@@ -6,4 +6,5 @@ data class ExpandState(
     val stockAreaExpanded: Boolean = false,
     val packingStyleExpanded: Boolean = false,
     val handlingMethodExpanded: Boolean = false,
+    val fileTransferMethodExpanded: Boolean = false,
 )

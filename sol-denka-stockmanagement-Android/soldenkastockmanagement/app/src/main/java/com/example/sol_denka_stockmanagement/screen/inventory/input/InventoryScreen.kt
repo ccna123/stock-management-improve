@@ -21,14 +21,12 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.sol_denka_stockmanagement.R
 import com.example.sol_denka_stockmanagement.navigation.Screen
 import com.example.sol_denka_stockmanagement.constant.SelectTitle
@@ -41,7 +39,6 @@ import com.example.sol_denka_stockmanagement.state.ErrorState
 import com.example.sol_denka_stockmanagement.state.ExpandState
 import com.example.sol_denka_stockmanagement.state.InputState
 import com.example.sol_denka_stockmanagement.viewmodel.AppViewModel
-import com.example.sol_denka_stockmanagement.screen.setting.sub_screen.reader_setting.ReaderSettingViewModel
 import com.example.sol_denka_stockmanagement.viewmodel.ScanViewModel
 
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
@@ -52,9 +49,9 @@ fun InventoryScreen(
     onNavigate: (Screen) -> Unit
 ) {
 
-    val errorState by appViewModel.errorState.collectAsStateWithLifecycle()
-    val inputState by appViewModel.inputState.collectAsStateWithLifecycle()
-    val expandState by appViewModel.expandState.collectAsStateWithLifecycle()
+    val errorState = appViewModel.errorState.value
+    val inputState = appViewModel.inputState.value
+    val expandState = appViewModel.expandState.value
 
     LaunchedEffect(Unit) {
         scanViewModel.setEnableScan(false)
@@ -142,7 +139,7 @@ fun InventoryScreenContent(
                     shape = RoundedCornerShape(13.dp),
                     onChange = { newValue ->
                         appViewModel.onInputIntent(
-                            InputIntent.UpdateStockArea(
+                            InputIntent.ChangeStockArea(
                                 newValue
                             )
                         )
@@ -160,7 +157,7 @@ fun InventoryScreenContent(
                         text = { Text(text = "保管場所選択") },
                         onClick = {
                             appViewModel.apply {
-                                onInputIntent(InputIntent.UpdateStockArea(""))
+                                onInputIntent(InputIntent.ChangeStockArea(""))
                                 onExpandIntent(ExpandIntent.ToggleStockAreaExpanded)
                             }
                         }
@@ -175,7 +172,7 @@ fun InventoryScreenContent(
                             text = { Text(text = stockArea) },
                             onClick = {
                                 appViewModel.apply {
-                                    onInputIntent(InputIntent.UpdateStockArea(if (stockArea == SelectTitle.SelectStockArea.displayName) "" else stockArea))
+                                    onInputIntent(InputIntent.ChangeStockArea(if (stockArea == SelectTitle.SelectStockArea.displayName) "" else stockArea))
                                     onExpandIntent(ExpandIntent.ToggleStockAreaExpanded)
                                 }
                             }

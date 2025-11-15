@@ -5,4 +5,5 @@ sealed class ExpandIntent{
     data object ToggleMissRollExpanded: ExpandIntent()
     data object TogglePackingStyleExpanded: ExpandIntent()
     data object ToggleHandlingMethodExpanded: ExpandIntent()
+    data object ToggleFileTransferMethodExpanded: ExpandIntent()
 }

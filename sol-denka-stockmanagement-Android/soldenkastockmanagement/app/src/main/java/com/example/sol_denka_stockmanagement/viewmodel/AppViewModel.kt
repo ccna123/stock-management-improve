@@ -6,6 +6,7 @@ import android.os.Build
 import android.provider.MediaStore
 import android.util.Log
 import androidx.annotation.RequiresApi
+import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -15,7 +16,7 @@ import com.example.sol_denka_stockmanagement.intent.ExpandIntent
 import com.example.sol_denka_stockmanagement.intent.ShareIntent
 import com.example.sol_denka_stockmanagement.intent.InputIntent
 import com.example.sol_denka_stockmanagement.model.ReaderInfoModel
-import com.example.sol_denka_stockmanagement.model.TagInfoModel
+import com.example.sol_denka_stockmanagement.screen.setting.sub_screen.app_setting.AppSettingState
 import com.example.sol_denka_stockmanagement.state.ErrorState
 import com.example.sol_denka_stockmanagement.state.ExpandState
 import com.example.sol_denka_stockmanagement.state.GeneralState
@@ -28,7 +29,6 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -41,17 +41,20 @@ class AppViewModel @Inject constructor(
 
 
     // region State Definitions
-    private val _generalState = MutableStateFlow(GeneralState())
-    val generalState: StateFlow<GeneralState> = _generalState.asStateFlow()
+    private val _generalState = mutableStateOf(GeneralState())
+    val generalState: State<GeneralState> = _generalState
 
-    private val _expandState = MutableStateFlow(ExpandState())
-    val expandState: StateFlow<ExpandState> = _expandState.asStateFlow()
+    private val _expandState = mutableStateOf(ExpandState())
+    val expandState: State<ExpandState> = _expandState
 
-    private val _inputState = MutableStateFlow(InputState())
-    val inputState: StateFlow<InputState> = _inputState.asStateFlow()
+    private val _inputState = mutableStateOf(InputState())
+    val inputState: State<InputState> = _inputState
 
-    private val _errorState = MutableStateFlow(ErrorState())
-    val errorState: StateFlow<ErrorState> = _errorState.asStateFlow()
+    private val _errorState = mutableStateOf(ErrorState())
+    val errorState: State<ErrorState> = _errorState
+
+    private val _appSettingState = mutableStateOf(AppSettingState())
+    val appSettingState: State<AppSettingState> = _appSettingState
 
     var showFileProgressDialog = mutableStateOf(false)
 
@@ -72,7 +75,6 @@ class AppViewModel @Inject constructor(
         started = SharingStarted.WhileSubscribed(5000),
         initialValue = ConnectionState.DISCONNECTED
     )
-
 
 
     init {
@@ -165,46 +167,90 @@ class AppViewModel @Inject constructor(
 
     fun onInputIntent(intent: InputIntent) {
         when (intent) {
-            is InputIntent.UpdateHandlingMethod -> _inputState.update { it.copy(handlingMethod = intent.value) }
-            is InputIntent.UpdateStockArea -> _inputState.update { it.copy(stockArea = intent.value) }
-            is InputIntent.UpdateRemark -> _inputState.update { it.copy(remark = intent.value) }
-            is InputIntent.UpdateMissRoll -> _inputState.update { it.copy(materialSelectedItem = intent.value) }
-            is InputIntent.UpdateGrade -> _inputState.update { it.copy(grade = intent.value) }
-            is InputIntent.UpdateLength -> _inputState.update { it.copy(length = intent.value) }
-            is InputIntent.UpdateRollingMachineInfo -> _inputState.update {
-                it.copy(
-                    rollingMachineInfo = intent.value
-                )
-            }
 
-            is InputIntent.UpdateThickness -> _inputState.update { it.copy(thickness = intent.value) }
-            is InputIntent.UpdateWeight -> _inputState.update { it.copy(weight = intent.value) }
-            is InputIntent.UpdateLotNo -> _inputState.update { it.copy(lotNo = intent.value) }
-            is InputIntent.UpdatePackingStyle -> _inputState.update { it.copy(packingStyle = intent.value) }
+            is InputIntent.ChangeHandlingMethod ->
+                _inputState.value = _inputState.value.copy(handlingMethod = intent.value)
+
+            is InputIntent.ChangeStockArea ->
+                _inputState.value = _inputState.value.copy(stockArea = intent.value)
+
+            is InputIntent.ChangeRemark ->
+                _inputState.value = _inputState.value.copy(remark = intent.value)
+
+            is InputIntent.ChangeMissRoll ->
+                _inputState.value = _inputState.value.copy(materialSelectedItem = intent.value)
+
+            is InputIntent.ChangeGrade ->
+                _inputState.value = _inputState.value.copy(grade = intent.value)
+
+            is InputIntent.ChangeLength ->
+                _inputState.value = _inputState.value.copy(length = intent.value)
+
+            is InputIntent.ChangeRollingMachineInfo ->
+                _inputState.value = _inputState.value.copy(rollingMachineInfo = intent.value)
+
+            is InputIntent.ChangeThickness ->
+                _inputState.value = _inputState.value.copy(thickness = intent.value)
+
+            is InputIntent.ChangeWeight ->
+                _inputState.value = _inputState.value.copy(weight = intent.value)
+
+            is InputIntent.ChangeLotNo ->
+                _inputState.value = _inputState.value.copy(lotNo = intent.value)
+
+            is InputIntent.ChangePackingStyle ->
+                _inputState.value = _inputState.value.copy(packingStyle = intent.value)
+
+            is InputIntent.ChangeFileTransferMethod ->
+                _inputState.value = _inputState.value.copy(fileTransferMethod = intent.value)
         }
     }
+
 
     fun onGeneralIntent(intent: ShareIntent) {
         when (intent) {
-            is ShareIntent.ChangeTab -> _generalState.update { it.copy(tab = intent.tab) }
-            is ShareIntent.ToggleDialog -> _generalState.update { it.copy(showAppDialog = !it.showAppDialog) }
-            is ShareIntent.ToggleDropDown -> _generalState.update { it.copy(showDropDown = intent.showDropDown) }
+            is ShareIntent.ChangeTab ->
+                _generalState.value = _generalState.value.copy(tab = intent.tab)
+
+            is ShareIntent.ToggleDialog ->
+                _generalState.value = _generalState.value.copy(showAppDialog = !_generalState.value.showAppDialog)
+
+            is ShareIntent.ToggleDropDown ->
+                _generalState.value = _generalState.value.copy(showDropDown = intent.showDropDown)
         }
     }
+
 
     fun onExpandIntent(intent: ExpandIntent) {
         when (intent) {
-            ExpandIntent.ToggleMissRollExpanded -> _expandState.update { it.copy(materialSelection = !it.materialSelection) }
-            ExpandIntent.ToggleStockAreaExpanded -> _expandState.update { it.copy(stockAreaExpanded = !it.stockAreaExpanded) }
-            ExpandIntent.TogglePackingStyleExpanded -> _expandState.update {
-                it.copy(
-                    packingStyleExpanded = !it.packingStyleExpanded
-                )
-            }
 
-            ExpandIntent.ToggleHandlingMethodExpanded ->  _expandState.update { it.copy(handlingMethodExpanded = !it.handlingMethodExpanded) }
+            ExpandIntent.ToggleMissRollExpanded ->
+                _expandState.value = _expandState.value.copy(
+                    materialSelection = !_expandState.value.materialSelection
+                )
+
+            ExpandIntent.ToggleStockAreaExpanded ->
+                _expandState.value = _expandState.value.copy(
+                    stockAreaExpanded = !_expandState.value.stockAreaExpanded
+                )
+
+            ExpandIntent.TogglePackingStyleExpanded ->
+                _expandState.value = _expandState.value.copy(
+                    packingStyleExpanded = !_expandState.value.packingStyleExpanded
+                )
+
+            ExpandIntent.ToggleHandlingMethodExpanded ->
+                _expandState.value = _expandState.value.copy(
+                    handlingMethodExpanded = !_expandState.value.handlingMethodExpanded
+                )
+
+            ExpandIntent.ToggleFileTransferMethodExpanded ->
+                _expandState.value = _expandState.value.copy(
+                    fileTransferMethodExpanded = !_expandState.value.fileTransferMethodExpanded
+                )
         }
     }
+
 
     var isSingleTagMode = MutableStateFlow(false)
         private set
@@ -216,18 +262,6 @@ class AppViewModel @Inject constructor(
         }
     }
 
-    fun clearSearchRfid() {
-
-    }
-
-    fun updateScanList(
-        scannedTags: Map<String, TagInfoModel> = emptyMap(),
-        scannedBarCode: Map<String, String> = emptyMap(),
-        barcode: String? = null,
-        setNo: Int = 0,
-    ) {
-    }
-
     fun resetState() {
         _inputState.value = InputState()
         _expandState.value = ExpandState()
@@ -235,10 +269,5 @@ class AppViewModel @Inject constructor(
         isSingleTagMode.value = false
         _generalState.value = GeneralState()
     }
-    // endregion
 
-    fun updateTagRssi(scannedTags: Map<String, Float>) {
-        viewModelScope.launch(Dispatchers.IO) {
-        }
-    }
 }

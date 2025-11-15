@@ -3,14 +3,7 @@ package com.example.sol_denka_stockmanagement.screen.setting.sub_screen.app_sett
 import javax.inject.Inject
 
 class AppSettingHelper @Inject constructor() {
-    fun hasAppSettingChangeWithoutSave(
-        initialState: AppSettingState,
-        currentState: AppSettingState
-    ): Boolean {
-        return initialState.autoConnectChecked != currentState.autoConnectChecked ||
-                initialState.isRfidVolumeOn != currentState.isRfidVolumeOn ||
-                initialState.selectedTab != currentState.selectedTab
-    }
+
 
 //    fun applyAppSettingChanges(
 //        context: Context,

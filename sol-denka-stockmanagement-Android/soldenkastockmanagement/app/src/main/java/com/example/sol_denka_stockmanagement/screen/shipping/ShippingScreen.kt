@@ -24,15 +24,12 @@ import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.sol_denka_stockmanagement.R
 import com.example.sol_denka_stockmanagement.constant.HandlingMethod
 import com.example.sol_denka_stockmanagement.constant.MaterialSelectionItem
@@ -40,8 +37,6 @@ import com.example.sol_denka_stockmanagement.navigation.Screen
 import com.example.sol_denka_stockmanagement.constant.SelectTitle
 import com.example.sol_denka_stockmanagement.intent.ExpandIntent
 import com.example.sol_denka_stockmanagement.intent.InputIntent
-import com.example.sol_denka_stockmanagement.model.ShippingItemModel
-import com.example.sol_denka_stockmanagement.model.TagInfoModel
 import com.example.sol_denka_stockmanagement.screen.layout.Layout
 import com.example.sol_denka_stockmanagement.screen.scan.shipping.ShippingScanViewModel
 import com.example.sol_denka_stockmanagement.share.ButtonContainer
@@ -49,12 +44,8 @@ import com.example.sol_denka_stockmanagement.share.InputFieldContainer
 import com.example.sol_denka_stockmanagement.state.ErrorState
 import com.example.sol_denka_stockmanagement.state.ExpandState
 import com.example.sol_denka_stockmanagement.state.InputState
-import com.example.sol_denka_stockmanagement.ui.theme.brightGreen
-import com.example.sol_denka_stockmanagement.ui.theme.brightOrange
-import com.example.sol_denka_stockmanagement.ui.theme.deepBlueSky
 import com.example.sol_denka_stockmanagement.ui.theme.paleSkyBlue
 import com.example.sol_denka_stockmanagement.viewmodel.AppViewModel
-import com.example.sol_denka_stockmanagement.screen.setting.sub_screen.reader_setting.ReaderSettingViewModel
 import com.example.sol_denka_stockmanagement.viewmodel.ScanViewModel
 
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
@@ -66,9 +57,9 @@ fun ShippingScreen(
     onNavigate: (Screen) -> Unit
 ) {
 
-    val errorState by appViewModel.errorState.collectAsStateWithLifecycle()
-    val expandState by appViewModel.expandState.collectAsStateWithLifecycle()
-    val inputState by appViewModel.inputState.collectAsStateWithLifecycle()
+    val errorState = appViewModel.errorState.value
+    val expandState = appViewModel.expandState.value
+    val inputState = appViewModel.inputState.value
 
     Layout(
         topBarText = stringResource(R.string.shipping),
@@ -188,7 +179,7 @@ fun ShippingScreenContent(
                     hintText = SelectTitle.SelectHandlingMethod.displayName,
                     shape = RoundedCornerShape(13.dp),
                     onChange = { newValue ->
-                        onUpdateInput(InputIntent.UpdateHandlingMethod(newValue))
+                        onUpdateInput(InputIntent.ChangeHandlingMethod(newValue))
                     },
                     readOnly = true,
                     isDropDown = true,
@@ -211,7 +202,7 @@ fun ShippingScreenContent(
                             text = { Text(text = method) },
                             onClick = {
                                 appViewModel.apply {
-                                    onInputIntent(InputIntent.UpdateHandlingMethod(if (method == SelectTitle.SelectHandlingMethod.displayName) "" else method))
+                                    onInputIntent(InputIntent.ChangeHandlingMethod(if (method == SelectTitle.SelectHandlingMethod.displayName) "" else method))
                                     onExpandIntent(ExpandIntent.ToggleHandlingMethodExpanded)
                                 }
                             }
@@ -236,7 +227,7 @@ fun ShippingScreenContent(
                             .toByteArray().size == 1) || char == '-'
                     }
                     appViewModel.onInputIntent(
-                        InputIntent.UpdateRemark(
+                        InputIntent.ChangeRemark(
                             filteredValue
                         )
                     )

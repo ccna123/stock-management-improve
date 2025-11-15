@@ -8,6 +8,12 @@ enum class CommonsString(val displayName: String) {
     InvalidInput("Invalid Input")
 }
 
+enum class FileTransferMethod(val displayName: String) {
+    SELECTION_TITLE("ファイル転送方法選択"),
+    USB("USB"),
+    WIFI("WIFI")
+}
+
 enum class HandlingMethod(val displayName: String) {
     SELECTION_TITLE("処理方法選択"),
     USE("使用"),

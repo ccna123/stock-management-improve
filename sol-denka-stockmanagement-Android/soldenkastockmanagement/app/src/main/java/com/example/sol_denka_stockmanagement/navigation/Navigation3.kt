@@ -43,7 +43,7 @@ fun Navigation3(
     detailViewModel: DetailViewModel,
     shippingScanViewModel: ShippingScanViewModel,
 ) {
-    val backStack = remember { mutableStateListOf<Screen>(Screen.Home) }
+    val backStack = remember { mutableStateListOf<Screen>(Screen.Setting) }
     NavDisplay(
         backStack = backStack,
         onBack = { backStack.removeLastOrNull() },

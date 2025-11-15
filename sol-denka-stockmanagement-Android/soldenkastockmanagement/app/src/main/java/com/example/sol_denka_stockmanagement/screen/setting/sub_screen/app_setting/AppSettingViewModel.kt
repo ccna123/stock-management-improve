@@ -1,7 +1,13 @@
 package com.example.sol_denka_stockmanagement.screen.setting.sub_screen.app_setting
 
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
+import com.example.sol_denka_stockmanagement.intent.AppSettingIntent
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import javax.inject.Inject
 
 @HiltViewModel
@@ -11,10 +17,10 @@ class AppSettingViewModel @Inject constructor(
 //    private val helper: AppSettingHelper
 ) : ViewModel() {
 
-//    private val _appSettingState = MutableStateFlow(AppSettingState())
-//    val appSettingState: StateFlow<AppSettingState> = _appSettingState.asStateFlow()
+    private val _appSettingState = MutableStateFlow(AppSettingState())
+    val appSettingState: StateFlow<AppSettingState> = _appSettingState.asStateFlow()
 //
-//    val initialAppSettingsState = mutableStateOf(_appSettingState.value)
+    val initialAppSettingsState = mutableStateOf(_appSettingState.value)
 //
 //    private val formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME.withZone(ZoneId.of("UTC"))
 //
@@ -22,19 +28,11 @@ class AppSettingViewModel @Inject constructor(
 //        loadSettingFromFile()
 //    }
 //
-//    fun onAppSettingIntent(intent: AppSettingIntent) {
-//        when (intent) {
-//            AppSettingIntent.ApplySettingChange -> applyAppSettingChanges()
-//            AppSettingIntent.HasAppSettingChangedWithoutSave -> hasAppSettingChangeWithoutSave()
-//            AppSettingIntent.DeleteScanTask -> deleteScanTask()
-//            AppSettingIntent.LoadSettingFromFile -> loadSettingFromFile()
-//            AppSettingIntent.ResetDeleteSuccess -> _appSettingState.update { it.copy(isDeleteSuccess = false) }
-//            is AppSettingIntent.SetAutoConnect -> setAutoConnect(
-//                intent.isAutoConnectSwitchOn,
-//                intent.selectedDeviceAddress
-//            )
-//        }
-//    }
+    fun handle(intent: AppSettingIntent) {
+        when (intent) {
+            is AppSettingIntent.ChangeFileTransferMethod -> _appSettingState.update { it.copy(fileTransferMethod = intent.method) }
+        }
+    }
 //
 //    fun updateAppSettingState(transform: AppSettingState.() -> AppSettingState) {
 //        _appSettingState.value = _appSettingState.value.transform()

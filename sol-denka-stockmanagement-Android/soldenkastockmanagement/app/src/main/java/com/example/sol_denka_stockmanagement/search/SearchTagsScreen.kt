@@ -76,7 +76,7 @@ fun SearchTagsScreen(
     onNavigate: (Screen) -> Unit,
 ) {
     val selectedTags by inventoryScanViewModel.selectedTags
-    val generalState by appViewModel.generalState.collectAsStateWithLifecycle()
+    val generalState = appViewModel.generalState.value
     val foundTags by searchViewModel.foundTags
     val rfidTagList = scanViewModel.rfidTagList.collectAsStateWithLifecycle()
     val readerSettingState by readerSettingViewModel.readerSettingState.collectAsStateWithLifecycle()

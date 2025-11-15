@@ -105,6 +105,8 @@
     <string name="setting_rfid_volume_high">高</string>
     <string name="setting_rfid_volume_mute">Mute</string>
     <string name="setting_rfid_power">電波強度</string>
+    <string name="setting_file_transfer_method">ファイル転送方法</string>
+    <string name="setting_file_transfer_method_desc">ファイル転送方法を選択</string>
 
     <!--    設定説明-->
     <string name="setting_rfid_flag_des">フラグ状態を利用した読み分けができることにより、読み取りスピードの向上や読み取る必要のないRFIDタグを事前に指定することでアプリケーションの負荷を軽減し、処理スピードをあげることが可能</string>

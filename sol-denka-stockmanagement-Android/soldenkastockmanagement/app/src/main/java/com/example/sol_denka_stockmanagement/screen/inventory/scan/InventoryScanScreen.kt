@@ -80,7 +80,7 @@ fun InventoryScanScreen(
     inventoryScanViewModel: InventoryScanViewModel,
     onNavigate: (Screen) -> Unit
 ) {
-    val generalState by appViewModel.generalState.collectAsStateWithLifecycle()
+    val generalState = appViewModel.generalState.value
     val rfidTagList = scanViewModel.rfidTagList.collectAsStateWithLifecycle()
     val readerSettingState by readerSettingViewModel.readerSettingState.collectAsStateWithLifecycle()
     var showRadioPowerDialog by remember { mutableStateOf(false) }

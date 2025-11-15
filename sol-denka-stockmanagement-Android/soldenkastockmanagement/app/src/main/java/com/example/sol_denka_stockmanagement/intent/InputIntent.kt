@@ -1,15 +1,16 @@
 package com.example.sol_denka_stockmanagement.intent
 
-sealed class InputIntent {
-    data class UpdateHandlingMethod(val value: String) : InputIntent()
-    data class UpdateMissRoll(val value: String) : InputIntent()
-    data class UpdateStockArea(val value: String) : InputIntent()
-    data class UpdateRemark(val value: String) : InputIntent()
-    data class UpdateThickness(val value: String) : InputIntent()
-    data class UpdateGrade(val value: String) : InputIntent()
-    data class UpdateRollingMachineInfo(val value: String) : InputIntent()
-    data class UpdateLength(val value: String) : InputIntent()
-    data class UpdateWeight(val value: String) : InputIntent()
-    data class UpdateLotNo(val value: String) : InputIntent()
-    data class UpdatePackingStyle(val value: String) : InputIntent()
+sealed interface InputIntent {
+    data class ChangeHandlingMethod(val value: String) : InputIntent
+    data class ChangeMissRoll(val value: String) : InputIntent
+    data class ChangeStockArea(val value: String) : InputIntent
+    data class ChangeRemark(val value: String) : InputIntent
+    data class ChangeThickness(val value: String) : InputIntent
+    data class ChangeGrade(val value: String) : InputIntent
+    data class ChangeRollingMachineInfo(val value: String) : InputIntent
+    data class ChangeLength(val value: String) : InputIntent
+    data class ChangeWeight(val value: String) : InputIntent
+    data class ChangeLotNo(val value: String) : InputIntent
+    data class ChangePackingStyle(val value: String) : InputIntent
+    data class ChangeFileTransferMethod(val value: String): InputIntent
 }

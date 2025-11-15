@@ -58,7 +58,7 @@ fun SettingScreen(
     readerSettingViewModel: ReaderSettingViewModel,
     onNavigate: (Screen) -> Unit
 ) {
-    val generalState by appViewModel.generalState.collectAsStateWithLifecycle()
+    val generalState = appViewModel.generalState.value
 //    val appSettingState by appSettingViewModel.appSettingState.collectAsStateWithLifecycle()
     var showApplyConfirmDialog by remember { mutableStateOf(false) }
     var showUnsavedConfirmDialog by remember { mutableStateOf(false) }

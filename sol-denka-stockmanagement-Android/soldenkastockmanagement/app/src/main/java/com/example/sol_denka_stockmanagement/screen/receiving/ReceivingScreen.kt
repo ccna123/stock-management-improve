@@ -46,7 +46,6 @@ import com.example.sol_denka_stockmanagement.viewmodel.AppViewModel
 import com.example.sol_denka_stockmanagement.viewmodel.ScanViewModel
 import com.example.sol_denka_stockmanagement.screen.receiving.components.LiterInput
 import com.example.sol_denka_stockmanagement.screen.receiving.components.MissRollInput
-import com.example.sol_denka_stockmanagement.screen.setting.sub_screen.reader_setting.ReaderSettingViewModel
 
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @Composable
@@ -56,9 +55,9 @@ fun ReceivingScreen(
     onNavigate: (Screen) -> Unit
 ) {
 
-    val errorState by appViewModel.errorState.collectAsStateWithLifecycle()
-    val inputState by appViewModel.inputState.collectAsStateWithLifecycle()
-    val expandState by appViewModel.expandState.collectAsStateWithLifecycle()
+    val errorState = appViewModel.errorState.value
+    val inputState = appViewModel.inputState.value
+    val expandState = appViewModel.expandState.value
     val scannedTag2 by scanViewModel.scannedTag2.collectAsStateWithLifecycle()
 
     LaunchedEffect(Unit) {
@@ -155,7 +154,7 @@ fun ReceivingScreenContent(
                     hintText = SelectTitle.SelectMaterial.displayName,
                     shape = RoundedCornerShape(13.dp),
                     onChange = { newValue ->
-                        onUpdateInput(InputIntent.UpdateMissRoll(newValue))
+                        onUpdateInput(InputIntent.ChangeMissRoll(newValue))
                     },
                     readOnly = true,
                     isDropDown = true,
@@ -180,7 +179,7 @@ fun ReceivingScreenContent(
                             text = { Text(text = missRoll) },
                             onClick = {
                                 appViewModel.apply {
-                                    onInputIntent(InputIntent.UpdateMissRoll(if (missRoll == SelectTitle.SelectMissRoll.displayName) "" else missRoll))
+                                    onInputIntent(InputIntent.ChangeMissRoll(if (missRoll == SelectTitle.SelectMissRoll.displayName) "" else missRoll))
                                     onExpandIntent(ExpandIntent.ToggleMissRollExpanded)
                                 }
                             }
@@ -199,17 +198,17 @@ fun ReceivingScreenContent(
                     length = inputState.length,
                     packingStyle = inputState.packingStyle,
                     packingStyleExpanded = expandState.packingStyleExpanded,
-                    onThicknessChange = { onUpdateInput(InputIntent.UpdateThickness(it)) },
-                    onLengthChange = { onUpdateInput(InputIntent.UpdateLength(it)) },
+                    onThicknessChange = { onUpdateInput(InputIntent.ChangeThickness(it)) },
+                    onLengthChange = { onUpdateInput(InputIntent.ChangeLength(it)) },
                     onRollingMachineInfoChange = {
                         onUpdateInput(
-                            InputIntent.UpdateRollingMachineInfo(
+                            InputIntent.ChangeRollingMachineInfo(
                                 it
                             )
                         )
                     },
-                    onStockAreaChange = { onUpdateInput(InputIntent.UpdateStockArea(it)) },
-                    onPackingStyleChange = { onUpdateInput(InputIntent.UpdatePackingStyle(it)) },
+                    onStockAreaChange = { onUpdateInput(InputIntent.ChangeStockArea(it)) },
+                    onPackingStyleChange = { onUpdateInput(InputIntent.ChangePackingStyle(it)) },
                     onPackingStyleExpand = { appViewModel.onExpandIntent(ExpandIntent.TogglePackingStyleExpanded) },
                     stockAreaExpanded = expandState.stockAreaExpanded,
                     onStockAreaExpand = { appViewModel.onExpandIntent(ExpandIntent.ToggleStockAreaExpanded) },
@@ -223,10 +222,10 @@ fun ReceivingScreenContent(
                         lotNo = inputState.lotNo,
                         packingStyle = inputState.packingStyle,
                         packingStyleExpanded = expandState.packingStyleExpanded,
-                        onThicknessChange = { onUpdateInput(InputIntent.UpdateThickness(it)) },
-                        onStockAreaChange = { onUpdateInput(InputIntent.UpdateStockArea(it)) },
-                        onLotNoChange = { onUpdateInput(InputIntent.UpdateLotNo(it)) },
-                        onPackingStyleChange = { onUpdateInput(InputIntent.UpdatePackingStyle(it)) },
+                        onThicknessChange = { onUpdateInput(InputIntent.ChangeThickness(it)) },
+                        onStockAreaChange = { onUpdateInput(InputIntent.ChangeStockArea(it)) },
+                        onLotNoChange = { onUpdateInput(InputIntent.ChangeLotNo(it)) },
+                        onPackingStyleChange = { onUpdateInput(InputIntent.ChangePackingStyle(it)) },
                         onPackingStyleExpand = { appViewModel.onExpandIntent(ExpandIntent.TogglePackingStyleExpanded) },
                     )
                 }

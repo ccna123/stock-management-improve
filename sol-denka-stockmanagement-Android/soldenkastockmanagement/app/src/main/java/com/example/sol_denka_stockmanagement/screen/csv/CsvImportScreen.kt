@@ -66,7 +66,7 @@ fun CsvImportScreen(
     val context = LocalContext.current
     val csvState by csvViewModel.csvState.collectAsStateWithLifecycle()
     val scope = rememberCoroutineScope()
-    val generalState by appViewModel.generalState.collectAsStateWithLifecycle()
+    val generalState = appViewModel.generalState.value
     val csvFiles by csvViewModel.csvFiles.collectAsStateWithLifecycle()
     val isImporting by csvViewModel.isImporting.collectAsStateWithLifecycle()
     val importProgress by csvViewModel.importProgress.collectAsStateWithLifecycle()
