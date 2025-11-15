@@ -12,6 +12,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.sol_denka_stockmanagement.constant.ConnectionState
 import com.example.sol_denka_stockmanagement.helper.ReaderController
+import com.example.sol_denka_stockmanagement.helper.ToastManager
+import com.example.sol_denka_stockmanagement.helper.ToastType
 import com.example.sol_denka_stockmanagement.intent.ExpandIntent
 import com.example.sol_denka_stockmanagement.intent.ShareIntent
 import com.example.sol_denka_stockmanagement.intent.InputIntent
@@ -24,6 +26,7 @@ import com.example.sol_denka_stockmanagement.state.InputState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -64,6 +67,9 @@ class AppViewModel @Inject constructor(
     private val _isFileWorking = MutableStateFlow(false)
     val isFileWorking = _isFileWorking.asStateFlow()
 
+    private val _toastFlow = MutableSharedFlow<Pair<String, ToastType>>()
+    val toastFlow = _toastFlow
+
 
     val readerInfo = readerController.readerInfo.stateIn(
         scope = viewModelScope,
@@ -81,6 +87,15 @@ class AppViewModel @Inject constructor(
     init {
         viewModelScope.launch(Dispatchers.IO) {
             readerController.tryAutoConnect()
+        }
+        viewModelScope.launch {
+            readerController.connectionEvents.collect { evt ->
+                if (evt == ConnectionState.CONNECTED) {
+                    _toastFlow.emit("リーダー接続に成功しました" to ToastType.SUCCESS)
+                } else if (evt == ConnectionState.DISCONNECTED ) {
+                    _toastFlow.emit("リーダーが切断されました" to ToastType.ERROR)
+                }
+            }
         }
     }
 

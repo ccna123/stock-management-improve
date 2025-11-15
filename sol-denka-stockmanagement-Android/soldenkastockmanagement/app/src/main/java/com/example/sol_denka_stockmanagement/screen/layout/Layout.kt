@@ -110,15 +110,12 @@ fun Layout(
     content: @Composable (PaddingValues) -> Unit
 ) {
     // ✅ Get ReaderController via Hilt entry point
-    val context = LocalContext.current
-    val readerController = remember {
-        EntryPointAccessors.fromApplication(
-            context.applicationContext,
-            ReaderControllerEntryPoint::class.java
-        ).readerController()
-    }
-    val connectionState by appViewModel?.connectionState?.collectAsStateWithLifecycle() ?: remember { mutableStateOf(
-        ConnectionState.DISCONNECTED) }
+    val connectionState by appViewModel?.connectionState?.collectAsStateWithLifecycle()
+        ?: remember {
+            mutableStateOf(
+                ConnectionState.DISCONNECTED
+            )
+        }
     val readerInfo by appViewModel?.readerInfo?.collectAsState() ?: remember {
         mutableStateOf(
             ReaderInfoModel()
@@ -136,7 +133,7 @@ fun Layout(
         ?: MutableStateFlow(false)).collectAsStateWithLifecycle()
 
     if (showFileProgressBar == true) {
-        AppDialog{
+        AppDialog {
             Column(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalAlignment = Alignment.CenterHorizontally
@@ -202,12 +199,8 @@ fun Layout(
     }
 
     LaunchedEffect(Unit) {
-        readerController.connectionEvents.collect { evt ->
-            if (evt == ConnectionState.CONNECTED) {
-                ToastManager.showToast("リーダー接続に成功しました", ToastType.SUCCESS)
-            } else {
-                ToastManager.showToast("リーダーが切断されました", ToastType.ERROR)
-            }
+        appViewModel?.toastFlow?.collect { (msg, type) ->
+            ToastManager.showToast(msg, type)
         }
     }
 
@@ -393,7 +386,7 @@ fun Layout(
                             }
                         },
                         colors = TopAppBarDefaults.topAppBarColors(
-                            containerColor = if(isPerformingInventory) orange else deepOceanBlue
+                            containerColor = if (isPerformingInventory) orange else deepOceanBlue
                         ),
                     )
                 },
