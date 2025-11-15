@@ -134,7 +134,7 @@ class FakeReader {
     fun startInventory() {
         inventoryJob?.cancel()
         inventoryJob = scope.launch {
-//            startScanDrain()
+            startScanDrain()
             while (isActive) {
                 delay(250)
                 val epc = listOf(

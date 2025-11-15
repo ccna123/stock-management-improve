@@ -35,10 +35,13 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -62,8 +65,10 @@ import com.example.sol_denka_stockmanagement.viewmodel.AppViewModel
 import com.example.sol_denka_stockmanagement.screen.setting.sub_screen.reader_setting.ReaderSettingViewModel
 import com.example.sol_denka_stockmanagement.share.AppDialog
 import com.example.sol_denka_stockmanagement.share.RadioPowerDialog
+import com.example.sol_denka_stockmanagement.ui.theme.brightAzure
 import com.example.sol_denka_stockmanagement.ui.theme.brightOrange
 import com.example.sol_denka_stockmanagement.viewmodel.ScanViewModel
+import kotlinx.coroutines.launch
 
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @Composable
@@ -80,6 +85,8 @@ fun InventoryScanScreen(
     val readerSettingState by readerSettingViewModel.readerSettingState.collectAsStateWithLifecycle()
     var showRadioPowerDialog by remember { mutableStateOf(false) }
     var showClearConfirmDialog by remember { mutableStateOf(false) }
+    val isPerformingInventory by scanViewModel.isPerformingInventory.collectAsStateWithLifecycle()
+    val scope = rememberCoroutineScope()
 
     LaunchedEffect(Unit) {
         scanViewModel.setEnableScan(enabled = true, Screen.InventoryScan(""))
@@ -180,7 +187,7 @@ fun InventoryScanScreen(
         currentScreenNameId = Screen.InventoryScan("").routeId,
         prevScreenNameId = prevScreenNameId,
         onNavigate = onNavigate,
-        hasBottomBar = inventoryScanViewModel.isSelectionMode.value,
+        hasBottomBar = true,
         appViewModel = appViewModel,
         readerSettingViewModel = readerSettingViewModel,
         topBarButton = {
@@ -259,56 +266,86 @@ fun InventoryScanScreen(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
-                ButtonContainer(
-                    buttonText = stringResource(R.string.search),
-                    icon = {
+                if (inventoryScanViewModel.isSelectionMode.value) {
+                    ButtonContainer(
+                        buttonText = stringResource(R.string.search),
+                        icon = {
+                            Icon(
+                                imageVector = Icons.Default.Search,
+                                contentDescription = null,
+                                tint = Color.White,
+                            )
+                        },
+                        onClick = {
+                            onNavigate(Screen.SearchTagsScreen(prevScreenNameId))
+                        },
+                    )
+                    ButtonContainer(
+                        containerColor = brightOrange,
+                        buttonText = stringResource(R.string.detail),
+                        icon = {
+                            Icon(
+                                imageVector = Icons.Default.Info,
+                                contentDescription = null,
+                                tint = Color.White,
+                            )
+                        },
+                        onClick = {
+                            onNavigate(Screen.Detail)
+                        },
+                    )
+                    IconButton(
+                        modifier = Modifier.background(
+                            color = Color.Red,
+                            shape = RoundedCornerShape(12.dp)
+                        ),
+                        shape = IconButtonDefaults.outlinedShape,
+                        onClick = {
+                            inventoryScanViewModel.apply {
+                                onIntent(
+                                    InventoryScanIntent.ToggleSelectionMode(false),
+                                )
+                                onIntent(
+                                    InventoryScanIntent.ClearTagSelectionList
+                                )
+                            }
+                        },
+                    ) {
                         Icon(
-                            imageVector = Icons.Default.Search,
+                            imageVector = Icons.Default.Clear,
                             contentDescription = null,
                             tint = Color.White,
                         )
-                    },
-                    onClick = {
-                        onNavigate(Screen.SearchTagsScreen(prevScreenNameId))
-                    },
-                )
-                ButtonContainer(
-                    containerColor = brightOrange,
-                    buttonText = stringResource(R.string.detail),
-                    icon = {
-                        Icon(
-                            imageVector = Icons.Default.Info,
-                            contentDescription = null,
-                            tint = Color.White,
-                        )
-                    },
-                    onClick = {
-                        onNavigate(Screen.Detail)
-                    },
-                )
-                IconButton(
-                    modifier = Modifier.background(
-                        color = Color.Red,
-                        shape = RoundedCornerShape(12.dp)
-                    ),
-                    shape = IconButtonDefaults.outlinedShape,
-                    onClick = {
-                        inventoryScanViewModel.apply {
-                            onIntent(
-                                InventoryScanIntent.ToggleSelectionMode(false),
+                    }
+                } else {
+                    ButtonContainer(
+                        buttonText = if (isPerformingInventory) stringResource(R.string.scan_stop) else stringResource(
+                            R.string.scan_start
+                        ),
+                        shape = RoundedCornerShape(10.dp),
+                        modifier = Modifier.shadow(
+                            elevation = 13.dp,
+                            clip = true,
+                            ambientColor = Color.Gray.copy(alpha = 0.5f),
+                            spotColor = Color.DarkGray.copy(alpha = 0.7f)
+                        ),
+                        icon = {
+                            Icon(
+                                painter = painterResource(R.drawable.scanner),
+                                contentDescription = null,
+                                tint = Color.White,
+                                modifier = Modifier.size(20.dp)
                             )
-                            onIntent(
-                                InventoryScanIntent.ClearTagSelectionList
-                            )
+                        },
+                        containerColor = if (isPerformingInventory) Color.Red else brightAzure,
+                        onClick = {
+                            scope.launch {
+                                if (isPerformingInventory) scanViewModel.stopInventory() else scanViewModel.startInventory()
+                            }
                         }
-                    },
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Clear,
-                        contentDescription = null,
-                        tint = Color.White,
                     )
                 }
+
             }
         },
         onBackArrowClick = {
