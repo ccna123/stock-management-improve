@@ -1,0 +1,189 @@
+package com.example.sol_denka_stockmanagement.reader
+
+import com.example.sol_denka_stockmanagement.constant.ConnectionState
+import com.example.sol_denka_stockmanagement.model.TagInfoModel
+import com.example.sol_denka_stockmanagement.share.DeviceEvent
+import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlin.random.Random
+
+enum class FakeSession { SESSION_S0, SESSION_S1, SESSION_S2, SESSION_S3 }
+enum class FakeInventoryState { INVENTORY_STATE_AB_FLIP, INVENTORY_STATE_A, INVENTORY_STATE_B }
+enum class FakeBeeperVolume(val displayName: String) {
+    QUIET_BEEP("静音"), LOW_BEEP("小"), MEDIUM_BEEP("中"),
+    HIGH_BEEP("高"),
+}
+
+enum class FakeChannel { CHANNEL1, CHANNEL2, CHANNEL3, CHANNEL4, CHANNEL5, CHANNEL6 }
+
+class FakeReader {
+
+    private val scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
+
+    private val _isConnected = MutableStateFlow(false)
+    val isConnected: StateFlow<Boolean> get() = _isConnected
+
+    private val _batteryLevel = MutableStateFlow(100)
+    val batteryLevel: StateFlow<Int> get() = _batteryLevel
+
+    private val _tagFlow = MutableStateFlow<Pair<String, Float>?>(null)
+    val tagFlow: StateFlow<Pair<String, Float>?> get() = _tagFlow
+
+    private var eventListener: ((DeviceEvent) -> Unit)? = null
+
+    private var inventoryJob: Job? = null
+    private var batteryJob: Job? = null
+
+    // -----------------------------
+    // Fake Reader Settings Storage
+    // -----------------------------
+    private var currentSession: FakeSession = FakeSession.SESSION_S0
+    private var currentInventoryState: FakeInventoryState = FakeInventoryState.INVENTORY_STATE_A
+    private var currentBeeper: FakeBeeperVolume = FakeBeeperVolume.MEDIUM_BEEP
+    private var currentRadioPower: Int = 30
+    private var currentTagPopulation: Short = 30
+    private var currentChannels: List<FakeChannel> = FakeChannel.entries.toList()
+
+    fun setEventListener(listener: (DeviceEvent) -> Unit) {
+        this.eventListener = listener
+    }
+
+    // -----------------------------
+    // Battery Drain Timer
+    // -----------------------------
+    private fun startBatteryDrain() {
+        batteryJob?.cancel()
+        batteryJob = scope.launch {
+            while (isActive) {
+                delay(6000) // drain every 6s
+                val newLevel = (_batteryLevel.value - 1).coerceAtLeast(5)
+                _batteryLevel.value = newLevel
+
+                eventListener?.invoke(DeviceEvent.BatteryData(newLevel))
+            }
+        }
+    }
+
+    // -----------------------------
+    // Connection
+    // -----------------------------
+    suspend fun connect(): Boolean {
+        delay(900)
+        _isConnected.value = true
+
+//        startBatteryDrain()
+
+        eventListener?.invoke(DeviceEvent.ConnectionStateChanged(true))
+
+        eventListener?.invoke(
+            DeviceEvent.ConnectedWithInfo(
+                batteryPower = _batteryLevel.value,
+                radioPower = currentRadioPower,
+                session = currentSession,
+                channel = currentChannels,
+                supportedChannels = FakeChannel.entries.toList(),
+                tagPopulation = currentTagPopulation,
+                buzzerVolume = currentBeeper,
+                tagAccessFlag = currentInventoryState,
+                firmwareVersion = "FAKE-1.0.0",
+                readerName = "FAKE-READER-01",
+                connectionState = ConnectionState.CONNECTED
+            )
+        )
+
+        return true
+    }
+    suspend fun disconnect() {
+        inventoryJob?.cancel()
+        batteryJob?.cancel()
+
+        delay(300)
+        _isConnected.value = false
+
+        eventListener?.invoke(DeviceEvent.ConnectionStateChanged(false))
+        eventListener?.invoke(DeviceEvent.Disconnected)
+    }
+
+    // -----------------------------
+    // Inventory
+    // -----------------------------
+    fun startInventory() {
+        inventoryJob?.cancel()
+        inventoryJob = scope.launch {
+            while (isActive) {
+                delay(250)
+
+                val epc = listOf(
+                    "80000000", "81111111", "82222222", "83333333",
+                    "84444444", "85555555", "86666666", "87777777",
+                    "88888888", "89999999"
+                ).random()
+
+                val rssi = Random.nextInt(-65, -20).toFloat()
+
+                val tag = TagInfoModel(rfidNo = epc, rssi = rssi)
+
+                eventListener?.invoke(DeviceEvent.TagsScanned(listOf(tag)))
+            }
+        }
+    }
+
+    fun stopInventory() {
+        inventoryJob?.cancel()
+        eventListener?.invoke(DeviceEvent.IsTriggerReleased(true))
+    }
+
+    fun emitUpdatedInfo() {
+        eventListener?.invoke(
+            DeviceEvent.ConnectedWithInfo(
+                batteryPower = _batteryLevel.value,
+                radioPower = currentRadioPower,
+                session = currentSession,
+                channel = currentChannels,
+                supportedChannels = FakeChannel.entries.toList(),
+                tagPopulation = currentTagPopulation,
+                buzzerVolume = currentBeeper,
+                tagAccessFlag = currentInventoryState,
+                firmwareVersion = "FAKE-1.0.0",
+                readerName = "FAKE-READER-01",
+                connectionState = ConnectionState.CONNECTED
+            )
+        )
+    }
+
+
+    // -----------------------------
+    // Fake Setting APIs
+    // -----------------------------
+
+    fun setSession(newSession: FakeSession): Boolean {
+        currentSession = newSession
+        return true
+    }
+
+    fun setTagPopulation(newPopulation: Short): Boolean {
+        currentTagPopulation = newPopulation
+        return true
+    }
+
+    fun setTagAccessFlag(flag: FakeInventoryState): Boolean {
+        currentInventoryState = flag
+        return true
+    }
+
+    fun setBuzzerVolume(vol: FakeBeeperVolume): Boolean {
+        currentBeeper = vol
+        return true
+    }
+
+    fun setRadioPower(power: Int): Boolean {
+        currentRadioPower = power
+        return true
+    }
+
+    fun setChannel(channels: List<FakeChannel>): Boolean {
+        currentChannels = channels
+        return true
+    }
+}

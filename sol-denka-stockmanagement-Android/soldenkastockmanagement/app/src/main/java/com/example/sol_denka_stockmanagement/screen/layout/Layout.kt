@@ -1,7 +1,6 @@
 package com.example.sol_denka_stockmanagement.screen.layout
 
 import android.os.Build
-import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
@@ -20,7 +19,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -52,8 +50,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -80,8 +76,6 @@ import com.example.sol_denka_stockmanagement.model.ReaderInfoModel
 import com.example.sol_denka_stockmanagement.share.AppDialog
 import com.example.sol_denka_stockmanagement.share.ButtonContainer
 import com.example.sol_denka_stockmanagement.share.MenuDrawer
-import com.example.sol_denka_stockmanagement.state.GeneralState
-import com.example.sol_denka_stockmanagement.state.ReaderSettingState
 import com.example.sol_denka_stockmanagement.ui.theme.brightGreen
 import com.example.sol_denka_stockmanagement.ui.theme.brightOrange
 import com.example.sol_denka_stockmanagement.ui.theme.deepOceanBlue
@@ -121,15 +115,14 @@ fun Layout(
             ReaderControllerEntryPoint::class.java
         ).readerController()
     }
-    val connectionState by readerController.connectionState.collectAsStateWithLifecycle()
+    val connectionState by appViewModel?.connectionState?.collectAsStateWithLifecycle() ?: remember { mutableStateOf(
+        ConnectionState.DISCONNECTED) }
     val readerInfo by appViewModel?.readerInfo?.collectAsState() ?: remember {
         mutableStateOf(
             ReaderInfoModel()
         )
     }
 
-    val readerSettingState by readerSettingViewModel?.readerSettingState?.collectAsState()
-        ?: remember { mutableStateOf(ReaderSettingState()) }
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val focusManager = LocalFocusManager.current
     val showFileProgressBar = appViewModel?.showFileProgressDialog?.value
@@ -321,7 +314,7 @@ fun Layout(
                                 Text(
                                     fontWeight = FontWeight.Bold,
                                     text = if (connectionState == ConnectionState.DISCONNECTED)
-                                        "-" else "${readerSettingState.radioPower}dbm / ${readerSettingState.radioPowerMw}Mw"
+                                        "-" else "${readerInfo.radioPower}dbm / ${readerInfo.radioPowerMw}Mw"
                                 )
                             }
                         }

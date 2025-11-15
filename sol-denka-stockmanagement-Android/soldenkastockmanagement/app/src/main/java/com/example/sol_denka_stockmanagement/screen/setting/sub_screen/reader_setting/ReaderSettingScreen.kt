@@ -49,15 +49,15 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.sol_denka_stockmanagement.R
-import com.example.sol_denka_stockmanagement.constant.BeeperVolume
 import com.example.sol_denka_stockmanagement.intent.ReaderSettingIntent
+import com.example.sol_denka_stockmanagement.reader.FakeBeeperVolume
+import com.example.sol_denka_stockmanagement.reader.FakeInventoryState
+import com.example.sol_denka_stockmanagement.reader.FakeSession
 import com.example.sol_denka_stockmanagement.screen.setting.components.reader_setting_tab.SettingBoxContainer
 import com.example.sol_denka_stockmanagement.screen.setting.components.reader_setting_tab.SettingItemTitle
 import com.example.sol_denka_stockmanagement.share.InputFieldContainer
 import com.example.sol_denka_stockmanagement.ui.theme.brightAzure
 import com.example.sol_denka_stockmanagement.ui.theme.skyBlue
-import com.zebra.rfid.api3.INVENTORY_STATE
-import com.zebra.rfid.api3.SESSION
 import java.text.NumberFormat
 import java.util.Locale
 import kotlin.math.roundToInt
@@ -96,7 +96,7 @@ fun ReaderSettingScreen(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(10.dp)
                 ) {
-                    BeeperVolume.entries.forEach { volume ->
+                    FakeBeeperVolume.entries.forEach { volume ->
                         Button(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -224,10 +224,10 @@ fun ReaderSettingScreen(
             content = {
                 Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
                     listOf(
-                        SESSION.SESSION_S0,
-                        SESSION.SESSION_S1,
-                        SESSION.SESSION_S2,
-                        SESSION.SESSION_S3,
+                        FakeSession.SESSION_S0,
+                        FakeSession.SESSION_S1,
+                        FakeSession.SESSION_S2,
+                        FakeSession.SESSION_S3,
                     ).forEach { session ->
                         Row(
                             modifier = Modifier
@@ -322,9 +322,9 @@ fun ReaderSettingScreen(
             content = {
                 Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
                     listOf(
-                        INVENTORY_STATE.INVENTORY_STATE_A,
-                        INVENTORY_STATE.INVENTORY_STATE_B,
-                        INVENTORY_STATE.INVENTORY_STATE_AB_FLIP,
+                        FakeInventoryState.INVENTORY_STATE_A,
+                        FakeInventoryState.INVENTORY_STATE_B,
+                        FakeInventoryState.INVENTORY_STATE_AB_FLIP,
                     ).forEach { accessFlag ->
                         Row(
                             modifier = Modifier
@@ -407,7 +407,7 @@ fun ReaderSettingScreen(
                                 },
                             )
                             DropdownMenuItem(
-                                text = { Text(channel) },
+                                text = { Text(channel.name) },
                                 onClick = {
                                 }
                             )

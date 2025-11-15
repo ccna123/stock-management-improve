@@ -1,15 +1,15 @@
 package com.example.sol_denka_stockmanagement.screen.setting.sub_screen.reader_setting
 
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.sol_denka_stockmanagement.constant.BeeperVolume
 import com.example.sol_denka_stockmanagement.helper.ReaderController
 import com.example.sol_denka_stockmanagement.intent.ReaderSettingIntent
+import com.example.sol_denka_stockmanagement.reader.FakeBeeperVolume
 import com.example.sol_denka_stockmanagement.state.ReaderSettingState
-import com.zebra.rfid.api3.BEEPER_VOLUME
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -41,21 +41,22 @@ class ReaderSettingViewModel @Inject constructor(
                         radioPower = info.radioPower,
                         radioPowerMw = ReaderSettingState.Companion.calculateMwFromDbm(info.radioPower),
                         radioPowerSliderPosition = info.radioPower,
-                        buzzerVolume = when(info.buzzerVolume){
-                            BEEPER_VOLUME.QUIET_BEEP -> {
-                                BeeperVolume.QUIET_BEEP
-                            }
-                            BEEPER_VOLUME.LOW_BEEP -> {
-                                BeeperVolume.LOW_BEEP
-                            }
-                            BEEPER_VOLUME.MEDIUM_BEEP -> {
-                                BeeperVolume.MEDIUM_BEEP
-                            }
-                            BEEPER_VOLUME.HIGH_BEEP -> {
-                                BeeperVolume.HIGH_BEEP
+                        buzzerVolume = when (info.buzzerVolume) {
+                            FakeBeeperVolume.QUIET_BEEP -> {
+                                FakeBeeperVolume.QUIET_BEEP
                             }
 
-                            else -> BeeperVolume.QUIET_BEEP
+                            FakeBeeperVolume.LOW_BEEP -> {
+                                FakeBeeperVolume.LOW_BEEP
+                            }
+
+                            FakeBeeperVolume.MEDIUM_BEEP -> {
+                                FakeBeeperVolume.MEDIUM_BEEP
+                            }
+
+                            FakeBeeperVolume.HIGH_BEEP -> {
+                                FakeBeeperVolume.HIGH_BEEP
+                            }
                         },
                         tagPopulation = info.tagPopulation,
                         rfidSession = info.rfidSession,
@@ -118,34 +119,42 @@ class ReaderSettingViewModel @Inject constructor(
         _readerSettingState.value = initialReaderSettingsState.value
     }
 
-    fun setRadioPower(radioPower: Int){
+    fun setRadioPower(radioPower: Int) {
         readerController.setRadioPower(radioPower)
     }
 
     fun applyReaderSetting(): Boolean {
         val sessionResult = readerController.setSession(_readerSettingState.value.rfidSession)
-        val channelTagAccessFlagResult =
+        val tagAccessFlagResult =
             readerController.setTagAccessFlag(_readerSettingState.value.tagAccessFlag)
         val radioPowerResult =
             readerController.setRadioPower(_readerSettingState.value.radioPower)
         val buzzerVolumeResult =
-            readerController.setBuzzerVolume(when(_readerSettingState.value.buzzerVolume){
-                BeeperVolume.QUIET_BEEP -> {
-                    BEEPER_VOLUME.QUIET_BEEP
+            readerController.setBuzzerVolume(
+                when (_readerSettingState.value.buzzerVolume) {
+                    FakeBeeperVolume.QUIET_BEEP -> {
+                        FakeBeeperVolume.QUIET_BEEP
+                    }
+
+                    FakeBeeperVolume.LOW_BEEP -> {
+                        FakeBeeperVolume.LOW_BEEP
+                    }
+
+                    FakeBeeperVolume.MEDIUM_BEEP -> {
+                        FakeBeeperVolume.MEDIUM_BEEP
+                    }
+
+                    FakeBeeperVolume.HIGH_BEEP -> {
+                        FakeBeeperVolume.HIGH_BEEP
+                    }
                 }
-                BeeperVolume.LOW_BEEP -> {
-                    BEEPER_VOLUME.LOW_BEEP
-                }
-                BeeperVolume.MEDIUM_BEEP -> {
-                    BEEPER_VOLUME.MEDIUM_BEEP
-                }
-                BeeperVolume.HIGH_BEEP -> {
-                    BEEPER_VOLUME.HIGH_BEEP
-                }
-            })
+            )
         val channelResult =
             readerController.setChannel(_readerSettingState.value.enabledRfidChannel)
-        if (sessionResult && channelTagAccessFlagResult && radioPowerResult && buzzerVolumeResult && channelResult) {
+        val tagPopulationResult =
+            readerController.setTagPopulation(_readerSettingState.value.tagPopulation)
+        if (sessionResult && tagAccessFlagResult && radioPowerResult && buzzerVolumeResult && channelResult && tagPopulationResult) {
+            readerController.emitUpdatedInfoFromFake()
             initialReaderSettingsState.value = _readerSettingState.value
             return true
         } else {

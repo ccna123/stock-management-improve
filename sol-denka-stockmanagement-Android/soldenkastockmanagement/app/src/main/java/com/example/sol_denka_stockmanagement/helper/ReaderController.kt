@@ -10,12 +10,13 @@ import com.example.sol_denka_stockmanagement.constant.ConnectionState
 import com.example.sol_denka_stockmanagement.model.ReaderInfoModel
 import com.example.sol_denka_stockmanagement.model.TagInfoModel
 import com.example.sol_denka_stockmanagement.navigation.Screen
+import com.example.sol_denka_stockmanagement.reader.FakeBeeperVolume
+import com.example.sol_denka_stockmanagement.reader.FakeChannel
+import com.example.sol_denka_stockmanagement.reader.FakeInventoryState
+import com.example.sol_denka_stockmanagement.reader.FakeReader
+import com.example.sol_denka_stockmanagement.reader.FakeSession
 import com.example.sol_denka_stockmanagement.share.DeviceEvent
 import com.example.sol_denka_stockmanagement.state.ReaderSettingState
-import com.example.sol_denka_stockmanagement.zebra.ZebraDeviceManager
-import com.zebra.rfid.api3.BEEPER_VOLUME
-import com.zebra.rfid.api3.INVENTORY_STATE
-import com.zebra.rfid.api3.SESSION
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
@@ -35,7 +36,7 @@ import javax.inject.Singleton
 class ReaderController @Inject constructor(
     private val context: Application,
 ) : IDeviceManager {
-    private var zebraManager: ZebraDeviceManager? = null
+    private var fakeReader: FakeReader? = null
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
     private val _scannedTags = MutableStateFlow<Map<String, TagInfoModel>>(emptyMap())
@@ -70,8 +71,7 @@ class ReaderController @Inject constructor(
     private val _screen = mutableStateOf<Screen>(Screen.ReceivingScan)
 
     init {
-        zebraManager = ZebraDeviceManager(context)
-        zebraManager?.initializeIfInternalScanner() ?: Log.e("TSS", "zebraManager is null")
+        fakeReader = FakeReader()
         setEventListeners()
 
         scope.launch {
@@ -84,7 +84,7 @@ class ReaderController @Inject constructor(
     suspend fun tryAutoConnect() {
         repeat(3) { attempt ->
             try {
-                zebraManager?.autoConnectIfRFD4030Attached()
+                fakeReader?.connect()
                 return // success
             } catch (e: Exception) {
                 Log.e("TSS", "AutoConnect attempt ${attempt + 1} failed: ${e.message}")
@@ -170,7 +170,7 @@ class ReaderController @Inject constructor(
             }
         }
 
-        zebraManager?.setEventListener(listener)
+        fakeReader?.setEventListener(listener)
     }
 
     fun startInventory(
@@ -178,7 +178,7 @@ class ReaderController @Inject constructor(
     ) {
         _isPerformingInventory.update { true }
         scope.launch {
-            zebraManager?.startInventory()
+            fakeReader?.startInventory()
         }
     }
 
@@ -188,7 +188,7 @@ class ReaderController @Inject constructor(
         _isPerformingInventory.update { false }
         scope.launch {
             resetRssi()
-            zebraManager?.stopInventory()
+            fakeReader?.stopInventory()
         }
     }
 
@@ -198,6 +198,11 @@ class ReaderController @Inject constructor(
         _scannedTags2.value = ""
         _scannedTags3.value = emptySet()
     }
+
+    fun emitUpdatedInfoFromFake() {
+        fakeReader?.emitUpdatedInfo()
+    }
+
 
     fun resetRssi() {
         scope.launch(Dispatchers.IO) {
@@ -233,48 +238,48 @@ class ReaderController @Inject constructor(
     }
 
     override suspend fun disconnect() {
-        zebraManager?.disconnect()
+        fakeReader?.disconnect()
     }
 
     override fun cleanup() {
-        zebraManager?.cleanup()
+        fakeReader = null
     }
 
 
     override fun setEventListener(listener: (DeviceEvent) -> Unit) {
-        zebraManager?.setEventListener(listener)
+        fakeReader?.setEventListener(listener)
     }
 
-    override fun setSession(session: SESSION): Boolean {
-        return zebraManager?.setSession(session) == true
+    override fun setSession(session: FakeSession): Boolean {
+        return fakeReader?.setSession(session) == true
     }
 
-    override fun setTagAccessFlag(flag: INVENTORY_STATE): Boolean {
-        return zebraManager?.setTagAccessFlag(flag) == true
+    override fun setTagAccessFlag(flag: FakeInventoryState): Boolean {
+        return fakeReader?.setTagAccessFlag(flag) == true
     }
 
-    override fun setChannel(channel: List<String>): Boolean {
-        return zebraManager?.setChannel(channel) == true
+    override fun setChannel(channel: List<FakeChannel>): Boolean {
+        return fakeReader?.setChannel(channel) == true
     }
 
     override fun setRadioPower(radioPower: Int): Boolean {
-        return zebraManager?.setRadioPower(radioPower) == true
+        return fakeReader?.setRadioPower(radioPower) == true
     }
 
-    override fun setBuzzerVolume(buzzerVolume: BEEPER_VOLUME): Boolean {
-        return zebraManager?.setBuzzerVolume(buzzerVolume) == true
+    override fun setBuzzerVolume(buzzerVolume: FakeBeeperVolume): Boolean {
+        return fakeReader?.setBuzzerVolume(buzzerVolume) == true
     }
 
-    fun setRfidChannel(newChannelList: List<String>): Boolean {
-        return zebraManager?.setChannel(newChannelList) == true
+    override fun setTagPopulation(population: Short): Boolean {
+        return fakeReader?.setTagPopulation(population) == true
     }
 
     override suspend fun startInventory() {
-        zebraManager?.startInventory()
+        fakeReader?.startInventory()
     }
 
     override suspend fun stopInventory() {
-        zebraManager?.stopInventory()
+        fakeReader?.stopInventory()
     }
 
     fun setScanEnabled(enabled: Boolean, screen: Screen = Screen.ReceivingScan) {

@@ -144,13 +144,6 @@ enum class InventoryResultType(val displayName: String) {
     NOT_FOUND("NOT_FOUND"),
 }
 
-enum class BeeperVolume(val displayName: String){
-    QUIET_BEEP("静音"),
-    LOW_BEEP("小"),
-    MEDIUM_BEEP("中"),
-    HIGH_BEEP("高"),
-}
-
 enum class ConnectionState {
     DISCONNECTED,
     CONNECTING,
