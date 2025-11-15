@@ -33,6 +33,7 @@ import androidx.compose.ui.unit.dp
 import com.example.sol_denka_stockmanagement.R
 import com.example.sol_denka_stockmanagement.constant.MaterialSelectionItem
 import com.example.sol_denka_stockmanagement.constant.SelectTitle
+import com.example.sol_denka_stockmanagement.constant.StockAreaItem
 import com.example.sol_denka_stockmanagement.intent.ExpandIntent
 import com.example.sol_denka_stockmanagement.intent.InputIntent
 import com.example.sol_denka_stockmanagement.navigation.Screen
@@ -138,8 +139,8 @@ fun StorageAreaChangeScreen(
                     onExpandedChange = { appViewModel.onExpandIntent(ExpandIntent.ToggleStockAreaExpanded) }) {
                     InputFieldContainer(
                         modifier = Modifier.menuAnchor(type = ExposedDropdownMenuAnchorType.PrimaryNotEditable, enabled = true).fillMaxWidth(),
-                        value = if (inputState.stockArea == "保管場所選択") "" else inputState.stockArea,
-                        hintText = "保管場所選択",
+                        value = if (inputState.stockArea == StockAreaItem.SELECTION_TITLE.displayName) "" else inputState.stockArea,
+                        hintText = StockAreaItem.SELECTION_TITLE.displayName,
                         isNumeric = false,
                         shape = RoundedCornerShape(13.dp),
                         onChange = { newValue ->
@@ -158,20 +159,13 @@ fun StorageAreaChangeScreen(
                         expanded = expandState.stockAreaExpanded,
                         onDismissRequest = { appViewModel.onExpandIntent(ExpandIntent.ToggleStockAreaExpanded) }
                     ) {
-                        DropdownMenuItem(
-                            text = { Text(text = "保管場所選択") },
-                            onClick = {
-                                appViewModel.apply {
-                                    onInputIntent(InputIntent.ChangeStockArea(""))
-                                    onExpandIntent(ExpandIntent.ToggleStockAreaExpanded)
-                                }
-                            }
-                        )
                         listOf(
-                            "保管場所A",
-                            "保管場所B",
-                            "保管場所C",
-                            "保管場所D",
+                            StockAreaItem.SELECTION_TITLE.displayName,
+                            StockAreaItem.STOCK_AREA1.displayName,
+                            StockAreaItem.STOCK_AREA2.displayName,
+                            StockAreaItem.STOCK_AREA3.displayName,
+                            StockAreaItem.STOCK_AREA4.displayName,
+                            StockAreaItem.STOCK_AREA5.displayName,
                         ).forEach { stockArea ->
                             DropdownMenuItem(
                                 text = { Text(text = stockArea) },
