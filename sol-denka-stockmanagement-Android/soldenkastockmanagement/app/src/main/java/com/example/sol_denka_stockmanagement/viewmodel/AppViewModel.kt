@@ -226,16 +226,28 @@ class AppViewModel @Inject constructor(
             is ShareIntent.ToggleTagSelection -> {
                 val current = generalState.value.selectedTags.toMutableList()
                 if (intent.item in current) current.remove(intent.item) else current.add(intent.item)
-                _generalState.value.copy(selectedTags = current)
-                if (current.isEmpty()) _generalState.value.copy(isSelectionMode = false)
+                _generalState.value = _generalState.value.copy(selectedTags = current)
+                if (current.isEmpty()) _generalState.value =
+                    _generalState.value.copy(isSelectionMode = false)
             }
+
             is ShareIntent.ToggleFoundTag -> {
                 val current = generalState.value.foundTags.toMutableList()
                 if (intent.tag in current) current.remove(intent.tag) else current.add(intent.tag)
-                _generalState.value.copy(foundTags = current)
+                _generalState.value = _generalState.value.copy(foundTags = current)
             }
-            ShareIntent.ClearTagSelectionList -> _generalState.value.selectedTags = emptyList()
-            ShareIntent.ClearFoundTag -> _generalState.value.foundTags = emptyList()
+
+            ShareIntent.ClearTagSelectionList -> {
+                _generalState.value = _generalState.value.copy(
+                    selectedTags1 = emptyList(),
+                    selectedTags = emptyList(),
+                    isAllSelected = false
+                )
+            }
+
+            ShareIntent.ClearFoundTag -> _generalState.value =
+                _generalState.value.copy(foundTags = emptyList())
+
             ShareIntent.Next -> {
                 val current = _generalState.value.currentIndex
                 val last = _generalState.value.selectedTags.lastIndex
@@ -244,6 +256,7 @@ class AppViewModel @Inject constructor(
                     currentIndex = minOf(current + 1, last)
                 )
             }
+
             ShareIntent.Prev -> {
                 val current = _generalState.value.currentIndex
                 // move backward
@@ -252,27 +265,35 @@ class AppViewModel @Inject constructor(
                 )
             }
 
-            ShareIntent.ResetState -> {
-                generalState.value.copy(selectedTags = emptyList(), isAllSelected = false, selectedTags1 = emptyList())
-            }
-
             is ShareIntent.ToggleSelectionAll -> {
-                if (_generalState.value.isAllSelected) {
-                    // UNTICK ALL
-                    _generalState.value.copy(selectedTags = emptyList(), isAllSelected = false)
+                _generalState.value = if (_generalState.value.isAllSelected) {
+                    _generalState.value.copy(
+                        selectedTags1 = emptyList(),
+                        isAllSelected = false
+                    )
                 } else {
-                    // SELECT ALL
-                    _generalState.value.copy(selectedTags1 =  intent.tagList, isAllSelected = true)
+                    _generalState.value.copy(
+                        selectedTags1 = intent.tagList.toList(),
+                        isAllSelected = true
+                    )
                 }
             }
 
             is ShareIntent.ToggleTagSelection1 -> {
                 val updated = _generalState.value.selectedTags1.toMutableList()
-                if (intent.tag in updated) updated.remove(intent.tag)
-                else updated.add(intent.tag)
-                _generalState.value.copy(selectedTags1 = updated, isAllSelected = updated.size == intent.totalTag)
 
+                if (intent.tag in updated) {
+                    updated.remove(intent.tag)
+                } else {
+                    updated.add(intent.tag)
+                }
+
+                _generalState.value = _generalState.value.copy(
+                    selectedTags1 = updated,
+                    isAllSelected = updated.size == intent.totalTag
+                )
             }
+
         }
     }
 

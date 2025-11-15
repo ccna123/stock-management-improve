@@ -58,10 +58,7 @@ fun ShippingScanScreen(
 
     LaunchedEffect(Unit) {
         scanViewModel.setEnableScan(enabled = true, screen = Screen.ShippingScan)
-        appViewModel.apply {
-            onGeneralIntent(ShareIntent.ClearTagSelectionList)
-            onGeneralIntent(ShareIntent.ResetState)
-        }
+        appViewModel.onGeneralIntent(ShareIntent.ClearTagSelectionList)
     }
 
     Layout(

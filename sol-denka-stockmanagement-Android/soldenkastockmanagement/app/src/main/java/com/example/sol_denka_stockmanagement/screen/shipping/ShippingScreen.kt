@@ -127,7 +127,7 @@ fun ShippingScreen(
                                 modifier = Modifier.alignByBaseline()
                             )
                             Text(
-                                text = generalState.selectedTags.size.toString(),
+                                text = generalState.selectedTags1.size.toString(),
                                 modifier = Modifier.alignByBaseline()
                             )
                         }

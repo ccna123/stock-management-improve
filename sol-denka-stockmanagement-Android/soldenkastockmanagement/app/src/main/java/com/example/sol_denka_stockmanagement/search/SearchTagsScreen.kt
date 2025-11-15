@@ -1,6 +1,7 @@
 package com.example.sol_denka_stockmanagement.search
 
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -80,6 +81,8 @@ fun SearchTagsScreen(
     var showRadioPowerDialog by remember { mutableStateOf(false) }
     val isPerformingInventory by scanViewModel.isPerformingInventory.collectAsStateWithLifecycle()
     val scope = rememberCoroutineScope()
+
+    Log.e("TSS", "prevScreenNameId: $prevScreenNameId", )
 
 
     LaunchedEffect(Unit) {
@@ -248,7 +251,7 @@ fun SearchTagsScreen(
             )
         },
         onBackArrowClick = {
-            onNavigate(Screen.InventoryScan(Screen.SearchTagsScreen("").routeId))
+            onNavigate(Screen.InventoryScan(Screen.Inventory.routeId))
         }) { paddingValues ->
         SearchTagsScreenContent(
             modifier = Modifier.padding(paddingValues),

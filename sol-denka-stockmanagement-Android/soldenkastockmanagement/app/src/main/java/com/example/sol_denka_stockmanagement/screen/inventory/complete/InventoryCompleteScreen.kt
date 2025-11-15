@@ -87,7 +87,7 @@ fun InventoryCompleteScreen(
             )
         },
         onBackArrowClick = {
-            onNavigate(Screen.InventoryScan(Screen.InventoryComplete.routeId))
+            onNavigate(Screen.InventoryScan(Screen.Inventory.routeId))
         }) { paddingValues ->
         InventoryCompleteScreenContent(
             modifier = Modifier.padding(paddingValues),

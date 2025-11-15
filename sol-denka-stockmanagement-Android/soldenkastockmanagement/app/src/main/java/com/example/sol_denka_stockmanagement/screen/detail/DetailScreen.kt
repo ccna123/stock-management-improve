@@ -49,7 +49,7 @@ fun DetailScreen(
         prevScreenNameId = Screen.Detail.routeId,
         hasBottomBar = false,
         onBackArrowClick = {
-            onNavigate(Screen.InventoryScan(""))
+            onNavigate(Screen.InventoryScan(Screen.Inventory.routeId))
         }
     ) { paddingValues ->
         LazyColumn(
