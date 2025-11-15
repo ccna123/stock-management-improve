@@ -77,7 +77,6 @@ fun InventoryScanScreen(
     appViewModel: AppViewModel,
     scanViewModel: ScanViewModel,
     readerSettingViewModel: ReaderSettingViewModel,
-    inventoryScanViewModel: InventoryScanViewModel,
     onNavigate: (Screen) -> Unit
 ) {
     val generalState = appViewModel.generalState.value
@@ -90,12 +89,12 @@ fun InventoryScanScreen(
 
     LaunchedEffect(Unit) {
         scanViewModel.setEnableScan(enabled = true, Screen.InventoryScan(""))
-        inventoryScanViewModel.apply {
-            onIntent(
-                InventoryScanIntent.ToggleSelectionMode(false),
+        appViewModel.apply {
+            onGeneralIntent(
+                ShareIntent.ToggleSelectionMode(false),
             )
-            onIntent(
-                InventoryScanIntent.ClearTagSelectionList
+            onGeneralIntent(
+                ShareIntent.ClearTagSelectionList
             )
         }
     }
@@ -266,7 +265,7 @@ fun InventoryScanScreen(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
-                if (inventoryScanViewModel.isSelectionMode.value) {
+                if (generalState.isSelectionMode) {
                     ButtonContainer(
                         buttonText = stringResource(R.string.search),
                         icon = {
@@ -301,12 +300,12 @@ fun InventoryScanScreen(
                         ),
                         shape = IconButtonDefaults.outlinedShape,
                         onClick = {
-                            inventoryScanViewModel.apply {
-                                onIntent(
-                                    InventoryScanIntent.ToggleSelectionMode(false),
+                            appViewModel.apply {
+                                onGeneralIntent(
+                                    ShareIntent.ToggleSelectionMode(false),
                                 )
-                                onIntent(
-                                    InventoryScanIntent.ClearTagSelectionList
+                                onGeneralIntent(
+                                    ShareIntent.ClearTagSelectionList
                                 )
                             }
                         },
@@ -355,7 +354,6 @@ fun InventoryScanScreen(
             modifier = Modifier.padding(paddingValues),
             appViewModel = appViewModel,
             generalState = generalState,
-            inventoryScanViewModel = inventoryScanViewModel,
             rfidTagList = rfidTagList.value,
         )
     }
@@ -368,7 +366,6 @@ fun InventoryScanScreenContent(
     generalState: GeneralState,
     appViewModel: AppViewModel,
     rfidTagList: List<InventoryItemMasterModel>,
-    inventoryScanViewModel: InventoryScanViewModel
 ) {
     Box(
         modifier = Modifier.fillMaxSize()
@@ -417,26 +414,26 @@ fun InventoryScanScreenContent(
                             Tab.Left -> rfidTagList.filter { it.newField.tagStatus == TagStatus.UNPROCESSED }
                             Tab.Right -> rfidTagList.filter { it.newField.tagStatus == TagStatus.PROCESSED }
                         },
-                        selectedTags = inventoryScanViewModel.selectedTags.value,
-                        isSelectionMode = if (inventoryScanViewModel.selectedTags.value.isNotEmpty()) inventoryScanViewModel.isSelectionMode.value else false,
+                        selectedTags = generalState.selectedTags,
+                        isSelectionMode = if (generalState.selectedTags.isNotEmpty()) generalState.isSelectionMode else false,
                         onClick = { item ->
-                            if (inventoryScanViewModel.isSelectionMode.value) {
-                                inventoryScanViewModel.onIntent(
-                                    InventoryScanIntent.ToggleTagSelection(item)
+                            if (generalState.isSelectionMode) {
+                                appViewModel.onGeneralIntent(
+                                    ShareIntent.ToggleTagSelection(item)
                                 )
                             }
                         },
                         onLongClick = { item ->
-                            inventoryScanViewModel.apply {
-                                onIntent(
-                                    InventoryScanIntent.ToggleSelectionMode(true)
+                            appViewModel.apply {
+                                onGeneralIntent(
+                                    ShareIntent.ToggleSelectionMode(true)
                                 )
-                                onIntent(InventoryScanIntent.ToggleTagSelection(item))
+                                onGeneralIntent(ShareIntent.ToggleTagSelection(item))
                             }
                         },
                         onCheckedChange = { item ->
-                            inventoryScanViewModel.onIntent(
-                                InventoryScanIntent.ToggleTagSelection(item)
+                            appViewModel.onGeneralIntent(
+                                ShareIntent.ToggleTagSelection(item)
                             )
                         }
                     )

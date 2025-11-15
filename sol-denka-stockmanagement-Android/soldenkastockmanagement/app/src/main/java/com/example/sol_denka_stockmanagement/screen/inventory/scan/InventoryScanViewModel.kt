@@ -21,21 +21,4 @@ class InventoryScanViewModel @Inject constructor() : ViewModel() {
         private set
 
 
-    fun onIntent(intent: InventoryScanIntent) {
-        when (intent) {
-            is InventoryScanIntent.ToggleSelectionMode -> isSelectionMode.value =
-                intent.selectionMode
-
-            is InventoryScanIntent.ToggleTagSelection -> {
-                val current = selectedTags.value.toMutableList()
-                if (intent.item in current) current.remove(intent.item) else current.add(intent.item)
-                selectedTags.value = current
-                if (current.isEmpty()) isSelectionMode.value = false
-            }
-
-            InventoryScanIntent.ClearTagSelectionList -> {
-                selectedTags.value = emptyList()
-            }
-        }
-    }
 }

@@ -35,9 +35,9 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.sol_denka_stockmanagement.R
 import com.example.sol_denka_stockmanagement.constant.MaterialSelectionItem
+import com.example.sol_denka_stockmanagement.intent.ShareIntent
 import com.example.sol_denka_stockmanagement.navigation.Screen
 import com.example.sol_denka_stockmanagement.screen.layout.Layout
-import com.example.sol_denka_stockmanagement.screen.setting.sub_screen.reader_setting.ReaderSettingViewModel
 import com.example.sol_denka_stockmanagement.share.ButtonContainer
 import com.example.sol_denka_stockmanagement.ui.theme.brightAzure
 import com.example.sol_denka_stockmanagement.viewmodel.AppViewModel
@@ -49,18 +49,18 @@ import kotlinx.coroutines.launch
 fun ShippingScanScreen(
     scanViewModel: ScanViewModel,
     appViewModel: AppViewModel,
-    shippingScanViewModel: ShippingScanViewModel,
     onNavigate: (Screen) -> Unit
 ) {
     val scannedTag3 by scanViewModel.scannedTag3.collectAsStateWithLifecycle()
     val isPerformingInventory by scanViewModel.isPerformingInventory.collectAsStateWithLifecycle()
     val scope = rememberCoroutineScope()
+    val generalState = appViewModel.generalState.value
 
     LaunchedEffect(Unit) {
         scanViewModel.setEnableScan(enabled = true, screen = Screen.ShippingScan)
-        shippingScanViewModel.apply {
-            handle(ShippingScanIntent.ClearTagSelectionList)
-            handle(ShippingScanIntent.ResetState)
+        appViewModel.apply {
+            onGeneralIntent(ShareIntent.ClearTagSelectionList)
+            onGeneralIntent(ShareIntent.ResetState)
         }
     }
 
@@ -128,88 +128,76 @@ fun ShippingScanScreen(
         onBackArrowClick = {
             onNavigate(Screen.Home)
         }) { paddingValues ->
-        ShippingScanScreenContent(
-            modifier = Modifier.padding(paddingValues),
-            scannedTag = scannedTag3,
-            shippingScanViewModel = shippingScanViewModel
-        )
-    }
-}
-
-@Composable
-fun ShippingScanScreenContent(
-    modifier: Modifier = Modifier,
-    scannedTag: Set<String>,
-    shippingScanViewModel: ShippingScanViewModel
-) {
-    Column(
-        modifier = modifier
-            .padding(20.dp)
-            .fillMaxSize()
-    ) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
+        Column(
+            modifier = Modifier
+                .padding(paddingValues)
+                .padding(20.dp)
+                .fillMaxSize()
         ) {
-            Text(text = stringResource(R.string.scan_tag_list_title))
-            ButtonContainer(
-                buttonText = if (shippingScanViewModel.isAllSelected.value) stringResource(R.string.select_all_remove) else stringResource(
-                    R.string.select_all
-                ),
-                containerColor = if (shippingScanViewModel.isAllSelected.value) Color.Red else brightAzure,
-                canClick = scannedTag.isNotEmpty(),
-                onClick = {
-                    shippingScanViewModel.handle(
-                        ShippingScanIntent.ToggleSelectionAll(
-                            tagList = scannedTag
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(text = stringResource(R.string.scan_tag_list_title))
+                ButtonContainer(
+                    buttonText = if (generalState.isAllSelected) stringResource(R.string.select_all_remove) else stringResource(
+                        R.string.select_all
+                    ),
+                    containerColor = if (generalState.isAllSelected) Color.Red else brightAzure,
+                    canClick = scannedTag3.isNotEmpty(),
+                    onClick = {
+                        appViewModel.onGeneralIntent(
+                            ShareIntent.ToggleSelectionAll(
+                                tagList = scannedTag3
+                            )
                         )
-                    )
-                }
-            )
-        }
-        Spacer(modifier = Modifier.height(5.dp))
-        HorizontalDivider()
-        Spacer(modifier = Modifier.height(10.dp))
-        LazyColumn {
-            items(scannedTag.toList()) { tag ->
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable(
-                            onClick = {
-                                shippingScanViewModel.handle(
-                                    ShippingScanIntent.ToggleTagSelection(
+                    }
+                )
+            }
+            Spacer(modifier = Modifier.height(5.dp))
+            HorizontalDivider()
+            Spacer(modifier = Modifier.height(10.dp))
+            LazyColumn {
+                items(scannedTag3.toList()) { tag ->
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable(
+                                onClick = {
+                                    appViewModel.onGeneralIntent(
+                                        ShareIntent.ToggleTagSelection1(
+                                            tag = tag,
+                                            totalTag = scannedTag3.size
+                                        )
+                                    )
+                                }
+                            ),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Column(
+                            modifier = Modifier.padding(5.dp)
+                        ) {
+                            Text(text = MaterialSelectionItem.MISS_ROLL.displayName)
+                            Text(text = tag)
+                        }
+                        Checkbox(
+                            checked = tag in generalState.selectedTags1,
+                            onCheckedChange = {
+                                appViewModel.onGeneralIntent(
+                                    ShareIntent.ToggleTagSelection1(
                                         tag = tag,
-                                        totalTag = scannedTag.size
+                                        totalTag = scannedTag3.size
                                     )
                                 )
                             }
-                        ),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Column(
-                        modifier = Modifier.padding(5.dp)
-                    ) {
-                        Text(text = MaterialSelectionItem.MISS_ROLL.displayName)
-                        Text(text = tag)
+                        )
                     }
-                    Checkbox(
-                        checked = tag in shippingScanViewModel.selectedTags.value,
-                        onCheckedChange = {
-                            shippingScanViewModel.handle(
-                                ShippingScanIntent.ToggleTagSelection(
-                                    tag = tag,
-                                    totalTag = scannedTag.size
-                                )
-                            )
-                        }
-                    )
+                    Spacer(modifier = Modifier.height(10.dp))
+                    HorizontalDivider()
+                    Spacer(modifier = Modifier.height(10.dp))
                 }
-                Spacer(modifier = Modifier.height(10.dp))
-                HorizontalDivider()
-                Spacer(modifier = Modifier.height(10.dp))
             }
         }
     }

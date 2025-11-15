@@ -62,6 +62,7 @@ import com.example.sol_denka_stockmanagement.screen.inventory.scan.InventoryScan
 import com.example.sol_denka_stockmanagement.screen.setting.sub_screen.reader_setting.ReaderSettingViewModel
 import com.example.sol_denka_stockmanagement.viewmodel.ScanViewModel
 import com.example.sol_denka_stockmanagement.share.RadioPowerDialog
+import com.example.sol_denka_stockmanagement.state.GeneralState
 import kotlinx.coroutines.launch
 
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
@@ -69,15 +70,11 @@ import kotlinx.coroutines.launch
 fun SearchTagsScreen(
     appViewModel: AppViewModel,
     readerSettingViewModel: ReaderSettingViewModel,
-    inventoryScanViewModel: InventoryScanViewModel,
-    searchViewModel: SearchViewModel,
     scanViewModel: ScanViewModel,
     prevScreenNameId: String,
     onNavigate: (Screen) -> Unit,
 ) {
-    val selectedTags by inventoryScanViewModel.selectedTags
     val generalState = appViewModel.generalState.value
-    val foundTags by searchViewModel.foundTags
     val rfidTagList = scanViewModel.rfidTagList.collectAsStateWithLifecycle()
     val readerSettingState by readerSettingViewModel.readerSettingState.collectAsStateWithLifecycle()
     var showRadioPowerDialog by remember { mutableStateOf(false) }
@@ -87,7 +84,7 @@ fun SearchTagsScreen(
 
     LaunchedEffect(Unit) {
         scanViewModel.setEnableScan(enabled = true, screen = Screen.SearchTagsScreen(""))
-        searchViewModel.onIntent(SearchScreenIntent.ClearFoundTag)
+        appViewModel.onGeneralIntent(ShareIntent.ClearFoundTag)
     }
 
     RadioPowerDialog(
@@ -162,11 +159,11 @@ fun SearchTagsScreen(
                             tint = Color.White
                         )
                     },
-                    canClick = foundTags.isNotEmpty(),
+                    canClick = generalState.foundTags.isNotEmpty(),
                     textColor = Color.White,
                     buttonText = stringResource(R.string.finish_search),
                     onClick = {
-                        foundTags.forEach { foundTag ->
+                        generalState.foundTags.forEach { foundTag ->
                             scanViewModel.updateTagStatus(
                                 epc = foundTag.epc,
                                 newStatus = TagStatus.PROCESSED
@@ -213,8 +210,8 @@ fun SearchTagsScreen(
                                 appViewModel.onGeneralIntent(
                                     ShareIntent.ToggleDropDown(false)
                                 )
-                                searchViewModel.onIntent(
-                                    SearchScreenIntent.ClearFoundTag
+                                appViewModel.onGeneralIntent(
+                                    ShareIntent.ClearFoundTag
                                 )
                             }
                         )
@@ -255,10 +252,9 @@ fun SearchTagsScreen(
         }) { paddingValues ->
         SearchTagsScreenContent(
             modifier = Modifier.padding(paddingValues),
-            selectedTags = selectedTags,
             rfidTagList = rfidTagList.value,
-            foundTags = foundTags,
-            searchViewModel = searchViewModel
+            generalState = generalState,
+            appViewModel = appViewModel,
         )
     }
 }
@@ -267,13 +263,12 @@ fun SearchTagsScreen(
 @Composable
 fun SearchTagsScreenContent(
     modifier: Modifier = Modifier,
-    searchViewModel: SearchViewModel,
-    selectedTags: List<InventoryItemMasterModel>,
+    appViewModel: AppViewModel,
+    generalState: GeneralState,
     rfidTagList: List<InventoryItemMasterModel>,
-    foundTags: List<InventoryItemMasterModel>,
 ) {
 
-    val tagsToDisplay = rfidTagList.filter { it.epc in selectedTags.map { it.epc } }
+    val tagsToDisplay = rfidTagList.filter { it.epc in generalState.selectedTags.map { it.epc } }
 
     Column(
         modifier = modifier
@@ -307,7 +302,7 @@ fun SearchTagsScreenContent(
                                 fontWeight = FontWeight.Bold
                             )
                         ) {
-                            append(foundTags.size.toString())
+                            append(generalState.foundTags.size.toString())
                         }
                         withStyle(
                             style = SpanStyle(
@@ -329,9 +324,9 @@ fun SearchTagsScreenContent(
                     SingleRfidRow(
                         boxWidth = TagDistanceCalculate.calculateBoxWidth(item.newField.rssi),
                         rfidNo = item.epc,
-                        isPressed = item in foundTags,
+                        isPressed = item in generalState.foundTags,
                         onChange = {
-                            searchViewModel.onIntent(SearchScreenIntent.ToggleFoundTag(item))
+                            appViewModel.onGeneralIntent(ShareIntent.ToggleFoundTag(item))
                         }
                     )
                 }

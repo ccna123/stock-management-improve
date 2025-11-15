@@ -10,16 +10,13 @@ import androidx.navigation3.ui.NavDisplay
 import com.example.sol_denka_stockmanagement.screen.csv.CsvExportScreen
 import com.example.sol_denka_stockmanagement.screen.csv.CsvImportScreen
 import com.example.sol_denka_stockmanagement.screen.detail.DetailScreen
-import com.example.sol_denka_stockmanagement.screen.detail.DetailViewModel
 import com.example.sol_denka_stockmanagement.screen.home.HomeScreen
 import com.example.sol_denka_stockmanagement.screen.inventory.complete.InventoryCompleteScreen
 import com.example.sol_denka_stockmanagement.screen.inventory.input.InventoryScreen
 import com.example.sol_denka_stockmanagement.screen.inventory.scan.InventoryScanScreen
-import com.example.sol_denka_stockmanagement.screen.inventory.scan.InventoryScanViewModel
 import com.example.sol_denka_stockmanagement.screen.receiving.ReceivingScreen
 import com.example.sol_denka_stockmanagement.screen.scan.receiving.ReceivingScanScreen
 import com.example.sol_denka_stockmanagement.screen.scan.shipping.ShippingScanScreen
-import com.example.sol_denka_stockmanagement.screen.scan.shipping.ShippingScanViewModel
 import com.example.sol_denka_stockmanagement.screen.shipping.ShippingScreen
 import com.example.sol_denka_stockmanagement.screen.version.VersionInfoScreen
 import com.example.sol_denka_stockmanagement.screen.version.sub_screen.LicenseInfoScreen
@@ -29,7 +26,6 @@ import com.example.sol_denka_stockmanagement.screen.setting.sub_screen.reader_se
 import com.example.sol_denka_stockmanagement.viewmodel.AppViewModel
 import com.example.sol_denka_stockmanagement.screen.setting.SettingScreen
 import com.example.sol_denka_stockmanagement.search.SearchTagsScreen
-import com.example.sol_denka_stockmanagement.search.SearchViewModel
 
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @Composable
@@ -38,12 +34,8 @@ fun Navigation3(
     appSettingViewModel: AppSettingViewModel,
     readerSettingViewModel: ReaderSettingViewModel,
     scanViewModel: ScanViewModel,
-    inventoryScanViewModel: InventoryScanViewModel,
-    searchViewModel: SearchViewModel,
-    detailViewModel: DetailViewModel,
-    shippingScanViewModel: ShippingScanViewModel,
 ) {
-    val backStack = remember { mutableStateListOf<Screen>(Screen.Setting) }
+    val backStack = remember { mutableStateListOf<Screen>(Screen.ShippingScan) }
     NavDisplay(
         backStack = backStack,
         onBack = { backStack.removeLastOrNull() },
@@ -62,8 +54,6 @@ fun Navigation3(
             entry<Screen.Shipping> {
                 ShippingScreen(
                     appViewModel = appViewModel,
-                    scanViewModel = scanViewModel,
-                    shippingScanViewModel = shippingScanViewModel,
                     onNavigate = { dest ->
                         if (backStack.last() != dest) {
                             backStack.add(dest)
@@ -87,7 +77,6 @@ fun Navigation3(
                     appViewModel = appViewModel,
                     scanViewModel = scanViewModel,
                     readerSettingViewModel = readerSettingViewModel,
-                    inventoryScanViewModel = inventoryScanViewModel,
                     prevScreenNameId = destinationScan.preScreen,
                     onNavigate = { dest ->
                         if (backStack.last() != dest) {
@@ -136,7 +125,6 @@ fun Navigation3(
                 ShippingScanScreen(
                     scanViewModel = scanViewModel,
                     appViewModel = appViewModel,
-                    shippingScanViewModel = shippingScanViewModel,
                     onNavigate = { dest ->
                         if (backStack.last() != dest) {
                             backStack.add(dest)
@@ -152,8 +140,6 @@ fun Navigation3(
                     appViewModel = appViewModel,
                     prevScreenNameId = destinationScan.preScreen,
                     readerSettingViewModel = readerSettingViewModel,
-                    inventoryScanViewModel = inventoryScanViewModel,
-                    searchViewModel = searchViewModel,
                     scanViewModel = scanViewModel,
                     onNavigate = { dest ->
                         if (backStack.last() != dest) {
@@ -219,9 +205,7 @@ fun Navigation3(
             entry<Screen.Detail> {
                 DetailScreen(
                     appViewModel = appViewModel,
-                    inventoryScanViewModel = inventoryScanViewModel,
                     scanViewModel = scanViewModel,
-                    detailViewModel = detailViewModel,
                     onNavigate = { dest ->
                         if (backStack.last() != dest) {
                             backStack.add(dest)

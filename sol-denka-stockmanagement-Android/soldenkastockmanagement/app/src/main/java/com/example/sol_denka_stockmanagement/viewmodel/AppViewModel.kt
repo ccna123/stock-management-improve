@@ -31,6 +31,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import kotlin.collections.lastIndex
 
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @HiltViewModel
@@ -213,10 +214,65 @@ class AppViewModel @Inject constructor(
                 _generalState.value = _generalState.value.copy(tab = intent.tab)
 
             is ShareIntent.ToggleDialog ->
-                _generalState.value = _generalState.value.copy(showAppDialog = !_generalState.value.showAppDialog)
+                _generalState.value =
+                    _generalState.value.copy(showAppDialog = !_generalState.value.showAppDialog)
 
             is ShareIntent.ToggleDropDown ->
                 _generalState.value = _generalState.value.copy(showDropDown = intent.showDropDown)
+
+            is ShareIntent.ToggleSelectionMode -> _generalState.value =
+                _generalState.value.copy(isSelectionMode = intent.selectionMode)
+
+            is ShareIntent.ToggleTagSelection -> {
+                val current = generalState.value.selectedTags.toMutableList()
+                if (intent.item in current) current.remove(intent.item) else current.add(intent.item)
+                _generalState.value.copy(selectedTags = current)
+                if (current.isEmpty()) _generalState.value.copy(isSelectionMode = false)
+            }
+            is ShareIntent.ToggleFoundTag -> {
+                val current = generalState.value.foundTags.toMutableList()
+                if (intent.tag in current) current.remove(intent.tag) else current.add(intent.tag)
+                _generalState.value.copy(foundTags = current)
+            }
+            ShareIntent.ClearTagSelectionList -> _generalState.value.selectedTags = emptyList()
+            ShareIntent.ClearFoundTag -> _generalState.value.foundTags = emptyList()
+            ShareIntent.Next -> {
+                val current = _generalState.value.currentIndex
+                val last = _generalState.value.selectedTags.lastIndex
+                // move forward
+                _generalState.value = _generalState.value.copy(
+                    currentIndex = minOf(current + 1, last)
+                )
+            }
+            ShareIntent.Prev -> {
+                val current = _generalState.value.currentIndex
+                // move backward
+                _generalState.value = _generalState.value.copy(
+                    currentIndex = maxOf(current - 1, 0)
+                )
+            }
+
+            ShareIntent.ResetState -> {
+                generalState.value.copy(selectedTags = emptyList(), isAllSelected = false, selectedTags1 = emptyList())
+            }
+
+            is ShareIntent.ToggleSelectionAll -> {
+                if (_generalState.value.isAllSelected) {
+                    // UNTICK ALL
+                    _generalState.value.copy(selectedTags = emptyList(), isAllSelected = false)
+                } else {
+                    // SELECT ALL
+                    _generalState.value.copy(selectedTags1 =  intent.tagList, isAllSelected = true)
+                }
+            }
+
+            is ShareIntent.ToggleTagSelection1 -> {
+                val updated = _generalState.value.selectedTags1.toMutableList()
+                if (intent.tag in updated) updated.remove(intent.tag)
+                else updated.add(intent.tag)
+                _generalState.value.copy(selectedTags1 = updated, isAllSelected = updated.size == intent.totalTag)
+
+            }
         }
     }
 

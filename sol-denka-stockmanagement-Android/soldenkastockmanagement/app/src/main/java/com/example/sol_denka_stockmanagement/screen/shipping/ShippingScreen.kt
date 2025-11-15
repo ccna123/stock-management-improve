@@ -33,33 +33,28 @@ import androidx.compose.ui.unit.dp
 import com.example.sol_denka_stockmanagement.R
 import com.example.sol_denka_stockmanagement.constant.HandlingMethod
 import com.example.sol_denka_stockmanagement.constant.MaterialSelectionItem
-import com.example.sol_denka_stockmanagement.navigation.Screen
 import com.example.sol_denka_stockmanagement.constant.SelectTitle
 import com.example.sol_denka_stockmanagement.intent.ExpandIntent
 import com.example.sol_denka_stockmanagement.intent.InputIntent
+import com.example.sol_denka_stockmanagement.navigation.Screen
 import com.example.sol_denka_stockmanagement.screen.layout.Layout
-import com.example.sol_denka_stockmanagement.screen.scan.shipping.ShippingScanViewModel
 import com.example.sol_denka_stockmanagement.share.ButtonContainer
 import com.example.sol_denka_stockmanagement.share.InputFieldContainer
-import com.example.sol_denka_stockmanagement.state.ErrorState
-import com.example.sol_denka_stockmanagement.state.ExpandState
-import com.example.sol_denka_stockmanagement.state.InputState
 import com.example.sol_denka_stockmanagement.ui.theme.paleSkyBlue
 import com.example.sol_denka_stockmanagement.viewmodel.AppViewModel
-import com.example.sol_denka_stockmanagement.viewmodel.ScanViewModel
 
+@OptIn(ExperimentalMaterial3Api::class)
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @Composable
 fun ShippingScreen(
     appViewModel: AppViewModel,
-    scanViewModel: ScanViewModel,
-    shippingScanViewModel: ShippingScanViewModel,
     onNavigate: (Screen) -> Unit
 ) {
 
     val errorState = appViewModel.errorState.value
     val expandState = appViewModel.expandState.value
     val inputState = appViewModel.inputState.value
+    val generalState = appViewModel.generalState.value
 
     Layout(
         topBarText = stringResource(R.string.shipping),
@@ -92,147 +87,123 @@ fun ShippingScreen(
         onBackArrowClick = {
             onNavigate(Screen.ShippingScan)
         }) { paddingValues ->
-        ShippingScreenContent(
-            modifier = Modifier.padding(top = paddingValues.calculateTopPadding()),
-            appViewModel = appViewModel,
-            errorState = errorState,
-            inputState = inputState,
-            expandState = expandState,
-            selectedTags = shippingScanViewModel.selectedTags.value,
-            onUpdateInput = { intent ->
-                appViewModel.onInputIntent(intent)
-            }
-        )
-    }
-}
-
-@RequiresApi(Build.VERSION_CODES.TIRAMISU)
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun ShippingScreenContent(
-    modifier: Modifier,
-    appViewModel: AppViewModel,
-    errorState: ErrorState,
-    inputState: InputState,
-    expandState: ExpandState,
-    selectedTags: Set<String>,
-    onUpdateInput: (InputIntent) -> Unit,
-) {
-    LazyColumn(
-        modifier = modifier
-            .padding(16.dp)
-            .imePadding()
-    ) {
-        item {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .border(1.dp, color = paleSkyBlue, shape = RoundedCornerShape(15.dp))
-            ) {
-                Column(
+        LazyColumn(
+            modifier = Modifier
+                .padding(top = paddingValues.calculateTopPadding())
+                .padding(16.dp)
+                .imePadding()
+        ) {
+            item {
+                Box(
                     modifier = Modifier
-                        .padding(vertical = 16.dp, horizontal = 10.dp)
-                        .fillMaxWidth(),
+                        .fillMaxWidth()
+                        .border(1.dp, color = paleSkyBlue, shape = RoundedCornerShape(15.dp))
                 ) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(10.dp)
+                    Column(
+                        modifier = Modifier
+                            .padding(vertical = 16.dp, horizontal = 10.dp)
+                            .fillMaxWidth(),
                     ) {
-                        Text(
-                            text = "${stringResource(R.string.material_name)}:",
-                            modifier = Modifier.alignByBaseline()
-                        )
-                        Text(
-                            text = MaterialSelectionItem.MISS_ROLL.displayName,
-                            modifier = Modifier.alignByBaseline()
-                        )
-                    }
-                    Spacer(modifier = Modifier.height(5.dp))
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(10.dp)
-                    ) {
-                        Text(
-                            text = "${stringResource(R.string.quantity)}:",
-                            modifier = Modifier.alignByBaseline()
-                        )
-                        Text(
-                            text = selectedTags.size.toString(),
-                            modifier = Modifier.alignByBaseline()
-                        )
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(10.dp)
+                        ) {
+                            Text(
+                                text = "${stringResource(R.string.material_name)}:",
+                                modifier = Modifier.alignByBaseline()
+                            )
+                            Text(
+                                text = MaterialSelectionItem.MISS_ROLL.displayName,
+                                modifier = Modifier.alignByBaseline()
+                            )
+                        }
+                        Spacer(modifier = Modifier.height(5.dp))
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(10.dp)
+                        ) {
+                            Text(
+                                text = "${stringResource(R.string.quantity)}:",
+                                modifier = Modifier.alignByBaseline()
+                            )
+                            Text(
+                                text = generalState.selectedTags.size.toString(),
+                                modifier = Modifier.alignByBaseline()
+                            )
+                        }
                     }
                 }
-            }
-            Spacer(modifier = Modifier.height(10.dp))
-            ExposedDropdownMenuBox(
-                expanded = expandState.handlingMethodExpanded,
-                onExpandedChange = { appViewModel.onExpandIntent(ExpandIntent.ToggleHandlingMethodExpanded) }) {
-                InputFieldContainer(
-                    modifier = Modifier
-                        .menuAnchor(
-                            type = ExposedDropdownMenuAnchorType.PrimaryNotEditable,
-                            enabled = true
-                        )
-                        .fillMaxWidth(),
-                    value = if (inputState.handlingMethod == SelectTitle.SelectHandlingMethod.displayName) "" else inputState.handlingMethod,
-                    isNumeric = false,
-                    hintText = SelectTitle.SelectHandlingMethod.displayName,
-                    shape = RoundedCornerShape(13.dp),
-                    onChange = { newValue ->
-                        onUpdateInput(InputIntent.ChangeHandlingMethod(newValue))
-                    },
-                    readOnly = true,
-                    isDropDown = true,
-                    enable = true,
-                    onClick = {
-                        appViewModel.onExpandIntent(ExpandIntent.ToggleHandlingMethodExpanded)
-                    },
-                )
-                ExposedDropdownMenu(
+                Spacer(modifier = Modifier.height(10.dp))
+                ExposedDropdownMenuBox(
                     expanded = expandState.handlingMethodExpanded,
-                    onDismissRequest = { appViewModel.onExpandIntent(ExpandIntent.ToggleMissRollExpanded) }
-                ) {
-                    listOf(
-                        HandlingMethod.SELECTION_TITLE.displayName,
-                        HandlingMethod.USE.displayName,
-                        HandlingMethod.SALE.displayName,
-                        HandlingMethod.CRUSHING.displayName,
-                    ).forEach { method ->
-                        DropdownMenuItem(
-                            text = { Text(text = method) },
-                            onClick = {
-                                appViewModel.apply {
-                                    onInputIntent(InputIntent.ChangeHandlingMethod(if (method == SelectTitle.SelectHandlingMethod.displayName) "" else method))
-                                    onExpandIntent(ExpandIntent.ToggleHandlingMethodExpanded)
-                                }
-                            }
-                        )
-                    }
-                }
-            }
-            Spacer(modifier = Modifier.height(20.dp))
-            InputFieldContainer(
-                modifier = Modifier.fillMaxWidth(),
-                value = inputState.remark,
-                label = "備考",
-                hintText = stringResource(R.string.remark_hint),
-                isNumeric = false,
-                shape = RoundedCornerShape(13.dp),
-                readOnly = false,
-                isDropDown = false,
-                enable = true,
-                onChange = { newValue ->
-                    val filteredValue = newValue.trimStart().filter { char ->
-                        (char.isLetterOrDigit() && char.toString()
-                            .toByteArray().size == 1) || char == '-'
-                    }
-                    appViewModel.onInputIntent(
-                        InputIntent.ChangeRemark(
-                            filteredValue
-                        )
+                    onExpandedChange = { appViewModel.onExpandIntent(ExpandIntent.ToggleHandlingMethodExpanded) }) {
+                    InputFieldContainer(
+                        modifier = Modifier
+                            .menuAnchor(
+                                type = ExposedDropdownMenuAnchorType.PrimaryNotEditable,
+                                enabled = true
+                            )
+                            .fillMaxWidth(),
+                        value = if (inputState.handlingMethod == SelectTitle.SelectHandlingMethod.displayName) "" else inputState.handlingMethod,
+                        isNumeric = false,
+                        hintText = SelectTitle.SelectHandlingMethod.displayName,
+                        shape = RoundedCornerShape(13.dp),
+                        onChange = { newValue ->
+                            appViewModel.onInputIntent(InputIntent.ChangeHandlingMethod(newValue))
+                        },
+                        readOnly = true,
+                        isDropDown = true,
+                        enable = true,
+                        onClick = {
+                            appViewModel.onExpandIntent(ExpandIntent.ToggleHandlingMethodExpanded)
+                        },
                     )
+                    ExposedDropdownMenu(
+                        expanded = expandState.handlingMethodExpanded,
+                        onDismissRequest = { appViewModel.onExpandIntent(ExpandIntent.ToggleMissRollExpanded) }
+                    ) {
+                        listOf(
+                            HandlingMethod.SELECTION_TITLE.displayName,
+                            HandlingMethod.USE.displayName,
+                            HandlingMethod.SALE.displayName,
+                            HandlingMethod.CRUSHING.displayName,
+                        ).forEach { method ->
+                            DropdownMenuItem(
+                                text = { Text(text = method) },
+                                onClick = {
+                                    appViewModel.apply {
+                                        onInputIntent(InputIntent.ChangeHandlingMethod(if (method == SelectTitle.SelectHandlingMethod.displayName) "" else method))
+                                        onExpandIntent(ExpandIntent.ToggleHandlingMethodExpanded)
+                                    }
+                                }
+                            )
+                        }
+                    }
                 }
-            )
+                Spacer(modifier = Modifier.height(20.dp))
+                InputFieldContainer(
+                    modifier = Modifier.fillMaxWidth(),
+                    value = inputState.remark,
+                    label = "備考",
+                    hintText = stringResource(R.string.remark_hint),
+                    isNumeric = false,
+                    shape = RoundedCornerShape(13.dp),
+                    readOnly = false,
+                    isDropDown = false,
+                    enable = true,
+                    onChange = { newValue ->
+                        val filteredValue = newValue.trimStart().filter { char ->
+                            (char.isLetterOrDigit() && char.toString()
+                                .toByteArray().size == 1) || char == '-'
+                        }
+                        appViewModel.onInputIntent(
+                            InputIntent.ChangeRemark(
+                                filteredValue
+                            )
+                        )
+                    }
+                )
+            }
         }
     }
 }

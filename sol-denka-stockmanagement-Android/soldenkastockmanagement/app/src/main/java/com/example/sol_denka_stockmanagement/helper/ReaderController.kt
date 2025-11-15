@@ -48,8 +48,8 @@ class ReaderController @Inject constructor(
     private val _scannedTags2 = MutableStateFlow<String>("")
     val scannedTags2: StateFlow<String> = _scannedTags2.asStateFlow()
 
-    private val _scannedTags3 = MutableStateFlow<Set<String>>(emptySet())
-    val scannedTags3: StateFlow<Set<String>> = _scannedTags3.asStateFlow()
+    private val _scannedTags3 = MutableStateFlow<List<String>>(emptyList())
+    val scannedTags3: StateFlow<List<String>> = _scannedTags3.asStateFlow()
 
     private val _connectionState = MutableStateFlow(ConnectionState.DISCONNECTED)
     val connectionState: StateFlow<ConnectionState> = _connectionState
@@ -176,7 +176,7 @@ class ReaderController @Inject constructor(
         _scannedTags.value = emptyMap()
         _scannedTags1.value = emptyMap()
         _scannedTags2.value = ""
-        _scannedTags3.value = emptySet()
+        _scannedTags3.value = emptyList()
     }
 
     fun emitUpdatedInfoFromFake() {
