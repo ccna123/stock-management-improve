@@ -11,8 +11,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.sol_denka_stockmanagement.constant.ConnectionState
+import com.example.sol_denka_stockmanagement.helper.NetworkConnectionObserver
 import com.example.sol_denka_stockmanagement.helper.ReaderController
-import com.example.sol_denka_stockmanagement.helper.ToastManager
 import com.example.sol_denka_stockmanagement.helper.ToastType
 import com.example.sol_denka_stockmanagement.intent.ExpandIntent
 import com.example.sol_denka_stockmanagement.intent.ShareIntent
@@ -40,7 +40,8 @@ import kotlin.collections.lastIndex
 @HiltViewModel
 class AppViewModel @Inject constructor(
     private val application: Application,
-    private var readerController: ReaderController
+    private val readerController: ReaderController,
+    private val connectionObserver: NetworkConnectionObserver
 ) : ViewModel() {
 
 
@@ -83,6 +84,12 @@ class AppViewModel @Inject constructor(
         initialValue = ConnectionState.DISCONNECTED
     )
 
+    val isNetworkConnected = connectionObserver.isConnected.stateIn(
+        viewModelScope,
+        SharingStarted.Eagerly,
+        false // Compute initial value synchronously
+    )
+
 
     init {
         viewModelScope.launch(Dispatchers.IO) {
@@ -92,7 +99,7 @@ class AppViewModel @Inject constructor(
             readerController.connectionEvents.collect { evt ->
                 if (evt == ConnectionState.CONNECTED) {
                     _toastFlow.emit("リーダー接続に成功しました" to ToastType.SUCCESS)
-                } else if (evt == ConnectionState.DISCONNECTED ) {
+                } else if (evt == ConnectionState.DISCONNECTED) {
                     _toastFlow.emit("リーダーが切断されました" to ToastType.ERROR)
                 }
             }
@@ -308,7 +315,9 @@ class AppViewModel @Inject constructor(
                     isAllSelected = updated.size == intent.totalTag
                 )
             }
-
+            is ShareIntent.ToggleNetworkDialog -> _generalState.value = _generalState.value.copy(
+                showNetworkDialog = intent.doesOpenDialog
+            )
         }
     }
 

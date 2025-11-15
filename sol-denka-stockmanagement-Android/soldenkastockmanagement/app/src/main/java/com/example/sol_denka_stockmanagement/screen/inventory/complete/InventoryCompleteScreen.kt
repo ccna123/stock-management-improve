@@ -34,6 +34,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.sol_denka_stockmanagement.R
 import com.example.sol_denka_stockmanagement.constant.InventoryScanResult
+import com.example.sol_denka_stockmanagement.intent.ShareIntent
 import com.example.sol_denka_stockmanagement.navigation.Screen
 import com.example.sol_denka_stockmanagement.model.InventoryScanResultStatusModel
 import com.example.sol_denka_stockmanagement.screen.layout.Layout
@@ -44,6 +45,7 @@ import com.example.sol_denka_stockmanagement.ui.theme.deepBlueSky
 import com.example.sol_denka_stockmanagement.ui.theme.paleSkyBlue
 import com.example.sol_denka_stockmanagement.viewmodel.AppViewModel
 import com.example.sol_denka_stockmanagement.screen.setting.sub_screen.reader_setting.ReaderSettingViewModel
+import com.example.sol_denka_stockmanagement.share.NetworkDialog
 import com.example.sol_denka_stockmanagement.viewmodel.ScanViewModel
 
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
@@ -54,8 +56,17 @@ fun InventoryCompleteScreen(
     onNavigate: (Screen) -> Unit
 ) {
 
+    val generalState = appViewModel.generalState.value
     LaunchedEffect(Unit) {
         scanViewModel.setEnableScan(false)
+    }
+
+    if (generalState.showNetworkDialog) {
+        NetworkDialog(appViewModel = appViewModel, onClose = {
+            appViewModel.onGeneralIntent(
+                ShareIntent.ToggleNetworkDialog(false)
+            )
+        })
     }
 
     Layout(
@@ -82,6 +93,11 @@ fun InventoryCompleteScreen(
                     )
                 },
                 onClick = {
+                    if (appViewModel.isNetworkConnected.value.not()) {
+                        appViewModel.onGeneralIntent(
+                            ShareIntent.ToggleNetworkDialog(true)
+                        )
+                    }
                 },
                 buttonText = stringResource(R.string.finish_inventory),
             )

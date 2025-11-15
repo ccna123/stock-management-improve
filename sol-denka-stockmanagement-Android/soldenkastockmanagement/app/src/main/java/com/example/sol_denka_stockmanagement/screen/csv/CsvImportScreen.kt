@@ -41,6 +41,9 @@ import com.example.sol_denka_stockmanagement.R
 import com.example.sol_denka_stockmanagement.constant.CsvType
 import com.example.sol_denka_stockmanagement.navigation.Screen
 import com.example.sol_denka_stockmanagement.constant.SelectTitle
+import com.example.sol_denka_stockmanagement.helper.ToastManager
+import com.example.sol_denka_stockmanagement.helper.ToastType
+import com.example.sol_denka_stockmanagement.intent.ShareIntent
 import com.example.sol_denka_stockmanagement.model.CsvFileInfoModel
 import com.example.sol_denka_stockmanagement.screen.layout.Layout
 import com.example.sol_denka_stockmanagement.share.AppDialog
@@ -54,6 +57,7 @@ import com.example.sol_denka_stockmanagement.viewmodel.AppViewModel
 import com.example.sol_denka_stockmanagement.screen.csv.components.SingleCsvFile
 import com.example.sol_denka_stockmanagement.screen.csv.CsvViewModel
 import com.example.sol_denka_stockmanagement.screen.setting.sub_screen.reader_setting.ReaderSettingViewModel
+import com.example.sol_denka_stockmanagement.share.NetworkDialog
 import kotlinx.coroutines.launch
 
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
@@ -88,8 +92,16 @@ fun CsvImportScreen(
         }
     }
 
+    if (generalState.showNetworkDialog) {
+        NetworkDialog(appViewModel = appViewModel, onClose = {
+            appViewModel.onGeneralIntent(
+                ShareIntent.ToggleNetworkDialog(false)
+            )
+        })
+    }
+
     if (isImporting) {
-        AppDialog{
+        AppDialog {
             Column(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalAlignment = Alignment.CenterHorizontally
@@ -113,7 +125,7 @@ fun CsvImportScreen(
     }
 
     if (showProcessResultDialog) {
-        AppDialog{
+        AppDialog {
             Column(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalAlignment = Alignment.CenterHorizontally
@@ -159,8 +171,14 @@ fun CsvImportScreen(
                 buttonText = stringResource(R.string.import_file),
                 canClick = csvState.csvType.isNotEmpty(),
                 onClick = {
-                    scope.launch {
-                        csvViewModel.downloadCsvFromSftp(context)
+                    if (appViewModel.isNetworkConnected.value.not()) {
+                        appViewModel.onGeneralIntent(
+                            ShareIntent.ToggleNetworkDialog(true)
+                        )
+                    } else {
+                        scope.launch {
+                            csvViewModel.downloadCsvFromSftp(context)
+                        }
                     }
                 },
             )

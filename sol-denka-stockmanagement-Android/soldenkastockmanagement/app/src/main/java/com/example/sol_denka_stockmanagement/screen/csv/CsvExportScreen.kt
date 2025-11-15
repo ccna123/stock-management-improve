@@ -39,6 +39,7 @@ import com.example.sol_denka_stockmanagement.R
 import com.example.sol_denka_stockmanagement.constant.CsvType
 import com.example.sol_denka_stockmanagement.navigation.Screen
 import com.example.sol_denka_stockmanagement.constant.SelectTitle
+import com.example.sol_denka_stockmanagement.intent.ShareIntent
 import com.example.sol_denka_stockmanagement.model.CsvFileInfoModel
 import com.example.sol_denka_stockmanagement.screen.layout.Layout
 import com.example.sol_denka_stockmanagement.share.ButtonContainer
@@ -50,6 +51,7 @@ import com.example.sol_denka_stockmanagement.viewmodel.AppViewModel
 import com.example.sol_denka_stockmanagement.screen.csv.components.SingleCsvFile
 import com.example.sol_denka_stockmanagement.screen.csv.CsvViewModel
 import com.example.sol_denka_stockmanagement.screen.setting.sub_screen.reader_setting.ReaderSettingViewModel
+import com.example.sol_denka_stockmanagement.share.NetworkDialog
 
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @Composable
@@ -83,6 +85,14 @@ fun CsvExportScreen(
         }
     }
 
+    if (generalState.showNetworkDialog) {
+        NetworkDialog(appViewModel = appViewModel, onClose = {
+            appViewModel.onGeneralIntent(
+                ShareIntent.ToggleNetworkDialog(false)
+            )
+        })
+    }
+
     Layout(
         topBarText = "${Screen.fromRouteId(Screen.CsvExport.routeId)?.displayName}",
         topBarIcon = Icons.AutoMirrored.Filled.ArrowBack,
@@ -102,21 +112,27 @@ fun CsvExportScreen(
                 buttonText = stringResource(R.string.export_file),
                 canClick = csvState.csvType.isNotEmpty() && isExporting.not(),
                 onClick = {
-                    csvViewModel.toggleProgressVisibility(true)
-                    csvViewModel.exportAllFilesIndividually(
-                        context = context,
-                        isInventoryResult = when (csvState.csvType) {
-                            CsvType.InventoryResult.displayName -> {
-                                true
-                            }
+                    if (appViewModel.isNetworkConnected.value.not()) {
+                        appViewModel.onGeneralIntent(
+                            ShareIntent.ToggleNetworkDialog(true)
+                        )
+                    }else{
+                        csvViewModel.toggleProgressVisibility(true)
+                        csvViewModel.exportAllFilesIndividually(
+                            context = context,
+                            isInventoryResult = when (csvState.csvType) {
+                                CsvType.InventoryResult.displayName -> {
+                                    true
+                                }
 
-                            CsvType.StockEvent.displayName -> {
-                                false
-                            }
+                                CsvType.StockEvent.displayName -> {
+                                    false
+                                }
 
-                            else -> false
-                        }
-                    )
+                                else -> false
+                            }
+                        )
+                    }
                 },
             )
         },
