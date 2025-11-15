@@ -50,8 +50,8 @@ fun LiterInput(
     InputFieldContainer(
         modifier = Modifier.fillMaxWidth(),
         value = stockArea,
-        label = stringResource(R.string.stock_area),
-        hintText = stringResource(R.string.stock_hint),
+        label = stringResource(R.string.storage_area),
+        hintText = stringResource(R.string.storage_area_hint),
         isNumeric = false,
         shape = RoundedCornerShape(13.dp),
         readOnly = false,

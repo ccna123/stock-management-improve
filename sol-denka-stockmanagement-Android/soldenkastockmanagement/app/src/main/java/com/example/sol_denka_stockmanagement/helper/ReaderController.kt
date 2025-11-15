@@ -206,7 +206,7 @@ class ReaderController @Inject constructor(
                     Screen.ReceivingScan.routeId -> {
                         _scannedTags2.value = epc.rfidNo
                     }
-                    Screen.ShippingScan.routeId -> {
+                    in listOf(Screen.ShippingScan.routeId,Screen.StorageAreaChangeScan.routeId) -> {
                         _scannedTags3.update { it + epc.rfidNo }
                     }
                     else -> {

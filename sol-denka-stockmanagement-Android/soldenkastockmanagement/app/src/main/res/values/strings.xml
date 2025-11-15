@@ -76,13 +76,14 @@
     <string name="length">長さ</string>
     <string name="rolling_machine_hint">巻き取り機情報入力</string>
     <string name="rolling_machine">巻き取り機情報</string>
-    <string name="stock_hint">保管場所入力</string>
-    <string name="stock_area">保管場所</string>
+    <string name="storage_area_hint">保管場所入力</string>
+    <string name="storage_area">保管場所</string>
     <string name="weight_hint">重量入力</string>
     <string name="weight">重量</string>
     <string name="lot_no_hint">Lot No入力</string>
     <string name="lot_no">Lot No</string>
     <string name="tag_population_hint">タグの推定数入力</string>
+    <string name="storage_area_change">保管場所変更</string>
 
     <!-- 設定画面 -->
     <string name="setting_basic_title">基本設定</string>

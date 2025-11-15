@@ -51,7 +51,6 @@ import com.example.sol_denka_stockmanagement.share.AppDialog
 import com.example.sol_denka_stockmanagement.share.ButtonContainer
 import com.example.sol_denka_stockmanagement.ui.theme.deepOceanBlue
 import com.example.sol_denka_stockmanagement.viewmodel.AppViewModel
-import com.example.sol_denka_stockmanagement.screen.setting.sub_screen.reader_setting.ReaderSettingViewModel
 import com.example.sol_denka_stockmanagement.viewmodel.ScanViewModel
 import kotlinx.coroutines.launch
 
@@ -138,7 +137,7 @@ fun HomeScreenContent(
     val menuItems = listOf(
         MenuModel(screen = Screen.Receiving, icon = R.drawable.receiving),
         MenuModel(screen = Screen.Shipping, icon = R.drawable.shipping),
-        MenuModel(screen = Screen.StockArea, icon = R.drawable.warehouse),
+        MenuModel(screen = Screen.StorageAreaChangeScan, icon = R.drawable.warehouse),
         MenuModel(screen = Screen.Inventory, icon = R.drawable.inventory),
     )
     LazyColumn(
@@ -163,6 +162,7 @@ fun HomeScreenContent(
                             when (menu.screen) {
                                 Screen.Receiving -> onNavigate(Screen.ReceivingScan)
                                 Screen.Shipping -> onNavigate(Screen.ShippingScan)
+                                Screen.StorageAreaChangeScan -> onNavigate(Screen.StorageAreaChangeScan)
                                 Screen.Inventory -> onNavigate(Screen.Inventory)
                                 else -> error("No route")
                             }

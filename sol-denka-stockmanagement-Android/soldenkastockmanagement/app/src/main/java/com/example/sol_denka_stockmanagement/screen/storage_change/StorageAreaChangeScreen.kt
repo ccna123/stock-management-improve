@@ -1,4 +1,4 @@
-package com.example.sol_denka_stockmanagement.screen.shipping
+package com.example.sol_denka_stockmanagement.screen.storage_change
 
 import android.os.Build
 import androidx.annotation.RequiresApi
@@ -31,7 +31,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.sol_denka_stockmanagement.R
-import com.example.sol_denka_stockmanagement.constant.HandlingMethod
 import com.example.sol_denka_stockmanagement.constant.MaterialSelectionItem
 import com.example.sol_denka_stockmanagement.constant.SelectTitle
 import com.example.sol_denka_stockmanagement.intent.ExpandIntent
@@ -46,7 +45,7 @@ import com.example.sol_denka_stockmanagement.viewmodel.AppViewModel
 @OptIn(ExperimentalMaterial3Api::class)
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @Composable
-fun ShippingScreen(
+fun StorageAreaChangeScreen(
     appViewModel: AppViewModel,
     onNavigate: (Screen) -> Unit
 ) {
@@ -57,7 +56,7 @@ fun ShippingScreen(
     val generalState = appViewModel.generalState.value
 
     Layout(
-        topBarText = stringResource(R.string.shipping),
+        topBarText = stringResource(R.string.storage_area_change),
         topBarIcon = Icons.AutoMirrored.Filled.ArrowBack,
         onNavigate = onNavigate,
         appViewModel = appViewModel,
@@ -81,11 +80,11 @@ fun ShippingScreen(
                 },
                 onClick = {
                 },
-                buttonText = stringResource(R.string.register_shipping),
+                buttonText = stringResource(R.string.storage_area_change),
             )
         },
         onBackArrowClick = {
-            onNavigate(Screen.ShippingScan)
+            onNavigate(Screen.StorageAreaChangeScan)
         }) { paddingValues ->
         LazyColumn(
             modifier = Modifier
@@ -133,47 +132,53 @@ fun ShippingScreen(
                         }
                     }
                 }
-                Spacer(modifier = Modifier.height(10.dp))
+                Spacer(modifier = Modifier.height(18.dp))
                 ExposedDropdownMenuBox(
-                    expanded = expandState.handlingMethodExpanded,
-                    onExpandedChange = { appViewModel.onExpandIntent(ExpandIntent.ToggleHandlingMethodExpanded) }) {
+                    expanded = expandState.stockAreaExpanded,
+                    onExpandedChange = { appViewModel.onExpandIntent(ExpandIntent.ToggleStockAreaExpanded) }) {
                     InputFieldContainer(
-                        modifier = Modifier
-                            .menuAnchor(
-                                type = ExposedDropdownMenuAnchorType.PrimaryNotEditable,
-                                enabled = true
-                            )
-                            .fillMaxWidth(),
-                        value = if (inputState.handlingMethod == SelectTitle.SelectHandlingMethod.displayName) "" else inputState.handlingMethod,
+                        modifier = Modifier.menuAnchor(type = ExposedDropdownMenuAnchorType.PrimaryNotEditable, enabled = true).fillMaxWidth(),
+                        value = if (inputState.stockArea == "保管場所選択") "" else inputState.stockArea,
+                        hintText = "保管場所選択",
                         isNumeric = false,
-                        hintText = SelectTitle.SelectHandlingMethod.displayName,
                         shape = RoundedCornerShape(13.dp),
                         onChange = { newValue ->
-                            appViewModel.onInputIntent(InputIntent.ChangeHandlingMethod(newValue))
+                            appViewModel.onInputIntent(
+                                InputIntent.ChangeStockArea(
+                                    newValue
+                                )
+                            )
                         },
                         readOnly = true,
                         isDropDown = true,
                         enable = true,
-                        onClick = {
-                            appViewModel.onExpandIntent(ExpandIntent.ToggleHandlingMethodExpanded)
-                        },
+                        onEnterPressed = {}
                     )
                     ExposedDropdownMenu(
-                        expanded = expandState.handlingMethodExpanded,
-                        onDismissRequest = { appViewModel.onExpandIntent(ExpandIntent.ToggleMissRollExpanded) }
+                        expanded = expandState.stockAreaExpanded,
+                        onDismissRequest = { appViewModel.onExpandIntent(ExpandIntent.ToggleStockAreaExpanded) }
                     ) {
+                        DropdownMenuItem(
+                            text = { Text(text = "保管場所選択") },
+                            onClick = {
+                                appViewModel.apply {
+                                    onInputIntent(InputIntent.ChangeStockArea(""))
+                                    onExpandIntent(ExpandIntent.ToggleStockAreaExpanded)
+                                }
+                            }
+                        )
                         listOf(
-                            HandlingMethod.SELECTION_TITLE.displayName,
-                            HandlingMethod.USE.displayName,
-                            HandlingMethod.SALE.displayName,
-                            HandlingMethod.CRUSHING.displayName,
-                        ).forEach { method ->
+                            "保管場所A",
+                            "保管場所B",
+                            "保管場所C",
+                            "保管場所D",
+                        ).forEach { stockArea ->
                             DropdownMenuItem(
-                                text = { Text(text = method) },
+                                text = { Text(text = stockArea) },
                                 onClick = {
                                     appViewModel.apply {
-                                        onInputIntent(InputIntent.ChangeHandlingMethod(if (method == SelectTitle.SelectHandlingMethod.displayName) "" else method))
-                                        onExpandIntent(ExpandIntent.ToggleHandlingMethodExpanded)
+                                        onInputIntent(InputIntent.ChangeStockArea(if (stockArea == SelectTitle.SelectStockArea.displayName) "" else stockArea))
+                                        onExpandIntent(ExpandIntent.ToggleStockAreaExpanded)
                                     }
                                 }
                             )

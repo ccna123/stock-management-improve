@@ -2,7 +2,6 @@ package com.example.sol_denka_stockmanagement.intent
 
 import com.example.sol_denka_stockmanagement.constant.Tab
 import com.example.sol_denka_stockmanagement.model.InventoryItemMasterModel
-import com.example.sol_denka_stockmanagement.screen.scan.shipping.ShippingScanIntent
 
 
 sealed interface ShareIntent {

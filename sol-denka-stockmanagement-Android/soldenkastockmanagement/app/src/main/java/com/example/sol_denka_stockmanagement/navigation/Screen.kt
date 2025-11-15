@@ -25,7 +25,8 @@ sealed class Screen(
     data object CsvExport : Screen("csv_export", "CSVファイル出力")
     data object CsvImport : Screen("csv_import", "CSVファイル取り込み")
     data object InventoryComplete : Screen("inventory_complete", "棚卸 (完了)")
-    data object StockArea : Screen("stock_area", "保管場所変更")
+    data object StorageAreaChangeScan : Screen("storage_area_change_scan", "保管場所変更")
+    data object StorageAreaChange : Screen("storage_area_change", "保管場所変更")
     data object Detail : Screen("detail", "詳細情報")
 
     companion object {
@@ -45,6 +46,8 @@ sealed class Screen(
             Detail.routeId -> Detail
             ReceivingScan.routeId -> ReceivingScan
             ShippingScan.routeId -> ShippingScan
+            StorageAreaChangeScan.routeId -> StorageAreaChangeScan
+            StorageAreaChange.routeId -> StorageAreaChange
             else -> null
         }
     }

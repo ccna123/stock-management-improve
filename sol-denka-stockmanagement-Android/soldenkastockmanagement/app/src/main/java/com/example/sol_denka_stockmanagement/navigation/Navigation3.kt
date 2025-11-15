@@ -25,6 +25,8 @@ import com.example.sol_denka_stockmanagement.screen.setting.sub_screen.app_setti
 import com.example.sol_denka_stockmanagement.screen.setting.sub_screen.reader_setting.ReaderSettingViewModel
 import com.example.sol_denka_stockmanagement.viewmodel.AppViewModel
 import com.example.sol_denka_stockmanagement.screen.setting.SettingScreen
+import com.example.sol_denka_stockmanagement.screen.storage_change.StorageAreaChangeScanScreen
+import com.example.sol_denka_stockmanagement.screen.storage_change.StorageAreaChangeScreen
 import com.example.sol_denka_stockmanagement.search.SearchTagsScreen
 
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
@@ -124,6 +126,33 @@ fun Navigation3(
             entry<Screen.ShippingScan> { destinationScan ->
                 ShippingScanScreen(
                     scanViewModel = scanViewModel,
+                    appViewModel = appViewModel,
+                    onNavigate = { dest ->
+                        if (backStack.last() != dest) {
+                            backStack.add(dest)
+                        } else if (dest is Screen.Home) {
+                            backStack.clear()
+                            backStack.add(Screen.Home)
+                        }
+                    }
+                )
+            }
+            entry<Screen.StorageAreaChangeScan> { destinationScan ->
+                StorageAreaChangeScanScreen(
+                    scanViewModel = scanViewModel,
+                    appViewModel = appViewModel,
+                    onNavigate = { dest ->
+                        if (backStack.last() != dest) {
+                            backStack.add(dest)
+                        } else if (dest is Screen.Home) {
+                            backStack.clear()
+                            backStack.add(Screen.Home)
+                        }
+                    }
+                )
+            }
+            entry<Screen.StorageAreaChange> { destinationScan ->
+                StorageAreaChangeScreen(
                     appViewModel = appViewModel,
                     onNavigate = { dest ->
                         if (backStack.last() != dest) {
