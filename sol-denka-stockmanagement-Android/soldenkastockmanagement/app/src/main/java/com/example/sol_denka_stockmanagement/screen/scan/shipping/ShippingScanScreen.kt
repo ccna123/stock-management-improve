@@ -24,6 +24,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
@@ -41,17 +42,19 @@ import com.example.sol_denka_stockmanagement.share.ButtonContainer
 import com.example.sol_denka_stockmanagement.ui.theme.brightAzure
 import com.example.sol_denka_stockmanagement.viewmodel.AppViewModel
 import com.example.sol_denka_stockmanagement.viewmodel.ScanViewModel
+import kotlinx.coroutines.launch
 
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @Composable
 fun ShippingScanScreen(
     scanViewModel: ScanViewModel,
     appViewModel: AppViewModel,
-    readerSettingViewModel: ReaderSettingViewModel,
     shippingScanViewModel: ShippingScanViewModel,
     onNavigate: (Screen) -> Unit
 ) {
     val scannedTag3 by scanViewModel.scannedTag3.collectAsStateWithLifecycle()
+    val isPerformingInventory by scanViewModel.isPerformingInventory.collectAsStateWithLifecycle()
+    val scope = rememberCoroutineScope()
 
     LaunchedEffect(Unit) {
         scanViewModel.setEnableScan(enabled = true, screen = Screen.ShippingScan)
@@ -68,11 +71,36 @@ fun ShippingScanScreen(
         onNavigate = onNavigate,
         hasBottomBar = true,
         appViewModel = appViewModel,
-        readerSettingViewModel = readerSettingViewModel,
         bottomButton = {
             Row(
                 horizontalArrangement = Arrangement.spacedBy(10.dp)
             ) {
+                ButtonContainer(
+                    buttonText = if (isPerformingInventory) stringResource(R.string.scan_stop) else stringResource(
+                        R.string.scan_start
+                    ),
+                    shape = RoundedCornerShape(10.dp),
+                    modifier = Modifier.shadow(
+                        elevation = 13.dp,
+                        clip = true,
+                        ambientColor = Color.Gray.copy(alpha = 0.5f),
+                        spotColor = Color.DarkGray.copy(alpha = 0.7f)
+                    ),
+                    icon = {
+                        Icon(
+                            painter = painterResource(R.drawable.scanner),
+                            contentDescription = null,
+                            tint = Color.White,
+                            modifier = Modifier.size(20.dp)
+                        )
+                    },
+                    containerColor = if (isPerformingInventory) Color.Red else brightAzure,
+                    onClick = {
+                        scope.launch {
+                            if (isPerformingInventory) scanViewModel.stopInventory() else scanViewModel.startInventory()
+                        }
+                    }
+                )
                 ButtonContainer(
                     buttonText = stringResource(R.string.register_info),
                     shape = RoundedCornerShape(10.dp),

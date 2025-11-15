@@ -11,7 +11,9 @@ import com.example.sol_denka_stockmanagement.model.InventoryItemMasterModel
 import com.example.sol_denka_stockmanagement.navigation.Screen
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -27,6 +29,13 @@ class ScanViewModel @Inject constructor(
     val scannedTag3 = readerController.scannedTags3
     private val _rfidTagList = MutableStateFlow<List<InventoryItemMasterModel>>(emptyList())
     val rfidTagList = _rfidTagList.asStateFlow()
+
+    val isPerformingInventory = readerController.isPerformingInventory
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = false
+        )
 
     init {
 
@@ -51,6 +60,14 @@ class ScanViewModel @Inject constructor(
                 }
             }
         }
+    }
+
+    suspend fun startInventory() {
+        readerController.startInventory()
+    }
+
+    suspend fun stopInventory() {
+        readerController.stopInventory()
     }
 
     fun clearScannedTag() = readerController.clearScannedTag()

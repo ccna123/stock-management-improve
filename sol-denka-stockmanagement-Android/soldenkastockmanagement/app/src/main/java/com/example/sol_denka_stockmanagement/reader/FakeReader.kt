@@ -45,32 +45,54 @@ class FakeReader {
     private var currentTagPopulation: Short = 30
     private var currentChannels: List<FakeChannel> = FakeChannel.entries.toList()
 
+    private var idleDrainJob: Job? = null
+    private var scanDrainJob: Job? = null
+
     fun setEventListener(listener: (DeviceEvent) -> Unit) {
         this.eventListener = listener
     }
 
-    // -----------------------------
-    // Battery Drain Timer
-    // -----------------------------
-    private fun startBatteryDrain() {
-        batteryJob?.cancel()
-        batteryJob = scope.launch {
-            while (isActive) {
-                delay(6000) // drain every 6s
-                val newLevel = (_batteryLevel.value - 1).coerceAtLeast(5)
-                _batteryLevel.value = newLevel
+    private fun startIdleDrain() {
+        // Stop scan drain if running
+        scanDrainJob?.cancel()
 
-                eventListener?.invoke(DeviceEvent.BatteryData(newLevel))
+        idleDrainJob?.cancel()
+        idleDrainJob = scope.launch {
+            while (isActive) {
+                delay(2000) // 2s interval for idle mode
+                drainBattery(1)  // drain 1% every 2 seconds
             }
         }
     }
 
+    private fun startScanDrain() {
+        // Stop idle drain when scanning
+        idleDrainJob?.cancel()
+
+        scanDrainJob?.cancel()
+        scanDrainJob = scope.launch {
+            while (isActive) {
+                delay(800) // faster drain while scanning
+                drainBattery(3) // drain 3% every ~1s
+            }
+        }
+    }
+
+    private fun stopAllDrain() {
+        idleDrainJob?.cancel()
+        scanDrainJob?.cancel()
+    }
+
+    // -----------------------------
+    // Battery Drain Timer
     // -----------------------------
     // Connection
     // -----------------------------
     suspend fun connect(): Boolean {
         delay(900)
         _isConnected.value = true
+
+//        startIdleDrain()
 
 //        startBatteryDrain()
 
@@ -94,6 +116,7 @@ class FakeReader {
 
         return true
     }
+
     suspend fun disconnect() {
         inventoryJob?.cancel()
         batteryJob?.cancel()
@@ -111,9 +134,9 @@ class FakeReader {
     fun startInventory() {
         inventoryJob?.cancel()
         inventoryJob = scope.launch {
+//            startScanDrain()
             while (isActive) {
                 delay(250)
-
                 val epc = listOf(
                     "80000000", "81111111", "82222222", "83333333",
                     "84444444", "85555555", "86666666", "87777777",
@@ -129,8 +152,16 @@ class FakeReader {
         }
     }
 
+    private fun drainBattery(amount: Int) {
+        val newLevel = (_batteryLevel.value - amount).coerceAtLeast(5)
+        _batteryLevel.value = newLevel
+        eventListener?.invoke(DeviceEvent.BatteryData(newLevel))
+    }
+
     fun stopInventory() {
         inventoryJob?.cancel()
+        scanDrainJob?.cancel()
+        startIdleDrain()
         eventListener?.invoke(DeviceEvent.IsTriggerReleased(true))
     }
 

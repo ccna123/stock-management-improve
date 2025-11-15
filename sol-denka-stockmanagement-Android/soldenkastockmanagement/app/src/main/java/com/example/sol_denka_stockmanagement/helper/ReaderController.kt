@@ -172,26 +172,6 @@ class ReaderController @Inject constructor(
 
         fakeReader?.setEventListener(listener)
     }
-
-    fun startInventory(
-        isScanScreen: Boolean = false,
-    ) {
-        _isPerformingInventory.update { true }
-        scope.launch {
-            fakeReader?.startInventory()
-        }
-    }
-
-    fun stopInventory(
-        isScanScreen: Boolean = false,
-    ) {
-        _isPerformingInventory.update { false }
-        scope.launch {
-            resetRssi()
-            fakeReader?.stopInventory()
-        }
-    }
-
     fun clearScannedTag() {
         _scannedTags.value = emptyMap()
         _scannedTags1.value = emptyMap()
@@ -275,11 +255,18 @@ class ReaderController @Inject constructor(
     }
 
     override suspend fun startInventory() {
-        fakeReader?.startInventory()
+        _isPerformingInventory.update { true }
+        scope.launch {
+            fakeReader?.startInventory()
+        }
     }
 
     override suspend fun stopInventory() {
-        fakeReader?.stopInventory()
+        _isPerformingInventory.update { false }
+        scope.launch {
+            resetRssi()
+            fakeReader?.stopInventory()
+        }
     }
 
     fun setScanEnabled(enabled: Boolean, screen: Screen = Screen.ReceivingScan) {

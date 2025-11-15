@@ -143,7 +143,6 @@ fun Navigation3(
                     scanViewModel = scanViewModel,
                     appViewModel = appViewModel,
                     shippingScanViewModel = shippingScanViewModel,
-                    readerSettingViewModel = readerSettingViewModel,
                     onNavigate = { dest ->
                         if (backStack.last() != dest) {
                             backStack.add(dest)

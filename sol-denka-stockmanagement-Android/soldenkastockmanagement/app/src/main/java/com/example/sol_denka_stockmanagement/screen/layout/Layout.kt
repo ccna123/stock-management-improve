@@ -83,6 +83,7 @@ import com.example.sol_denka_stockmanagement.ui.theme.paleSkyBlue
 import com.example.sol_denka_stockmanagement.viewmodel.AppViewModel
 import com.example.sol_denka_stockmanagement.screen.setting.sub_screen.reader_setting.ReaderSettingViewModel
 import com.example.sol_denka_stockmanagement.ui.theme.orange
+import com.example.sol_denka_stockmanagement.viewmodel.ScanViewModel
 import dagger.hilt.android.EntryPointAccessors
 import kotlinx.coroutines.flow.MutableStateFlow
 
@@ -97,6 +98,7 @@ fun Layout(
     prevScreenNameId: String = "",
     hasBottomBar: Boolean = true,
     appViewModel: AppViewModel? = null,
+    scanViewModel: ScanViewModel? = null,
     readerSettingViewModel: ReaderSettingViewModel? = null,
     onBackArrowClick: (DrawerState) -> Unit,
     onNavigate: (Screen) -> Unit,
@@ -130,7 +132,7 @@ fun Layout(
     val isFileWorking by (appViewModel?.isFileWorking
         ?: MutableStateFlow(false)).collectAsStateWithLifecycle()
 
-    val isPerformingInventory by (appViewModel?.isPerformingInventory
+    val isPerformingInventory by (scanViewModel?.isPerformingInventory
         ?: MutableStateFlow(false)).collectAsStateWithLifecycle()
 
     if (showFileProgressBar == true) {
