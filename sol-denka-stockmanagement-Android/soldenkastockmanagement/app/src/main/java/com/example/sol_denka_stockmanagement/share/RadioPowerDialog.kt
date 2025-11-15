@@ -60,7 +60,7 @@ fun RadioPowerDialog(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(PaddingValues(top = 10.dp, start = 15.dp, end = 15.dp)),
+                        .padding(PaddingValues(vertical = 10.dp)),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
@@ -105,7 +105,7 @@ fun RadioPowerDialog(
                 horizontalArrangement = Arrangement.Center
             ) {
                 ButtonContainer(
-                    buttonText = stringResource(R.string.ok),
+                    buttonText = stringResource(R.string.apply_setting),
                     onClick = { onOk() }
                 )
                 Spacer(modifier = Modifier.width(10.dp))

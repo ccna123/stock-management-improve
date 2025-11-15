@@ -55,7 +55,6 @@ import com.example.sol_denka_stockmanagement.screen.setting.sub_screen.reader_se
 @Composable
 fun CsvExportScreen(
     appViewModel: AppViewModel,
-    readerSettingViewModel: ReaderSettingViewModel,
     onNavigate: (Screen) -> Unit
 ) {
     val csvViewModel = hiltViewModel<CsvViewModel>()
@@ -89,7 +88,6 @@ fun CsvExportScreen(
         topBarIcon = Icons.AutoMirrored.Filled.ArrowBack,
         onNavigate = onNavigate,
         appViewModel = appViewModel,
-        readerSettingViewModel = readerSettingViewModel,
         currentScreenNameId = Screen.CsvExport.routeId,
         prevScreenNameId = Screen.CsvExport.routeId,
         hasBottomBar = true,

@@ -85,8 +85,8 @@
 
     <!-- 設定画面 -->
     <string name="setting_basic_title">基本設定</string>
-    <string name="setting_label_min">最小</string>
-    <string name="setting_label_max">最高</string>
+    <string name="setting_label_min">小</string>
+    <string name="setting_label_max">高</string>
 
     <string name="setting_rfid_advanced">詳細設定</string>
     <string name="setting_radio_irradiation">Radio wave irradiation time</string>

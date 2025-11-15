@@ -54,7 +54,6 @@ import java.time.format.DateTimeFormatter
 fun ReceivingScanScreen(
     scanViewModel: ScanViewModel,
     appViewModel: AppViewModel,
-    readerSettingViewModel: ReaderSettingViewModel,
     onNavigate: (Screen) -> Unit
 ) {
     val scannedTag2 by scanViewModel.scannedTag2.collectAsStateWithLifecycle()
@@ -72,7 +71,6 @@ fun ReceivingScanScreen(
         onNavigate = onNavigate,
         hasBottomBar = true,
         appViewModel = appViewModel,
-        readerSettingViewModel = readerSettingViewModel,
         bottomButton = {
             Row(
                 horizontalArrangement = Arrangement.spacedBy(10.dp)

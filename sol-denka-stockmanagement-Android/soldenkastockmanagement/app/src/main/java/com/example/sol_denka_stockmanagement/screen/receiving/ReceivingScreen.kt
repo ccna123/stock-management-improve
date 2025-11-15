@@ -53,7 +53,6 @@ import com.example.sol_denka_stockmanagement.screen.setting.sub_screen.reader_se
 fun ReceivingScreen(
     appViewModel: AppViewModel,
     scanViewModel: ScanViewModel,
-    readerSettingViewModel: ReaderSettingViewModel,
     onNavigate: (Screen) -> Unit
 ) {
 
@@ -76,7 +75,6 @@ fun ReceivingScreen(
         topBarIcon = Icons.AutoMirrored.Filled.ArrowBack,
         onNavigate = onNavigate,
         appViewModel = appViewModel,
-        readerSettingViewModel = readerSettingViewModel,
         currentScreenNameId = Screen.Receiving.routeId,
         prevScreenNameId = Screen.Receiving.routeId, // for scan screen to navigate back,
         hasBottomBar = true,

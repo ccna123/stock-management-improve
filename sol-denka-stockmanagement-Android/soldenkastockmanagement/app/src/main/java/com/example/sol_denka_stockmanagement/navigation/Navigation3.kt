@@ -52,7 +52,6 @@ fun Navigation3(
                 HomeScreen(
                     appViewModel = appViewModel,
                     scanViewModel = scanViewModel,
-                    readerSettingViewModel = readerSettingViewModel,
                     onNavigate = { dest ->
                         if (backStack.last() != dest) {
                             backStack.add(dest)
@@ -65,7 +64,6 @@ fun Navigation3(
                     appViewModel = appViewModel,
                     scanViewModel = scanViewModel,
                     shippingScanViewModel = shippingScanViewModel,
-                    readerSettingViewModel = readerSettingViewModel,
                     onNavigate = { dest ->
                         if (backStack.last() != dest) {
                             backStack.add(dest)
@@ -77,7 +75,6 @@ fun Navigation3(
                 InventoryScreen(
                     appViewModel = appViewModel,
                     scanViewModel = scanViewModel,
-                    readerSettingViewModel = readerSettingViewModel,
                     onNavigate = { dest ->
                         if (backStack.last() != dest) {
                             backStack.add(dest)
@@ -102,7 +99,6 @@ fun Navigation3(
             entry<Screen.InventoryComplete> {
                 InventoryCompleteScreen(
                     appViewModel = appViewModel,
-                    readerSettingViewModel = readerSettingViewModel,
                     scanViewModel = scanViewModel,
                     onNavigate = { dest ->
                         if (backStack.last() != dest) {
@@ -115,7 +111,6 @@ fun Navigation3(
                 ReceivingScreen(
                     appViewModel = appViewModel,
                     scanViewModel = scanViewModel,
-                    readerSettingViewModel = readerSettingViewModel,
                     onNavigate = { dest ->
                         if (backStack.last() != dest) {
                             backStack.add(dest)
@@ -127,7 +122,6 @@ fun Navigation3(
                 ReceivingScanScreen(
                     scanViewModel = scanViewModel,
                     appViewModel = appViewModel,
-                    readerSettingViewModel = readerSettingViewModel,
                     onNavigate = { dest ->
                         if (backStack.last() != dest) {
                             backStack.add(dest)
@@ -205,7 +199,6 @@ fun Navigation3(
             entry<Screen.CsvExport> {
                 CsvExportScreen(
                     appViewModel = appViewModel,
-                    readerSettingViewModel = readerSettingViewModel,
                     onNavigate = { dest ->
                         if (backStack.last() != dest) {
                             backStack.add(dest)
@@ -216,7 +209,6 @@ fun Navigation3(
             entry<Screen.CsvImport> {
                 CsvImportScreen(
                     appViewModel = appViewModel,
-                    readerSettingViewModel = readerSettingViewModel,
                     onNavigate = { dest ->
                         if (backStack.last() != dest) {
                             backStack.add(dest)
@@ -227,7 +219,6 @@ fun Navigation3(
             entry<Screen.Detail> {
                 DetailScreen(
                     appViewModel = appViewModel,
-                    readerSettingViewModel = readerSettingViewModel,
                     inventoryScanViewModel = inventoryScanViewModel,
                     scanViewModel = scanViewModel,
                     detailViewModel = detailViewModel,

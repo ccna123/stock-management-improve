@@ -60,7 +60,6 @@ import kotlinx.coroutines.launch
 @Composable
 fun CsvImportScreen(
     appViewModel: AppViewModel,
-    readerSettingViewModel: ReaderSettingViewModel,
     onNavigate: (Screen) -> Unit
 ) {
     val csvViewModel = hiltViewModel<CsvViewModel>()
@@ -146,7 +145,6 @@ fun CsvImportScreen(
         topBarIcon = Icons.AutoMirrored.Filled.ArrowBack,
         onNavigate = onNavigate,
         appViewModel = appViewModel,
-        readerSettingViewModel = readerSettingViewModel,
         currentScreenNameId = Screen.CsvImport.routeId,
         prevScreenNameId = Screen.CsvImport.routeId,
         hasBottomBar = true,

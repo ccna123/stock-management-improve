@@ -169,7 +169,7 @@ fun InventoryScanScreen(
                     },
                 )
                 ButtonContainer(
-                    buttonText = stringResource(R.string.close),
+                    buttonText = stringResource(R.string.no),
                     shape = RoundedCornerShape(10.dp),
                     containerColor = Color.Red,
                     buttonTextSize = 20,

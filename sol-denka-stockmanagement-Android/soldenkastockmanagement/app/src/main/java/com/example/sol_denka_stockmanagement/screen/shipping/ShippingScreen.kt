@@ -62,7 +62,6 @@ import com.example.sol_denka_stockmanagement.viewmodel.ScanViewModel
 fun ShippingScreen(
     appViewModel: AppViewModel,
     scanViewModel: ScanViewModel,
-    readerSettingViewModel: ReaderSettingViewModel,
     shippingScanViewModel: ShippingScanViewModel,
     onNavigate: (Screen) -> Unit
 ) {
@@ -76,7 +75,6 @@ fun ShippingScreen(
         topBarIcon = Icons.AutoMirrored.Filled.ArrowBack,
         onNavigate = onNavigate,
         appViewModel = appViewModel,
-        readerSettingViewModel = readerSettingViewModel,
         currentScreenNameId = Screen.Shipping.routeId,
         prevScreenNameId = Screen.Shipping.routeId, // for scan screen to navigate back,
         hasBottomBar = true,

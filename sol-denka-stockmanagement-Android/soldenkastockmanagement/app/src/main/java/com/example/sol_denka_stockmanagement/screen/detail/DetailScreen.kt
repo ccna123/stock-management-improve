@@ -33,7 +33,6 @@ import com.example.sol_denka_stockmanagement.viewmodel.ScanViewModel
 fun DetailScreen(
     appViewModel: AppViewModel,
     scanViewModel: ScanViewModel,
-    readerSettingViewModel: ReaderSettingViewModel,
     inventoryScanViewModel: InventoryScanViewModel,
     detailViewModel: DetailViewModel = androidx.lifecycle.viewmodel.compose.viewModel(),
     onNavigate: (Screen) -> Unit
@@ -54,7 +53,6 @@ fun DetailScreen(
         topBarIcon = Icons.AutoMirrored.Filled.ArrowBack,
         onNavigate = onNavigate,
         appViewModel = appViewModel,
-        readerSettingViewModel = readerSettingViewModel,
         currentScreenNameId = Screen.Detail.routeId,
         prevScreenNameId = Screen.Detail.routeId,
         hasBottomBar = false,

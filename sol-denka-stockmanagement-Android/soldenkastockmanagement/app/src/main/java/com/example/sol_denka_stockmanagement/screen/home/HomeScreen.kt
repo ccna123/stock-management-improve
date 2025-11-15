@@ -60,7 +60,6 @@ import kotlinx.coroutines.launch
 fun HomeScreen(
     appViewModel: AppViewModel,
     scanViewModel: ScanViewModel,
-    readerSettingViewModel: ReaderSettingViewModel,
     onNavigate: (Screen) -> Unit
 ) {
     val scope = rememberCoroutineScope()
@@ -121,7 +120,6 @@ fun HomeScreen(
         hasBottomBar = false,
         onNavigate = onNavigate,
         appViewModel = appViewModel,
-        readerSettingViewModel = readerSettingViewModel,
         onBackArrowClick = { drawerState: DrawerState ->
             scope.launch { drawerState.open() }
         }) { paddingValues ->

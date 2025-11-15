@@ -48,7 +48,6 @@ import com.example.sol_denka_stockmanagement.viewmodel.ScanViewModel
 @Composable
 fun InventoryScreen(
     appViewModel: AppViewModel,
-    readerSettingViewModel: ReaderSettingViewModel,
     scanViewModel: ScanViewModel,
     onNavigate: (Screen) -> Unit
 ) {
@@ -72,7 +71,6 @@ fun InventoryScreen(
         topBarIcon = Icons.AutoMirrored.Filled.ArrowBack,
         onNavigate = onNavigate,
         appViewModel = appViewModel,
-        readerSettingViewModel = readerSettingViewModel,
         currentScreenNameId = Screen.Inventory.routeId,
         prevScreenNameId = Screen.Inventory.routeId, // for scan screen to navigate back,
         hasBottomBar = true,
