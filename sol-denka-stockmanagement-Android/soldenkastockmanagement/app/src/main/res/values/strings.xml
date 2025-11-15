@@ -1,0 +1,140 @@
+<resources>
+    <string name="app_name">StockManagement</string>
+    <string name="title_dialog_inventory">Import master file.</string>
+    <string name="title_dialog_doing">Unfinished data exists.\nDo you resume?</string>
+    <string name="doing_continue">Resume</string>
+    <string name="doing_new">New operation</string>
+    <string name="cancel">Skip</string>
+    <string name="google_play_services_api_key">unused</string>
+
+    <!--    ボタン名-->
+    <string name="scan_start">スキャン開始</string>
+    <string name="scan_stop">スキャン停止</string>
+    <string name="register_info">情報登録</string>
+    <string name="close">閉じる</string>
+    <string name="ok">はい</string>
+    <string name="no">いいえ</string>
+    <string name="return_home">Homeへ戻る</string>
+    <string name="import_file">取り込み</string>
+    <string name="export_file">出力</string>
+    <string name="finish_inventory">棚卸完了</string>
+    <string name="apply_setting">設定適用</string>
+    <string name="clear">クリア</string>
+    <string name="search">探索</string>
+    <string name="detail">詳細情報</string>
+    <string name="select_all">全選択</string>
+    <string name="select_all_remove">全選択解除</string>
+
+    <!--    タブ名-->
+    <string name="unprocessed">未処理</string>
+    <string name="processed">処理済み</string>
+    <string name="app_setting">アプリ設定</string>
+    <string name="reader_setting">リーダー設定</string>
+
+    <!-- 各画面   -->
+    <string name="home">Home</string>
+    <string name="inventory">棚卸</string>
+    <string name="receiving">入庫</string>
+    <string name="shipping">出庫</string>
+    <string name="register_receiving">入庫登録</string>
+    <string name="register_shipping">出庫登録</string>
+    <string name="inventory_start">棚卸開始</string>
+    <string name="handling_method_hint">処理方法入力</string>
+    <string name="remark_hint">備考入力</string>
+    <string name="finish_search">探索完了</string>
+    <string name="no_items_found">発見数</string>
+    <string name="found">発見</string>
+    <string name="no_device_connect">未接続</string>
+    <string name="drawer_volume">音量</string>
+    <string name="drawer_radio_power">電波強度</string>
+    <string name="material_name">資材名</string>
+    <string name="epc">EPC</string>
+    <string name="quantity">数量</string>
+
+    <string name="permission_title">ファイルアクセス権限の要求</string>
+    <string name="permission_message">
+        アプリはPCからコピーされたCSVファイルを読み取るために、すべてのファイルへのアクセス権限が必要です。
+        \n\nこのアプリに「すべてのファイルの管理」権限を付与してください。
+    </string>
+    <string name="permission_accept">同意する</string>
+    <string name="permission_cancel">キャンセル</string>
+    <string name="setting_apply_confirm">設定を適用しますか</string>
+    <string name="setting_interrupt_confirm">設定を適用せずに終了しますか</string>
+    <string name="app_exit_confirm">アプリを終了しますか</string>
+    <string name="item_code">アイテムコード: %s</string>
+    <string name="process_status">処理状況</string>
+    <string name="clear_processed_tag_dialog">読み取りをクリアします。\nよろしいでしょうか</string>
+    <string name="scan_tag_list_title">スキャンタグ</string>
+
+    <!-- 入力-->
+    <string name="grade_hint">グレード入力</string>
+    <string name="grade">グレード</string>
+    <string name="thickness_hint">厚み入力</string>
+    <string name="thickness">厚み</string>
+    <string name="length_hint">長さ入力</string>
+    <string name="length">長さ</string>
+    <string name="rolling_machine_hint">巻き取り機情報入力</string>
+    <string name="rolling_machine">巻き取り機情報</string>
+    <string name="stock_hint">保管場所入力</string>
+    <string name="stock_area">保管場所</string>
+    <string name="weight_hint">重量入力</string>
+    <string name="weight">重量</string>
+    <string name="lot_no_hint">Lot No入力</string>
+    <string name="lot_no">Lot No</string>
+    <string name="tag_population_hint">タグの推定数入力</string>
+
+    <!-- 設定画面 -->
+    <string name="setting_basic_title">基本設定</string>
+    <string name="setting_label_min">最小</string>
+    <string name="setting_label_max">最高</string>
+
+    <string name="setting_rfid_advanced">詳細設定</string>
+    <string name="setting_radio_irradiation">Radio wave irradiation time</string>
+    <string name="setting_tag_population_string">タグ数</string>
+    <string name="setting_duty_cycle">Duty Cycle</string>
+    <string name="setting_rfid_session">セッション</string>
+    <string name="setting_rfid_flag">フラグの読み分け</string>
+    <string name="setting_rfid_flagA">フラグA（初期状態Aのタグを読み取り）</string>
+    <string name="setting_rfid_flagB">フラグB（初期状態Bのタグを読み取り）</string>
+    <string name="setting_rfid_flagAB">フラグA/B交互（両方のタグを読み取り）</string>
+    <string name="setting_rfid_channel">使用チャンネル</string>
+    <string name="setting_rfid_volume">音量</string>
+    <string name="setting_rfid_volume_quiet">静音</string>
+    <string name="setting_rfid_volume_low">小</string>
+    <string name="setting_rfid_volume_medium">中</string>
+    <string name="setting_rfid_volume_high">高</string>
+    <string name="setting_rfid_volume_mute">Mute</string>
+    <string name="setting_rfid_power">電波強度</string>
+
+    <!--    設定説明-->
+    <string name="setting_rfid_flag_des">フラグ状態を利用した読み分けができることにより、読み取りスピードの向上や読み取る必要のないRFIDタグを事前に指定することでアプリケーションの負荷を軽減し、処理スピードをあげることが可能</string>
+    <string name="setting_rfid_channel_des">使用するRFチャネル（周波数帯）を選択します。複数有効にすると干渉を回避できますが、速度が低下する場合があります。</string>
+    <string name="setting_rfid_tag_population_des">タグが読み取られる範囲内に存在するタグの推定数を設定します。値が大きいほど、同時に多くのタグを処理できますが、読み取り速度が低下する可能性があります。</string>
+    <string name="setting_rfid_session_des">セッションは、タグが読み取られたあとに「読み取られた状態（フラグA/B）」をどのくらい記憶しておくかを指定します。\n
+SESSION_S0：最も短い（読み取り後すぐにリセット）\n
+SESSION_S1：短い（数百ミリ秒～数秒）\n
+SESSION_S2：中程度（数秒程度保持）\n
+SESSION_S3：最も長い（電波が切れるまで保持）\n
+セッション番号が大きいほど、タグは「読み取られた」状態を長く覚えており、重複読み取りを防止できます。</string>
+
+    <!-- バージョン情報画面 -->
+    <string name="version_verinfo">バージョン %s</string>
+    <string name="version_app_name">副資材管理アプリ</string>
+    <string name="version_copyright">©株式会社東北サポートシステムズ</string>
+    <string name="version_device_title">◆ 端末情報</string>
+    <string name="version_device_name">端末名</string>
+    <string name="version_device_android">Androidバージョン</string>
+    <string name="version_device_id">端末ID</string>
+    <string name="version_rfid_title">◆リーダー情報</string>
+    <string name="version_rfid_name">リーダー名</string>
+    <string name="version_rfid_mac">MACアドレス</string>
+    <string name="version_rfid">ファームウェアバージョン</string>
+    <string name="version_auth_title">◆Upgrade</string>
+    <string name="version_company_title">開発元</string>
+    <string name="version_company_name">東北サポートシステムズ</string>
+    <string name="version_division_name">ストラテジックビジネス本部 ソリューション営業事業部</string>
+    <string name="version_company_url">https://rfid.tss21.co.jp/</string>
+    <string name="version_read_barcode_message">Read authentication barcode</string>
+    <string name="version_license_info">ライセンス情報</string>
+    <string name="version_lib_title">使用ライブラリー</string>
+</resources>

@@ -1,0 +1,285 @@
+package com.example.sol_denka_stockmanagement.screen.csv
+
+import android.os.Build
+import androidx.annotation.RequiresApi
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuAnchorType
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.sol_denka_stockmanagement.R
+import com.example.sol_denka_stockmanagement.constant.CsvType
+import com.example.sol_denka_stockmanagement.navigation.Screen
+import com.example.sol_denka_stockmanagement.constant.SelectTitle
+import com.example.sol_denka_stockmanagement.model.CsvFileInfoModel
+import com.example.sol_denka_stockmanagement.screen.layout.Layout
+import com.example.sol_denka_stockmanagement.share.AppDialog
+import com.example.sol_denka_stockmanagement.share.ButtonContainer
+import com.example.sol_denka_stockmanagement.share.InputContainer
+import com.example.sol_denka_stockmanagement.share.InputFieldContainer
+import com.example.sol_denka_stockmanagement.state.GeneralState
+import com.example.sol_denka_stockmanagement.ui.theme.brightGreen
+import com.example.sol_denka_stockmanagement.ui.theme.skyBlue
+import com.example.sol_denka_stockmanagement.viewmodel.AppViewModel
+import com.example.sol_denka_stockmanagement.screen.csv.components.SingleCsvFile
+import com.example.sol_denka_stockmanagement.screen.csv.CsvViewModel
+import com.example.sol_denka_stockmanagement.screen.setting.sub_screen.reader_setting.ReaderSettingViewModel
+import kotlinx.coroutines.launch
+
+@RequiresApi(Build.VERSION_CODES.TIRAMISU)
+@Composable
+fun CsvImportScreen(
+    appViewModel: AppViewModel,
+    readerSettingViewModel: ReaderSettingViewModel,
+    onNavigate: (Screen) -> Unit
+) {
+    val csvViewModel = hiltViewModel<CsvViewModel>()
+    val context = LocalContext.current
+    val csvState by csvViewModel.csvState.collectAsStateWithLifecycle()
+    val scope = rememberCoroutineScope()
+    val generalState by appViewModel.generalState.collectAsStateWithLifecycle()
+    val csvFiles by csvViewModel.csvFiles.collectAsStateWithLifecycle()
+    val isImporting by csvViewModel.isImporting.collectAsStateWithLifecycle()
+    val importProgress by csvViewModel.importProgress.collectAsStateWithLifecycle()
+    val showProcessResultDialog by csvViewModel.showProcessResultDialog.collectAsStateWithLifecycle()
+    val processResultMessage by csvViewModel.processResultMessage.collectAsStateWithLifecycle()
+
+    LaunchedEffect(csvState.csvType) {
+        when (csvState.csvType) {
+            in listOf(
+                CsvType.MaterialMaster.displayName,
+                CsvType.LedgerMaster.displayName,
+                CsvType.StorageAreaMaster.displayName,
+            ) -> {
+                csvViewModel.fetchCsvFiles(context)
+                csvViewModel.toggleProgressVisibility(false)
+            }
+
+            else -> csvViewModel.clearCsvList()
+        }
+    }
+
+    if (isImporting) {
+        AppDialog{
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    text = if (importProgress < 1f) "CSVファイル取り込み中" else "CSVファイル取り込みに成功しました",
+                    textAlign = TextAlign.Center,
+                    color = if (importProgress < 1f) Color.Black else brightGreen
+                )
+                Spacer(Modifier.height(12.dp))
+                LinearProgressIndicator(
+                    progress = {
+                        importProgress
+                    },
+                    modifier = Modifier
+                        .height(6.dp),
+                )
+                Text("${(importProgress * 100).toInt()}%")
+            }
+        }
+    }
+
+    if (showProcessResultDialog) {
+        AppDialog{
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    text = processResultMessage ?: "",
+                    textAlign = TextAlign.Center,
+                    color = Color.Red
+                )
+                Spacer(Modifier.height(12.dp))
+                ButtonContainer(
+                    buttonText = stringResource(R.string.close),
+                    onClick = {
+                        csvViewModel.dismissProcessResultDialog()
+                    }
+                )
+            }
+        }
+    }
+
+    DisposableEffect(Unit) {
+        onDispose {
+            csvViewModel.resetState()
+        }
+    }
+
+    Layout(
+        topBarText = "${Screen.fromRouteId(Screen.CsvImport.routeId)?.displayName}",
+        topBarIcon = Icons.AutoMirrored.Filled.ArrowBack,
+        onNavigate = onNavigate,
+        appViewModel = appViewModel,
+        readerSettingViewModel = readerSettingViewModel,
+        currentScreenNameId = Screen.CsvImport.routeId,
+        prevScreenNameId = Screen.CsvImport.routeId,
+        hasBottomBar = true,
+        bottomButton = {
+            ButtonContainer(
+                modifier = Modifier.shadow(
+                    elevation = 13.dp, clip = true, ambientColor = Color.Gray.copy(alpha = 0.5f),
+                    spotColor = Color.DarkGray.copy(alpha = 0.7f)
+                ),
+                shape = RoundedCornerShape(10.dp),
+                buttonTextSize = 20,
+                buttonText = stringResource(R.string.import_file),
+                canClick = csvState.csvType.isNotEmpty(),
+                onClick = {
+                    scope.launch {
+                        csvViewModel.downloadCsvFromSftp(context)
+                    }
+                },
+            )
+        },
+        onBackArrowClick = {
+            onNavigate(Screen.Home)
+        }) { paddingValues ->
+        CsvImportScreenContent(
+            modifier = Modifier.padding(paddingValues),
+            csvViewModel = csvViewModel,
+            csvState = csvState,
+            generalState = generalState,
+            appViewModel = appViewModel,
+            csvFiles = csvFiles
+        )
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun CsvImportScreenContent(
+    modifier: Modifier,
+    csvViewModel: CsvViewModel,
+    csvState: CsvState,
+    csvFiles: List<CsvFileInfoModel>,
+    generalState: GeneralState,
+    appViewModel: AppViewModel
+) {
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+            .imePadding()
+    ) {
+        Column(
+            modifier = Modifier
+                .padding(16.dp)
+        ) {
+            InputContainer(
+                title = "CSVファイルの種類選択",
+                isRequired = true,
+                children = {
+                    ExposedDropdownMenuBox(
+                        expanded = csvState.csvTypeExpanded,
+                        onExpandedChange = { csvViewModel.toggleCsvTypeExpanded() }) {
+                        InputFieldContainer(
+                            modifier = Modifier
+                                .menuAnchor(
+                                    type = ExposedDropdownMenuAnchorType.PrimaryNotEditable,
+                                    enabled = true
+                                )
+                                .fillMaxWidth(),
+                            value = if (csvState.csvType == SelectTitle.SelectCsvType.displayName) "" else csvState.csvType,
+                            hintText = SelectTitle.SelectCsvType.displayName,
+                            isNumeric = false,
+                            shape = RoundedCornerShape(13.dp),
+                            onChange = { csvViewModel.updateState { copy(csvType = it) } },
+                            readOnly = true,
+                            isDropDown = true,
+                            enable = true,
+                        )
+                        ExposedDropdownMenu(
+                            expanded = csvState.csvTypeExpanded,
+                            onDismissRequest = { csvViewModel.toggleCsvTypeExpanded() }
+                        ) {
+                            listOf(
+                                SelectTitle.SelectCsvType.displayName,
+                                CsvType.MaterialMaster.displayName,
+                                CsvType.LedgerMaster.displayName,
+                                CsvType.StorageAreaMaster.displayName
+                            ).forEach { csvType ->
+                                DropdownMenuItem(
+                                    text = { Text(text = csvType) },
+                                    onClick = {
+                                        csvViewModel.updateState {
+                                            copy(
+                                                csvType = if (csvType == SelectTitle.SelectCsvType.displayName) "" else csvType
+                                            )
+                                        }
+                                        csvViewModel.toggleCsvTypeExpanded()
+                                    }
+                                )
+                            }
+                        }
+                    }
+                }
+            )
+            Spacer(modifier = Modifier.height(10.dp))
+            HorizontalDivider()
+            Spacer(modifier = Modifier.height(10.dp))
+            LazyColumn(
+                modifier = Modifier.fillMaxWidth(),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                item {
+                    if (csvState.csvType == "") {
+                        if (csvFiles.isEmpty()) {
+                            Text(text = "CSVファイルが見つかりません")
+                        }
+                    } else {
+                        csvFiles.forEachIndexed { index, file ->
+                            SingleCsvFile(
+                                csvFileName = file.fileName,
+                                csvFileSize = file.fileSize,
+                                index = index,
+                                modifier = Modifier.background(
+                                    shape = RoundedCornerShape(10.dp),
+                                    color = if (index % 2 == 0) skyBlue.copy(alpha = 0.2f) else Color.Unspecified
+                                )
+                            )
+                            Spacer(modifier = Modifier.height(10.dp))
+                            HorizontalDivider()
+                            Spacer(modifier = Modifier.height(10.dp))
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

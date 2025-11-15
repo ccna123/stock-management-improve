@@ -1,0 +1,5 @@
+{
+  "host": "<PCのIPアドレス>",
+  "port": <SSHポート番号>,
+  "username": "<SSHユーザー名>",
+}
