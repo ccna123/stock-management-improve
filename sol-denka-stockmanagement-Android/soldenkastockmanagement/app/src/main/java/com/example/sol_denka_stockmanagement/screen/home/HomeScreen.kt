@@ -137,7 +137,7 @@ fun HomeScreenContent(
     val menuItems = listOf(
         MenuModel(screen = Screen.Receiving, icon = R.drawable.receiving),
         MenuModel(screen = Screen.Shipping, icon = R.drawable.shipping),
-        MenuModel(screen = Screen.StorageAreaChangeScan, icon = R.drawable.warehouse),
+        MenuModel(screen = Screen.StorageAreaChange, icon = R.drawable.warehouse),
         MenuModel(screen = Screen.Inventory, icon = R.drawable.inventory),
     )
     LazyColumn(
@@ -161,8 +161,8 @@ fun HomeScreenContent(
                         ) {
                             when (menu.screen) {
                                 Screen.Receiving -> onNavigate(Screen.ReceivingScan)
-                                Screen.Shipping -> onNavigate(Screen.ShippingScan)
-                                Screen.StorageAreaChangeScan -> onNavigate(Screen.StorageAreaChangeScan)
+                                Screen.Shipping -> onNavigate(Screen.Scan(Screen.Shipping.routeId))
+                                Screen.StorageAreaChange -> onNavigate(Screen.Scan(Screen.StorageAreaChange.routeId))
                                 Screen.Inventory -> onNavigate(Screen.Inventory)
                                 else -> error("No route")
                             }

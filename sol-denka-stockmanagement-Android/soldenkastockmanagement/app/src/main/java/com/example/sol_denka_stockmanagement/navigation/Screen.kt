@@ -20,14 +20,13 @@ sealed class Screen(
     data object LicenseInfo : Screen("license_info", "ライセンス情報")
     data object ReaderConnect : Screen("reader_connect", "リーダー接続")
     data object ReceivingScan : Screen("receiving_scan", "入庫")
-    data object ShippingScan : Screen("shipping_scan", "出庫")
     data class SearchTagsScreen(val preScreen: String) : Screen("search", "探索")
     data object CsvExport : Screen("csv_export", "CSVファイル出力")
     data object CsvImport : Screen("csv_import", "CSVファイル取り込み")
     data object InventoryComplete : Screen("inventory_complete", "棚卸 (完了)")
-    data object StorageAreaChangeScan : Screen("storage_area_change_scan", "保管場所変更")
     data object StorageAreaChange : Screen("storage_area_change", "保管場所変更")
     data object Detail : Screen("detail", "詳細情報")
+    data class Scan(val preScreen: String) : Screen("scan", "")
 
     companion object {
         /** Get destination by routeId */
@@ -45,8 +44,6 @@ sealed class Screen(
             InventoryComplete.routeId -> InventoryComplete
             Detail.routeId -> Detail
             ReceivingScan.routeId -> ReceivingScan
-            ShippingScan.routeId -> ShippingScan
-            StorageAreaChangeScan.routeId -> StorageAreaChangeScan
             StorageAreaChange.routeId -> StorageAreaChange
             else -> null
         }

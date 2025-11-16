@@ -82,9 +82,6 @@ fun SearchTagsScreen(
     val isPerformingInventory by scanViewModel.isPerformingInventory.collectAsStateWithLifecycle()
     val scope = rememberCoroutineScope()
 
-    Log.e("TSS", "prevScreenNameId: $prevScreenNameId", )
-
-
     LaunchedEffect(Unit) {
         scanViewModel.setEnableScan(enabled = true, screen = Screen.SearchTagsScreen(""))
         appViewModel.onGeneralIntent(ShareIntent.ClearFoundTag)

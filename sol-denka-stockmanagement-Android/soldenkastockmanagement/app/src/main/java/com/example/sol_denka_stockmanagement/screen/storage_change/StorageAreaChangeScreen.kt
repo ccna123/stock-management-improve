@@ -85,7 +85,7 @@ fun StorageAreaChangeScreen(
             )
         },
         onBackArrowClick = {
-            onNavigate(Screen.StorageAreaChangeScan)
+            onNavigate(Screen.Scan(Screen.StorageAreaChange.routeId))
         }) { paddingValues ->
         LazyColumn(
             modifier = Modifier

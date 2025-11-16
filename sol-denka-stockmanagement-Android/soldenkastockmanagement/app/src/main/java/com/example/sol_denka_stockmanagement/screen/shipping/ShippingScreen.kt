@@ -85,7 +85,7 @@ fun ShippingScreen(
             )
         },
         onBackArrowClick = {
-            onNavigate(Screen.ShippingScan)
+            onNavigate(Screen.Scan(Screen.Shipping.routeId))
         }) { paddingValues ->
         LazyColumn(
             modifier = Modifier

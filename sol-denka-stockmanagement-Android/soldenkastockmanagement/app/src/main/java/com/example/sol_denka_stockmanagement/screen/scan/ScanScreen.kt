@@ -1,4 +1,4 @@
-package com.example.sol_denka_stockmanagement.screen.scan.shipping
+package com.example.sol_denka_stockmanagement.screen.scan
 
 import android.os.Build
 import androidx.annotation.RequiresApi
@@ -46,9 +46,10 @@ import kotlinx.coroutines.launch
 
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @Composable
-fun ShippingScanScreen(
+fun ScanScreen(
     scanViewModel: ScanViewModel,
     appViewModel: AppViewModel,
+    prevScreenNameId: String,
     onNavigate: (Screen) -> Unit
 ) {
     val scannedTag3 by scanViewModel.scannedTag3.collectAsStateWithLifecycle()
@@ -57,14 +58,14 @@ fun ShippingScanScreen(
     val generalState = appViewModel.generalState.value
 
     LaunchedEffect(Unit) {
-        scanViewModel.setEnableScan(enabled = true, screen = Screen.ShippingScan)
+        scanViewModel.setEnableScan(enabled = true, screen = Screen.Scan(""))
         appViewModel.onGeneralIntent(ShareIntent.ClearTagSelectionList)
     }
 
     Layout(
-        topBarText = Screen.ShippingScan.displayName,
+        topBarText = Screen.fromRouteId(prevScreenNameId)?.displayName ?: "",
         topBarIcon = Icons.AutoMirrored.Filled.ArrowBack,
-        currentScreenNameId = Screen.ShippingScan.routeId,
+        currentScreenNameId = Screen.Scan("").routeId,
         onNavigate = onNavigate,
         hasBottomBar = true,
         appViewModel = appViewModel,
@@ -99,7 +100,11 @@ fun ShippingScanScreen(
                     }
                 )
                 ButtonContainer(
-                    buttonText = stringResource(R.string.register_info),
+                    buttonText = when(prevScreenNameId){
+                        Screen.Shipping.routeId -> stringResource(R.string.register_info)
+                        Screen.StorageAreaChange.routeId -> stringResource(R.string.storage_area_change)
+                        else -> ""
+                    },
                     shape = RoundedCornerShape(10.dp),
                     modifier = Modifier.shadow(
                         elevation = 13.dp,
@@ -117,7 +122,11 @@ fun ShippingScanScreen(
                         )
                     },
                     onClick = {
-                        onNavigate(Screen.Shipping)
+                        onNavigate(when(prevScreenNameId){
+                            Screen.Shipping.routeId -> Screen.Shipping
+                            Screen.StorageAreaChange.routeId -> Screen.StorageAreaChange
+                            else -> Screen.Home
+                        })
                     }
                 )
             }

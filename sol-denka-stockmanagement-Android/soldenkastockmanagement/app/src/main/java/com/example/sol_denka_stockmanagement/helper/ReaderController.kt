@@ -15,6 +15,7 @@ import com.example.sol_denka_stockmanagement.reader.FakeChannel
 import com.example.sol_denka_stockmanagement.reader.FakeInventoryState
 import com.example.sol_denka_stockmanagement.reader.FakeReader
 import com.example.sol_denka_stockmanagement.reader.FakeSession
+import com.example.sol_denka_stockmanagement.screen.scan.ScanScreen
 import com.example.sol_denka_stockmanagement.share.DeviceEvent
 import com.example.sol_denka_stockmanagement.state.ReaderSettingState
 import kotlinx.coroutines.CoroutineScope
@@ -206,7 +207,7 @@ class ReaderController @Inject constructor(
                     Screen.ReceivingScan.routeId -> {
                         _scannedTags2.value = epc.rfidNo
                     }
-                    in listOf(Screen.ShippingScan.routeId,Screen.StorageAreaChangeScan.routeId) -> {
+                    Screen.Scan("").routeId -> {
                         _scannedTags3.update { it + epc.rfidNo }
                     }
                     else -> {
