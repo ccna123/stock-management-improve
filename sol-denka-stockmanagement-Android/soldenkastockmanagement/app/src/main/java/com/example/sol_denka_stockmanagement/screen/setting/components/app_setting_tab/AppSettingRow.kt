@@ -4,6 +4,7 @@ import android.os.Build
 import android.widget.Space
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -43,27 +44,13 @@ import java.nio.file.WatchEvent
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AppSettingRow(
-    isChecked: Boolean? = false,
-    topText: String,
-    bottomText: String,
-    content: @Composable () -> Unit
+    content: @Composable () -> Unit,
 ) {
-    Row(
+    Box(
         modifier = Modifier
             .fillMaxWidth()
             .padding(8.dp),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
     ) {
-        Column {
-            Text(text = topText)
-            Text(
-                color = Color.LightGray,
-                fontSize = 14.sp,
-                text = bottomText
-            )
-        }
-        Spacer(modifier = Modifier.width(10.dp))
         content()
     }
 }

@@ -287,8 +287,6 @@ fun SettingScreenContent(
                 Tab.Right -> {
                     AppSettingScreen(
                         appSettingViewModel = appSettingViewModel,
-                        onAutoConnectCheck = {
-                        },
                         appViewModel = appViewModel,
                     )
                 }

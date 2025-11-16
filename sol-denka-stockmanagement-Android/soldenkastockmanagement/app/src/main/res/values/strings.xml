@@ -66,6 +66,9 @@
     <string name="clear_processed_tag_dialog">読み取りをクリアします。\nよろしいでしょうか</string>
     <string name="scan_tag_list_title">スキャンタグ</string>
     <string name="network_connect_failed">ネットワークが接続されていません。</string>
+    <string name="connect_state">接続状態</string>
+    <string name="ok_connect">接続</string>
+    <string name="no_connect">未接続</string>
 
     <!-- 入力-->
     <string name="grade_hint">グレード入力</string>

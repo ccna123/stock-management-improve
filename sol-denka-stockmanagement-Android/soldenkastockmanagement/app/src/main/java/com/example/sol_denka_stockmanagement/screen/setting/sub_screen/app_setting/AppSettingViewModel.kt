@@ -2,16 +2,24 @@ package com.example.sol_denka_stockmanagement.screen.setting.sub_screen.app_sett
 
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.example.sol_denka_stockmanagement.helper.NetworkConnectionObserver
+import com.example.sol_denka_stockmanagement.helper.UsbEvent
+import com.example.sol_denka_stockmanagement.helper.UsbState
 import com.example.sol_denka_stockmanagement.intent.AppSettingIntent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class AppSettingViewModel @Inject constructor(
+    private val connectionObserver: NetworkConnectionObserver
 //    private val fileSettingStorage: JsonFileSettingStorage<AppSettingModel>,
 //    @ApplicationContext private val context: Context,
 //    private val helper: AppSettingHelper
@@ -21,6 +29,24 @@ class AppSettingViewModel @Inject constructor(
     val appSettingState: StateFlow<AppSettingState> = _appSettingState.asStateFlow()
 //
     val initialAppSettingsState = mutableStateOf(_appSettingState.value)
+
+    private val _usbState = MutableStateFlow(UsbState(connected = false, mtp = false))
+    val usbState = _usbState.asStateFlow()
+
+
+    val isNetworkConnected = connectionObserver.isConnected.stateIn(
+        viewModelScope,
+        SharingStarted.WhileSubscribed(5000),
+        false // Compute initial value synchronously
+    )
+
+    init {
+        viewModelScope.launch {
+            UsbEvent.usbEvents.collect { usbState ->
+                _usbState.value = usbState
+            }
+        }
+    }
 //
 //    private val formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME.withZone(ZoneId.of("UTC"))
 //
