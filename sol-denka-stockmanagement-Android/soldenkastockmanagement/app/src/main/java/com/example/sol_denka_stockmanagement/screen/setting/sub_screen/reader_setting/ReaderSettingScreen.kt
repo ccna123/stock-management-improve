@@ -422,7 +422,7 @@ fun ReaderSettingScreen(
 @Composable
 fun ExpandableSettingSection(
     title: String,
-    description: String,
+    description: String = "",
     expanded: Boolean,
     value: String,
     onExpandToggle: () -> Unit,
@@ -450,8 +450,10 @@ fun ExpandableSettingSection(
         }
         AnimatedVisibility(visible = expanded) {
             Column(modifier = Modifier.padding(top = 8.dp)) {
-                Text(description, fontSize = 13.sp, color = Color.Gray)
-                Spacer(Modifier.height(10.dp))
+                if (description.isNotEmpty()){
+                    Text(description, fontSize = 13.sp, color = Color.Gray)
+                    Spacer(Modifier.height(10.dp))
+                }
                 content()
             }
         }

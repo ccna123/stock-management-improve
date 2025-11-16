@@ -2,6 +2,7 @@ package com.example.sol_denka_stockmanagement.screen.setting.sub_screen.app_sett
 
 import android.os.Build
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -23,9 +24,13 @@ import androidx.compose.material3.ExposedDropdownMenuAnchorType
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -41,12 +46,17 @@ import com.example.sol_denka_stockmanagement.constant.FileTransferMethod
 import com.example.sol_denka_stockmanagement.constant.SelectTitle
 import com.example.sol_denka_stockmanagement.intent.ExpandIntent
 import com.example.sol_denka_stockmanagement.intent.InputIntent
+import com.example.sol_denka_stockmanagement.intent.ReaderSettingIntent
+import com.example.sol_denka_stockmanagement.intent.ShareIntent
+import com.example.sol_denka_stockmanagement.reader.FakeInventoryState
 import com.example.sol_denka_stockmanagement.screen.setting.components.app_setting_tab.AppSettingRow
 import com.example.sol_denka_stockmanagement.share.ButtonType
 import com.example.sol_denka_stockmanagement.screen.setting.sub_screen.app_setting.AppSettingViewModel
 import com.example.sol_denka_stockmanagement.screen.setting.sub_screen.app_setting.component.ConnectionStatusRow
+import com.example.sol_denka_stockmanagement.screen.setting.sub_screen.reader_setting.ExpandableSettingSection
 import com.example.sol_denka_stockmanagement.share.InputFieldContainer
 import com.example.sol_denka_stockmanagement.ui.theme.brightGreen
+import com.example.sol_denka_stockmanagement.ui.theme.skyBlue
 import com.example.sol_denka_stockmanagement.viewmodel.AppViewModel
 
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
@@ -60,6 +70,7 @@ fun AppSettingScreen(
     val isNetworkConnected by appSettingViewModel.isNetworkConnected.collectAsStateWithLifecycle()
     val usbState by appSettingViewModel.usbState.collectAsStateWithLifecycle()
     val fileTransferMethod = appViewModel.inputState.value.fileTransferMethod
+    var isFileTransferMethodExpanded by remember { mutableStateOf(false) }
     Column(
         modifier = Modifier
             .padding(16.dp)
@@ -70,73 +81,55 @@ fun AppSettingScreen(
                 Column(
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(10.dp)
-                    ) {
-                        Column {
-                            Text(text = stringResource(R.string.setting_file_transfer_method))
-                            Text(
-                                color = Color.LightGray,
-                                fontSize = 13.sp,
-                                text = stringResource(R.string.setting_file_transfer_method_desc)
-                            )
-                        }
-                        ExposedDropdownMenuBox(
-                            expanded = appViewModel.expandState.value.fileTransferMethodExpanded,
-                            onExpandedChange = { appViewModel.onExpandIntent(ExpandIntent.ToggleFileTransferMethodExpanded) }) {
-                            InputFieldContainer(
-                                modifier = Modifier
-                                    .menuAnchor(
-                                        type = ExposedDropdownMenuAnchorType.PrimaryNotEditable,
-                                        enabled = true
-                                    )
-                                    .fillMaxWidth(),
-                                value = if (appViewModel.inputState.value.fileTransferMethod == SelectTitle.SelectHandlingMethod.displayName) "" else appViewModel.inputState.value.fileTransferMethod,
-                                isNumeric = false,
-                                hintText = SelectTitle.SelectHandlingMethod.displayName,
-                                shape = RoundedCornerShape(13.dp),
-                                onChange = { newValue ->
-                                    appViewModel.onInputIntent(
-                                        InputIntent.ChangeFileTransferMethod(
-                                            newValue
-                                        )
-                                    )
-                                },
-                                readOnly = true,
-                                isDropDown = true,
-                                enable = true,
-                                onClick = {
-                                    appViewModel.onExpandIntent(ExpandIntent.ToggleFileTransferMethodExpanded)
-                                },
-                            )
-                            ExposedDropdownMenu(
-                                expanded = appViewModel.expandState.value.fileTransferMethodExpanded,
-                                onDismissRequest = { appViewModel.onExpandIntent(ExpandIntent.ToggleFileTransferMethodExpanded) }
-                            ) {
+                    ExpandableSettingSection(
+                        title = stringResource(R.string.setting_file_transfer_method),
+                        value = appViewModel.inputState.value.fileTransferMethod,
+                        expanded = isFileTransferMethodExpanded,
+                        onExpandToggle = { isFileTransferMethodExpanded = !isFileTransferMethodExpanded },
+                        content = {
+                            Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
                                 listOf(
-                                    FileTransferMethod.SELECTION_TITLE.displayName,
-                                    FileTransferMethod.USB.displayName,
                                     FileTransferMethod.WIFI.displayName,
+                                    FileTransferMethod.USB.displayName,
                                 ).forEach { method ->
-                                    DropdownMenuItem(
-                                        text = { Text(text = method) },
-                                        onClick = {
-                                            appViewModel.apply {
-                                                onInputIntent(
+                                    Row(
+                                        modifier = Modifier
+                                            .background(
+                                                color = if (appViewModel.inputState.value.fileTransferMethod == method) skyBlue.copy(
+                                                    alpha = 0.4f
+                                                ) else Color.Unspecified, shape = RoundedCornerShape(10.dp)
+                                            )
+                                            .fillMaxWidth(),
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.spacedBy(10.dp)
+                                    ) {
+                                        RadioButton(
+                                            selected = appViewModel.inputState.value.fileTransferMethod == method,
+                                            onClick = {
+                                                appViewModel.onInputIntent(
                                                     InputIntent.ChangeFileTransferMethod(
-                                                        if (method == FileTransferMethod.SELECTION_TITLE.displayName) "" else method
+                                                        method
                                                     )
                                                 )
-                                                onExpandIntent(ExpandIntent.ToggleFileTransferMethodExpanded)
+                                            },
+                                            enabled = true,
+                                        )
+                                        DropdownMenuItem(
+                                            text = { Text(method) },
+                                            onClick = {
+                                                appViewModel.onInputIntent(
+                                                    InputIntent.ChangeFileTransferMethod(
+                                                        method
+                                                    )
+                                                )
                                             }
-                                        }
-                                    )
+                                        )
+                                    }
+
                                 }
                             }
                         }
-                    }
+                    )
                     Spacer(modifier = Modifier.height(10.dp))
                     when(fileTransferMethod){
                         FileTransferMethod.USB.displayName -> ConnectionStatusRow(
@@ -159,7 +152,6 @@ fun AppSettingScreen(
                 }
             },
         )
-        Spacer(modifier = Modifier.height(10.dp))
         HorizontalDivider()
     }
 }
