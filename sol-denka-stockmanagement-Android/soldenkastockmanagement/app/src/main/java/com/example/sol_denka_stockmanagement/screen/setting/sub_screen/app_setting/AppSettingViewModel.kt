@@ -1,5 +1,9 @@
 package com.example.sol_denka_stockmanagement.screen.setting.sub_screen.app_setting
 
+import android.app.Application
+import android.content.Context
+import android.hardware.usb.UsbManager
+import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -7,7 +11,9 @@ import com.example.sol_denka_stockmanagement.helper.NetworkConnectionObserver
 import com.example.sol_denka_stockmanagement.helper.UsbEvent
 import com.example.sol_denka_stockmanagement.helper.UsbState
 import com.example.sol_denka_stockmanagement.intent.AppSettingIntent
+import dagger.hilt.android.internal.Contexts.getApplication
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -19,9 +25,9 @@ import javax.inject.Inject
 
 @HiltViewModel
 class AppSettingViewModel @Inject constructor(
-    private val connectionObserver: NetworkConnectionObserver
+    private val connectionObserver: NetworkConnectionObserver,
 //    private val fileSettingStorage: JsonFileSettingStorage<AppSettingModel>,
-//    @ApplicationContext private val context: Context,
+    @ApplicationContext private val context: Context,
 //    private val helper: AppSettingHelper
 ) : ViewModel() {
 
@@ -46,6 +52,11 @@ class AppSettingViewModel @Inject constructor(
                 _usbState.value = usbState
             }
         }
+
+        viewModelScope.launch {
+            val initialUsbState = detectInitialUsbState()
+            _usbState.value = initialUsbState
+        }
     }
 //
 //    private val formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME.withZone(ZoneId.of("UTC"))
@@ -59,6 +70,25 @@ class AppSettingViewModel @Inject constructor(
             is AppSettingIntent.ChangeFileTransferMethod -> _appSettingState.update { it.copy(fileTransferMethod = intent.method) }
         }
     }
+
+    private fun detectInitialUsbState(): UsbState {
+        try {
+            val process = Runtime.getRuntime().exec("getprop sys.usb.state")
+            val reader = process.inputStream.bufferedReader()
+            val state = reader.readLine()?.trim() ?: ""
+
+            val connected = state != "none" && state.isNotEmpty()
+            val isMtp = state.contains("mtp")
+
+            return UsbState(
+                connected = connected,
+                mtp = isMtp
+            )
+        } catch (e: Exception) {
+            return UsbState(false, false)
+        }
+    }
+
 //
 //    fun updateAppSettingState(transform: AppSettingState.() -> AppSettingState) {
 //        _appSettingState.value = _appSettingState.value.transform()
