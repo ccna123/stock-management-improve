@@ -32,10 +32,10 @@ class CsvHelper @Inject constructor(
         private const val EXPORT = "Export"
         private const val IMPORT = "Import"
 
-        private const val INVENTORY_RESULT = "InventoryResultDao"
+        private const val INVENTORY_RESULT = "InventoryResult"
         private const val STOCK_EVENT = "StockEvent"
 
-        private const val MATERIAL_MASTER = "MaterialMasterEntity"
+        private const val MATERIAL_MASTER = "MaterialMaster"
         private const val LEDGER_MASTER = "LedgerMaster"
         private const val STORAGE_AREA_MASTER = "StorageAreaMaster"
         private const val STOCK_MASTER = "StockMaster"
@@ -109,7 +109,7 @@ class CsvHelper @Inject constructor(
             )
 
             CsvType.InventoryResult.displayName -> Pair(
-                "Export/InventoryResultDao",
+                "Export/InventoryResult",
                 "$EXPORT/$INVENTORY_RESULT"
             )
 
@@ -355,5 +355,80 @@ class CsvHelper @Inject constructor(
             }
         }
         return Pair(privateKeyFile, knownHosts)
+    }
+
+    suspend fun saveCsv(
+        context: Context,
+        csvType: String,
+        fileName: String,
+        csvContent: String,
+        onProgress: (Float) -> Unit
+    ): ProcessResult = withContext(Dispatchers.IO) {
+
+        try {
+            val resolver = context.contentResolver
+            val externalUri = MediaStore.Files.getContentUri("external")
+
+            val (_, localFolder) = mapCsvTypeToFolders(csvType)
+                ?: return@withContext ProcessResult.Failure(
+                    statusCode = StatusCode.FAILED,
+                    message = "保存先フォルダーが見つかりません"
+                )
+
+            val relativePath =
+                Environment.DIRECTORY_DOWNLOADS + "/$ROOT_FOLDER/$localFolder"
+
+            // delete existing file if same name
+            resolver.delete(
+                externalUri,
+                "${MediaStore.MediaColumns.RELATIVE_PATH}=? AND ${MediaStore.MediaColumns.DISPLAY_NAME}=?",
+                arrayOf(relativePath, fileName)
+            )
+
+            val values = ContentValues().apply {
+                put(MediaStore.MediaColumns.DISPLAY_NAME, fileName)
+                put(MediaStore.MediaColumns.MIME_TYPE, "text/csv")
+                put(MediaStore.MediaColumns.RELATIVE_PATH, relativePath)
+            }
+
+            val uri = resolver.insert(externalUri, values)
+                ?: return@withContext ProcessResult.Failure(
+                    statusCode = StatusCode.FAILED,
+                    message = "CSVファイルの作成に失敗しました"
+                )
+
+            val bytes = csvContent.toByteArray()
+            val totalBytes = bytes.size.takeIf { it > 0 } ?: 1
+            var written = 0
+
+            resolver.openOutputStream(uri)?.use { output ->
+                val bufferSize = 4096
+                var offset = 0
+
+                while (offset < bytes.size) {
+                    val count = minOf(bufferSize, bytes.size - offset)
+                    output.write(bytes, offset, count)
+                    offset += count
+                    written += count
+
+                    val progress = (written.toFloat() / totalBytes)
+                        .coerceIn(0f, 1f)
+
+                    onProgress(progress)
+                }
+
+                output.flush()
+            }
+
+            Log.i("TSS", "✅ CSV saved with progress: $relativePath/$fileName")
+
+            onProgress(1f)
+
+            ProcessResult.Success(statusCode = StatusCode.OK)
+
+        } catch (e: Exception) {
+            Log.e("TSS", "❌ saveCsvToSharedStorageWithProgress: ${e.message}", e)
+            ProcessResult.Failure(statusCode = StatusCode.FAILED, message = e.message ?: "Unknown")
+        }
     }
 }
