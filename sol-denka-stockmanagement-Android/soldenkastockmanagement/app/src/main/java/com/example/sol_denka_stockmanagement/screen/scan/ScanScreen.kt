@@ -112,7 +112,7 @@ fun ScanScreen(
                         ambientColor = Color.Gray.copy(alpha = 0.5f),
                         spotColor = Color.DarkGray.copy(alpha = 0.7f)
                     ),
-                    canClick = scannedTag3.isNotEmpty(),
+                    canClick = scannedTag3.isNotEmpty() && generalState.selectedTags1.isNotEmpty(),
                     icon = {
                         Icon(
                             painter = painterResource(R.drawable.register),
