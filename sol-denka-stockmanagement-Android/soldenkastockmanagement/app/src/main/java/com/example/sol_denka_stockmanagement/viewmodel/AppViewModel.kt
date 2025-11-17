@@ -388,6 +388,8 @@ class AppViewModel @Inject constructor(
         _errorState.value = ErrorState()
         isSingleTagMode.value = false
         _generalState.value = GeneralState()
+        perTagExpanded.value = emptyMap()
+        perTagHandlingMethod.value = emptyMap()
     }
 
 }
