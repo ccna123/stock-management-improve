@@ -42,12 +42,14 @@ import com.example.sol_denka_stockmanagement.share.ButtonContainer
 import com.example.sol_denka_stockmanagement.share.InputFieldContainer
 import com.example.sol_denka_stockmanagement.ui.theme.paleSkyBlue
 import com.example.sol_denka_stockmanagement.viewmodel.AppViewModel
+import com.example.sol_denka_stockmanagement.viewmodel.ScanViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @Composable
 fun ShippingScreen(
     appViewModel: AppViewModel,
+    scanViewModel: ScanViewModel,
     onNavigate: (Screen) -> Unit
 ) {
 
@@ -61,6 +63,7 @@ fun ShippingScreen(
         topBarIcon = Icons.AutoMirrored.Filled.ArrowBack,
         onNavigate = onNavigate,
         appViewModel = appViewModel,
+        scanViewModel = scanViewModel,
         currentScreenNameId = Screen.Shipping.routeId,
         prevScreenNameId = Screen.Shipping.routeId, // for scan screen to navigate back,
         hasBottomBar = true,

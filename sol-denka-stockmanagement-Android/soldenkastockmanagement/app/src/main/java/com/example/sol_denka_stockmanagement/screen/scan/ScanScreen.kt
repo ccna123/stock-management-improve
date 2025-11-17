@@ -40,6 +40,7 @@ import com.example.sol_denka_stockmanagement.navigation.Screen
 import com.example.sol_denka_stockmanagement.screen.layout.Layout
 import com.example.sol_denka_stockmanagement.share.ButtonContainer
 import com.example.sol_denka_stockmanagement.ui.theme.brightAzure
+import com.example.sol_denka_stockmanagement.ui.theme.orange
 import com.example.sol_denka_stockmanagement.viewmodel.AppViewModel
 import com.example.sol_denka_stockmanagement.viewmodel.ScanViewModel
 import kotlinx.coroutines.launch
@@ -67,6 +68,7 @@ fun ScanScreen(
         topBarIcon = Icons.AutoMirrored.Filled.ArrowBack,
         currentScreenNameId = Screen.Scan("").routeId,
         onNavigate = onNavigate,
+        scanViewModel = scanViewModel,
         hasBottomBar = true,
         appViewModel = appViewModel,
         bottomButton = {
@@ -92,7 +94,7 @@ fun ScanScreen(
                             modifier = Modifier.size(20.dp)
                         )
                     },
-                    containerColor = if (isPerformingInventory) Color.Red else brightAzure,
+                    containerColor = if (isPerformingInventory) orange else brightAzure,
                     onClick = {
                         scope.launch {
                             if (isPerformingInventory) scanViewModel.stopInventory() else scanViewModel.startInventory()

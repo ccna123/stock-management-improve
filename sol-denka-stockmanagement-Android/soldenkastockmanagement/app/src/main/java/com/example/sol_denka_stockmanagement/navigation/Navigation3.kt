@@ -36,7 +36,7 @@ fun Navigation3(
     readerSettingViewModel: ReaderSettingViewModel,
     scanViewModel: ScanViewModel,
 ) {
-    val backStack = remember { mutableStateListOf<Screen>(Screen.Setting) }
+    val backStack = remember { mutableStateListOf<Screen>(Screen.Home) }
     NavDisplay(
         backStack = backStack,
         onBack = { backStack.removeLastOrNull() },
@@ -55,6 +55,7 @@ fun Navigation3(
             entry<Screen.Shipping> {
                 ShippingScreen(
                     appViewModel = appViewModel,
+                    scanViewModel = scanViewModel,
                     onNavigate = { dest ->
                         if (backStack.last() != dest) {
                             backStack.add(dest)

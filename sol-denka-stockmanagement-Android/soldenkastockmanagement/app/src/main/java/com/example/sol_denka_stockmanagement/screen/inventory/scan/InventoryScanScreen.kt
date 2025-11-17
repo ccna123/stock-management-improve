@@ -188,6 +188,7 @@ fun InventoryScanScreen(
         onNavigate = onNavigate,
         hasBottomBar = true,
         appViewModel = appViewModel,
+        scanViewModel = scanViewModel,
         readerSettingViewModel = readerSettingViewModel,
         topBarButton = {
             Row(
@@ -336,7 +337,7 @@ fun InventoryScanScreen(
                                 modifier = Modifier.size(20.dp)
                             )
                         },
-                        containerColor = if (isPerformingInventory) Color.Red else brightAzure,
+                        containerColor = if (isPerformingInventory) orange else brightAzure,
                         onClick = {
                             scope.launch {
                                 if (isPerformingInventory) scanViewModel.stopInventory() else scanViewModel.startInventory()
