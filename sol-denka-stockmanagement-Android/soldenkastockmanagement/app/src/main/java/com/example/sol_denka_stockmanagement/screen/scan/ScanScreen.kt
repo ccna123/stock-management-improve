@@ -35,6 +35,9 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.sol_denka_stockmanagement.R
 import com.example.sol_denka_stockmanagement.constant.MaterialSelectionItem
+import com.example.sol_denka_stockmanagement.constant.SelectTitle
+import com.example.sol_denka_stockmanagement.intent.ExpandIntent
+import com.example.sol_denka_stockmanagement.intent.InputIntent
 import com.example.sol_denka_stockmanagement.intent.ShareIntent
 import com.example.sol_denka_stockmanagement.navigation.Screen
 import com.example.sol_denka_stockmanagement.screen.layout.Layout
@@ -58,6 +61,8 @@ fun ScanScreen(
     val isPerformingInventory by scanViewModel.isPerformingInventory.collectAsStateWithLifecycle()
     val scope = rememberCoroutineScope()
     val generalState = appViewModel.generalState.value
+    val expandState = appViewModel.expandState.value
+    val inputState = appViewModel.inputState.value
 
     LaunchedEffect(Unit) {
         scanViewModel.setEnableScan(enabled = true, screen = Screen.Scan(""))
@@ -103,7 +108,7 @@ fun ScanScreen(
                     }
                 )
                 ButtonContainer(
-                    buttonText = when(prevScreenNameId){
+                    buttonText = when (prevScreenNameId) {
                         Screen.Shipping.routeId -> stringResource(R.string.register_info)
                         Screen.StorageAreaChange.routeId -> stringResource(R.string.storage_area_change)
                         else -> ""
@@ -125,11 +130,13 @@ fun ScanScreen(
                         )
                     },
                     onClick = {
-                        onNavigate(when(prevScreenNameId){
-                            Screen.Shipping.routeId -> Screen.Shipping
-                            Screen.StorageAreaChange.routeId -> Screen.StorageAreaChange
-                            else -> Screen.Home
-                        })
+                        onNavigate(
+                            when (prevScreenNameId) {
+                                Screen.Shipping.routeId -> Screen.Shipping
+                                Screen.StorageAreaChange.routeId -> Screen.StorageAreaChange
+                                else -> Screen.Home
+                            }
+                        )
                     }
                 )
             }
@@ -187,7 +194,27 @@ fun ScanScreen(
                                     totalTag = scannedTag3.size
                                 )
                             )
-                        }
+                        },
+                        isExpanded = expandState.handlingMethodExpanded,
+                        value = if (inputState.handlingMethod == SelectTitle.SelectHandlingMethod.displayName) "" else inputState.handlingMethod,
+                        onExpandedChange = {
+                            appViewModel.onExpandIntent(ExpandIntent.ToggleHandlingMethodExpanded)
+                        },
+                        onDismissRequest = { appViewModel.onExpandIntent(ExpandIntent.ToggleMissRollExpanded) },
+                        onValueChange = { newValue ->
+                            appViewModel.onInputIntent(
+                                InputIntent.ChangeHandlingMethod(
+                                    newValue
+                                )
+                            )
+                        },
+                        onClickInput = { appViewModel.onExpandIntent(ExpandIntent.ToggleHandlingMethodExpanded) },
+                        onClickDropDownMenuItem = { method ->
+                            appViewModel.apply {
+                                onInputIntent(InputIntent.ChangeHandlingMethod(if (method == SelectTitle.SelectHandlingMethod.displayName) "" else method))
+                                onExpandIntent(ExpandIntent.ToggleHandlingMethodExpanded)
+                            }
+                        },
                     )
 //                    Row(
 //                        modifier = Modifier
