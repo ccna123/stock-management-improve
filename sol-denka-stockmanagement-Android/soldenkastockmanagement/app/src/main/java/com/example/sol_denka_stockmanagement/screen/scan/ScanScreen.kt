@@ -38,6 +38,7 @@ import com.example.sol_denka_stockmanagement.constant.MaterialSelectionItem
 import com.example.sol_denka_stockmanagement.intent.ShareIntent
 import com.example.sol_denka_stockmanagement.navigation.Screen
 import com.example.sol_denka_stockmanagement.screen.layout.Layout
+import com.example.sol_denka_stockmanagement.screen.scan.components.ShippingSingleItem
 import com.example.sol_denka_stockmanagement.share.ButtonContainer
 import com.example.sol_denka_stockmanagement.ui.theme.brightAzure
 import com.example.sol_denka_stockmanagement.ui.theme.orange
@@ -168,40 +169,60 @@ fun ScanScreen(
             Spacer(modifier = Modifier.height(10.dp))
             LazyColumn {
                 items(scannedTag3.toList()) { tag ->
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clickable(
-                                onClick = {
-                                    appViewModel.onGeneralIntent(
-                                        ShareIntent.ToggleTagSelection1(
-                                            tag = tag,
-                                            totalTag = scannedTag3.size
-                                        )
-                                    )
-                                }
-                            ),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Column(
-                            modifier = Modifier.padding(5.dp)
-                        ) {
-                            Text(text = MaterialSelectionItem.MISS_ROLL.displayName)
-                            Text(text = tag)
-                        }
-                        Checkbox(
-                            checked = tag in generalState.selectedTags1,
-                            onCheckedChange = {
-                                appViewModel.onGeneralIntent(
-                                    ShareIntent.ToggleTagSelection1(
-                                        tag = tag,
-                                        totalTag = scannedTag3.size
-                                    )
+                    ShippingSingleItem(
+                        tag = tag,
+                        isChecked = tag in generalState.selectedTags1,
+                        onSelect = {
+                            appViewModel.onGeneralIntent(
+                                ShareIntent.ToggleTagSelection1(
+                                    tag = tag,
+                                    totalTag = scannedTag3.size
                                 )
-                            }
-                        )
-                    }
+                            )
+                        },
+                        onCheckedChange = {
+                            appViewModel.onGeneralIntent(
+                                ShareIntent.ToggleTagSelection1(
+                                    tag = tag,
+                                    totalTag = scannedTag3.size
+                                )
+                            )
+                        }
+                    )
+//                    Row(
+//                        modifier = Modifier
+//                            .fillMaxWidth()
+//                            .clickable(
+//                                onClick = {
+//                                    appViewModel.onGeneralIntent(
+//                                        ShareIntent.ToggleTagSelection1(
+//                                            tag = tag,
+//                                            totalTag = scannedTag3.size
+//                                        )
+//                                    )
+//                                }
+//                            ),
+//                        verticalAlignment = Alignment.CenterVertically,
+//                        horizontalArrangement = Arrangement.SpaceBetween
+//                    ) {
+//                        Column(
+//                            modifier = Modifier.padding(5.dp)
+//                        ) {
+//                            Text(text = MaterialSelectionItem.MISS_ROLL.displayName)
+//                            Text(text = tag)
+//                        }
+//                        Checkbox(
+//                            checked = tag in generalState.selectedTags1,
+//                            onCheckedChange = {
+//                                appViewModel.onGeneralIntent(
+//                                    ShareIntent.ToggleTagSelection1(
+//                                        tag = tag,
+//                                        totalTag = scannedTag3.size
+//                                    )
+//                                )
+//                            }
+//                        )
+//                    }
                     Spacer(modifier = Modifier.height(10.dp))
                     HorizontalDivider()
                     Spacer(modifier = Modifier.height(10.dp))
