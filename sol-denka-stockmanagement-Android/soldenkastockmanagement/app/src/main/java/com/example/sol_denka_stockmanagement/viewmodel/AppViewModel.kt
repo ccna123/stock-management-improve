@@ -71,6 +71,9 @@ class AppViewModel @Inject constructor(
     private val _toastFlow = MutableSharedFlow<Pair<String, ToastType>>()
     val toastFlow = _toastFlow
 
+    val perTagHandlingMethod = MutableStateFlow<Map<String, String>>(emptyMap())
+    val perTagExpanded = MutableStateFlow<Map<String, Boolean>>(emptyMap())
+
 
     val readerInfo = readerController.readerInfo.stateIn(
         scope = viewModelScope,
@@ -315,9 +318,15 @@ class AppViewModel @Inject constructor(
                     isAllSelected = updated.size == intent.totalTag
                 )
             }
+
             is ShareIntent.ToggleNetworkDialog -> _generalState.value = _generalState.value.copy(
                 showNetworkDialog = intent.doesOpenDialog
             )
+
+            is ShareIntent.ChangePerTagHandlingMethod -> {
+                perTagHandlingMethod.value = perTagHandlingMethod.value.toMutableMap()
+                    .apply { put(intent.tag, intent.method) }
+            }
         }
     }
 
@@ -349,6 +358,16 @@ class AppViewModel @Inject constructor(
                 _expandState.value = _expandState.value.copy(
                     fileTransferMethodExpanded = !_expandState.value.fileTransferMethodExpanded
                 )
+
+            is ExpandIntent.TogglePerTagHandlingExpanded -> {
+                val current = perTagExpanded.value[intent.tag] ?: false
+                perTagExpanded.value = perTagExpanded.value.toMutableMap().apply { put(intent.tag, !current) }
+            }
+
+            is ExpandIntent.CloseHandlingExpanded -> {
+                perTagExpanded.value =
+                    perTagExpanded.value.toMutableMap().apply { put(intent.tag, false) }
+            }
         }
     }
 

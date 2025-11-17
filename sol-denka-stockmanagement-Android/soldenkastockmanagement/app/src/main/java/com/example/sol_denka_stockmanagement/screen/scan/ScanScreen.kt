@@ -63,6 +63,8 @@ fun ScanScreen(
     val generalState = appViewModel.generalState.value
     val expandState = appViewModel.expandState.value
     val inputState = appViewModel.inputState.value
+    val expandedMap by appViewModel.perTagExpanded.collectAsStateWithLifecycle()
+    val handlingMap by appViewModel.perTagHandlingMethod.collectAsStateWithLifecycle()
 
     LaunchedEffect(Unit) {
         scanViewModel.setEnableScan(enabled = true, screen = Screen.Scan(""))
@@ -176,6 +178,8 @@ fun ScanScreen(
             Spacer(modifier = Modifier.height(10.dp))
             LazyColumn {
                 items(scannedTag3.toList()) { tag ->
+                    val isExpanded = expandedMap[tag] ?: false
+                    val value = handlingMap[tag] ?: ""
                     ShippingSingleItem(
                         tag = tag,
                         isChecked = tag in generalState.selectedTags1,
@@ -195,26 +199,30 @@ fun ScanScreen(
                                 )
                             )
                         },
-                        isExpanded = expandState.handlingMethodExpanded,
-                        value = if (inputState.handlingMethod == SelectTitle.SelectHandlingMethod.displayName) "" else inputState.handlingMethod,
+                        isExpanded = isExpanded,
+                        value = value,
                         onExpandedChange = {
-                            appViewModel.onExpandIntent(ExpandIntent.ToggleHandlingMethodExpanded)
+                            appViewModel.onExpandIntent(ExpandIntent.TogglePerTagHandlingExpanded(tag))
                         },
-                        onDismissRequest = { appViewModel.onExpandIntent(ExpandIntent.ToggleMissRollExpanded) },
-                        onValueChange = { newValue ->
-                            appViewModel.onInputIntent(
-                                InputIntent.ChangeHandlingMethod(
-                                    newValue
-                                )
+                        onDismissRequest = {
+                            appViewModel.onExpandIntent(
+                                ExpandIntent.CloseHandlingExpanded(tag)
                             )
                         },
-                        onClickInput = { appViewModel.onExpandIntent(ExpandIntent.ToggleHandlingMethodExpanded) },
-                        onClickDropDownMenuItem = { method ->
-                            appViewModel.apply {
-                                onInputIntent(InputIntent.ChangeHandlingMethod(if (method == SelectTitle.SelectHandlingMethod.displayName) "" else method))
-                                onExpandIntent(ExpandIntent.ToggleHandlingMethodExpanded)
-                            }
+                        onValueChange = { newValue ->
+                            appViewModel.onGeneralIntent(
+                                ShareIntent.ChangePerTagHandlingMethod(tag, newValue)
+                            )
                         },
+                        onClickInput = { appViewModel.onExpandIntent(ExpandIntent.CloseHandlingExpanded(tag)) },
+                        onClickDropDownMenuItem = { method ->
+                            appViewModel.onGeneralIntent(
+                                ShareIntent.ChangePerTagHandlingMethod(tag, method)
+                            )
+                            appViewModel.onExpandIntent(
+                                ExpandIntent.CloseHandlingExpanded(tag)
+                            )
+                        }
                     )
 //                    Row(
 //                        modifier = Modifier
