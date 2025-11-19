@@ -44,6 +44,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.sol_denka_stockmanagement.R
+import com.example.sol_denka_stockmanagement.intent.ShareIntent
 import com.example.sol_denka_stockmanagement.navigation.Screen
 import com.example.sol_denka_stockmanagement.model.MenuModel
 import com.example.sol_denka_stockmanagement.screen.layout.Layout
@@ -70,7 +71,7 @@ fun HomeScreen(
     }
 
     LaunchedEffect(Unit) {
-        appViewModel.resetState()
+        appViewModel.onGeneralIntent(ShareIntent.ResetState)
         scanViewModel.apply {
             clearScannedTag()
             clearProcessedTag()

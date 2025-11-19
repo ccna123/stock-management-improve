@@ -26,7 +26,7 @@ class ScanViewModel @Inject constructor(
 ) : ViewModel() {
 
     val scannedTag2 = readerController.scannedTags2
-    val scannedTag3 = readerController.scannedTags3
+    val scannedTags3 = readerController.scannedTags3
     private val _rfidTagList = MutableStateFlow<List<InventoryItemMasterModel>>(emptyList())
     val rfidTagList = _rfidTagList.asStateFlow()
 

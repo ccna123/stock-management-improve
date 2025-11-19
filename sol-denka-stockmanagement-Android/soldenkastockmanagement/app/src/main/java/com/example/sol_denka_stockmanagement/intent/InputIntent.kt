@@ -13,4 +13,5 @@ sealed interface InputIntent {
     data class ChangeLotNo(val value: String) : InputIntent
     data class ChangePackingStyle(val value: String) : InputIntent
     data class ChangeFileTransferMethod(val value: String): InputIntent
+    data object BulkApplyHandlingMethod: InputIntent
 }

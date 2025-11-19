@@ -25,7 +25,7 @@ import com.example.sol_denka_stockmanagement.screen.setting.sub_screen.app_setti
 import com.example.sol_denka_stockmanagement.screen.setting.sub_screen.reader_setting.ReaderSettingViewModel
 import com.example.sol_denka_stockmanagement.viewmodel.AppViewModel
 import com.example.sol_denka_stockmanagement.screen.setting.SettingScreen
-import com.example.sol_denka_stockmanagement.screen.storage_change.StorageAreaChangeScreen
+import com.example.sol_denka_stockmanagement.screen.storage_area_change.StorageAreaChangeScreen
 import com.example.sol_denka_stockmanagement.search.SearchTagsScreen
 
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
@@ -55,7 +55,6 @@ fun Navigation3(
             entry<Screen.Shipping> {
                 ShippingScreen(
                     appViewModel = appViewModel,
-                    scanViewModel = scanViewModel,
                     onNavigate = { dest ->
                         if (backStack.last() != dest) {
                             backStack.add(dest)

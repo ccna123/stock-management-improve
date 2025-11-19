@@ -36,6 +36,7 @@ import com.example.sol_denka_stockmanagement.navigation.Screen
 import com.example.sol_denka_stockmanagement.constant.SelectTitle
 import com.example.sol_denka_stockmanagement.intent.ExpandIntent
 import com.example.sol_denka_stockmanagement.intent.InputIntent
+import com.example.sol_denka_stockmanagement.intent.ShareIntent
 import com.example.sol_denka_stockmanagement.screen.layout.Layout
 import com.example.sol_denka_stockmanagement.share.ButtonContainer
 import com.example.sol_denka_stockmanagement.share.InputFieldContainer
@@ -66,7 +67,7 @@ fun ReceivingScreen(
 
     DisposableEffect(Unit) {
         onDispose {
-            appViewModel.resetState()
+            appViewModel.onGeneralIntent(ShareIntent.ResetState)
         }
     }
     Layout(

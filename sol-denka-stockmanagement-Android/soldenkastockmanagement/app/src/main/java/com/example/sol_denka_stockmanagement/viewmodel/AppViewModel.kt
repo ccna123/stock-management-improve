@@ -6,11 +6,13 @@ import android.os.Build
 import android.provider.MediaStore
 import android.util.Log
 import androidx.annotation.RequiresApi
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.sol_denka_stockmanagement.constant.ConnectionState
+import com.example.sol_denka_stockmanagement.constant.HandlingMethod
 import com.example.sol_denka_stockmanagement.helper.NetworkConnectionObserver
 import com.example.sol_denka_stockmanagement.helper.ReaderController
 import com.example.sol_denka_stockmanagement.helper.ToastType
@@ -74,6 +76,22 @@ class AppViewModel @Inject constructor(
     val perTagHandlingMethod = MutableStateFlow<Map<String, String>>(emptyMap())
     val perTagExpanded = MutableStateFlow<Map<String, Boolean>>(emptyMap())
 
+    val showConnectingDialog = MutableStateFlow(false)
+
+    private val _perTagChecked = MutableStateFlow<Map<String, Boolean>>(emptyMap())
+    val perTagChecked: StateFlow<Map<String, Boolean>> = _perTagChecked.asStateFlow()
+
+    private val _isAllSelected = MutableStateFlow(false)
+    val isAllSelected = _isAllSelected.asStateFlow()
+
+    private val _selectedCount = MutableStateFlow(0)
+    val selectedCount = _selectedCount.asStateFlow()
+
+    private val _showBottomSheet = MutableStateFlow(false)
+    val showBottomSheet = _showBottomSheet.asStateFlow()
+
+    var bottomSheetChosenMethod = mutableStateOf(HandlingMethod.USE.displayName)
+        private set
 
     val readerInfo = readerController.readerInfo.stateIn(
         scope = viewModelScope,
@@ -100,10 +118,16 @@ class AppViewModel @Inject constructor(
         }
         viewModelScope.launch {
             readerController.connectionEvents.collect { evt ->
-                if (evt == ConnectionState.CONNECTED) {
-                    _toastFlow.emit("リーダー接続に成功しました" to ToastType.SUCCESS)
-                } else if (evt == ConnectionState.DISCONNECTED) {
-                    _toastFlow.emit("リーダーが切断されました" to ToastType.ERROR)
+                when(evt){
+                    ConnectionState.DISCONNECTED -> {
+                        showConnectingDialog.value = false
+                        _toastFlow.emit("リーダーが切断されました" to ToastType.ERROR)
+                    }
+                    ConnectionState.CONNECTING -> showConnectingDialog.value = true
+                    ConnectionState.CONNECTED -> {
+                        showConnectingDialog.value = false
+                        _toastFlow.emit("リーダー接続に成功しました" to ToastType.SUCCESS)
+                    }
                 }
             }
         }
@@ -193,9 +217,10 @@ class AppViewModel @Inject constructor(
 
     fun onInputIntent(intent: InputIntent) {
         when (intent) {
-
-            is InputIntent.ChangeHandlingMethod ->
+            is InputIntent.ChangeHandlingMethod -> {
                 _inputState.value = _inputState.value.copy(handlingMethod = intent.value)
+                bottomSheetChosenMethod.value = intent.value
+            }
 
             is InputIntent.ChangeStockArea ->
                 _inputState.value = _inputState.value.copy(stockArea = intent.value)
@@ -229,6 +254,20 @@ class AppViewModel @Inject constructor(
 
             is InputIntent.ChangeFileTransferMethod ->
                 _inputState.value = _inputState.value.copy(fileTransferMethod = intent.value)
+
+            InputIntent.BulkApplyHandlingMethod -> {
+                val chosenMethod = bottomSheetChosenMethod.value
+                val checked = _perTagChecked.value
+
+                val updated = perTagHandlingMethod.value.toMutableMap()
+
+                checked.forEach { (tag, isChecked) ->
+                    if (isChecked){
+                        updated[tag] = chosenMethod
+                    }
+                }
+                perTagHandlingMethod.value = updated
+            }
         }
     }
 
@@ -264,7 +303,6 @@ class AppViewModel @Inject constructor(
 
             ShareIntent.ClearTagSelectionList -> {
                 _generalState.value = _generalState.value.copy(
-                    selectedTags1 = emptyList(),
                     selectedTags = emptyList(),
                     isAllSelected = false
                 )
@@ -291,32 +329,33 @@ class AppViewModel @Inject constructor(
             }
 
             is ShareIntent.ToggleSelectionAll -> {
-                _generalState.value = if (_generalState.value.isAllSelected) {
-                    _generalState.value.copy(
-                        selectedTags1 = emptyList(),
-                        isAllSelected = false
-                    )
+                val allTags = intent.tagList
+                if (allTags.isEmpty()) return
+
+                val currentlyAll = allTags.all { tag -> _perTagChecked.value[tag] == true }
+
+                if (currentlyAll) {
+                    _perTagChecked.value = allTags.associateWith { false }
+                    _selectedCount.value = 0
+                    _isAllSelected.value = false
                 } else {
-                    _generalState.value.copy(
-                        selectedTags1 = intent.tagList.toList(),
-                        isAllSelected = true
-                    )
+                    _perTagChecked.value = allTags.associateWith { true }
+                    _selectedCount.value = allTags.size
+                    _isAllSelected.value = true
                 }
             }
 
             is ShareIntent.ToggleTagSelection1 -> {
-                val updated = _generalState.value.selectedTags1.toMutableList()
+                val updated = _perTagChecked.value.toMutableMap()
+                updated[intent.tag] = !(updated[intent.tag] ?: false)
+                _perTagChecked.value = updated
 
-                if (intent.tag in updated) {
-                    updated.remove(intent.tag)
-                } else {
-                    updated.add(intent.tag)
-                }
+                val selectedCount = updated.values.count { it }
+                val allSelected = selectedCount == intent.totalTag
 
-                _generalState.value = _generalState.value.copy(
-                    selectedTags1 = updated,
-                    isAllSelected = updated.size == intent.totalTag
-                )
+                _isAllSelected.value = allSelected
+                _selectedCount.value = selectedCount
+
             }
 
             is ShareIntent.ToggleNetworkDialog -> _generalState.value = _generalState.value.copy(
@@ -327,10 +366,25 @@ class AppViewModel @Inject constructor(
                 perTagHandlingMethod.value = perTagHandlingMethod.value.toMutableMap()
                     .apply { put(intent.tag, intent.method) }
             }
+
+            is ShareIntent.ShowBottomSheet -> {
+                _showBottomSheet.value = intent.showBottomSheet
+            }
+
+            ShareIntent.ResetState -> {
+                _inputState.value = InputState()
+                _expandState.value = ExpandState()
+                _errorState.value = ErrorState()
+                _generalState.value = GeneralState()
+                perTagExpanded.value = emptyMap()
+                perTagHandlingMethod.value = emptyMap()
+                _perTagChecked.value = emptyMap()
+                _selectedCount.value = 0
+                _showBottomSheet.value = false
+                bottomSheetChosenMethod.value = HandlingMethod.USE.displayName
+            }
         }
     }
-
-
     fun onExpandIntent(intent: ExpandIntent) {
         when (intent) {
 
@@ -370,26 +424,4 @@ class AppViewModel @Inject constructor(
             }
         }
     }
-
-
-    var isSingleTagMode = MutableStateFlow(false)
-        private set
-
-    // endregion
-
-    fun updateTagStatus(rfidNo: String) {
-        viewModelScope.launch(Dispatchers.IO) {
-        }
-    }
-
-    fun resetState() {
-        _inputState.value = InputState()
-        _expandState.value = ExpandState()
-        _errorState.value = ErrorState()
-        isSingleTagMode.value = false
-        _generalState.value = GeneralState()
-        perTagExpanded.value = emptyMap()
-        perTagHandlingMethod.value = emptyMap()
-    }
-
 }

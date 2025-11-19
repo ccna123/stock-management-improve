@@ -17,10 +17,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExposedDropdownMenuAnchorType
-import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -31,10 +28,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.sol_denka_stockmanagement.R
-import com.example.sol_denka_stockmanagement.constant.HandlingMethod
 import com.example.sol_denka_stockmanagement.constant.MaterialSelectionItem
-import com.example.sol_denka_stockmanagement.constant.SelectTitle
-import com.example.sol_denka_stockmanagement.intent.ExpandIntent
 import com.example.sol_denka_stockmanagement.intent.InputIntent
 import com.example.sol_denka_stockmanagement.navigation.Screen
 import com.example.sol_denka_stockmanagement.screen.layout.Layout
@@ -42,14 +36,12 @@ import com.example.sol_denka_stockmanagement.share.ButtonContainer
 import com.example.sol_denka_stockmanagement.share.InputFieldContainer
 import com.example.sol_denka_stockmanagement.ui.theme.paleSkyBlue
 import com.example.sol_denka_stockmanagement.viewmodel.AppViewModel
-import com.example.sol_denka_stockmanagement.viewmodel.ScanViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @Composable
 fun ShippingScreen(
     appViewModel: AppViewModel,
-    scanViewModel: ScanViewModel,
     onNavigate: (Screen) -> Unit
 ) {
 
@@ -63,7 +55,6 @@ fun ShippingScreen(
         topBarIcon = Icons.AutoMirrored.Filled.ArrowBack,
         onNavigate = onNavigate,
         appViewModel = appViewModel,
-        scanViewModel = scanViewModel,
         currentScreenNameId = Screen.Shipping.routeId,
         prevScreenNameId = Screen.Shipping.routeId, // for scan screen to navigate back,
         hasBottomBar = true,
@@ -129,57 +120,10 @@ fun ShippingScreen(
                                 text = "${stringResource(R.string.quantity)}:",
                                 modifier = Modifier.alignByBaseline()
                             )
-                            Text(
-                                text = generalState.selectedTags1.size.toString(),
-                                modifier = Modifier.alignByBaseline()
-                            )
-                        }
-                    }
-                }
-                Spacer(modifier = Modifier.height(10.dp))
-                ExposedDropdownMenuBox(
-                    expanded = expandState.handlingMethodExpanded,
-                    onExpandedChange = { appViewModel.onExpandIntent(ExpandIntent.ToggleHandlingMethodExpanded) }) {
-                    InputFieldContainer(
-                        modifier = Modifier
-                            .menuAnchor(
-                                type = ExposedDropdownMenuAnchorType.PrimaryNotEditable,
-                                enabled = true
-                            )
-                            .fillMaxWidth(),
-                        value = if (inputState.handlingMethod == SelectTitle.SelectHandlingMethod.displayName) "" else inputState.handlingMethod,
-                        isNumeric = false,
-                        hintText = SelectTitle.SelectHandlingMethod.displayName,
-                        shape = RoundedCornerShape(13.dp),
-                        onChange = { newValue ->
-                            appViewModel.onInputIntent(InputIntent.ChangeHandlingMethod(newValue))
-                        },
-                        readOnly = true,
-                        isDropDown = true,
-                        enable = true,
-                        onClick = {
-                            appViewModel.onExpandIntent(ExpandIntent.ToggleHandlingMethodExpanded)
-                        },
-                    )
-                    ExposedDropdownMenu(
-                        expanded = expandState.handlingMethodExpanded,
-                        onDismissRequest = { appViewModel.onExpandIntent(ExpandIntent.ToggleMissRollExpanded) }
-                    ) {
-                        listOf(
-                            HandlingMethod.SELECTION_TITLE.displayName,
-                            HandlingMethod.USE.displayName,
-                            HandlingMethod.SALE.displayName,
-                            HandlingMethod.CRUSHING.displayName,
-                        ).forEach { method ->
-                            DropdownMenuItem(
-                                text = { Text(text = method) },
-                                onClick = {
-                                    appViewModel.apply {
-                                        onInputIntent(InputIntent.ChangeHandlingMethod(if (method == SelectTitle.SelectHandlingMethod.displayName) "" else method))
-                                        onExpandIntent(ExpandIntent.ToggleHandlingMethodExpanded)
-                                    }
-                                }
-                            )
+//                            Text(
+//                                text = generalState.selectedTags1.size.toString(),
+//                                modifier = Modifier.alignByBaseline()
+//                            )
                         }
                     }
                 }

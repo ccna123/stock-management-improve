@@ -393,11 +393,7 @@ fun Layout(
                 bottomBar = {
                     if (hasBottomBar) {
                         BottomAppBar(
-                            containerColor = if (isPerformingInventory) {
-                                orange
-                            } else {
-                                Color.Black.copy(alpha = 0.3f)
-                            },
+                            containerColor = Color.Black.copy(alpha = 0.3f),
                             contentPadding = PaddingValues(horizontal = 16.dp),
                             modifier = Modifier
                                 .height(100.dp)

@@ -1,19 +1,21 @@
-package com.example.sol_denka_stockmanagement.screen.storage_change
+package com.example.sol_denka_stockmanagement.screen.storage_area_change
 
 import android.os.Build
 import androidx.annotation.RequiresApi
-import androidx.compose.foundation.border
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -24,12 +26,17 @@ import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.compositionLocalOf
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.sol_denka_stockmanagement.R
 import com.example.sol_denka_stockmanagement.constant.MaterialSelectionItem
 import com.example.sol_denka_stockmanagement.constant.SelectTitle
@@ -40,6 +47,7 @@ import com.example.sol_denka_stockmanagement.navigation.Screen
 import com.example.sol_denka_stockmanagement.screen.layout.Layout
 import com.example.sol_denka_stockmanagement.share.ButtonContainer
 import com.example.sol_denka_stockmanagement.share.InputFieldContainer
+import com.example.sol_denka_stockmanagement.share.TableCell
 import com.example.sol_denka_stockmanagement.ui.theme.paleSkyBlue
 import com.example.sol_denka_stockmanagement.viewmodel.AppViewModel
 
@@ -55,6 +63,8 @@ fun StorageAreaChangeScreen(
     val expandState = appViewModel.expandState.value
     val inputState = appViewModel.inputState.value
     val generalState = appViewModel.generalState.value
+    val selectedCount by appViewModel.selectedCount.collectAsStateWithLifecycle()
+    val checkedMap by appViewModel.perTagChecked.collectAsStateWithLifecycle()
 
     Layout(
         topBarText = stringResource(R.string.storage_area_change),
@@ -66,10 +76,12 @@ fun StorageAreaChangeScreen(
         hasBottomBar = true,
         bottomButton = {
             ButtonContainer(
-                modifier = Modifier.shadow(
-                    elevation = 13.dp, clip = true, ambientColor = Color.Gray.copy(alpha = 0.5f),
-                    spotColor = Color.DarkGray.copy(alpha = 0.7f)
-                ),
+                modifier = Modifier
+                    .fillMaxWidth(0.5f)
+                    .shadow(
+                        elevation = 13.dp, clip = true, ambientColor = Color.Gray.copy(alpha = 0.5f),
+                        spotColor = Color.DarkGray.copy(alpha = 0.7f)
+                    ),
                 shape = RoundedCornerShape(10.dp),
                 icon = {
                     Icon(
@@ -89,56 +101,77 @@ fun StorageAreaChangeScreen(
         }) { paddingValues ->
         LazyColumn(
             modifier = Modifier
-                .padding(top = paddingValues.calculateTopPadding())
+                .padding(paddingValues)
                 .padding(16.dp)
                 .imePadding()
         ) {
             item {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .border(1.dp, color = paleSkyBlue, shape = RoundedCornerShape(15.dp))
-                ) {
-                    Column(
-                        modifier = Modifier
-                            .padding(vertical = 16.dp, horizontal = 10.dp)
-                            .fillMaxWidth(),
-                    ) {
+                Text(text = stringResource(R.string.planned_register_item_number, selectedCount))
+                Spacer(modifier = Modifier.height(18.dp))
+                Column{
+                    val localTempFontSize = compositionLocalOf { 13.sp }
+                    CompositionLocalProvider(localTempFontSize provides localTempFontSize.current) {
                         Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.spacedBy(10.dp)
+                            modifier = Modifier
+                                .background(color = paleSkyBlue)
+                                .fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween
                         ) {
-                            Text(
-                                text = "${stringResource(R.string.material_name)}:",
-                                modifier = Modifier.alignByBaseline()
+                            TableCell(
+                                content = stringResource(R.string.item_name_title),
+                                contentSize = localTempFontSize.current,
+                                weight = 1f
                             )
-                            Text(
-                                text = MaterialSelectionItem.MISS_ROLL.displayName,
-                                modifier = Modifier.alignByBaseline()
+                            TableCell(
+                                content = stringResource(R.string.item_code_title),
+                                contentSize = localTempFontSize.current,
+                                weight = 1f
                             )
-                        }
-                        Spacer(modifier = Modifier.height(5.dp))
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.spacedBy(10.dp)
-                        ) {
-                            Text(
-                                text = "${stringResource(R.string.quantity)}:",
-                                modifier = Modifier.alignByBaseline()
-                            )
-                            Text(
-                                text = generalState.selectedTags1.size.toString(),
-                                modifier = Modifier.alignByBaseline()
+                            TableCell(
+                                content = stringResource(R.string.storage_area),
+                                contentSize = localTempFontSize.current,
+                                weight = 1f
                             )
                         }
                     }
+                    LazyColumn(
+                        modifier = Modifier
+                            .height(150.dp)
+                    ) {
+                        items(checkedMap.filter { it.value }.keys.toList()) { tag ->
+                            Row(
+                                modifier = Modifier
+                                    .height(IntrinsicSize.Min)
+                                    .fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                TableCell(
+                                    content = MaterialSelectionItem.MISS_ROLL.displayName,
+                                    weight = 1f
+                                )
+                                TableCell(
+                                    content = tag,
+                                    weight = 1f
+                                )
+                                TableCell(
+                                    content = "保管場所A",
+                                    weight = 1f
+                                )
+                            }
+                        }
+                    }
                 }
-                Spacer(modifier = Modifier.height(18.dp))
+                Spacer(modifier = Modifier.height(20.dp))
                 ExposedDropdownMenuBox(
                     expanded = expandState.stockAreaExpanded,
                     onExpandedChange = { appViewModel.onExpandIntent(ExpandIntent.ToggleStockAreaExpanded) }) {
                     InputFieldContainer(
-                        modifier = Modifier.menuAnchor(type = ExposedDropdownMenuAnchorType.PrimaryNotEditable, enabled = true).fillMaxWidth(),
+                        modifier = Modifier
+                            .menuAnchor(
+                                type = ExposedDropdownMenuAnchorType.PrimaryNotEditable,
+                                enabled = true
+                            )
+                            .fillMaxWidth(),
                         value = if (inputState.stockArea == StockAreaItem.SELECTION_TITLE.displayName) "" else inputState.stockArea,
                         hintText = StockAreaItem.SELECTION_TITLE.displayName,
                         isNumeric = false,
@@ -183,7 +216,7 @@ fun StorageAreaChangeScreen(
                 InputFieldContainer(
                     modifier = Modifier.fillMaxWidth(),
                     value = inputState.remark,
-                    label = "備考",
+                    label = stringResource(R.string.remark) + "（オプション）",
                     hintText = stringResource(R.string.remark_hint),
                     isNumeric = false,
                     shape = RoundedCornerShape(13.dp),

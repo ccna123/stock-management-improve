@@ -2,9 +2,6 @@
     <string name="app_name">StockManagement</string>
     <string name="title_dialog_inventory">Import master file.</string>
     <string name="title_dialog_doing">Unfinished data exists.\nDo you resume?</string>
-    <string name="doing_continue">Resume</string>
-    <string name="doing_new">New operation</string>
-    <string name="cancel">Skip</string>
     <string name="google_play_services_api_key">unused</string>
 
     <!--    ボタン名-->
@@ -24,6 +21,9 @@
     <string name="detail">詳細情報</string>
     <string name="select_all">全選択</string>
     <string name="select_all_remove">全選択解除</string>
+    <string name="bulk_register">選択済み（%s件）の処理方法を一括登録</string>
+    <string name="cancel">キャンセル</string>
+    <string name="bulk_apply">一括適用</string>
 
     <!--    タブ名-->
     <string name="unprocessed">未処理</string>
@@ -41,6 +41,7 @@
     <string name="inventory_start">棚卸開始</string>
     <string name="handling_method_hint">処理方法入力</string>
     <string name="remark_hint">備考入力</string>
+    <string name="remark">備考</string>
     <string name="finish_search">探索完了</string>
     <string name="no_items_found">発見数</string>
     <string name="found">発見</string>
@@ -65,10 +66,16 @@
     <string name="process_status">処理状況</string>
     <string name="clear_processed_tag_dialog">読み取りをクリアします。\nよろしいでしょうか</string>
     <string name="scan_tag_list_title">スキャンタグ</string>
+    <string name="scan_tag_list_item">スキャン済みアイテム</string>
     <string name="network_connect_failed">ネットワークが接続されていません。</string>
     <string name="connect_state">接続状態</string>
     <string name="ok_connect">接続</string>
     <string name="no_connect">未接続</string>
+    <string name="connecting">接続中</string>
+    <string name="bulk_apply_item_number">%s件のアイテムをに適用されます</string>
+    <string name="planned_register_item_number">登録予定アイテム（%s件）</string>
+    <string name="item_name_title">アイテム名</string>
+    <string name="item_code_title">アイテムコード</string>
 
     <!-- 入力-->
     <string name="grade_hint">グレード入力</string>
