@@ -105,7 +105,6 @@ fun LiterInput(
             readOnly = true,
             isDropDown = true,
             enable = true,
-            onClick = { onPackingStyleExpand(!packingStyleExpanded) },
         )
         ExposedDropdownMenu(
             expanded = packingStyleExpanded,

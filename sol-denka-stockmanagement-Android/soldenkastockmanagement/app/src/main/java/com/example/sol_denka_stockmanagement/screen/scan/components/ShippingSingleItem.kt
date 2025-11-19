@@ -84,7 +84,7 @@ fun ShippingSingleItem(
                 isDropDown = true,
                 enable = true,
                 iconColor = brightAzure,
-                onClick = { onClickInput() },
+//                onClick = { onClickInput() },
             )
             ExposedDropdownMenu(
                 expanded = isExpanded,

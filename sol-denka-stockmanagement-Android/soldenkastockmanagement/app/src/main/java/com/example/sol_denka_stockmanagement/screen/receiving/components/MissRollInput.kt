@@ -104,7 +104,6 @@ fun MissRollInput(
             readOnly = true,
             isDropDown = true,
             enable = true,
-            onEnterPressed = {}
         )
         ExposedDropdownMenu(
             expanded = stockAreaExpanded,
@@ -148,7 +147,6 @@ fun MissRollInput(
             readOnly = true,
             isDropDown = true,
             enable = true,
-            onClick = { onPackingStyleExpand(!packingStyleExpanded) },
         )
         ExposedDropdownMenu(
             expanded = packingStyleExpanded,

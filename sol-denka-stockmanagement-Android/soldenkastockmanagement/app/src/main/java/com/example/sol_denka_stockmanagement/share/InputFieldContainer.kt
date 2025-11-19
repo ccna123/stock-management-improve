@@ -40,19 +40,13 @@ fun InputFieldContainer(
     shape: Shape = RoundedCornerShape(13.dp),
     fontSize: TextUnit = 16.sp,
     enable: Boolean,
-    height: Dp = 55.dp,
-    borderColor: Color = paleSkyBlue,
     label: String? = null,
     iconColor: Color = Color.Unspecified,
     isDropDown: Boolean,
     readOnly: Boolean,
     singleLine: Boolean = true,
-    focusRequester: FocusRequester = remember { FocusRequester() },
     onChange: ((String) -> Unit)? = null,
     onEnterPressed: (() -> Unit)? = null,
-    onClick: (() -> Unit)? = null,
-    onFocusChanged: ((Boolean) -> Unit)? = null,
-    onPositionChanged: ((Float) -> Unit)? = null
 ) {
     val textFieldInteractionSource = remember { MutableInteractionSource() }
     OutlinedTextField(
@@ -61,7 +55,7 @@ fun InputFieldContainer(
             if (!readOnly) onChange?.invoke(newText.replace("\n", ""))
         },
         modifier = modifier,
-        shape = RoundedCornerShape(13.dp),
+        shape = shape,
         label = label?.let { { Text(text = it) } },
         placeholder = { Text(text = hintText, color = Color.Gray, fontSize = 16.sp) },
         interactionSource = textFieldInteractionSource,

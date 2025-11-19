@@ -159,9 +159,9 @@ fun ReceivingScreenContent(
                     readOnly = true,
                     isDropDown = true,
                     enable = true,
-                    onClick = {
-                        appViewModel.onExpandIntent(ExpandIntent.ToggleMissRollExpanded)
-                    },
+//                    onClick = {
+//                        appViewModel.onExpandIntent(ExpandIntent.ToggleMissRollExpanded)
+//                    },
                 )
                 ExposedDropdownMenu(
                     expanded = expandState.materialSelection,
