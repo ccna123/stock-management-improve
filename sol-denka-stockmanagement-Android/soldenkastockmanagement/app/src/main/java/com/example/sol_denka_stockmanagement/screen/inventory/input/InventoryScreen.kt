@@ -138,7 +138,6 @@ fun InventoryScreenContent(
                     value = if (inputState.stockArea == StockAreaItem.SELECTION_TITLE.displayName) "" else inputState.stockArea,
                     hintText = StockAreaItem.SELECTION_TITLE.displayName,
                     isNumeric = false,
-                    shape = RoundedCornerShape(13.dp),
                     onChange = { newValue ->
                         appViewModel.onInputIntent(
                             InputIntent.ChangeStockArea(

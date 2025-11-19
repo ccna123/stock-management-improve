@@ -175,7 +175,6 @@ fun StorageAreaChangeScreen(
                         value = if (inputState.stockArea == StockAreaItem.SELECTION_TITLE.displayName) "" else inputState.stockArea,
                         hintText = StockAreaItem.SELECTION_TITLE.displayName,
                         isNumeric = false,
-                        shape = RoundedCornerShape(13.dp),
                         onChange = { newValue ->
                             appViewModel.onInputIntent(
                                 InputIntent.ChangeStockArea(
@@ -219,7 +218,6 @@ fun StorageAreaChangeScreen(
                     label = stringResource(R.string.remark) + "（オプション）",
                     hintText = stringResource(R.string.remark_hint),
                     isNumeric = false,
-                    shape = RoundedCornerShape(13.dp),
                     readOnly = false,
                     isDropDown = false,
                     enable = true,

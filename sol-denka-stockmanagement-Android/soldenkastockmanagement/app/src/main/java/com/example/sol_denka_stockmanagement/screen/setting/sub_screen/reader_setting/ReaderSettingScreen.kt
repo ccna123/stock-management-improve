@@ -298,7 +298,6 @@ fun ReaderSettingScreen(
                     value = readerSettingState.tagPopulation.toString(),
                     hintText = stringResource(R.string.tag_population_hint),
                     isNumeric = true,
-                    shape = RoundedCornerShape(13.dp),
                     readOnly = false,
                     isDropDown = false,
                     enable = true,

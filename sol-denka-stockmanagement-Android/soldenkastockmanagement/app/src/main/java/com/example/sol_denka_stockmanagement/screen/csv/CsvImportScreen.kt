@@ -41,8 +41,6 @@ import com.example.sol_denka_stockmanagement.R
 import com.example.sol_denka_stockmanagement.constant.CsvType
 import com.example.sol_denka_stockmanagement.navigation.Screen
 import com.example.sol_denka_stockmanagement.constant.SelectTitle
-import com.example.sol_denka_stockmanagement.helper.ToastManager
-import com.example.sol_denka_stockmanagement.helper.ToastType
 import com.example.sol_denka_stockmanagement.intent.ShareIntent
 import com.example.sol_denka_stockmanagement.model.CsvFileInfoModel
 import com.example.sol_denka_stockmanagement.screen.layout.Layout
@@ -51,12 +49,10 @@ import com.example.sol_denka_stockmanagement.share.ButtonContainer
 import com.example.sol_denka_stockmanagement.share.InputContainer
 import com.example.sol_denka_stockmanagement.share.InputFieldContainer
 import com.example.sol_denka_stockmanagement.state.GeneralState
-import com.example.sol_denka_stockmanagement.ui.theme.brightGreen
+import com.example.sol_denka_stockmanagement.ui.theme.brightGreenPrimary
 import com.example.sol_denka_stockmanagement.ui.theme.skyBlue
 import com.example.sol_denka_stockmanagement.viewmodel.AppViewModel
 import com.example.sol_denka_stockmanagement.screen.csv.components.SingleCsvFile
-import com.example.sol_denka_stockmanagement.screen.csv.CsvViewModel
-import com.example.sol_denka_stockmanagement.screen.setting.sub_screen.reader_setting.ReaderSettingViewModel
 import com.example.sol_denka_stockmanagement.share.NetworkDialog
 import kotlinx.coroutines.launch
 
@@ -109,7 +105,7 @@ fun CsvImportScreen(
                 Text(
                     text = if (importProgress < 1f) "CSVファイル取り込み中" else "CSVファイル取り込みに成功しました",
                     textAlign = TextAlign.Center,
-                    color = if (importProgress < 1f) Color.Black else brightGreen
+                    color = if (importProgress < 1f) Color.Black else brightGreenPrimary
                 )
                 Spacer(Modifier.height(12.dp))
                 LinearProgressIndicator(

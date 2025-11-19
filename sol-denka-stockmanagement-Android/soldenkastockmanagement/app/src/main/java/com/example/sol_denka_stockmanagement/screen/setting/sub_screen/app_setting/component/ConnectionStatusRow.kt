@@ -15,7 +15,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.example.sol_denka_stockmanagement.ui.theme.brightGreen
+import com.example.sol_denka_stockmanagement.ui.theme.brightGreenPrimary
 
 @Composable
 fun ConnectionStatusRow(
@@ -39,14 +39,14 @@ fun ConnectionStatusRow(
             Icon(
                 imageVector = if (isConnected) connectedIcon else disconnectedIcon,
                 contentDescription = null,
-                tint = if (isConnected) brightGreen else Color.Red,
+                tint = if (isConnected) brightGreenPrimary else Color.Red,
                 modifier = Modifier.size(20.dp)
             )
             Spacer(modifier = Modifier.width(4.dp))
             Text(
                 text = if (isConnected) connectedText else disconnectedText,
                 fontWeight = FontWeight.Bold,
-                color = if (isConnected) brightGreen else Color.Red
+                color = if (isConnected) brightGreenPrimary else Color.Red
             )
         }
     }

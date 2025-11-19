@@ -45,7 +45,6 @@ fun MissRollInput(
         label = stringResource(R.string.thickness),
         hintText = stringResource(R.string.thickness_hint),
         isNumeric = false,
-        shape = RoundedCornerShape(13.dp),
         readOnly = false,
         isDropDown = false,
         enable = true,
@@ -64,7 +63,6 @@ fun MissRollInput(
         label = stringResource(R.string.length),
         hintText = stringResource(R.string.length_hint),
         isNumeric = true,
-        shape = RoundedCornerShape(13.dp),
         readOnly = false,
         isDropDown = false,
         enable = true,
@@ -80,7 +78,6 @@ fun MissRollInput(
         label = stringResource(R.string.rolling_machine),
         hintText = stringResource(R.string.rolling_machine_hint),
         isNumeric = false,
-        shape = RoundedCornerShape(13.dp),
         readOnly = false,
         isDropDown = false,
         enable = true,
@@ -101,7 +98,6 @@ fun MissRollInput(
             value = if (stockArea == StockAreaItem.SELECTION_TITLE.displayName) "" else stockArea,
             hintText = StockAreaItem.SELECTION_TITLE.displayName,
             isNumeric = false,
-            shape = RoundedCornerShape(13.dp),
             onChange = { newValue ->
                 onStockAreaChange(newValue)
             },
@@ -146,7 +142,6 @@ fun MissRollInput(
             value = if (packingStyle == PackingStyleItem.SELECTION_TITLE.displayName) "" else packingStyle,
             isNumeric = false,
             hintText = PackingStyleItem.SELECTION_TITLE.displayName,
-            shape = RoundedCornerShape(13.dp),
             onChange = { newValue ->
                 onPackingStyleChange(newValue)
             },

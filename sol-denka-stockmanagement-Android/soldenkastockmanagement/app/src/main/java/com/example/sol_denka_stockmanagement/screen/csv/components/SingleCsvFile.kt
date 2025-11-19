@@ -18,7 +18,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import com.example.sol_denka_stockmanagement.ui.theme.brightGreen
+import com.example.sol_denka_stockmanagement.ui.theme.brightGreenPrimary
 
 @Composable
 fun SingleCsvFile(
@@ -64,7 +64,7 @@ fun SingleCsvFile(
                         Icon(
                             imageVector = Icons.Default.CheckCircle,
                             contentDescription = null,
-                            tint = brightGreen
+                            tint = brightGreenPrimary
                         )
                     }
                     isError -> {

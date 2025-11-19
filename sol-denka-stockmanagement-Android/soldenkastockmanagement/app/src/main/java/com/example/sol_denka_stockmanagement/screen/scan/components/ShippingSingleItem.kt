@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuAnchorType
@@ -21,11 +22,10 @@ import androidx.compose.ui.unit.dp
 import com.example.sol_denka_stockmanagement.constant.HandlingMethod
 import com.example.sol_denka_stockmanagement.constant.MaterialSelectionItem
 import com.example.sol_denka_stockmanagement.constant.SelectTitle
-import com.example.sol_denka_stockmanagement.intent.ExpandIntent
-import com.example.sol_denka_stockmanagement.intent.InputIntent
-import com.example.sol_denka_stockmanagement.intent.ShareIntent
 import com.example.sol_denka_stockmanagement.share.InputFieldContainer
 import com.example.sol_denka_stockmanagement.ui.theme.brightAzure
+import com.example.sol_denka_stockmanagement.ui.theme.brightGreenPrimary
+import com.example.sol_denka_stockmanagement.ui.theme.brightGreenSecondary
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -53,6 +53,9 @@ fun ShippingSingleItem(
             modifier = Modifier.clickable(onClick = { onSelect() })
         ) {
             Checkbox(
+                colors = CheckboxDefaults.colors(
+                    checkedColor = brightGreenSecondary
+                ),
                 checked = isChecked,
                 onCheckedChange = { onCheckedChange() }
             )
@@ -68,7 +71,6 @@ fun ShippingSingleItem(
             onExpandedChange = { onExpandedChange() }) {
             InputFieldContainer(
                 modifier = Modifier
-                    .border(1.dp, color = brightAzure, RoundedCornerShape(13.dp))
                     .menuAnchor(
                         type = ExposedDropdownMenuAnchorType.PrimaryNotEditable,
                         enabled = true
@@ -77,7 +79,6 @@ fun ShippingSingleItem(
                 value = value,
                 isNumeric = false,
                 hintText = SelectTitle.SelectHandlingMethod.displayName,
-                shape = RoundedCornerShape(13.dp),
                 onChange = { newValue -> onValueChange(newValue) },
                 readOnly = true,
                 isDropDown = true,

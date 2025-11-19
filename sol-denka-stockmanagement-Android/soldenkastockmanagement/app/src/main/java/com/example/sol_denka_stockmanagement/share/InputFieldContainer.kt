@@ -1,8 +1,10 @@
 package com.example.sol_denka_stockmanagement.share
 
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.border
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -35,7 +37,7 @@ fun InputFieldContainer(
     hintText: String = "",
     error: Boolean? = false,
     isNumeric: Boolean = false,
-    shape: Shape,
+    shape: Shape = RoundedCornerShape(13.dp),
     fontSize: TextUnit = 16.sp,
     enable: Boolean,
     height: Dp = 55.dp,
@@ -59,13 +61,13 @@ fun InputFieldContainer(
             if (!readOnly) onChange?.invoke(newText.replace("\n", ""))
         },
         modifier = modifier,
-        shape = shape,
+        shape = RoundedCornerShape(13.dp),
         label = label?.let { { Text(text = it) } },
         placeholder = { Text(text = hintText, color = Color.Gray, fontSize = 16.sp) },
         interactionSource = textFieldInteractionSource,
         colors = OutlinedTextFieldDefaults.colors(
-            focusedBorderColor = if (error == true) Color.Red else paleSkyBlue,
-            unfocusedBorderColor = if (error == true) Color.Red else paleSkyBlue,
+            focusedBorderColor = if (error == true) Color.Red else brightAzure,
+            unfocusedBorderColor = if (error == true) Color.Red else brightAzure,
             focusedContainerColor = Color.Transparent,
             unfocusedContainerColor = Color.Transparent,
             disabledContainerColor = Color.LightGray.copy(alpha = 0.4f),

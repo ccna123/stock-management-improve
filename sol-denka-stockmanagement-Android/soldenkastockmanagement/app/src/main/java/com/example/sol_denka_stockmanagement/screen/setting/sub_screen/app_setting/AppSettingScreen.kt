@@ -10,8 +10,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Usb
@@ -20,10 +18,7 @@ import androidx.compose.material.icons.filled.Wifi
 import androidx.compose.material.icons.filled.WifiOff
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExposedDropdownMenuAnchorType
-import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -35,27 +30,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.sol_denka_stockmanagement.R
 import com.example.sol_denka_stockmanagement.constant.FileTransferMethod
-import com.example.sol_denka_stockmanagement.constant.SelectTitle
-import com.example.sol_denka_stockmanagement.intent.ExpandIntent
 import com.example.sol_denka_stockmanagement.intent.InputIntent
-import com.example.sol_denka_stockmanagement.intent.ReaderSettingIntent
-import com.example.sol_denka_stockmanagement.intent.ShareIntent
-import com.example.sol_denka_stockmanagement.reader.FakeInventoryState
 import com.example.sol_denka_stockmanagement.screen.setting.components.app_setting_tab.AppSettingRow
-import com.example.sol_denka_stockmanagement.share.ButtonType
-import com.example.sol_denka_stockmanagement.screen.setting.sub_screen.app_setting.AppSettingViewModel
 import com.example.sol_denka_stockmanagement.screen.setting.sub_screen.app_setting.component.ConnectionStatusRow
 import com.example.sol_denka_stockmanagement.screen.setting.sub_screen.reader_setting.ExpandableSettingSection
-import com.example.sol_denka_stockmanagement.share.InputFieldContainer
-import com.example.sol_denka_stockmanagement.ui.theme.brightGreen
 import com.example.sol_denka_stockmanagement.ui.theme.skyBlue
 import com.example.sol_denka_stockmanagement.viewmodel.AppViewModel
 

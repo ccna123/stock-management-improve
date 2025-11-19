@@ -39,12 +39,11 @@ import com.example.sol_denka_stockmanagement.navigation.Screen
 import com.example.sol_denka_stockmanagement.model.InventoryScanResultStatusModel
 import com.example.sol_denka_stockmanagement.screen.layout.Layout
 import com.example.sol_denka_stockmanagement.share.ButtonContainer
-import com.example.sol_denka_stockmanagement.ui.theme.brightGreen
+import com.example.sol_denka_stockmanagement.ui.theme.brightGreenPrimary
 import com.example.sol_denka_stockmanagement.ui.theme.brightOrange
 import com.example.sol_denka_stockmanagement.ui.theme.deepBlueSky
 import com.example.sol_denka_stockmanagement.ui.theme.paleSkyBlue
 import com.example.sol_denka_stockmanagement.viewmodel.AppViewModel
-import com.example.sol_denka_stockmanagement.screen.setting.sub_screen.reader_setting.ReaderSettingViewModel
 import com.example.sol_denka_stockmanagement.share.NetworkDialog
 import com.example.sol_denka_stockmanagement.viewmodel.ScanViewModel
 
@@ -150,7 +149,7 @@ fun InventoryCompleteScreenContent(
                         InventoryScanResultStatusModel(
                             status = InventoryScanResult.OK.displayName,
                             icon = R.drawable.scan_ok,
-                            color = brightGreen
+                            color = brightGreenPrimary
                         ),
                         InventoryScanResultStatusModel(
                             status = InventoryScanResult.SHORTAGE.displayName,

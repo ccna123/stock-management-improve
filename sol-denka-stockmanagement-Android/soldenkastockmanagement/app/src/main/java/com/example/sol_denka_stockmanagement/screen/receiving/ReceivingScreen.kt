@@ -153,7 +153,6 @@ fun ReceivingScreenContent(
                     value = if (inputState.materialSelectedItem == SelectTitle.SelectMaterial.displayName) "" else inputState.materialSelectedItem,
                     isNumeric = false,
                     hintText = SelectTitle.SelectMaterial.displayName,
-                    shape = RoundedCornerShape(13.dp),
                     onChange = { newValue ->
                         onUpdateInput(InputIntent.ChangeMissRoll(newValue))
                     },

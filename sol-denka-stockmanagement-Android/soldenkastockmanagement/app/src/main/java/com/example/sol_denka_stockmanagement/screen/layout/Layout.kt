@@ -54,7 +54,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -66,17 +65,15 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.sol_denka_stockmanagement.R
-import com.example.sol_denka_stockmanagement.ReaderControllerEntryPoint
 import com.example.sol_denka_stockmanagement.constant.ConnectionState
 import com.example.sol_denka_stockmanagement.navigation.Screen
 import com.example.sol_denka_stockmanagement.helper.ToastManager
 import com.example.sol_denka_stockmanagement.helper.ToastMessage
-import com.example.sol_denka_stockmanagement.helper.ToastType
 import com.example.sol_denka_stockmanagement.model.ReaderInfoModel
 import com.example.sol_denka_stockmanagement.share.AppDialog
 import com.example.sol_denka_stockmanagement.share.ButtonContainer
 import com.example.sol_denka_stockmanagement.share.MenuDrawer
-import com.example.sol_denka_stockmanagement.ui.theme.brightGreen
+import com.example.sol_denka_stockmanagement.ui.theme.brightGreenPrimary
 import com.example.sol_denka_stockmanagement.ui.theme.brightOrange
 import com.example.sol_denka_stockmanagement.ui.theme.deepOceanBlue
 import com.example.sol_denka_stockmanagement.ui.theme.paleSkyBlue
@@ -84,7 +81,6 @@ import com.example.sol_denka_stockmanagement.viewmodel.AppViewModel
 import com.example.sol_denka_stockmanagement.screen.setting.sub_screen.reader_setting.ReaderSettingViewModel
 import com.example.sol_denka_stockmanagement.ui.theme.orange
 import com.example.sol_denka_stockmanagement.viewmodel.ScanViewModel
-import dagger.hilt.android.EntryPointAccessors
 import kotlinx.coroutines.flow.MutableStateFlow
 
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
@@ -152,7 +148,7 @@ fun Layout(
                         else -> ""
                     },
                     textAlign = TextAlign.Center,
-                    color = if (isFileWorking) Color.Black else brightGreen
+                    color = if (isFileWorking) Color.Black else brightGreenPrimary
                 )
                 Spacer(Modifier.height(12.dp))
                 LinearProgressIndicator(
@@ -320,7 +316,7 @@ fun Layout(
                             MenuDrawer(
                                 menuName = Screen.CsvImport.displayName,
                                 icon = R.drawable.file_import,
-                                iconColor = brightGreen,
+                                iconColor = brightGreenPrimary,
                                 onClick = { onNavigate(Screen.CsvImport) }
                             )
                             HorizontalDivider()
