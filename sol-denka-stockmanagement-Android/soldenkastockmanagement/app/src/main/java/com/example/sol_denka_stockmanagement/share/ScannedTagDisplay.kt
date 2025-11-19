@@ -12,6 +12,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -21,6 +22,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.sol_denka_stockmanagement.model.InventoryItemMasterModel
+import com.example.sol_denka_stockmanagement.ui.theme.brightGreenSecondary
 
 @Composable
 fun ScannedTagDisplay(
@@ -58,6 +60,9 @@ fun ScannedTagDisplay(
             ) {
                 if (isSelectionMode) {
                     Checkbox(
+                        colors = CheckboxDefaults.colors(
+                            checkedColor = brightGreenSecondary
+                        ),
                         checked = item in selectedTags,
                         onCheckedChange = {
                             onCheckedChange(item)

@@ -41,7 +41,7 @@ fun InputFieldContainer(
     fontSize: TextUnit = 16.sp,
     enable: Boolean,
     label: String? = null,
-    iconColor: Color = Color.Unspecified,
+    iconColor: Color = brightAzure,
     isDropDown: Boolean,
     readOnly: Boolean,
     singleLine: Boolean = true,

@@ -39,7 +39,6 @@ fun ShippingSingleItem(
     onCheckedChange: () -> Unit,
     onDismissRequest: () -> Unit,
     onValueChange: (String) -> Unit,
-    onClickInput: () -> Unit,
     onClickDropDownMenuItem: (String) -> Unit
 ) {
     Row(

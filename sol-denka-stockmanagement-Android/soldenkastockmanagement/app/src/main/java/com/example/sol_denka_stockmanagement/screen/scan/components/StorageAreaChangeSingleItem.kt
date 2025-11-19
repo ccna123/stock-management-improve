@@ -7,12 +7,14 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.sol_denka_stockmanagement.constant.MaterialSelectionItem
+import com.example.sol_denka_stockmanagement.ui.theme.brightGreenSecondary
 
 @Composable
 fun StorageAreaChangeSingleItem(
@@ -35,6 +37,9 @@ fun StorageAreaChangeSingleItem(
             Text(text = tag)
         }
         Checkbox(
+            colors = CheckboxDefaults.colors(
+                checkedColor = brightGreenSecondary
+            ),
             checked = isChecked,
             onCheckedChange = { onCheckedChange() }
         )

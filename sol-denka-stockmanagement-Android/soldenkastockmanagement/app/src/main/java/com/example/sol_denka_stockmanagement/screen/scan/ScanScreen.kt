@@ -272,13 +272,13 @@ fun ScanScreen(
                                         )
                                     )
                                 },
-                                onClickInput = {
-                                    appViewModel.onExpandIntent(
-                                        ExpandIntent.CloseHandlingExpanded(
-                                            tag
-                                        )
-                                    )
-                                },
+//                                onClickInput = {
+//                                    appViewModel.onExpandIntent(
+//                                        ExpandIntent.CloseHandlingExpanded(
+//                                            tag
+//                                        )
+//                                    )
+//                                },
                                 onClickDropDownMenuItem = { method ->
                                     val finalValue =
                                         if (method == HandlingMethod.SELECTION_TITLE.displayName) ""

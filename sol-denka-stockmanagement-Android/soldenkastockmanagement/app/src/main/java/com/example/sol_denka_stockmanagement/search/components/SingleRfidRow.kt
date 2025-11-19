@@ -25,6 +25,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.sol_denka_stockmanagement.R
 import com.example.sol_denka_stockmanagement.ui.theme.brightAzure
+import com.example.sol_denka_stockmanagement.ui.theme.brightGreenSecondary
 import com.example.sol_denka_stockmanagement.ui.theme.deepOceanBlue
 
 @Composable
@@ -69,10 +70,10 @@ fun SingleRfidRow(
             onClick = { onChange() },
             shape = RoundedCornerShape(12.dp),
             colors = ButtonDefaults.buttonColors(
-                containerColor = if (isPressed == true) brightAzure else Color.White,
-                contentColor = deepOceanBlue
+                containerColor = if (isPressed == true) brightGreenSecondary else Color.White,
+                contentColor = brightAzure
             ),
-            border = BorderStroke(1.dp, if (isPressed == true) Color.Transparent else deepOceanBlue)
+            border = BorderStroke(1.dp, if (isPressed == true) Color.Transparent else brightAzure)
         ) {
             Text(
                 fontSize = 16.sp,
