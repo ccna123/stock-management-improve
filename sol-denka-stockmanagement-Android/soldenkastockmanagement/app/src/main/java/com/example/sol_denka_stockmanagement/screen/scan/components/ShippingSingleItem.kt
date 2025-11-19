@@ -1,5 +1,6 @@
 package com.example.sol_denka_stockmanagement.screen.scan.components
 
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -24,6 +25,7 @@ import com.example.sol_denka_stockmanagement.intent.ExpandIntent
 import com.example.sol_denka_stockmanagement.intent.InputIntent
 import com.example.sol_denka_stockmanagement.intent.ShareIntent
 import com.example.sol_denka_stockmanagement.share.InputFieldContainer
+import com.example.sol_denka_stockmanagement.ui.theme.brightAzure
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -66,6 +68,7 @@ fun ShippingSingleItem(
             onExpandedChange = { onExpandedChange() }) {
             InputFieldContainer(
                 modifier = Modifier
+                    .border(1.dp, color = brightAzure, RoundedCornerShape(13.dp))
                     .menuAnchor(
                         type = ExposedDropdownMenuAnchorType.PrimaryNotEditable,
                         enabled = true
@@ -79,6 +82,7 @@ fun ShippingSingleItem(
                 readOnly = true,
                 isDropDown = true,
                 enable = true,
+                iconColor = brightAzure,
                 onClick = { onClickInput() },
             )
             ExposedDropdownMenu(

@@ -47,6 +47,8 @@ import com.example.sol_denka_stockmanagement.screen.scan.components.StorageAreaC
 import com.example.sol_denka_stockmanagement.share.ButtonContainer
 import com.example.sol_denka_stockmanagement.ui.theme.brightAzure
 import com.example.sol_denka_stockmanagement.ui.theme.deepOceanBlue
+import com.example.sol_denka_stockmanagement.ui.theme.orange
+import com.example.sol_denka_stockmanagement.ui.theme.tealGreen
 import com.example.sol_denka_stockmanagement.viewmodel.AppViewModel
 import com.example.sol_denka_stockmanagement.viewmodel.ScanViewModel
 import kotlinx.coroutines.launch
@@ -110,6 +112,7 @@ fun ScanScreen(
                         R.string.scan_start
                     ),
                     shape = RoundedCornerShape(10.dp),
+                    containerColor = if (isPerformingInventory) orange else tealGreen,
                     modifier = Modifier
                         .shadow(
                             elevation = 13.dp,
@@ -208,7 +211,6 @@ fun ScanScreen(
                 ) {
                     ButtonContainer(
                         modifier = Modifier
-                            .border(1.dp, color = deepOceanBlue, shape = RoundedCornerShape(12.dp))
                             .fillMaxWidth(),
                         buttonText = stringResource(
                             R.string.bulk_register,
@@ -319,7 +321,7 @@ fun ScanScreen(
                     }
 
                     Spacer(modifier = Modifier.height(10.dp))
-                    HorizontalDivider()
+                    HorizontalDivider(color = brightAzure)
                     Spacer(modifier = Modifier.height(10.dp))
                 }
             }

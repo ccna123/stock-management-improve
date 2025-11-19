@@ -64,6 +64,7 @@ import com.example.sol_denka_stockmanagement.screen.setting.sub_screen.reader_se
 import com.example.sol_denka_stockmanagement.viewmodel.ScanViewModel
 import com.example.sol_denka_stockmanagement.share.RadioPowerDialog
 import com.example.sol_denka_stockmanagement.state.GeneralState
+import com.example.sol_denka_stockmanagement.ui.theme.tealGreen
 import kotlinx.coroutines.launch
 
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
@@ -240,7 +241,7 @@ fun SearchTagsScreen(
                         modifier = Modifier.size(20.dp)
                     )
                 },
-                containerColor = if (isPerformingInventory) orange else brightAzure,
+                containerColor = if (isPerformingInventory) orange else tealGreen,
                 onClick = {
                     scope.launch {
                         if (isPerformingInventory) scanViewModel.stopInventory() else scanViewModel.startInventory()

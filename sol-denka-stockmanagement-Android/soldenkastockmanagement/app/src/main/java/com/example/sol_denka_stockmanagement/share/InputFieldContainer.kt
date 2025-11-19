@@ -25,6 +25,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.sol_denka_stockmanagement.ui.theme.paleSkyBlue
 import androidx.compose.ui.graphics.Shape // Correct Shape import
+import com.example.sol_denka_stockmanagement.ui.theme.brightAzure
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -40,6 +41,7 @@ fun InputFieldContainer(
     height: Dp = 55.dp,
     borderColor: Color = paleSkyBlue,
     label: String? = null,
+    iconColor: Color = Color.Unspecified,
     isDropDown: Boolean,
     readOnly: Boolean,
     singleLine: Boolean = true,
@@ -84,7 +86,8 @@ fun InputFieldContainer(
                 Icon(
                     modifier = Modifier.size(45.dp),
                     imageVector = Icons.Default.ArrowDropDown,
-                    contentDescription = "Dropdown Arrow"
+                    contentDescription = "Dropdown Arrow",
+                    tint = iconColor
                 )
             }
         }

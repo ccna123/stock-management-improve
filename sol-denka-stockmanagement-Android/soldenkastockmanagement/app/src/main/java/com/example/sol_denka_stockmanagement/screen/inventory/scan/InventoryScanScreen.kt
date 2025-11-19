@@ -67,6 +67,7 @@ import com.example.sol_denka_stockmanagement.share.AppDialog
 import com.example.sol_denka_stockmanagement.share.RadioPowerDialog
 import com.example.sol_denka_stockmanagement.ui.theme.brightAzure
 import com.example.sol_denka_stockmanagement.ui.theme.brightOrange
+import com.example.sol_denka_stockmanagement.ui.theme.tealGreen
 import com.example.sol_denka_stockmanagement.viewmodel.ScanViewModel
 import kotlinx.coroutines.launch
 
@@ -337,7 +338,7 @@ fun InventoryScanScreen(
                                 modifier = Modifier.size(20.dp)
                             )
                         },
-                        containerColor = if (isPerformingInventory) orange else brightAzure,
+                        containerColor = if (isPerformingInventory) orange else tealGreen,
                         onClick = {
                             scope.launch {
                                 if (isPerformingInventory) scanViewModel.stopInventory() else scanViewModel.startInventory()

@@ -45,6 +45,7 @@ import com.example.sol_denka_stockmanagement.screen.setting.sub_screen.reader_se
 import com.example.sol_denka_stockmanagement.ui.theme.brightAzure
 import com.example.sol_denka_stockmanagement.ui.theme.deepBlueSky
 import com.example.sol_denka_stockmanagement.ui.theme.paleSkyBlue
+import com.example.sol_denka_stockmanagement.ui.theme.tealGreen
 import kotlinx.coroutines.launch
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
@@ -94,7 +95,7 @@ fun ReceivingScanScreen(
                             modifier = Modifier.size(20.dp)
                         )
                     },
-                    containerColor = if (isPerformingInventory) Color.Red else brightAzure,
+                    containerColor = if (isPerformingInventory) Color.Red else tealGreen,
                     onClick = {
                         scope.launch {
                             if (isPerformingInventory) scanViewModel.stopInventory() else scanViewModel.startInventory()
