@@ -58,7 +58,7 @@ class ReaderSettingViewModel @Inject constructor(
                                 FakeBeeperVolume.HIGH_BEEP
                             }
                         },
-                        tagPopulation = info.tagPopulation,
+                        tagPopulation = info.tagPopulation.toString(),
                         rfidSession = info.rfidSession,
                         tagAccessFlag = info.tagAccessFlag
                     )
@@ -152,7 +152,7 @@ class ReaderSettingViewModel @Inject constructor(
         val channelResult =
             readerController.setChannel(_readerSettingState.value.enabledRfidChannel)
         val tagPopulationResult =
-            readerController.setTagPopulation(_readerSettingState.value.tagPopulation)
+            readerController.setTagPopulation(_readerSettingState.value.tagPopulation.toShort())
         if (sessionResult && tagAccessFlagResult && radioPowerResult && buzzerVolumeResult && channelResult && tagPopulationResult) {
             readerController.emitUpdatedInfoFromFake()
             initialReaderSettingsState.value = _readerSettingState.value

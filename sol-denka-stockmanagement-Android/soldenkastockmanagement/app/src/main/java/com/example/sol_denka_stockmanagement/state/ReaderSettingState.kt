@@ -17,7 +17,7 @@ data class ReaderSettingState(
     // Settings-specific fields (merged from SettingState)
     var radioPowerSliderPosition: Int = 0,
     var rfidSession: FakeSession = FakeSession.SESSION_S0,
-    var tagPopulation: Short = 0,
+    var tagPopulation: String = "",
     var linkProfile: Int = 1,
     var tagAccessFlag: FakeInventoryState = FakeInventoryState.INVENTORY_STATE_AB_FLIP,
     var enabledRfidChannel: List<FakeChannel> = emptyList(),

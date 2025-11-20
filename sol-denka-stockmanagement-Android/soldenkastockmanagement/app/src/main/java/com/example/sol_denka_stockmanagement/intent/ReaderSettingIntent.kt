@@ -9,7 +9,7 @@ sealed interface ReaderSettingIntent {
     data class ChangeVolume(val newValue: FakeBeeperVolume): ReaderSettingIntent
     data class ChangeRadioPower(val newValue: Int): ReaderSettingIntent
     data class ChangeSession(val newValue: FakeSession): ReaderSettingIntent
-    data class ChangeTagPopulation(val newValue: Short): ReaderSettingIntent
+    data class ChangeTagPopulation(val newValue: String): ReaderSettingIntent
     data class ChangeTagAccessFlag(val newValue: FakeInventoryState): ReaderSettingIntent
     data class ChangeUsedChannel(val newValue: List<FakeChannel>): ReaderSettingIntent
     data class ChangeRadioPowerSliderPosition(val newValue: Int): ReaderSettingIntent
