@@ -91,9 +91,10 @@ fun HomeScreen(
                 Spacer(Modifier.height(12.dp))
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.Center
+                    horizontalArrangement = Arrangement.SpaceEvenly
                 ) {
                     ButtonContainer(
+                        modifier = Modifier.weight(1f),
                         buttonText = stringResource(R.string.ok),
                         onClick = {
                             showExitDialog = false
@@ -102,6 +103,7 @@ fun HomeScreen(
                     )
                     Spacer(modifier = Modifier.width(10.dp))
                     ButtonContainer(
+                        modifier = Modifier.weight(1f),
                         buttonText = stringResource(R.string.close),
                         containerColor = Color.Red,
                         onClick = {

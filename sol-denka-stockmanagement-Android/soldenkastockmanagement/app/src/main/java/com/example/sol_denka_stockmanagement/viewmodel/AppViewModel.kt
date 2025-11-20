@@ -381,6 +381,7 @@ class AppViewModel @Inject constructor(
                 _perTagChecked.value = emptyMap()
                 _selectedCount.value = 0
                 _showBottomSheet.value = false
+                _isAllSelected.value = false
                 bottomSheetChosenMethod.value = HandlingMethod.USE.displayName
             }
         }

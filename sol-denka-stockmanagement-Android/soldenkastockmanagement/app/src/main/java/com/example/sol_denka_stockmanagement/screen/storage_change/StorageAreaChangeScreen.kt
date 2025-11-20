@@ -43,10 +43,12 @@ import com.example.sol_denka_stockmanagement.constant.SelectTitle
 import com.example.sol_denka_stockmanagement.constant.StockAreaItem
 import com.example.sol_denka_stockmanagement.intent.ExpandIntent
 import com.example.sol_denka_stockmanagement.intent.InputIntent
+import com.example.sol_denka_stockmanagement.model.ScanResultRowModel
 import com.example.sol_denka_stockmanagement.navigation.Screen
 import com.example.sol_denka_stockmanagement.screen.layout.Layout
 import com.example.sol_denka_stockmanagement.share.ButtonContainer
 import com.example.sol_denka_stockmanagement.share.InputFieldContainer
+import com.example.sol_denka_stockmanagement.share.ScanResultTable
 import com.example.sol_denka_stockmanagement.share.TableCell
 import com.example.sol_denka_stockmanagement.ui.theme.paleSkyBlue
 import com.example.sol_denka_stockmanagement.viewmodel.AppViewModel
@@ -108,59 +110,20 @@ fun StorageAreaChangeScreen(
             item {
                 Text(text = stringResource(R.string.planned_register_item_number, selectedCount))
                 Spacer(modifier = Modifier.height(18.dp))
-                Column{
-                    val localTempFontSize = compositionLocalOf { 13.sp }
-                    CompositionLocalProvider(localTempFontSize provides localTempFontSize.current) {
-                        Row(
-                            modifier = Modifier
-                                .background(color = paleSkyBlue)
-                                .fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween
-                        ) {
-                            TableCell(
-                                content = stringResource(R.string.item_name_title),
-                                contentSize = localTempFontSize.current,
-                                weight = 1f
-                            )
-                            TableCell(
-                                content = stringResource(R.string.item_code_title),
-                                contentSize = localTempFontSize.current,
-                                weight = 1f
-                            )
-                            TableCell(
-                                content = stringResource(R.string.storage_area),
-                                contentSize = localTempFontSize.current,
-                                weight = 1f
-                            )
-                        }
-                    }
-                    LazyColumn(
-                        modifier = Modifier
-                            .height(150.dp)
-                    ) {
-                        items(checkedMap.filter { it.value }.keys.toList()) { tag ->
-                            Row(
-                                modifier = Modifier
-                                    .height(IntrinsicSize.Min)
-                                    .fillMaxWidth(),
-                                horizontalArrangement = Arrangement.SpaceBetween
-                            ) {
-                                TableCell(
-                                    content = MaterialSelectionItem.MISS_ROLL.displayName,
-                                    weight = 1f
-                                )
-                                TableCell(
-                                    content = tag,
-                                    weight = 1f
-                                )
-                                TableCell(
-                                    content = "保管場所A",
-                                    weight = 1f
-                                )
-                            }
-                        }
-                    }
-                }
+                ScanResultTable(
+                    tableHeader = listOf(
+                        stringResource(R.string.item_name_title),
+                        stringResource(R.string.item_code_title),
+                        stringResource(R.string.storage_area)
+                    ),
+                    scanResult = checkedMap.filter { it.value }.keys.toList().map { tag ->
+                        ScanResultRowModel(
+                            itemName = MaterialSelectionItem.MISS_ROLL.displayName,
+                            itemCode = tag,
+                            lastColumn = "保管場所A"
+                        )
+                    },
+                )
                 Spacer(modifier = Modifier.height(20.dp))
                 ExposedDropdownMenuBox(
                     expanded = expandState.stockAreaExpanded,

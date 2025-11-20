@@ -201,7 +201,7 @@ fun ScanScreen(
                 )
             }
             Spacer(modifier = Modifier.height(5.dp))
-            HorizontalDivider()
+            HorizontalDivider(color = brightAzure)
             Spacer(modifier = Modifier.height(10.dp))
             if (prevScreenNameId == Screen.Shipping.routeId) {
                 Box(

@@ -21,19 +21,23 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.sol_denka_stockmanagement.R
 import com.example.sol_denka_stockmanagement.constant.MaterialSelectionItem
 import com.example.sol_denka_stockmanagement.intent.InputIntent
+import com.example.sol_denka_stockmanagement.model.ScanResultRowModel
 import com.example.sol_denka_stockmanagement.navigation.Screen
 import com.example.sol_denka_stockmanagement.screen.layout.Layout
 import com.example.sol_denka_stockmanagement.share.ButtonContainer
 import com.example.sol_denka_stockmanagement.share.InputFieldContainer
+import com.example.sol_denka_stockmanagement.share.ScanResultTable
 import com.example.sol_denka_stockmanagement.ui.theme.paleSkyBlue
 import com.example.sol_denka_stockmanagement.viewmodel.AppViewModel
 
@@ -49,6 +53,7 @@ fun ShippingScreen(
     val expandState = appViewModel.expandState.value
     val inputState = appViewModel.inputState.value
     val generalState = appViewModel.generalState.value
+    val checkedMap by appViewModel.perTagHandlingMethod.collectAsStateWithLifecycle()
 
     Layout(
         topBarText = stringResource(R.string.shipping),
@@ -88,46 +93,23 @@ fun ShippingScreen(
                 .imePadding()
         ) {
             item {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .border(1.dp, color = paleSkyBlue, shape = RoundedCornerShape(15.dp))
-                ) {
-                    Column(
-                        modifier = Modifier
-                            .padding(vertical = 16.dp, horizontal = 10.dp)
-                            .fillMaxWidth(),
-                    ) {
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.spacedBy(10.dp)
-                        ) {
-                            Text(
-                                text = "${stringResource(R.string.material_name)}:",
-                                modifier = Modifier.alignByBaseline()
-                            )
-                            Text(
-                                text = MaterialSelectionItem.MISS_ROLL.displayName,
-                                modifier = Modifier.alignByBaseline()
-                            )
-                        }
-                        Spacer(modifier = Modifier.height(5.dp))
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.spacedBy(10.dp)
-                        ) {
-                            Text(
-                                text = "${stringResource(R.string.quantity)}:",
-                                modifier = Modifier.alignByBaseline()
-                            )
-//                            Text(
-//                                text = generalState.selectedTags1.size.toString(),
-//                                modifier = Modifier.alignByBaseline()
-//                            )
-                        }
-                    }
-                }
-                Spacer(modifier = Modifier.height(10.dp))
+                Text(text = stringResource(R.string.planned_register_item_number))
+                Spacer(modifier = Modifier.height(18.dp))
+                ScanResultTable(
+                    tableHeader = listOf(
+                        stringResource(R.string.item_name_title),
+                        stringResource(R.string.item_code_title),
+                        stringResource(R.string.handling_method)
+                    ),
+                    scanResult = checkedMap.keys.map { tag ->
+                        ScanResultRowModel(
+                            itemName = MaterialSelectionItem.MISS_ROLL.displayName,
+                            itemCode = tag,
+                            lastColumn = checkedMap[tag] ?: "未設定"
+                        )
+                    },
+                )
+                Spacer(modifier = Modifier.height(20.dp))
                 InputFieldContainer(
                     modifier = Modifier.fillMaxWidth(),
                     value = inputState.remark,

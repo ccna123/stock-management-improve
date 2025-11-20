@@ -40,6 +40,7 @@
     <string name="register_shipping">出庫登録</string>
     <string name="inventory_start">棚卸開始</string>
     <string name="handling_method_hint">処理方法入力</string>
+    <string name="handling_method">処理方法</string>
     <string name="remark_hint">備考入力</string>
     <string name="remark">備考</string>
     <string name="finish_search">探索完了</string>
