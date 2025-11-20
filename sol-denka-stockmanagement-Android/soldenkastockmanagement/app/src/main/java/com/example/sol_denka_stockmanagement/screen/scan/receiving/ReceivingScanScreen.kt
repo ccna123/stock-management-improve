@@ -150,6 +150,7 @@ fun ReceivingScanScreenContent(
     ) {
         Box(
             modifier = Modifier
+                .padding(10.dp)
                 // ✨ Add the shadow first, with clip disabled so the shadow can extend beyond the shape
                 .shadow(
                     elevation = 3.dp,
