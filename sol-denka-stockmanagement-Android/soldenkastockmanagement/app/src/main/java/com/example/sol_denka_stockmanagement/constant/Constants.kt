@@ -23,7 +23,6 @@ enum class HandlingMethod(val displayName: String) {
 
 enum class MaterialSelectionItem(val displayName: String) {
     MISS_ROLL("ミスロール"),
-    PAPER_CORE("紙管"),
     PACKING_STYLE("荷姿"),
     LITER_CAN("一斗缶"),
     PELLET("ペレット"),

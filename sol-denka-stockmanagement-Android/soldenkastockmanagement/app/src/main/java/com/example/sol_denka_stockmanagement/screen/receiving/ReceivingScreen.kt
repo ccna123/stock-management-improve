@@ -2,9 +2,13 @@ package com.example.sol_denka_stockmanagement.screen.receiving
 
 import android.os.Build
 import androidx.annotation.RequiresApi
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -30,6 +34,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
@@ -138,27 +143,59 @@ fun ReceivingScreen(
                             MaterialSelectionItem.PACKING_STYLE.displayName,
                             MaterialSelectionItem.PELLET.displayName,
                         )
-                    ) {
+                    ) { item ->
+
+                        val selected = inputState.materialSelectedItem == item
+
+                        // 🔵 Animated background color
+                        val bgColor by animateColorAsState(
+                            targetValue = if (selected) brightAzure else Color.Transparent,
+                            animationSpec = tween(250)
+                        )
+
+                        // 🔘 Animated text color
+                        val textColor by animateColorAsState(
+                            targetValue = if (selected) Color.White else Color.Black,
+                            animationSpec = tween(250)
+                        )
+
+                        // ⬜ Animated border thickness
+                        val borderWidth by animateDpAsState(
+                            targetValue = if (selected) 0.dp else 1.dp,
+                            animationSpec = tween(200)
+                        )
+
+                        // ⤵ Animated padding for a “pop” effect
+                        val horizontalPadding by animateDpAsState(
+                            targetValue = if (selected) 14.dp else 10.dp,
+                            animationSpec = tween(180)
+                        )
+
                         Text(
+                            text = item,
+                            color = textColor,
                             modifier = Modifier
                                 .clickable(
-                                    onClick = {
-                                        appViewModel.onGeneralIntent(
-                                            ShareIntent.ChangeTabInReceivingScreen(
-                                                it
-                                            )
-                                        )
-                                    }
+                                    interactionSource = remember { MutableInteractionSource() },
+                                    indication = null,
+                                ) {
+                                    appViewModel.onGeneralIntent(
+                                        ShareIntent.ChangeTabInReceivingScreen(item)
+                                    )
+                                }
+                                .background(
+                                    color = bgColor,
+                                    shape = RoundedCornerShape(12.dp)
                                 )
-                                .background(color = if (inputState.materialSelectedItem == it) brightAzure else Color.Unspecified, shape = RoundedCornerShape(12.dp))
                                 .border(
-                                    width = if (inputState.materialSelectedItem == it) 0.dp else 1.dp,
+                                    width = borderWidth,
                                     color = brightAzure,
                                     shape = RoundedCornerShape(12.dp)
                                 )
-                                .padding(10.dp),
-                            color = if (inputState.materialSelectedItem == it) Color.White else Color.Black,
-                            text = it
+                                .padding(
+                                    vertical = 10.dp,
+                                    horizontal = horizontalPadding  // animated “pop”
+                                )
                         )
                     }
                 }
@@ -250,8 +287,6 @@ fun ReceivingScreen(
                         },
                         onPackingStyleExpand = { appViewModel.onExpandIntent(ExpandIntent.TogglePackingStyleExpanded) },
                     )
-
-                    MaterialSelectionItem.PAPER_CORE.displayName -> {}
                     MaterialSelectionItem.LITER_CAN.displayName -> {
                         LiterInput(
                             thickness = inputState.thickness,
