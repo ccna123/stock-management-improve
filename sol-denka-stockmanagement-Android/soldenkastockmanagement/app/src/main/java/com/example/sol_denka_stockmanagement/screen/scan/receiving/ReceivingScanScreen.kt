@@ -44,6 +44,7 @@ import com.example.sol_denka_stockmanagement.viewmodel.AppViewModel
 import com.example.sol_denka_stockmanagement.screen.setting.sub_screen.reader_setting.ReaderSettingViewModel
 import com.example.sol_denka_stockmanagement.ui.theme.brightAzure
 import com.example.sol_denka_stockmanagement.ui.theme.deepBlueSky
+import com.example.sol_denka_stockmanagement.ui.theme.orange
 import com.example.sol_denka_stockmanagement.ui.theme.paleSkyBlue
 import com.example.sol_denka_stockmanagement.ui.theme.tealGreen
 import kotlinx.coroutines.launch
@@ -72,6 +73,7 @@ fun ReceivingScanScreen(
         onNavigate = onNavigate,
         hasBottomBar = true,
         appViewModel = appViewModel,
+        scanViewModel = scanViewModel,
         bottomButton = {
             Row(
                 horizontalArrangement = Arrangement.spacedBy(10.dp)
@@ -95,7 +97,7 @@ fun ReceivingScanScreen(
                             modifier = Modifier.size(20.dp)
                         )
                     },
-                    containerColor = if (isPerformingInventory) Color.Red else tealGreen,
+                    containerColor = if (isPerformingInventory) orange else tealGreen,
                     onClick = {
                         scope.launch {
                             if (isPerformingInventory) scanViewModel.stopInventory() else scanViewModel.startInventory()
