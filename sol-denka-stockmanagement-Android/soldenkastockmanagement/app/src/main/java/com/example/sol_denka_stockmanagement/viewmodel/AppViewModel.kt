@@ -384,6 +384,8 @@ class AppViewModel @Inject constructor(
                 _isAllSelected.value = false
                 bottomSheetChosenMethod.value = HandlingMethod.USE.displayName
             }
+
+            is ShareIntent.ChangeTabInReceivingScreen -> _inputState.value = _inputState.value.copy(materialSelectedItem = intent.tab)
         }
     }
     fun onExpandIntent(intent: ExpandIntent) {

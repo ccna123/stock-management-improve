@@ -21,4 +21,5 @@ sealed interface ShareIntent {
     data class ChangePerTagHandlingMethod(val tag: String, val method: String): ShareIntent
     data class ShowBottomSheet(val showBottomSheet: Boolean): ShareIntent
     data object ResetState: ShareIntent
+    data class ChangeTabInReceivingScreen(val tab: String): ShareIntent
 }

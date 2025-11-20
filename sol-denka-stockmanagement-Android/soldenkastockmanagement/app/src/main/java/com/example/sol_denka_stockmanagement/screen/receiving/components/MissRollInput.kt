@@ -27,7 +27,6 @@ fun MissRollInput(
     thickness: String,
     rollingMachineInfo: String,
     stockArea: String,
-    stockAreaExpanded: Boolean,
     length: String,
     packingStyle: String,
     packingStyleExpanded: Boolean,
@@ -37,7 +36,6 @@ fun MissRollInput(
     onStockAreaChange: (String) -> Unit,
     onPackingStyleChange: (String) -> Unit,
     onPackingStyleExpand: (Boolean) -> Unit,
-    onStockAreaExpand: (Boolean) -> Unit,
 ) {
     InputFieldContainer(
         modifier = Modifier.fillMaxWidth(),
@@ -89,44 +87,25 @@ fun MissRollInput(
             onRollingMachineInfoChange(filteredValue)
         }
     )
-    Spacer(modifier = Modifier.height(18.dp))
-    ExposedDropdownMenuBox(
-        expanded = stockAreaExpanded,
-        onExpandedChange = { onStockAreaExpand(it) }) {
-        InputFieldContainer(
-            modifier = Modifier.menuAnchor(type = ExposedDropdownMenuAnchorType.PrimaryNotEditable, enabled = true).fillMaxWidth(),
-            value = if (stockArea == StockAreaItem.SELECTION_TITLE.displayName) "" else stockArea,
-            hintText = StockAreaItem.SELECTION_TITLE.displayName,
-            isNumeric = false,
-            onChange = { newValue ->
-                onStockAreaChange(newValue)
-            },
-            readOnly = true,
-            isDropDown = true,
-            enable = true,
-        )
-        ExposedDropdownMenu(
-            expanded = stockAreaExpanded,
-            onDismissRequest = { onStockAreaExpand(false) }
-        ) {
-            listOf(
-                StockAreaItem.SELECTION_TITLE.displayName,
-                StockAreaItem.STOCK_AREA1.displayName,
-                StockAreaItem.STOCK_AREA2.displayName,
-                StockAreaItem.STOCK_AREA3.displayName,
-                StockAreaItem.STOCK_AREA4.displayName,
-                StockAreaItem.STOCK_AREA5.displayName,
-            ).forEach { stockArea ->
-                DropdownMenuItem(
-                    text = { Text(text = stockArea) },
-                    onClick = {
-                        onStockAreaChange(stockArea)
-                        onStockAreaExpand(false)
-                    }
-                )
+    Spacer(modifier = Modifier.height(10.dp))
+    InputFieldContainer(
+        modifier = Modifier.fillMaxWidth(),
+        value = stockArea,
+        label = stringResource(R.string.storage_area),
+        hintText = stringResource(R.string.storage_area_hint),
+        isNumeric = false,
+        shape = RoundedCornerShape(13.dp),
+        readOnly = false,
+        isDropDown = false,
+        enable = true,
+        onChange = { newValue ->
+            val filteredValue = newValue.filter { char ->
+                (char.isLetterOrDigit() && char.toString()
+                    .toByteArray().size == 1) || char == '-'
             }
+            onStockAreaChange(filteredValue)
         }
-    }
+    )
     Spacer(modifier = Modifier.height(18.dp))
     ExposedDropdownMenuBox(
         expanded = packingStyleExpanded,

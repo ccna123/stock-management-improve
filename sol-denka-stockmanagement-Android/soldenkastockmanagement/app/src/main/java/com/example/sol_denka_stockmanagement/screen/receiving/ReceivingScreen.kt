@@ -2,6 +2,11 @@ package com.example.sol_denka_stockmanagement.screen.receiving
 
 import android.os.Build
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -9,6 +14,8 @@ import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -16,6 +23,7 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuAnchorType
 import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -47,7 +55,10 @@ import com.example.sol_denka_stockmanagement.viewmodel.AppViewModel
 import com.example.sol_denka_stockmanagement.viewmodel.ScanViewModel
 import com.example.sol_denka_stockmanagement.screen.receiving.components.LiterInput
 import com.example.sol_denka_stockmanagement.screen.receiving.components.MissRollInput
+import com.example.sol_denka_stockmanagement.ui.theme.brightAzure
+import com.example.sol_denka_stockmanagement.ui.theme.skyBlue
 
+@OptIn(ExperimentalMaterial3Api::class)
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @Composable
 fun ReceivingScreen(
@@ -101,135 +112,181 @@ fun ReceivingScreen(
         onBackArrowClick = {
             onNavigate(Screen.ReceivingScan)
         }) { paddingValues ->
-        ReceivingScreenContent(
-            modifier = Modifier.padding(paddingValues),
-            appViewModel = appViewModel,
-            errorState = errorState,
-            expandState = expandState,
-            inputState = inputState,
-            scannedTag = scannedTag2,
-            onUpdateInput = { intent ->
-                appViewModel.onInputIntent(intent)
-            }
-        )
-    }
-}
-
-@RequiresApi(Build.VERSION_CODES.TIRAMISU)
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun ReceivingScreenContent(
-    modifier: Modifier,
-    appViewModel: AppViewModel,
-    errorState: ErrorState,
-    scannedTag: String,
-    expandState: ExpandState,
-    inputState: InputState,
-    onUpdateInput: (InputIntent) -> Unit,
-) {
-    LazyColumn(
-        modifier = modifier
-            .imePadding()
-            .padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        item {
-            Text(
-                text = stringResource(
-                    R.string.item_code,
-                    scannedTag.takeIf { it.isNotEmpty() } ?: "")
-            )
-            Spacer(modifier = Modifier.height(20.dp))
-            ExposedDropdownMenuBox(
-                expanded = expandState.materialSelection,
-                onExpandedChange = { appViewModel.onExpandIntent(ExpandIntent.ToggleMissRollExpanded) }) {
-                InputFieldContainer(
-                    modifier = Modifier
-                        .menuAnchor(
-                            type = ExposedDropdownMenuAnchorType.PrimaryNotEditable,
-                            enabled = true
-                        )
-                        .fillMaxWidth(),
-                    value = if (inputState.materialSelectedItem == SelectTitle.SelectMaterial.displayName) "" else inputState.materialSelectedItem,
-                    isNumeric = false,
-                    hintText = SelectTitle.SelectMaterial.displayName,
-                    onChange = { newValue ->
-                        onUpdateInput(InputIntent.ChangeMissRoll(newValue))
-                    },
-                    readOnly = true,
-                    isDropDown = true,
-                    enable = true,
-//                    onClick = {
-//                        appViewModel.onExpandIntent(ExpandIntent.ToggleMissRollExpanded)
-//                    },
+        LazyColumn(
+            modifier = Modifier
+                .padding(paddingValues)
+                .imePadding()
+                .padding(16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            item {
+                Text(
+                    text = stringResource(
+                        R.string.item_code,
+                        scannedTag2.takeIf { it.isNotEmpty() } ?: "")
                 )
-                ExposedDropdownMenu(
-                    expanded = expandState.materialSelection,
-                    onDismissRequest = { appViewModel.onExpandIntent(ExpandIntent.ToggleMissRollExpanded) }
+                Spacer(modifier = Modifier.height(20.dp))
+                LazyRow(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(10.dp)
                 ) {
-                    listOf(
-                        SelectTitle.SelectMaterial.displayName,
-                        MaterialSelectionItem.MISS_ROLL.displayName,
-                        MaterialSelectionItem.LITER_CAN.displayName,
-                        MaterialSelectionItem.PACKING_STYLE.displayName,
-                        MaterialSelectionItem.PAPER_CORE.displayName,
-                        MaterialSelectionItem.PELLET.displayName,
-                    ).forEach { missRoll ->
-                        DropdownMenuItem(
-                            text = { Text(text = missRoll) },
-                            onClick = {
-                                appViewModel.apply {
-                                    onInputIntent(InputIntent.ChangeMissRoll(if (missRoll == SelectTitle.SelectMissRoll.displayName) "" else missRoll))
-                                    onExpandIntent(ExpandIntent.ToggleMissRollExpanded)
-                                }
-                            }
+                    items(
+                        listOf(
+                            MaterialSelectionItem.MISS_ROLL.displayName,
+                            MaterialSelectionItem.LITER_CAN.displayName,
+                            MaterialSelectionItem.PACKING_STYLE.displayName,
+                            MaterialSelectionItem.PELLET.displayName,
+                        )
+                    ) {
+                        Text(
+                            modifier = Modifier
+                                .clickable(
+                                    onClick = {
+                                        appViewModel.onGeneralIntent(
+                                            ShareIntent.ChangeTabInReceivingScreen(
+                                                it
+                                            )
+                                        )
+                                    }
+                                )
+                                .background(color = if (inputState.materialSelectedItem == it) brightAzure else Color.Unspecified, shape = RoundedCornerShape(12.dp))
+                                .border(
+                                    width = if (inputState.materialSelectedItem == it) 0.dp else 1.dp,
+                                    color = brightAzure,
+                                    shape = RoundedCornerShape(12.dp)
+                                )
+                                .padding(10.dp),
+                            color = if (inputState.materialSelectedItem == it) Color.White else Color.Black,
+                            text = it
                         )
                     }
                 }
-            }
-            Spacer(modifier = Modifier.height(20.dp))
+                Spacer(modifier = Modifier.height(10.dp))
+                HorizontalDivider(color = brightAzure)
+//                ExposedDropdownMenuBox(
+//                    expanded = expandState.materialSelection,
+//                    onExpandedChange = { appViewModel.onExpandIntent(ExpandIntent.ToggleMissRollExpanded) }) {
+//                    InputFieldContainer(
+//                        modifier = Modifier
+//                            .menuAnchor(
+//                                type = ExposedDropdownMenuAnchorType.PrimaryNotEditable,
+//                                enabled = true
+//                            )
+//                            .fillMaxWidth(),
+//                        value = if (inputState.materialSelectedItem == SelectTitle.SelectMaterial.displayName) "" else inputState.materialSelectedItem,
+//                        isNumeric = false,
+//                        hintText = SelectTitle.SelectMaterial.displayName,
+//                        onChange = { newValue ->
+//                            appViewModel.onInputIntent(InputIntent.ChangeMissRoll(newValue))
+//                        },
+//                        readOnly = true,
+//                        isDropDown = true,
+//                        enable = true,
+//                    )
+//                    ExposedDropdownMenu(
+//                        expanded = expandState.materialSelection,
+//                        onDismissRequest = { appViewModel.onExpandIntent(ExpandIntent.ToggleMissRollExpanded) }
+//                    ) {
+//                        listOf(
+//                            SelectTitle.SelectMaterial.displayName,
+//                            MaterialSelectionItem.MISS_ROLL.displayName,
+//                            MaterialSelectionItem.LITER_CAN.displayName,
+//                            MaterialSelectionItem.PACKING_STYLE.displayName,
+//                            MaterialSelectionItem.PAPER_CORE.displayName,
+//                            MaterialSelectionItem.PELLET.displayName,
+//                        ).forEach { missRoll ->
+//                            DropdownMenuItem(
+//                                text = { Text(text = missRoll) },
+//                                onClick = {
+//                                    appViewModel.apply {
+//                                        onInputIntent(InputIntent.ChangeMissRoll(if (missRoll == SelectTitle.SelectMissRoll.displayName) "" else missRoll))
+//                                        onExpandIntent(ExpandIntent.ToggleMissRollExpanded)
+//                                    }
+//                                }
+//                            )
+//                        }
+//                    }
+//                }
+                Spacer(modifier = Modifier.height(20.dp))
 
-            when (inputState.materialSelectedItem) {
-                SelectTitle.SelectMaterial.displayName -> {}
-                MaterialSelectionItem.MISS_ROLL.displayName -> MissRollInput(
-                    thickness = inputState.thickness,
-                    rollingMachineInfo = inputState.rollingMachineInfo,
-                    stockArea = inputState.stockArea,
-                    length = inputState.length,
-                    packingStyle = inputState.packingStyle,
-                    packingStyleExpanded = expandState.packingStyleExpanded,
-                    onThicknessChange = { onUpdateInput(InputIntent.ChangeThickness(it)) },
-                    onLengthChange = { onUpdateInput(InputIntent.ChangeLength(it)) },
-                    onRollingMachineInfoChange = {
-                        onUpdateInput(
-                            InputIntent.ChangeRollingMachineInfo(
-                                it
-                            )
-                        )
-                    },
-                    onStockAreaChange = { onUpdateInput(InputIntent.ChangeStockArea(it)) },
-                    onPackingStyleChange = { onUpdateInput(InputIntent.ChangePackingStyle(it)) },
-                    onPackingStyleExpand = { appViewModel.onExpandIntent(ExpandIntent.TogglePackingStyleExpanded) },
-                    stockAreaExpanded = expandState.stockAreaExpanded,
-                    onStockAreaExpand = { appViewModel.onExpandIntent(ExpandIntent.ToggleStockAreaExpanded) },
-                )
-
-                MaterialSelectionItem.PAPER_CORE.displayName -> {}
-                MaterialSelectionItem.LITER_CAN.displayName -> {
-                    LiterInput(
+                when (inputState.materialSelectedItem) {
+                    SelectTitle.SelectMaterial.displayName -> {}
+                    MaterialSelectionItem.MISS_ROLL.displayName -> MissRollInput(
                         thickness = inputState.thickness,
+                        rollingMachineInfo = inputState.rollingMachineInfo,
                         stockArea = inputState.stockArea,
-                        lotNo = inputState.lotNo,
+                        length = inputState.length,
                         packingStyle = inputState.packingStyle,
                         packingStyleExpanded = expandState.packingStyleExpanded,
-                        onThicknessChange = { onUpdateInput(InputIntent.ChangeThickness(it)) },
-                        onStockAreaChange = { onUpdateInput(InputIntent.ChangeStockArea(it)) },
-                        onLotNoChange = { onUpdateInput(InputIntent.ChangeLotNo(it)) },
-                        onPackingStyleChange = { onUpdateInput(InputIntent.ChangePackingStyle(it)) },
+                        onThicknessChange = {
+                            appViewModel.onInputIntent(
+                                InputIntent.ChangeThickness(
+                                    it
+                                )
+                            )
+                        },
+                        onLengthChange = { appViewModel.onInputIntent(InputIntent.ChangeLength(it)) },
+                        onRollingMachineInfoChange = {
+                            appViewModel.onInputIntent(
+                                InputIntent.ChangeRollingMachineInfo(
+                                    it
+                                )
+                            )
+                        },
+                        onStockAreaChange = {
+                            appViewModel.onInputIntent(
+                                InputIntent.ChangeStockArea(
+                                    it
+                                )
+                            )
+                        },
+                        onPackingStyleChange = {
+                            appViewModel.onInputIntent(
+                                InputIntent.ChangePackingStyle(
+                                    it
+                                )
+                            )
+                        },
                         onPackingStyleExpand = { appViewModel.onExpandIntent(ExpandIntent.TogglePackingStyleExpanded) },
                     )
+
+                    MaterialSelectionItem.PAPER_CORE.displayName -> {}
+                    MaterialSelectionItem.LITER_CAN.displayName -> {
+                        LiterInput(
+                            thickness = inputState.thickness,
+                            stockArea = inputState.stockArea,
+                            lotNo = inputState.lotNo,
+                            packingStyle = inputState.packingStyle,
+                            packingStyleExpanded = expandState.packingStyleExpanded,
+                            onThicknessChange = {
+                                appViewModel.onInputIntent(
+                                    InputIntent.ChangeThickness(
+                                        it
+                                    )
+                                )
+                            },
+                            onStockAreaChange = {
+                                appViewModel.onInputIntent(
+                                    InputIntent.ChangeStockArea(
+                                        it
+                                    )
+                                )
+                            },
+                            onLotNoChange = { appViewModel.onInputIntent(InputIntent.ChangeLotNo(it)) },
+                            onPackingStyleChange = {
+                                appViewModel.onInputIntent(
+                                    InputIntent.ChangePackingStyle(
+                                        it
+                                    )
+                                )
+                            },
+                            onPackingStyleExpand = { appViewModel.onExpandIntent(ExpandIntent.TogglePackingStyleExpanded) },
+                        )
+                    }
+
+                    MaterialSelectionItem.PELLET.displayName -> {}
                 }
-                MaterialSelectionItem.PELLET.displayName -> {}
             }
         }
     }
