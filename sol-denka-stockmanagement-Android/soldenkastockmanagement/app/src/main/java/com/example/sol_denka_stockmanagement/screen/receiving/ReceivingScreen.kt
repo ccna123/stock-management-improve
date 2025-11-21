@@ -131,120 +131,50 @@ fun ReceivingScreen(
                         scannedTag2.takeIf { it.isNotEmpty() } ?: "")
                 )
                 Spacer(modifier = Modifier.height(20.dp))
-                LazyRow(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(10.dp)
-                ) {
-                    items(
+                HorizontalDivider(color = brightAzure)
+                ExposedDropdownMenuBox(
+                    expanded = expandState.materialSelection,
+                    onExpandedChange = { appViewModel.onExpandIntent(ExpandIntent.ToggleMissRollExpanded) }) {
+                    InputFieldContainer(
+                        modifier = Modifier
+                            .menuAnchor(
+                                type = ExposedDropdownMenuAnchorType.PrimaryNotEditable,
+                                enabled = true
+                            )
+                            .fillMaxWidth(),
+                        value = if (inputState.materialSelectedItem == SelectTitle.SelectMaterial.displayName) "" else inputState.materialSelectedItem,
+                        isNumeric = false,
+                        hintText = SelectTitle.SelectMaterial.displayName,
+                        onChange = { newValue ->
+                            appViewModel.onInputIntent(InputIntent.ChangeMissRoll(newValue))
+                        },
+                        readOnly = true,
+                        isDropDown = true,
+                        enable = true,
+                    )
+                    ExposedDropdownMenu(
+                        expanded = expandState.materialSelection,
+                        onDismissRequest = { appViewModel.onExpandIntent(ExpandIntent.ToggleMissRollExpanded) }
+                    ) {
                         listOf(
+                            SelectTitle.SelectMaterial.displayName,
                             MaterialSelectionItem.MISS_ROLL.displayName,
                             MaterialSelectionItem.LITER_CAN.displayName,
                             MaterialSelectionItem.PACKING_STYLE.displayName,
                             MaterialSelectionItem.PELLET.displayName,
-                        )
-                    ) { item ->
-
-                        val selected = inputState.materialSelectedItem == item
-
-                        // 🔵 Animated background color
-                        val bgColor by animateColorAsState(
-                            targetValue = if (selected) brightAzure else Color.Transparent,
-                            animationSpec = tween(250)
-                        )
-
-                        // 🔘 Animated text color
-                        val textColor by animateColorAsState(
-                            targetValue = if (selected) Color.White else Color.Black,
-                            animationSpec = tween(250)
-                        )
-
-                        // ⬜ Animated border thickness
-                        val borderWidth by animateDpAsState(
-                            targetValue = if (selected) 0.dp else 1.dp,
-                            animationSpec = tween(200)
-                        )
-
-                        // ⤵ Animated padding for a “pop” effect
-                        val horizontalPadding by animateDpAsState(
-                            targetValue = if (selected) 14.dp else 10.dp,
-                            animationSpec = tween(180)
-                        )
-
-                        Text(
-                            text = item,
-                            color = textColor,
-                            modifier = Modifier
-                                .clickable(
-                                    interactionSource = remember { MutableInteractionSource() },
-                                    indication = null,
-                                ) {
-                                    appViewModel.onGeneralIntent(
-                                        ShareIntent.ChangeTabInReceivingScreen(item)
-                                    )
+                        ).forEach { missRoll ->
+                            DropdownMenuItem(
+                                text = { Text(text = missRoll) },
+                                onClick = {
+                                    appViewModel.apply {
+                                        onInputIntent(InputIntent.ChangeMissRoll(if (missRoll == SelectTitle.SelectMissRoll.displayName) "" else missRoll))
+                                        onExpandIntent(ExpandIntent.ToggleMissRollExpanded)
+                                    }
                                 }
-                                .background(
-                                    color = bgColor,
-                                    shape = RoundedCornerShape(12.dp)
-                                )
-                                .border(
-                                    width = borderWidth,
-                                    color = brightAzure,
-                                    shape = RoundedCornerShape(12.dp)
-                                )
-                                .padding(
-                                    vertical = 10.dp,
-                                    horizontal = horizontalPadding  // animated “pop”
-                                )
-                        )
+                            )
+                        }
                     }
                 }
-                Spacer(modifier = Modifier.height(10.dp))
-                HorizontalDivider(color = brightAzure)
-//                ExposedDropdownMenuBox(
-//                    expanded = expandState.materialSelection,
-//                    onExpandedChange = { appViewModel.onExpandIntent(ExpandIntent.ToggleMissRollExpanded) }) {
-//                    InputFieldContainer(
-//                        modifier = Modifier
-//                            .menuAnchor(
-//                                type = ExposedDropdownMenuAnchorType.PrimaryNotEditable,
-//                                enabled = true
-//                            )
-//                            .fillMaxWidth(),
-//                        value = if (inputState.materialSelectedItem == SelectTitle.SelectMaterial.displayName) "" else inputState.materialSelectedItem,
-//                        isNumeric = false,
-//                        hintText = SelectTitle.SelectMaterial.displayName,
-//                        onChange = { newValue ->
-//                            appViewModel.onInputIntent(InputIntent.ChangeMissRoll(newValue))
-//                        },
-//                        readOnly = true,
-//                        isDropDown = true,
-//                        enable = true,
-//                    )
-//                    ExposedDropdownMenu(
-//                        expanded = expandState.materialSelection,
-//                        onDismissRequest = { appViewModel.onExpandIntent(ExpandIntent.ToggleMissRollExpanded) }
-//                    ) {
-//                        listOf(
-//                            SelectTitle.SelectMaterial.displayName,
-//                            MaterialSelectionItem.MISS_ROLL.displayName,
-//                            MaterialSelectionItem.LITER_CAN.displayName,
-//                            MaterialSelectionItem.PACKING_STYLE.displayName,
-//                            MaterialSelectionItem.PAPER_CORE.displayName,
-//                            MaterialSelectionItem.PELLET.displayName,
-//                        ).forEach { missRoll ->
-//                            DropdownMenuItem(
-//                                text = { Text(text = missRoll) },
-//                                onClick = {
-//                                    appViewModel.apply {
-//                                        onInputIntent(InputIntent.ChangeMissRoll(if (missRoll == SelectTitle.SelectMissRoll.displayName) "" else missRoll))
-//                                        onExpandIntent(ExpandIntent.ToggleMissRollExpanded)
-//                                    }
-//                                }
-//                            )
-//                        }
-//                    }
-//                }
                 Spacer(modifier = Modifier.height(20.dp))
 
                 when (inputState.materialSelectedItem) {
