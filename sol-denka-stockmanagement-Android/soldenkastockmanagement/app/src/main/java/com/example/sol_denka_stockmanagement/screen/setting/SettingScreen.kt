@@ -222,73 +222,54 @@ fun SettingScreen(
                 onNavigate(Screen.Home)
             }
         }) { paddingValues ->
-        SettingScreenContent(
-            modifier = Modifier.padding(top = paddingValues.calculateTopPadding()),
-            appViewModel = appViewModel,
-            appSettingViewModel = appSettingViewModel,
-            generalState = generalState,
-//            appSettingState = appSettingState,
-            readerSettingViewModel = readerSettingViewModel
-        )
-    }
-}
-
-@RequiresApi(Build.VERSION_CODES.TIRAMISU)
-@Composable
-fun SettingScreenContent(
-    modifier: Modifier,
-    appViewModel: AppViewModel,
-    readerSettingViewModel: ReaderSettingViewModel,
-    appSettingViewModel: AppSettingViewModel,
-//    appSettingState: AppSettingState,
-    generalState: GeneralState,
-) {
-    Column(
-        modifier = modifier
-            .fillMaxSize()
-            .padding(
-                paddingValues = PaddingValues(
-                    top = 16.dp,
-                )
-            )
-    ) {
-        Box(
+        Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(paddingValues = PaddingValues(start = 16.dp, end = 16.dp, top = 10.dp))
-        ) {
-            OptionTabs(
-                leftTabText = stringResource(R.string.reader_setting),
-                rightTabText = stringResource(R.string.app_setting),
-                leftTab = Tab.Left,
-                rightTab = Tab.Right,
-                leftIcon = Icons.Default.QrCodeScanner,
-                rightIcon = Icons.Default.AppSettingsAlt,
-                tab = generalState.tab,
-                onChangeTab = {
-                    appViewModel.onGeneralIntent(ShareIntent.ChangeTab(it))
-                }
-            )
-        }
-        Spacer(modifier = Modifier.height(8.dp))
-        HorizontalDivider()
-        Box(
-            modifier = Modifier
+                .padding(paddingValues)
                 .fillMaxSize()
-                .imePadding()
+                .padding(
+                    paddingValues = PaddingValues(
+                        top = 16.dp,
+                    )
+                )
         ) {
-            when (generalState.tab) {
-                Tab.Left -> {
-                    ReaderSettingScreen(
-                        readerSettingViewModel = readerSettingViewModel
-                    )
-                }
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(paddingValues = PaddingValues(start = 16.dp, end = 16.dp, top = 10.dp))
+            ) {
+                OptionTabs(
+                    leftTabText = stringResource(R.string.reader_setting),
+                    rightTabText = stringResource(R.string.app_setting),
+                    leftTab = Tab.Left,
+                    rightTab = Tab.Right,
+                    leftIcon = Icons.Default.QrCodeScanner,
+                    rightIcon = Icons.Default.AppSettingsAlt,
+                    tab = generalState.tab,
+                    onChangeTab = {
+                        appViewModel.onGeneralIntent(ShareIntent.ChangeTab(it))
+                    }
+                )
+            }
+            Spacer(modifier = Modifier.height(8.dp))
+            HorizontalDivider()
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .imePadding()
+            ) {
+                when (generalState.tab) {
+                    Tab.Left -> {
+                        ReaderSettingScreen(
+                            readerSettingViewModel = readerSettingViewModel
+                        )
+                    }
 
-                Tab.Right -> {
-                    AppSettingScreen(
-                        appSettingViewModel = appSettingViewModel,
-                        appViewModel = appViewModel,
-                    )
+                    Tab.Right -> {
+                        AppSettingScreen(
+                            appSettingViewModel = appSettingViewModel,
+                            appViewModel = appViewModel,
+                        )
+                    }
                 }
             }
         }
