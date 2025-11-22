@@ -120,7 +120,7 @@ fun ReceivingScreen(
                 ),
                 canClick = inputState.materialSelectedItem != SelectTitle.SelectMaterial.displayName,
                 onClick = {},
-                buttonText = stringResource(R.string.register_receiving),
+                buttonText = stringResource(R.string.register),
             )
         },
         onBackArrowClick = {

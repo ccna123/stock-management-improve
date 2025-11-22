@@ -7,7 +7,8 @@
     <!--    ボタン名-->
     <string name="scan_start">スキャン開始</string>
     <string name="scan_stop">スキャン停止</string>
-    <string name="register_info">登録</string>
+    <string name="register">登録</string>
+    <string name="register_info">情報登録</string>
     <string name="close">閉じる</string>
     <string name="ok">はい</string>
     <string name="no">いいえ</string>
@@ -36,8 +37,6 @@
     <string name="inventory">棚卸</string>
     <string name="receiving">入庫</string>
     <string name="shipping">出庫</string>
-    <string name="register_receiving">入庫登録</string>
-    <string name="register_shipping">出庫登録</string>
     <string name="inventory_start">棚卸開始</string>
     <string name="handling_method_hint">処理方法入力</string>
     <string name="handling_method">処理方法</string>

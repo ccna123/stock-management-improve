@@ -80,7 +80,7 @@ fun ShippingScreen(
                 },
                 onClick = {
                 },
-                buttonText = stringResource(R.string.register_shipping),
+                buttonText = stringResource(R.string.register),
             )
         },
         onBackArrowClick = {
