@@ -1,7 +1,5 @@
-package com.example.sol_denka_stockmanagement.screen.scan.receiving
+package com.example.sol_denka_stockmanagement.screen.scan.components
 
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -17,135 +15,28 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Timer
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.sol_denka_stockmanagement.R
-import com.example.sol_denka_stockmanagement.navigation.Screen
-import com.example.sol_denka_stockmanagement.share.ButtonContainer
-import com.example.sol_denka_stockmanagement.screen.layout.Layout
-import com.example.sol_denka_stockmanagement.viewmodel.ScanViewModel
-import com.example.sol_denka_stockmanagement.viewmodel.AppViewModel
-import com.example.sol_denka_stockmanagement.screen.setting.sub_screen.reader_setting.ReaderSettingViewModel
-import com.example.sol_denka_stockmanagement.ui.theme.brightAzure
 import com.example.sol_denka_stockmanagement.ui.theme.deepBlueSky
-import com.example.sol_denka_stockmanagement.ui.theme.orange
 import com.example.sol_denka_stockmanagement.ui.theme.paleSkyBlue
-import com.example.sol_denka_stockmanagement.ui.theme.tealGreen
-import kotlinx.coroutines.launch
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 
-@RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @Composable
-fun ReceivingScanScreen(
-    scanViewModel: ScanViewModel,
-    appViewModel: AppViewModel,
-    onNavigate: (Screen) -> Unit
-) {
-    val scannedTag2 by scanViewModel.scannedTag2.collectAsStateWithLifecycle()
-    val isPerformingInventory by scanViewModel.isPerformingInventory.collectAsStateWithLifecycle()
-    val scope = rememberCoroutineScope()
-
-    LaunchedEffect(Unit) {
-        scanViewModel.setEnableScan(enabled = true)
-    }
-
-    Layout(
-        topBarText = Screen.ReceivingScan.displayName,
-        topBarIcon = Icons.AutoMirrored.Filled.ArrowBack,
-        currentScreenNameId = Screen.ReceivingScan.routeId,
-        onNavigate = onNavigate,
-        hasBottomBar = true,
-        appViewModel = appViewModel,
-        scanViewModel = scanViewModel,
-        bottomButton = {
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(10.dp)
-            ) {
-                ButtonContainer(
-                    buttonText = if (isPerformingInventory) stringResource(R.string.scan_stop) else stringResource(
-                        R.string.scan_start
-                    ),
-                    shape = RoundedCornerShape(10.dp),
-                    modifier = Modifier.shadow(
-                        elevation = 13.dp,
-                        clip = true,
-                        ambientColor = Color.Gray.copy(alpha = 0.5f),
-                        spotColor = Color.DarkGray.copy(alpha = 0.7f)
-                    ),
-                    icon = {
-                        Icon(
-                            painter = painterResource(R.drawable.scanner),
-                            contentDescription = null,
-                            tint = Color.White,
-                            modifier = Modifier.size(20.dp)
-                        )
-                    },
-                    containerColor = if (isPerformingInventory) orange else tealGreen,
-                    onClick = {
-                        scope.launch {
-                            if (isPerformingInventory) scanViewModel.stopInventory() else scanViewModel.startInventory()
-                        }
-                    }
-                )
-                ButtonContainer(
-                    buttonText = stringResource(R.string.register_info),
-                    shape = RoundedCornerShape(10.dp),
-                    modifier = Modifier.shadow(
-                        elevation = 13.dp,
-                        clip = true,
-                        ambientColor = Color.Gray.copy(alpha = 0.5f),
-                        spotColor = Color.DarkGray.copy(alpha = 0.7f)
-                    ),
-                    canClick = scannedTag2.isNotEmpty(),
-                    icon = {
-                        Icon(
-                            painter = painterResource(R.drawable.register),
-                            contentDescription = null,
-                            tint = Color.White,
-                            modifier = Modifier.size(20.dp)
-                        )
-                    },
-                    onClick = {
-                        onNavigate(Screen.Receiving)
-                    }
-                )
-            }
-        },
-        onBackArrowClick = {
-            onNavigate(Screen.Home)
-        }) { paddingValues ->
-        ReceivingScanScreenContent(
-            modifier = Modifier.padding(paddingValues),
-            scannedTag = scannedTag2,
-        )
-    }
-}
-
-@RequiresApi(Build.VERSION_CODES.S)
-@Composable
-fun ReceivingScanScreenContent(
-    modifier: Modifier,
-    scannedTag: String,
-) {
+fun ReceivingScanTagCard(scannedTag: String) {
     Column(
-        modifier = modifier
+        modifier = Modifier
             .fillMaxSize(),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally

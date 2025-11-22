@@ -72,7 +72,7 @@ class ScanViewModel @Inject constructor(
 
     fun clearScannedTag() = readerController.clearScannedTag()
 
-    fun setEnableScan(enabled: Boolean, screen: Screen = Screen.ReceivingScan) =
+    fun setEnableScan(enabled: Boolean, screen: Screen = Screen.Receiving) =
         readerController.setScanEnabled(enabled, screen = screen)
 
     fun updateTagRssi(epc: String, newRssi: Float) {

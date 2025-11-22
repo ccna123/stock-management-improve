@@ -19,7 +19,6 @@ sealed class Screen(
     data object VersionInfo : Screen("version_info", "バージョン情報")
     data object LicenseInfo : Screen("license_info", "ライセンス情報")
     data object ReaderConnect : Screen("reader_connect", "リーダー接続")
-    data object ReceivingScan : Screen("receiving_scan", "入庫")
     data class SearchTagsScreen(val preScreen: String) : Screen("search", "探索")
     data object CsvExport : Screen("csv_export", "CSVファイル出力")
     data object CsvImport : Screen("csv_import", "CSVファイル取り込み")
@@ -43,7 +42,6 @@ sealed class Screen(
             CsvImport.routeId -> CsvImport
             InventoryComplete.routeId -> InventoryComplete
             Detail.routeId -> Detail
-            ReceivingScan.routeId -> ReceivingScan
             StorageAreaChange.routeId -> StorageAreaChange
             else -> null
         }

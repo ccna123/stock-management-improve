@@ -69,7 +69,7 @@ class ReaderController @Inject constructor(
     val readerInfo: StateFlow<ReaderInfoModel> = _readerInfo.asStateFlow()
 
     private val _canScan = mutableStateOf(false)
-    private val _screen = mutableStateOf<Screen>(Screen.ReceivingScan)
+    private val _screen = mutableStateOf<Screen>(Screen.Receiving)
 
     init {
         fakeReader = FakeReader()
@@ -204,7 +204,7 @@ class ReaderController @Inject constructor(
                     Screen.SearchTagsScreen("").routeId -> {
                         _scannedTags1.value = _scannedTags1.value + (epc.rfidNo to epc.rssi)
                     }
-                    Screen.ReceivingScan.routeId -> {
+                    Screen.Receiving.routeId -> {
                         _scannedTags2.value = epc.rfidNo
                     }
                     Screen.Scan("").routeId -> {
@@ -270,7 +270,7 @@ class ReaderController @Inject constructor(
         }
     }
 
-    fun setScanEnabled(enabled: Boolean, screen: Screen = Screen.ReceivingScan) {
+    fun setScanEnabled(enabled: Boolean, screen: Screen = Screen.Receiving) {
         _canScan.value = enabled
         _screen.value = screen
     }

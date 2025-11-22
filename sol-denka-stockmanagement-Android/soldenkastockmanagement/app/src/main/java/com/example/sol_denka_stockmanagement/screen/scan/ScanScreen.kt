@@ -41,6 +41,7 @@ import com.example.sol_denka_stockmanagement.intent.InputIntent
 import com.example.sol_denka_stockmanagement.intent.ShareIntent
 import com.example.sol_denka_stockmanagement.navigation.Screen
 import com.example.sol_denka_stockmanagement.screen.layout.Layout
+import com.example.sol_denka_stockmanagement.screen.scan.components.ReceivingScanTagCard
 import com.example.sol_denka_stockmanagement.screen.scan.components.ShippingModal
 import com.example.sol_denka_stockmanagement.screen.scan.components.ShippingSingleItem
 import com.example.sol_denka_stockmanagement.screen.scan.components.StorageAreaChangeSingleItem
@@ -61,6 +62,7 @@ fun ScanScreen(
     prevScreenNameId: String,
     onNavigate: (Screen) -> Unit
 ) {
+    val scannedTag2 by scanViewModel.scannedTag2.collectAsStateWithLifecycle()
     val scannedTags3 by scanViewModel.scannedTags3.collectAsStateWithLifecycle()
     val isPerformingInventory by scanViewModel.isPerformingInventory.collectAsStateWithLifecycle()
     val scope = rememberCoroutineScope()
@@ -91,7 +93,12 @@ fun ScanScreen(
     }
 
     LaunchedEffect(Unit) {
-        scanViewModel.setEnableScan(enabled = true, screen = Screen.Scan(""))
+        scanViewModel.setEnableScan(
+            enabled = true, screen = when (prevScreenNameId) {
+                Screen.Receiving.routeId -> Screen.Receiving
+                else -> Screen.Scan("")
+            }
+        )
 //        appViewModel.onGeneralIntent(ShareIntent.ClearTagSelectionList)
     }
 
@@ -137,7 +144,15 @@ fun ScanScreen(
                     }
                 )
                 ButtonContainer(
-                    buttonText = "${stringResource(R.string.register_info)}(${selectedCount}件)",
+                    buttonText = when (prevScreenNameId) {
+                        in listOf(
+                            Screen.Shipping.routeId,
+                            Screen.StorageAreaChange.routeId
+                        ) -> "${stringResource(R.string.register_info)}(${selectedCount}件)"
+
+                        Screen.Receiving.routeId -> stringResource(R.string.register_info)
+                        else -> ""
+                    },
                     shape = RoundedCornerShape(10.dp),
                     modifier = Modifier
                         .weight(1f)
@@ -148,7 +163,15 @@ fun ScanScreen(
                             ambientColor = Color.Gray.copy(alpha = 0.5f),
                             spotColor = Color.DarkGray.copy(alpha = 0.7f)
                         ),
-                    canClick = checkedMap.values.any { it },
+                    canClick = when (prevScreenNameId) {
+                        in listOf(
+                            Screen.Shipping.routeId,
+                            Screen.StorageAreaChange.routeId
+                        ) -> checkedMap.values.any { it }
+
+                        Screen.Receiving.routeId -> scannedTag2.isNotEmpty()
+                        else -> true
+                    },
                     icon = {
                         Icon(
                             painter = painterResource(R.drawable.register),
@@ -162,6 +185,7 @@ fun ScanScreen(
                             when (prevScreenNameId) {
                                 Screen.Shipping.routeId -> Screen.Shipping
                                 Screen.StorageAreaChange.routeId -> Screen.StorageAreaChange
+                                Screen.Receiving.routeId -> Screen.Receiving
                                 else -> Screen.Home
                             }
                         )
@@ -178,151 +202,148 @@ fun ScanScreen(
                 .padding(20.dp)
                 .fillMaxSize()
         ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Text(text = stringResource(R.string.scan_tag_list_item))
-                ButtonContainer(
-                    modifier = Modifier.width(120.dp),
-                    buttonText = if (isAllSelected) stringResource(R.string.select_all_remove) else stringResource(
-                        R.string.select_all
-                    ),
-                    containerColor = if (isAllSelected) Color.Red else brightAzure,
-                    canClick = scannedTags3.isNotEmpty(),
-                    onClick = {
-                        appViewModel.onGeneralIntent(
-                            ShareIntent.ToggleSelectionAll(
-                                tagList = scannedTags3.toSet()
-                            )
-                        )
-                    }
-                )
-            }
-            Spacer(modifier = Modifier.height(5.dp))
-            HorizontalDivider(color = brightAzure)
-            Spacer(modifier = Modifier.height(10.dp))
-            if (prevScreenNameId == Screen.Shipping.routeId) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth(),
-                    contentAlignment = Alignment.Center
+            if (prevScreenNameId == Screen.Receiving.routeId) {
+                ReceivingScanTagCard(scannedTag = scannedTag2)
+            } else {
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
                 ) {
+                    Text(text = stringResource(R.string.scan_tag_list_item))
                     ButtonContainer(
-                        modifier = Modifier
-                            .fillMaxWidth(),
-                        buttonText = stringResource(
-                            R.string.bulk_register,
-                            selectedCount.toString()
+                        modifier = Modifier.width(120.dp),
+                        buttonText = if (isAllSelected) stringResource(R.string.select_all_remove) else stringResource(
+                            R.string.select_all
                         ),
-                        canClick = checkedMap.values.any { it },
+                        containerColor = if (isAllSelected) Color.Red else brightAzure,
+                        canClick = scannedTags3.isNotEmpty(),
                         onClick = {
-                            appViewModel.onGeneralIntent(ShareIntent.ShowBottomSheet(true))
+                            appViewModel.onGeneralIntent(
+                                ShareIntent.ToggleSelectionAll(
+                                    tagList = scannedTags3.toSet()
+                                )
+                            )
                         }
                     )
                 }
-            }
-            Spacer(modifier = Modifier.height(10.dp))
-            LazyColumn {
-                items(scannedTags3.toList(), key = { tag -> tag }) { tag ->
-                    when (prevScreenNameId) {
-                        Screen.Shipping.routeId -> {
-                            val isExpanded = expandedMap[tag] ?: false
-                            val isChecked = checkedMap[tag] ?: false
-                            val value = handlingMap[tag] ?: ""
-                            ShippingSingleItem(
-                                tag = tag,
-                                isChecked = isChecked,
-                                onSelect = {
-                                    appViewModel.onGeneralIntent(
-                                        ShareIntent.ToggleTagSelection1(
-                                            tag = tag,
-                                            totalTag = scannedTags3.size
-                                        )
-                                    )
-                                },
-                                onCheckedChange = {
-                                    appViewModel.onGeneralIntent(
-                                        ShareIntent.ToggleTagSelection1(
-                                            tag = tag,
-                                            totalTag = scannedTags3.size
-                                        )
-                                    )
-                                },
-                                isExpanded = isExpanded,
-                                value = value,
-                                onExpandedChange = {
-                                    appViewModel.onExpandIntent(
-                                        ExpandIntent.TogglePerTagHandlingExpanded(
-                                            tag
-                                        )
-                                    )
-                                },
-                                onDismissRequest = {
-                                    appViewModel.onExpandIntent(
-                                        ExpandIntent.CloseHandlingExpanded(tag)
-                                    )
-                                },
-                                onValueChange = { newValue ->
-                                    appViewModel.onGeneralIntent(
-                                        ShareIntent.ChangePerTagHandlingMethod(
-                                            tag = tag,
-                                            method = newValue
-                                        )
-                                    )
-                                },
-//                                onClickInput = {
-//                                    appViewModel.onExpandIntent(
-//                                        ExpandIntent.CloseHandlingExpanded(
-//                                            tag
-//                                        )
-//                                    )
-//                                },
-                                onClickDropDownMenuItem = { method ->
-                                    val finalValue =
-                                        if (method == HandlingMethod.SELECTION_TITLE.displayName) ""
-                                        else method
-
-                                    appViewModel.onGeneralIntent(
-                                        ShareIntent.ChangePerTagHandlingMethod(tag, finalValue)
-                                    )
-
-                                    appViewModel.onExpandIntent(
-                                        ExpandIntent.CloseHandlingExpanded(tag)
-                                    )
-                                }
-                            )
-                        }
-
-                        Screen.StorageAreaChange.routeId -> {
-                            val isChecked = checkedMap[tag] ?: false
-                            StorageAreaChangeSingleItem(
-                                tag = tag,
-                                isChecked = isChecked,
-                                onCheckedChange = {
-                                    appViewModel.onGeneralIntent(
-                                        ShareIntent.ToggleTagSelection1(
-                                            tag = tag,
-                                            totalTag = scannedTags3.size
-                                        )
-                                    )
-                                },
-                                onClick = {
-                                    appViewModel.onGeneralIntent(
-                                        ShareIntent.ToggleTagSelection1(
-                                            tag = tag,
-                                            totalTag = scannedTags3.size
-                                        )
-                                    )
-                                }
-                            )
-                        }
+                Spacer(modifier = Modifier.height(5.dp))
+                HorizontalDivider(color = brightAzure)
+                Spacer(modifier = Modifier.height(10.dp))
+                if (prevScreenNameId == Screen.Shipping.routeId) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        ButtonContainer(
+                            modifier = Modifier
+                                .fillMaxWidth(),
+                            buttonText = stringResource(
+                                R.string.bulk_register,
+                                selectedCount.toString()
+                            ),
+                            canClick = checkedMap.values.any { it },
+                            onClick = {
+                                appViewModel.onGeneralIntent(ShareIntent.ShowBottomSheet(true))
+                            }
+                        )
                     }
+                }
+                Spacer(modifier = Modifier.height(10.dp))
+                LazyColumn {
+                    items(scannedTags3.toList(), key = { tag -> tag }) { tag ->
+                        when (prevScreenNameId) {
+                            Screen.Shipping.routeId -> {
+                                val isExpanded = expandedMap[tag] ?: false
+                                val isChecked = checkedMap[tag] ?: false
+                                val value = handlingMap[tag] ?: ""
+                                ShippingSingleItem(
+                                    tag = tag,
+                                    isChecked = isChecked,
+                                    onSelect = {
+                                        appViewModel.onGeneralIntent(
+                                            ShareIntent.ToggleTagSelection1(
+                                                tag = tag,
+                                                totalTag = scannedTags3.size
+                                            )
+                                        )
+                                    },
+                                    onCheckedChange = {
+                                        appViewModel.onGeneralIntent(
+                                            ShareIntent.ToggleTagSelection1(
+                                                tag = tag,
+                                                totalTag = scannedTags3.size
+                                            )
+                                        )
+                                    },
+                                    isExpanded = isExpanded,
+                                    value = value,
+                                    onExpandedChange = {
+                                        appViewModel.onExpandIntent(
+                                            ExpandIntent.TogglePerTagHandlingExpanded(
+                                                tag
+                                            )
+                                        )
+                                    },
+                                    onDismissRequest = {
+                                        appViewModel.onExpandIntent(
+                                            ExpandIntent.CloseHandlingExpanded(tag)
+                                        )
+                                    },
+                                    onValueChange = { newValue ->
+                                        appViewModel.onGeneralIntent(
+                                            ShareIntent.ChangePerTagHandlingMethod(
+                                                tag = tag,
+                                                method = newValue
+                                            )
+                                        )
+                                    },
+                                    onClickDropDownMenuItem = { method ->
+                                        val finalValue =
+                                            if (method == HandlingMethod.SELECTION_TITLE.displayName) ""
+                                            else method
 
-                    Spacer(modifier = Modifier.height(10.dp))
-                    HorizontalDivider(color = brightAzure)
-                    Spacer(modifier = Modifier.height(10.dp))
+                                        appViewModel.onGeneralIntent(
+                                            ShareIntent.ChangePerTagHandlingMethod(tag, finalValue)
+                                        )
+
+                                        appViewModel.onExpandIntent(
+                                            ExpandIntent.CloseHandlingExpanded(tag)
+                                        )
+                                    }
+                                )
+                            }
+
+                            Screen.StorageAreaChange.routeId -> {
+                                val isChecked = checkedMap[tag] ?: false
+                                StorageAreaChangeSingleItem(
+                                    tag = tag,
+                                    isChecked = isChecked,
+                                    onCheckedChange = {
+                                        appViewModel.onGeneralIntent(
+                                            ShareIntent.ToggleTagSelection1(
+                                                tag = tag,
+                                                totalTag = scannedTags3.size
+                                            )
+                                        )
+                                    },
+                                    onClick = {
+                                        appViewModel.onGeneralIntent(
+                                            ShareIntent.ToggleTagSelection1(
+                                                tag = tag,
+                                                totalTag = scannedTags3.size
+                                            )
+                                        )
+                                    }
+                                )
+                            }
+                        }
+                        Spacer(modifier = Modifier.height(10.dp))
+                        HorizontalDivider(color = brightAzure)
+                        Spacer(modifier = Modifier.height(10.dp))
+                    }
                 }
             }
         }

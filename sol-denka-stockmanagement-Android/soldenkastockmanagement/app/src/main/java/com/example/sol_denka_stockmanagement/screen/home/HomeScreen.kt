@@ -163,7 +163,7 @@ fun HomeScreenContent(
                             interactionSource = remember { MutableInteractionSource() }
                         ) {
                             when (menu.screen) {
-                                Screen.Receiving -> onNavigate(Screen.ReceivingScan)
+                                Screen.Receiving -> onNavigate(Screen.Scan(Screen.Receiving.routeId))
                                 Screen.Shipping -> onNavigate(Screen.Scan(Screen.Shipping.routeId))
                                 Screen.StorageAreaChange -> onNavigate(Screen.Scan(Screen.StorageAreaChange.routeId))
                                 Screen.Inventory -> onNavigate(Screen.Inventory)

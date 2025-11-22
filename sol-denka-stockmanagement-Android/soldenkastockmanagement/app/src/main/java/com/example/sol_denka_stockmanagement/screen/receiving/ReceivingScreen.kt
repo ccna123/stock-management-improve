@@ -115,7 +115,7 @@ fun ReceivingScreen(
             )
         },
         onBackArrowClick = {
-            onNavigate(Screen.ReceivingScan)
+            onNavigate(Screen.Scan(Screen.Receiving.routeId))
         }) { paddingValues ->
         LazyColumn(
             modifier = Modifier
@@ -131,7 +131,6 @@ fun ReceivingScreen(
                         scannedTag2.takeIf { it.isNotEmpty() } ?: "")
                 )
                 Spacer(modifier = Modifier.height(20.dp))
-                HorizontalDivider(color = brightAzure)
                 ExposedDropdownMenuBox(
                     expanded = expandState.materialSelection,
                     onExpandedChange = { appViewModel.onExpandIntent(ExpandIntent.ToggleMissRollExpanded) }) {
@@ -176,7 +175,8 @@ fun ReceivingScreen(
                     }
                 }
                 Spacer(modifier = Modifier.height(20.dp))
-
+                HorizontalDivider(color = brightAzure)
+                Spacer(modifier = Modifier.height(20.dp))
                 when (inputState.materialSelectedItem) {
                     SelectTitle.SelectMaterial.displayName -> {}
                     MaterialSelectionItem.MISS_ROLL.displayName -> MissRollInput(

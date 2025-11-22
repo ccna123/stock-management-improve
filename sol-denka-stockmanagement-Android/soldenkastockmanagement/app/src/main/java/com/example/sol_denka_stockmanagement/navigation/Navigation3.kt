@@ -16,7 +16,6 @@ import com.example.sol_denka_stockmanagement.screen.inventory.input.InventoryScr
 import com.example.sol_denka_stockmanagement.screen.inventory.scan.InventoryScanScreen
 import com.example.sol_denka_stockmanagement.screen.receiving.ReceivingScreen
 import com.example.sol_denka_stockmanagement.screen.scan.ScanScreen
-import com.example.sol_denka_stockmanagement.screen.scan.receiving.ReceivingScanScreen
 import com.example.sol_denka_stockmanagement.screen.shipping.ShippingScreen
 import com.example.sol_denka_stockmanagement.screen.version.VersionInfoScreen
 import com.example.sol_denka_stockmanagement.screen.version.sub_screen.LicenseInfoScreen
@@ -104,20 +103,6 @@ fun Navigation3(
                     onNavigate = { dest ->
                         if (backStack.last() != dest) {
                             backStack.add(dest)
-                        }
-                    }
-                )
-            }
-            entry<Screen.ReceivingScan> { destinationScan ->
-                ReceivingScanScreen(
-                    scanViewModel = scanViewModel,
-                    appViewModel = appViewModel,
-                    onNavigate = { dest ->
-                        if (backStack.last() != dest) {
-                            backStack.add(dest)
-                        } else if (dest is Screen.Home) {
-                            backStack.clear()
-                            backStack.add(Screen.Home)
                         }
                     }
                 )
