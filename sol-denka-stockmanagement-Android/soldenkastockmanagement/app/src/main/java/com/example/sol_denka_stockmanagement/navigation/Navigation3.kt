@@ -35,7 +35,7 @@ fun Navigation3(
     readerSettingViewModel: ReaderSettingViewModel,
     scanViewModel: ScanViewModel,
 ) {
-    val backStack = remember { mutableStateListOf<Screen>(Screen.Setting) }
+    val backStack = remember { mutableStateListOf<Screen>(Screen.Receiving) }
     NavDisplay(
         backStack = backStack,
         onBack = { backStack.removeLastOrNull() },
