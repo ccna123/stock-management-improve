@@ -37,41 +37,51 @@ fun SingleTab(
     modifier: Modifier,
     onClick: () -> Unit,
 ) {
+    // ANIMATION COLORS
+    val backgroundColor by animateColorAsState(
+        targetValue = if (isSelected) brightAzure else Color.White,
+        label = "tab-bg"
+    )
+
+    val borderColor by animateColorAsState(
+        targetValue = if (isSelected) Color.Transparent else Color.LightGray,
+        label = "tab-border"
+    )
+
+    val contentColor by animateColorAsState(
+        targetValue = if (isSelected) Color.White else Color.Black,
+        label = "tab-content"
+    )
+
     Box(
         modifier = modifier
-            .background(color = if (isSelected) brightAzure else Color.Unspecified, shape = RoundedCornerShape(10.dp))
-            .fillMaxWidth()
-            .clickable(
-                interactionSource = remember { MutableInteractionSource() },
-                indication = null,
-            ) {
-                onClick.invoke()
-            }
+            .background(backgroundColor, shape)
             .border(
-                if (isSelected) 0.dp else 1.dp,
-                color = if (isSelected) Color.Unspecified else Color.LightGray,
-                RoundedCornerShape(10.dp)
+                width = 1.dp,
+                color = borderColor,
+                shape = shape
             )
             .clickable(
                 interactionSource = remember { MutableInteractionSource() },
-                indication = null,
-                onClick = onClick)
+                indication = null
+            ) { onClick() }
             .padding(vertical = 10.dp),
-        contentAlignment = Alignment.Center
+        contentAlignment = Alignment.Center,
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Icon(
                 imageVector = icon,
                 contentDescription = null,
-                tint = if (isSelected) Color.White else Color.Black,
+                tint = contentColor,
                 modifier = Modifier.size(20.dp)
             )
             Spacer(modifier = Modifier.width(6.dp))
             Text(
                 textAlign = TextAlign.Center,
-                color = if (isSelected) Color.White else Color.Black,
+                color = contentColor,
                 text = text
             )
         }
     }
 }
+

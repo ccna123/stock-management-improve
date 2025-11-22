@@ -2,6 +2,12 @@ package com.example.sol_denka_stockmanagement.screen.setting
 
 import android.os.Build
 import androidx.annotation.RequiresApi
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -260,18 +266,32 @@ fun SettingScreen(
                     .fillMaxSize()
                     .imePadding()
             ) {
-                when (generalState.tab) {
-                    Tab.Left -> {
-                        ReaderSettingScreen(
-                            readerSettingViewModel = readerSettingViewModel
-                        )
-                    }
+                AnimatedContent(
+                    targetState = generalState.tab,
+                    transitionSpec = {
+                        if (targetState == Tab.Left) {
+                            slideInHorizontally { -it } + fadeIn() togetherWith
+                                    slideOutHorizontally { it } + fadeOut()
+                        } else {
+                            slideInHorizontally { it } + fadeIn() togetherWith
+                                    slideOutHorizontally { -it } + fadeOut()
+                        }
+                    },
+                    label = "SettingTabAnimation"
+                ) { tab ->
 
-                    Tab.Right -> {
-                        AppSettingScreen(
-                            appSettingViewModel = appSettingViewModel,
-                            appViewModel = appViewModel,
-                        )
+                    when (tab) {
+                        Tab.Left -> {
+                            ReaderSettingScreen(
+                                readerSettingViewModel = readerSettingViewModel
+                            )
+                        }
+                        Tab.Right -> {
+                            AppSettingScreen(
+                                appSettingViewModel = appSettingViewModel,
+                                appViewModel = appViewModel
+                            )
+                        }
                     }
                 }
             }

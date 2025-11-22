@@ -2,6 +2,12 @@ package com.example.sol_denka_stockmanagement.screen.inventory.scan
 
 import android.os.Build
 import androidx.annotation.RequiresApi
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -411,34 +417,46 @@ fun InventoryScanScreenContent(
                         }
                     )
                     Spacer(modifier = Modifier.height(10.dp))
-                    ScannedTagDisplay(
-                        rfidTagList = when (generalState.tab) {
+                    AnimatedContent(
+                        targetState = generalState.tab,
+                        transitionSpec = {
+                            if (targetState == Tab.Left) {
+                                slideInHorizontally { -it } + fadeIn() togetherWith
+                                        slideOutHorizontally { it } + fadeOut()
+                            } else {
+                                slideInHorizontally { it } + fadeIn() togetherWith
+                                        slideOutHorizontally { -it } + fadeOut()
+                            }
+                        },
+                        label = "InventoryTabAnimation"
+                    ) { tab ->
+
+                        val displayList = when (tab) {
                             Tab.Left -> rfidTagList.filter { it.newField.tagStatus == TagStatus.UNPROCESSED }
                             Tab.Right -> rfidTagList.filter { it.newField.tagStatus == TagStatus.PROCESSED }
-                        },
-                        selectedTags = generalState.selectedTags,
-                        isSelectionMode = if (generalState.selectedTags.isNotEmpty()) generalState.isSelectionMode else false,
-                        onClick = { item ->
-                            if (generalState.isSelectionMode) {
-                                appViewModel.onGeneralIntent(
-                                    ShareIntent.ToggleTagSelection(item)
-                                )
-                            }
-                        },
-                        onLongClick = { item ->
-                            appViewModel.apply {
-                                onGeneralIntent(
-                                    ShareIntent.ToggleSelectionMode(true)
-                                )
-                                onGeneralIntent(ShareIntent.ToggleTagSelection(item))
-                            }
-                        },
-                        onCheckedChange = { item ->
-                            appViewModel.onGeneralIntent(
-                                ShareIntent.ToggleTagSelection(item)
-                            )
                         }
-                    )
+
+                        ScannedTagDisplay(
+                            rfidTagList = displayList,
+                            selectedTags = generalState.selectedTags,
+                            isSelectionMode = if (generalState.selectedTags.isNotEmpty()) generalState.isSelectionMode else false,
+                            onClick = { item ->
+                                if (generalState.isSelectionMode) {
+                                    appViewModel.onGeneralIntent(ShareIntent.ToggleTagSelection(item))
+                                }
+                            },
+                            onLongClick = { item ->
+                                appViewModel.apply {
+                                    onGeneralIntent(ShareIntent.ToggleSelectionMode(true))
+                                    onGeneralIntent(ShareIntent.ToggleTagSelection(item))
+                                }
+                            },
+                            onCheckedChange = { item ->
+                                appViewModel.onGeneralIntent(ShareIntent.ToggleTagSelection(item))
+                            }
+                        )
+                    }
+
                 }
             }
         }
