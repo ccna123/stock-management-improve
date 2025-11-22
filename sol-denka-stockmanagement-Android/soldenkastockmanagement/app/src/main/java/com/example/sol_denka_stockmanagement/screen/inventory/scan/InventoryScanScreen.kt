@@ -73,6 +73,7 @@ import com.example.sol_denka_stockmanagement.screen.setting.sub_screen.reader_se
 import com.example.sol_denka_stockmanagement.share.AppDialog
 import com.example.sol_denka_stockmanagement.share.RadioPowerDialog
 import com.example.sol_denka_stockmanagement.ui.theme.brightAzure
+import com.example.sol_denka_stockmanagement.ui.theme.brightGreenSecondary
 import com.example.sol_denka_stockmanagement.ui.theme.brightOrange
 import com.example.sol_denka_stockmanagement.ui.theme.tealGreen
 import com.example.sol_denka_stockmanagement.viewmodel.ScanViewModel
@@ -288,7 +289,7 @@ fun InventoryScanScreen(
                         },
                     )
                     ButtonContainer(
-                        containerColor = brightOrange,
+                        containerColor = brightGreenSecondary,
                         buttonText = stringResource(R.string.detail),
                         icon = {
                             Icon(
