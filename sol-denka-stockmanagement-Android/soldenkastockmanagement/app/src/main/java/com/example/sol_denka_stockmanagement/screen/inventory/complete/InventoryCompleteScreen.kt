@@ -82,7 +82,6 @@ fun InventoryCompleteScreen(
                     elevation = 13.dp, clip = true, ambientColor = Color.Gray.copy(alpha = 0.5f),
                     spotColor = Color.DarkGray.copy(alpha = 0.7f)
                 ),
-                shape = RoundedCornerShape(10.dp),
                 icon = {
                     Icon(
                         imageVector = Icons.Default.CheckCircle,
@@ -104,93 +103,84 @@ fun InventoryCompleteScreen(
         onBackArrowClick = {
             onNavigate(Screen.InventoryScan(Screen.Inventory.routeId))
         }) { paddingValues ->
-        InventoryCompleteScreenContent(
-            modifier = Modifier.padding(paddingValues),
-        )
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun InventoryCompleteScreenContent(
-    modifier: Modifier,
-) {
-    Column(
-        modifier = modifier
-            .padding(30.dp)
-            .fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Text(text = "以下の内容でCSVファイルを出力します")
-        Spacer(modifier = Modifier.height(30.dp))
-        Box(
+        Column(
             modifier = Modifier
-                .shadow(
-                    elevation = 3.dp,
-                    shape = RoundedCornerShape(12.dp),
-                    clip = false, // 👈 allow the shadow to bleed outside the box
-                )
-                .background(
-                    color = Color.White,
-                    shape = RoundedCornerShape(12.dp)
-                )
-                .fillMaxWidth()
-                .border(1.dp, color = paleSkyBlue, shape = RoundedCornerShape(10.dp)),
+                .padding(paddingValues)
+                .padding(30.dp)
+                .fillMaxSize(),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Row(
+            Text(text = "以下の内容でCSVファイルを出力します")
+            Spacer(modifier = Modifier.height(30.dp))
+            Box(
                 modifier = Modifier
+                    .shadow(
+                        elevation = 3.dp,
+                        shape = RoundedCornerShape(12.dp),
+                        clip = false, // 👈 allow the shadow to bleed outside the box
+                    )
+                    .background(
+                        color = Color.White,
+                        shape = RoundedCornerShape(12.dp)
+                    )
                     .fillMaxWidth()
-                    .padding(10.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Center
+                    .border(1.dp, color = paleSkyBlue, shape = RoundedCornerShape(10.dp)),
             ) {
-                Column {
-                    listOf(
-                        InventoryScanResultStatusModel(
-                            status = InventoryScanResult.OK.displayName,
-                            icon = R.drawable.scan_ok,
-                            color = brightGreenPrimary
-                        ),
-                        InventoryScanResultStatusModel(
-                            status = InventoryScanResult.SHORTAGE.displayName,
-                            icon = R.drawable.scan_shortage,
-                            color = brightOrange
-                        ),
-                        InventoryScanResultStatusModel(
-                            status = InventoryScanResult.OVERLOAD.displayName,
-                            icon = R.drawable.scan_overload,
-                            color = Color(0xFFF44336)
-                        ),
-                        InventoryScanResultStatusModel(
-                            status = InventoryScanResult.WRONG_LOCATION.displayName,
-                            icon = R.drawable.scan_wrong_location,
-                            color = deepBlueSky
-                        ),
-                    ).map {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(4.dp)
-                        ) {
-                            Icon(
-                                painter = painterResource(it.icon),
-                                contentDescription = null,
-                                modifier = Modifier.size(23.dp),
-                                tint = it.color
-                            )
-                            Text(
-                                modifier = Modifier.padding(vertical = 5.dp),
-                                text = it.status, fontSize = 19.sp
-                            )
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(10.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    Column {
+                        listOf(
+                            InventoryScanResultStatusModel(
+                                status = InventoryScanResult.OK.displayName,
+                                icon = R.drawable.scan_ok,
+                                color = brightGreenPrimary
+                            ),
+                            InventoryScanResultStatusModel(
+                                status = InventoryScanResult.SHORTAGE.displayName,
+                                icon = R.drawable.scan_shortage,
+                                color = brightOrange
+                            ),
+                            InventoryScanResultStatusModel(
+                                status = InventoryScanResult.OVERLOAD.displayName,
+                                icon = R.drawable.scan_overload,
+                                color = Color(0xFFF44336)
+                            ),
+                            InventoryScanResultStatusModel(
+                                status = InventoryScanResult.WRONG_LOCATION.displayName,
+                                icon = R.drawable.scan_wrong_location,
+                                color = deepBlueSky
+                            ),
+                        ).map {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(4.dp)
+                            ) {
+                                Icon(
+                                    painter = painterResource(it.icon),
+                                    contentDescription = null,
+                                    modifier = Modifier.size(23.dp),
+                                    tint = it.color
+                                )
+                                Text(
+                                    modifier = Modifier.padding(vertical = 5.dp),
+                                    text = it.status, fontSize = 19.sp
+                                )
+                            }
                         }
                     }
-                }
-                Spacer(modifier = Modifier.width(50.dp))
-                Column {
-                    for (i in 1 until 5) {
-                        Text(
-                            modifier = Modifier.padding(vertical = 5.dp),
-                            text = "${i}件", fontSize = 19.sp
-                        )
+                    Spacer(modifier = Modifier.width(50.dp))
+                    Column {
+                        for (i in 1 until 5) {
+                            Text(
+                                modifier = Modifier.padding(vertical = 5.dp),
+                                text = "${i}件", fontSize = 19.sp
+                            )
+                        }
                     }
                 }
             }

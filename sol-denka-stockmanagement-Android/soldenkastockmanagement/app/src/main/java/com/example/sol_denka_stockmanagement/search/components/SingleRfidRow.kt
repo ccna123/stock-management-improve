@@ -68,7 +68,6 @@ fun SingleRfidRow(
         Spacer(modifier = Modifier.weight(1f)) // Push Button to the right
         Button(
             onClick = { onChange() },
-            shape = RoundedCornerShape(12.dp),
             colors = ButtonDefaults.buttonColors(
                 containerColor = if (isPressed == true) brightGreenSecondary else Color.White,
                 contentColor = brightAzure

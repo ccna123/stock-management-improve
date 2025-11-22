@@ -69,7 +69,6 @@ fun ShippingScreen(
                     elevation = 13.dp, clip = true, ambientColor = Color.Gray.copy(alpha = 0.5f),
                     spotColor = Color.DarkGray.copy(alpha = 0.7f)
                 ),
-                shape = RoundedCornerShape(10.dp),
                 icon = {
                     Icon(
                         painter = painterResource(R.drawable.register),

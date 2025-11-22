@@ -66,6 +66,7 @@ import com.example.sol_denka_stockmanagement.share.RadioPowerDialog
 import com.example.sol_denka_stockmanagement.state.GeneralState
 import com.example.sol_denka_stockmanagement.ui.theme.tealGreen
 import kotlinx.coroutines.launch
+import kotlin.collections.filter
 
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @Composable
@@ -82,6 +83,7 @@ fun SearchTagsScreen(
     var showRadioPowerDialog by remember { mutableStateOf(false) }
     val isPerformingInventory by scanViewModel.isPerformingInventory.collectAsStateWithLifecycle()
     val scope = rememberCoroutineScope()
+    val tagsToDisplay = rfidTagList.value.filter { it.epc in generalState.selectedTags.map { it.epc } }
 
     LaunchedEffect(Unit) {
         scanViewModel.setEnableScan(enabled = true, screen = Screen.SearchTagsScreen(""))
@@ -153,7 +155,6 @@ fun SearchTagsScreen(
                     modifier = Modifier,
                     buttonHeight = 35.dp,
                     containerColor = orange,
-                    shape = RoundedCornerShape(5.dp),
                     icon = {
                         Icon(
                             imageVector = Icons.Default.CheckCircle,
@@ -226,8 +227,9 @@ fun SearchTagsScreen(
                 buttonText = if (isPerformingInventory) stringResource(R.string.scan_stop) else stringResource(
                     R.string.scan_start
                 ),
-                shape = RoundedCornerShape(10.dp),
-                modifier = Modifier.shadow(
+                modifier = Modifier
+                    .fillMaxWidth(0.5f)
+                    .shadow(
                     elevation = 13.dp,
                     clip = true,
                     ambientColor = Color.Gray.copy(alpha = 0.5f),
@@ -252,85 +254,66 @@ fun SearchTagsScreen(
         onBackArrowClick = {
             onNavigate(Screen.InventoryScan(Screen.Inventory.routeId))
         }) { paddingValues ->
-        SearchTagsScreenContent(
-            modifier = Modifier.padding(paddingValues),
-            rfidTagList = rfidTagList.value,
-            generalState = generalState,
-            appViewModel = appViewModel,
-        )
-    }
-}
-
-@RequiresApi(Build.VERSION_CODES.TIRAMISU)
-@Composable
-fun SearchTagsScreenContent(
-    modifier: Modifier = Modifier,
-    appViewModel: AppViewModel,
-    generalState: GeneralState,
-    rfidTagList: List<InventoryItemMasterModel>,
-) {
-
-    val tagsToDisplay = rfidTagList.filter { it.epc in generalState.selectedTags.map { it.epc } }
-
-    Column(
-        modifier = modifier
-    ) {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(
-                    paleSkyBlue
-                )
+        Column(
+            modifier = Modifier.padding(paddingValues)
         ) {
-            Row(
+            Box(
                 modifier = Modifier
-                    .padding(6.dp)
-                    .fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    fontSize = 20.sp,
-                    text = stringResource(R.string.no_items_found)
-                )
-                Text(
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 20.sp,
-                    text = buildAnnotatedString {
-                        withStyle(
-                            style = SpanStyle(
-                                fontSize = 34.sp,
-                                color = deepOceanBlue,
-                                fontWeight = FontWeight.Bold
-                            )
-                        ) {
-                            append(generalState.foundTags.size.toString())
-                        }
-                        withStyle(
-                            style = SpanStyle(
-                                fontSize = 25.sp,
-                                color = deepOceanBlue,
-                                fontWeight = FontWeight.Bold
-                            )
-                        ) {
-                            append("/${tagsToDisplay.size}")
-                        }
-                    },
-                )
-            }
-        }
-        Spacer(modifier = Modifier.width(20.dp))
-        LazyColumn {
-            item {
-                tagsToDisplay.forEach { item ->
-                    SingleRfidRow(
-                        boxWidth = TagDistanceCalculate.calculateBoxWidth(item.newField.rssi),
-                        rfidNo = item.epc,
-                        isPressed = item in generalState.foundTags,
-                        onChange = {
-                            appViewModel.onGeneralIntent(ShareIntent.ToggleFoundTag(item))
-                        }
+                    .fillMaxWidth()
+                    .background(
+                        paleSkyBlue
                     )
+            ) {
+                Row(
+                    modifier = Modifier
+                        .padding(6.dp)
+                        .fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        fontSize = 20.sp,
+                        text = stringResource(R.string.no_items_found)
+                    )
+                    Text(
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 20.sp,
+                        text = buildAnnotatedString {
+                            withStyle(
+                                style = SpanStyle(
+                                    fontSize = 34.sp,
+                                    color = deepOceanBlue,
+                                    fontWeight = FontWeight.Bold
+                                )
+                            ) {
+                                append(generalState.foundTags.size.toString())
+                            }
+                            withStyle(
+                                style = SpanStyle(
+                                    fontSize = 25.sp,
+                                    color = deepOceanBlue,
+                                    fontWeight = FontWeight.Bold
+                                )
+                            ) {
+                                append("/${tagsToDisplay.size}")
+                            }
+                        },
+                    )
+                }
+            }
+            Spacer(modifier = Modifier.width(20.dp))
+            LazyColumn {
+                item {
+                    tagsToDisplay.forEach { item ->
+                        SingleRfidRow(
+                            boxWidth = TagDistanceCalculate.calculateBoxWidth(item.newField.rssi),
+                            rfidNo = item.epc,
+                            isPressed = item in generalState.foundTags,
+                            onChange = {
+                                appViewModel.onGeneralIntent(ShareIntent.ToggleFoundTag(item))
+                            }
+                        )
+                    }
                 }
             }
         }

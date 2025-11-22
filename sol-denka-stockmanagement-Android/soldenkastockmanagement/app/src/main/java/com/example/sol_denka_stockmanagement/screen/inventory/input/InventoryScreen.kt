@@ -43,6 +43,7 @@ import com.example.sol_denka_stockmanagement.state.InputState
 import com.example.sol_denka_stockmanagement.viewmodel.AppViewModel
 import com.example.sol_denka_stockmanagement.viewmodel.ScanViewModel
 
+@OptIn(ExperimentalMaterial3Api::class)
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @Composable
 fun InventoryScreen(
@@ -79,7 +80,6 @@ fun InventoryScreen(
                     elevation = 13.dp, clip = true, ambientColor = Color.Gray.copy(alpha = 0.5f),
                     spotColor = Color.DarkGray.copy(alpha = 0.7f)
                 ),
-                shape = RoundedCornerShape(10.dp),
                 icon = {
                     Icon(
                         painter = painterResource(R.drawable.scan),
@@ -101,76 +101,57 @@ fun InventoryScreen(
         onBackArrowClick = {
             onNavigate(Screen.Home)
         }) { paddingValues ->
-        InventoryScreenContent(
-            modifier = Modifier.padding(top = paddingValues.calculateTopPadding()),
-            appViewModel = appViewModel,
-            errorState = errorState,
-            expandState = expandState,
-            inputState = inputState,
-        )
-    }
-}
-
-@RequiresApi(Build.VERSION_CODES.TIRAMISU)
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun InventoryScreenContent(
-    modifier: Modifier,
-    appViewModel: AppViewModel,
-    errorState: ErrorState,
-    expandState: ExpandState,
-    inputState: InputState,
-) {
-
-    LazyColumn(
-        modifier = modifier
-            .padding(16.dp)
-            .imePadding()
-    ) {
-        item {
-            Text(text = "棚卸を行う保管場所を選択")
-            Spacer(modifier = Modifier.height(10.dp))
-            ExposedDropdownMenuBox(
-                expanded = expandState.stockAreaExpanded,
-                onExpandedChange = { appViewModel.onExpandIntent(ExpandIntent.ToggleStockAreaExpanded) }) {
-                InputFieldContainer(
-                    modifier = Modifier.menuAnchor(type = ExposedDropdownMenuAnchorType.PrimaryNotEditable, enabled = true).fillMaxWidth(),
-                    value = if (inputState.stockArea == StockAreaItem.SELECTION_TITLE.displayName) "" else inputState.stockArea,
-                    hintText = StockAreaItem.SELECTION_TITLE.displayName,
-                    isNumeric = false,
-                    onChange = { newValue ->
-                        appViewModel.onInputIntent(
-                            InputIntent.ChangeStockArea(
-                                newValue
-                            )
-                        )
-                    },
-                    readOnly = true,
-                    isDropDown = true,
-                    enable = true,
-                    onEnterPressed = {}
-                )
-                ExposedDropdownMenu(
+        LazyColumn(
+            modifier = Modifier
+                .padding(top = paddingValues.calculateTopPadding())
+                .padding(16.dp)
+                .imePadding()
+        ) {
+            item {
+                Text(text = "棚卸を行う保管場所を選択")
+                Spacer(modifier = Modifier.height(10.dp))
+                ExposedDropdownMenuBox(
                     expanded = expandState.stockAreaExpanded,
-                    onDismissRequest = { appViewModel.onExpandIntent(ExpandIntent.ToggleStockAreaExpanded) }
-                ) {
-                    listOf(
-                        StockAreaItem.SELECTION_TITLE.displayName,
-                        StockAreaItem.STOCK_AREA1.displayName,
-                        StockAreaItem.STOCK_AREA2.displayName,
-                        StockAreaItem.STOCK_AREA3.displayName,
-                        StockAreaItem.STOCK_AREA4.displayName,
-                        StockAreaItem.STOCK_AREA5.displayName,
-                    ).forEach { stockArea ->
-                        DropdownMenuItem(
-                            text = { Text(text = stockArea) },
-                            onClick = {
-                                appViewModel.apply {
-                                    onInputIntent(InputIntent.ChangeStockArea(if (stockArea == SelectTitle.SelectStockArea.displayName) "" else stockArea))
-                                    onExpandIntent(ExpandIntent.ToggleStockAreaExpanded)
+                    onExpandedChange = { appViewModel.onExpandIntent(ExpandIntent.ToggleStockAreaExpanded) }) {
+                    InputFieldContainer(
+                        modifier = Modifier.menuAnchor(type = ExposedDropdownMenuAnchorType.PrimaryNotEditable, enabled = true).fillMaxWidth(),
+                        value = if (inputState.stockArea == StockAreaItem.SELECTION_TITLE.displayName) "" else inputState.stockArea,
+                        hintText = StockAreaItem.SELECTION_TITLE.displayName,
+                        isNumeric = false,
+                        onChange = { newValue ->
+                            appViewModel.onInputIntent(
+                                InputIntent.ChangeStockArea(
+                                    newValue
+                                )
+                            )
+                        },
+                        readOnly = true,
+                        isDropDown = true,
+                        enable = true,
+                        onEnterPressed = {}
+                    )
+                    ExposedDropdownMenu(
+                        expanded = expandState.stockAreaExpanded,
+                        onDismissRequest = { appViewModel.onExpandIntent(ExpandIntent.ToggleStockAreaExpanded) }
+                    ) {
+                        listOf(
+                            StockAreaItem.SELECTION_TITLE.displayName,
+                            StockAreaItem.STOCK_AREA1.displayName,
+                            StockAreaItem.STOCK_AREA2.displayName,
+                            StockAreaItem.STOCK_AREA3.displayName,
+                            StockAreaItem.STOCK_AREA4.displayName,
+                            StockAreaItem.STOCK_AREA5.displayName,
+                        ).forEach { stockArea ->
+                            DropdownMenuItem(
+                                text = { Text(text = stockArea) },
+                                onClick = {
+                                    appViewModel.apply {
+                                        onInputIntent(InputIntent.ChangeStockArea(if (stockArea == SelectTitle.SelectStockArea.displayName) "" else stockArea))
+                                        onExpandIntent(ExpandIntent.ToggleStockAreaExpanded)
+                                    }
                                 }
-                            }
-                        )
+                            )
+                        }
                     }
                 }
             }

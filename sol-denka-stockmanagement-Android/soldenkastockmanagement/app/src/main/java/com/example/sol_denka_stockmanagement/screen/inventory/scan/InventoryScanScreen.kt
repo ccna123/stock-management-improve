@@ -21,6 +21,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -205,7 +206,6 @@ fun InventoryScanScreen(
             ) {
                 ButtonContainer(
                     buttonHeight = 35.dp,
-                    shape = RoundedCornerShape(12.dp),
                     buttonText = stringResource(R.string.finish_inventory),
                     buttonTextSize = 19,
                     canClick = rfidTagList.value.count { it.newField.tagStatus == TagStatus.PROCESSED } > 0,
@@ -304,7 +304,7 @@ fun InventoryScanScreen(
                     IconButton(
                         modifier = Modifier.background(
                             color = Color.Red,
-                            shape = RoundedCornerShape(12.dp)
+                            shape = CircleShape
                         ),
                         shape = IconButtonDefaults.outlinedShape,
                         onClick = {
@@ -329,8 +329,9 @@ fun InventoryScanScreen(
                         buttonText = if (isPerformingInventory) stringResource(R.string.scan_stop) else stringResource(
                             R.string.scan_start
                         ),
-                        shape = RoundedCornerShape(10.dp),
-                        modifier = Modifier.shadow(
+                        modifier = Modifier
+                            .fillMaxWidth(.5f)
+                            .shadow(
                             elevation = 13.dp,
                             clip = true,
                             ambientColor = Color.Gray.copy(alpha = 0.5f),

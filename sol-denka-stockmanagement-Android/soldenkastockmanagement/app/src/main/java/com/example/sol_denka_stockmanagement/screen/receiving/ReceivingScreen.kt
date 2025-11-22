@@ -105,7 +105,6 @@ fun ReceivingScreen(
         hasBottomBar = true,
         bottomButton = {
             ButtonContainer(
-                shape = RoundedCornerShape(10.dp),
                 icon = {
                     Icon(
                         painter = painterResource(R.drawable.register),

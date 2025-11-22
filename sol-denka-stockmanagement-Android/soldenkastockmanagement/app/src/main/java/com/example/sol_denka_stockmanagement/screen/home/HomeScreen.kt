@@ -51,6 +51,7 @@ import com.example.sol_denka_stockmanagement.screen.layout.Layout
 import com.example.sol_denka_stockmanagement.share.AppDialog
 import com.example.sol_denka_stockmanagement.share.ButtonContainer
 import com.example.sol_denka_stockmanagement.ui.theme.deepOceanBlue
+import com.example.sol_denka_stockmanagement.ui.theme.tealGreen
 import com.example.sol_denka_stockmanagement.viewmodel.AppViewModel
 import com.example.sol_denka_stockmanagement.viewmodel.ScanViewModel
 import kotlinx.coroutines.launch
@@ -156,7 +157,7 @@ fun HomeScreenContent(
                         .height(105.dp)
                         .width(280.dp)
                         .background(
-                            color = deepOceanBlue, shape = RoundedCornerShape(12.dp)
+                            color = tealGreen, shape = RoundedCornerShape(12.dp)
                         )
                         .clickable(
                             indication = LocalIndication.current,

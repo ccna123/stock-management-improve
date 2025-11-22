@@ -32,7 +32,7 @@ fun ButtonContainer(
     borderColor: Color = Color.Unspecified,
     onClick: () -> Unit,
     canClick: Boolean = true,
-    shape: Shape = RoundedCornerShape(12.dp),
+    shape: Shape = RoundedCornerShape(20.dp),
     icon: @Composable (() -> Unit)? = null,
     buttonHeight: Dp = 48.dp,
     position: ButtonPosition = ButtonPosition.Bottom,

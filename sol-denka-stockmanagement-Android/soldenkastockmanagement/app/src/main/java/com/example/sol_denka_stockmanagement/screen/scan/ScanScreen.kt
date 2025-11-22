@@ -118,7 +118,6 @@ fun ScanScreen(
                     buttonText = if (isPerformingInventory) stringResource(R.string.scan_stop) else stringResource(
                         R.string.scan_start
                     ),
-                    shape = RoundedCornerShape(10.dp),
                     containerColor = if (isPerformingInventory) orange else tealGreen,
                     modifier = Modifier
                         .shadow(
@@ -153,7 +152,6 @@ fun ScanScreen(
                         Screen.Receiving.routeId -> stringResource(R.string.register_info)
                         else -> ""
                     },
-                    shape = RoundedCornerShape(10.dp),
                     modifier = Modifier
                         .weight(1f)
                         .fillMaxWidth()
