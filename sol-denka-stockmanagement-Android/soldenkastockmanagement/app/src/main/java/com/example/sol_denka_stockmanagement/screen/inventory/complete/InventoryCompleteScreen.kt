@@ -32,6 +32,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.sol_denka_stockmanagement.R
 import com.example.sol_denka_stockmanagement.constant.InventoryScanResult
 import com.example.sol_denka_stockmanagement.intent.ShareIntent
@@ -55,7 +56,7 @@ fun InventoryCompleteScreen(
     onNavigate: (Screen) -> Unit
 ) {
 
-    val generalState = appViewModel.generalState.value
+    val generalState = appViewModel.generalState.collectAsStateWithLifecycle().value
     LaunchedEffect(Unit) {
         scanViewModel.setEnableScan(false)
     }

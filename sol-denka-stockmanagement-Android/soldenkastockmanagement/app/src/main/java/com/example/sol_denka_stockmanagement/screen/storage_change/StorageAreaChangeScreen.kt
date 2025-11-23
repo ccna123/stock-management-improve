@@ -62,9 +62,9 @@ fun StorageAreaChangeScreen(
 ) {
 
     val errorState = appViewModel.errorState.value
-    val expandState = appViewModel.expandState.value
-    val inputState = appViewModel.inputState.value
-    val generalState = appViewModel.generalState.value
+    val expandState = appViewModel.expandState.collectAsStateWithLifecycle().value
+    val inputState = appViewModel.inputState.collectAsStateWithLifecycle().value
+    val generalState = appViewModel.generalState.collectAsStateWithLifecycle().value
     val selectedCount by appViewModel.selectedCount.collectAsStateWithLifecycle()
     val checkedMap by appViewModel.perTagChecked.collectAsStateWithLifecycle()
 

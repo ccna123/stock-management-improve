@@ -81,9 +81,8 @@ fun ReceivingScreen(
     onNavigate: (Screen) -> Unit
 ) {
 
-    val errorState = appViewModel.errorState.value
-    val inputState = appViewModel.inputState.value
-    val expandState = appViewModel.expandState.value
+    val inputState = appViewModel.inputState.collectAsStateWithLifecycle().value
+    val expandState = appViewModel.expandState.collectAsStateWithLifecycle().value
     val scannedTag2 by scanViewModel.scannedTag2.collectAsStateWithLifecycle()
 
     LaunchedEffect(Unit) {

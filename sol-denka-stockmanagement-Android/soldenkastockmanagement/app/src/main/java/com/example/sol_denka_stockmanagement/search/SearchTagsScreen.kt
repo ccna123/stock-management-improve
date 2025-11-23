@@ -77,7 +77,7 @@ fun SearchTagsScreen(
     prevScreenNameId: String,
     onNavigate: (Screen) -> Unit,
 ) {
-    val generalState = appViewModel.generalState.value
+    val generalState = appViewModel.generalState.collectAsStateWithLifecycle().value
     val rfidTagList = scanViewModel.rfidTagList.collectAsStateWithLifecycle()
     val readerSettingState by readerSettingViewModel.readerSettingState.collectAsStateWithLifecycle()
     var showRadioPowerDialog by remember { mutableStateOf(false) }

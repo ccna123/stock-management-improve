@@ -21,12 +21,14 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.sol_denka_stockmanagement.R
 import com.example.sol_denka_stockmanagement.navigation.Screen
 import com.example.sol_denka_stockmanagement.constant.SelectTitle
@@ -42,6 +44,7 @@ import com.example.sol_denka_stockmanagement.state.ExpandState
 import com.example.sol_denka_stockmanagement.state.InputState
 import com.example.sol_denka_stockmanagement.viewmodel.AppViewModel
 import com.example.sol_denka_stockmanagement.viewmodel.ScanViewModel
+import androidx.compose.runtime.collectAsState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
@@ -52,9 +55,8 @@ fun InventoryScreen(
     onNavigate: (Screen) -> Unit
 ) {
 
-    val errorState = appViewModel.errorState.value
-    val inputState = appViewModel.inputState.value
-    val expandState = appViewModel.expandState.value
+    val inputState = appViewModel.inputState.collectAsStateWithLifecycle().value
+    val expandState = appViewModel.expandState.collectAsStateWithLifecycle().value
 
     LaunchedEffect(Unit) {
         scanViewModel.setEnableScan(false)

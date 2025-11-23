@@ -34,6 +34,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import kotlin.collections.lastIndex
@@ -48,14 +49,14 @@ class AppViewModel @Inject constructor(
 
 
     // region State Definitions
-    private val _generalState = mutableStateOf(GeneralState())
-    val generalState: State<GeneralState> = _generalState
+    private val _generalState = MutableStateFlow(GeneralState())
+    val generalState: StateFlow<GeneralState> = _generalState.asStateFlow()
 
-    private val _expandState = mutableStateOf(ExpandState())
-    val expandState: State<ExpandState> = _expandState
+    private val _expandState = MutableStateFlow(ExpandState())
+    val expandState: StateFlow<ExpandState> = _expandState.asStateFlow()
 
-    private val _inputState = mutableStateOf(InputState())
-    val inputState: State<InputState> = _inputState
+    private val _inputState = MutableStateFlow(InputState())
+    val inputState: StateFlow<InputState> = _inputState.asStateFlow()
 
     private val _errorState = mutableStateOf(ErrorState())
     val errorState: State<ErrorState> = _errorState
@@ -118,11 +119,12 @@ class AppViewModel @Inject constructor(
         }
         viewModelScope.launch {
             readerController.connectionEvents.collect { evt ->
-                when(evt){
+                when (evt) {
                     ConnectionState.DISCONNECTED -> {
                         showConnectingDialog.value = false
                         _toastFlow.emit("リーダーが切断されました" to ToastType.ERROR)
                     }
+
                     ConnectionState.CONNECTING -> showConnectingDialog.value = true
                     ConnectionState.CONNECTED -> {
                         showConnectingDialog.value = false
@@ -218,42 +220,42 @@ class AppViewModel @Inject constructor(
     fun onInputIntent(intent: InputIntent) {
         when (intent) {
             is InputIntent.ChangeHandlingMethod -> {
-                _inputState.value = _inputState.value.copy(handlingMethod = intent.value)
+                _inputState.update { it.copy(handlingMethod = intent.value) }
                 bottomSheetChosenMethod.value = intent.value
             }
 
             is InputIntent.ChangeStockArea ->
-                _inputState.value = _inputState.value.copy(stockArea = intent.value)
+                _inputState.update { it.copy(stockArea = intent.value) }
 
             is InputIntent.ChangeRemark ->
-                _inputState.value = _inputState.value.copy(remark = intent.value)
+                _inputState.update { it.copy(remark = intent.value) }
 
             is InputIntent.ChangeMissRoll ->
-                _inputState.value = _inputState.value.copy(materialSelectedItem = intent.value)
+                _inputState.update { it.copy(materialSelectedItem = intent.value) }
 
             is InputIntent.ChangeGrade ->
-                _inputState.value = _inputState.value.copy(grade = intent.value)
+                _inputState.update { it.copy(grade = intent.value) }
 
             is InputIntent.ChangeLength ->
-                _inputState.value = _inputState.value.copy(length = intent.value)
+                _inputState.update { it.copy(length = intent.value) }
 
             is InputIntent.ChangeRollingMachineInfo ->
-                _inputState.value = _inputState.value.copy(rollingMachineInfo = intent.value)
+                _inputState.update { it.copy(rollingMachineInfo = intent.value) }
 
             is InputIntent.ChangeThickness ->
-                _inputState.value = _inputState.value.copy(thickness = intent.value)
+                _inputState.update { it.copy(thickness = intent.value) }
 
             is InputIntent.ChangeWeight ->
-                _inputState.value = _inputState.value.copy(weight = intent.value)
+                _inputState.update { it.copy(weight = intent.value) }
 
             is InputIntent.ChangeLotNo ->
-                _inputState.value = _inputState.value.copy(lotNo = intent.value)
+                _inputState.update { it.copy(lotNo = intent.value) }
 
             is InputIntent.ChangePackingStyle ->
-                _inputState.value = _inputState.value.copy(packingStyle = intent.value)
+                _inputState.update { it.copy(packingStyle = intent.value) }
 
             is InputIntent.ChangeFileTransferMethod ->
-                _inputState.value = _inputState.value.copy(fileTransferMethod = intent.value)
+                _inputState.update { it.copy(fileTransferMethod = intent.value) }
 
             InputIntent.BulkApplyHandlingMethod -> {
                 val chosenMethod = bottomSheetChosenMethod.value
@@ -262,7 +264,7 @@ class AppViewModel @Inject constructor(
                 val updated = perTagHandlingMethod.value.toMutableMap()
 
                 checked.forEach { (tag, isChecked) ->
-                    if (isChecked){
+                    if (isChecked) {
                         updated[tag] = chosenMethod
                     }
                 }
@@ -275,57 +277,50 @@ class AppViewModel @Inject constructor(
     fun onGeneralIntent(intent: ShareIntent) {
         when (intent) {
             is ShareIntent.ChangeTab ->
-                _generalState.value = _generalState.value.copy(tab = intent.tab)
+                _generalState.update { it.copy(tab = intent.tab) }
 
             is ShareIntent.ToggleDialog ->
-                _generalState.value =
-                    _generalState.value.copy(showAppDialog = !_generalState.value.showAppDialog)
+                _generalState.update { it.copy(showAppDialog = !_generalState.value.showAppDialog) }
 
             is ShareIntent.ToggleDropDown ->
-                _generalState.value = _generalState.value.copy(showDropDown = intent.showDropDown)
+                _generalState.update { it.copy(showDropDown = intent.showDropDown) }
 
-            is ShareIntent.ToggleSelectionMode -> _generalState.value =
-                _generalState.value.copy(isSelectionMode = intent.selectionMode)
+            is ShareIntent.ToggleSelectionMode ->
+                _generalState.update { it.copy(isSelectionMode = intent.selectionMode) }
 
             is ShareIntent.ToggleTagSelection -> {
                 val current = generalState.value.selectedTags.toMutableList()
                 if (intent.item in current) current.remove(intent.item) else current.add(intent.item)
-                _generalState.value = _generalState.value.copy(selectedTags = current)
-                if (current.isEmpty()) _generalState.value =
-                    _generalState.value.copy(isSelectionMode = false)
+                _generalState.update { it.copy(selectedTags = current) }
+                if (current.isEmpty()) _generalState.update { it.copy(isSelectionMode = false) }
             }
 
             is ShareIntent.ToggleFoundTag -> {
                 val current = generalState.value.foundTags.toMutableList()
                 if (intent.tag in current) current.remove(intent.tag) else current.add(intent.tag)
-                _generalState.value = _generalState.value.copy(foundTags = current)
+                _generalState.update { it.copy(foundTags = current) }
             }
 
             ShareIntent.ClearTagSelectionList -> {
-                _generalState.value = _generalState.value.copy(
-                    selectedTags = emptyList(),
-                    isAllSelected = false
-                )
+                _generalState.update {
+                    it.copy(
+                        selectedTags = emptyList(),
+                        isAllSelected = false
+                    )
+                }
             }
 
-            ShareIntent.ClearFoundTag -> _generalState.value =
-                _generalState.value.copy(foundTags = emptyList())
+            ShareIntent.ClearFoundTag -> _generalState.update { it.copy(foundTags = emptyList()) }
 
             ShareIntent.Next -> {
                 val current = _generalState.value.currentIndex
                 val last = _generalState.value.selectedTags.lastIndex
-                // move forward
-                _generalState.value = _generalState.value.copy(
-                    currentIndex = minOf(current + 1, last)
-                )
+                _generalState.update { it.copy(currentIndex = minOf(current + 1, last)) }
             }
 
             ShareIntent.Prev -> {
                 val current = _generalState.value.currentIndex
-                // move backward
-                _generalState.value = _generalState.value.copy(
-                    currentIndex = maxOf(current - 1, 0)
-                )
+                _generalState.update { it.copy(currentIndex = maxOf(current - 1, 0)) }
             }
 
             is ShareIntent.ToggleSelectionAll -> {
@@ -358,9 +353,8 @@ class AppViewModel @Inject constructor(
 
             }
 
-            is ShareIntent.ToggleNetworkDialog -> _generalState.value = _generalState.value.copy(
-                showNetworkDialog = intent.doesOpenDialog
-            )
+            is ShareIntent.ToggleNetworkDialog ->
+                _generalState.update { it.copy(showNetworkDialog = intent.doesOpenDialog) }
 
             is ShareIntent.ChangePerTagHandlingMethod -> {
                 perTagHandlingMethod.value = perTagHandlingMethod.value.toMutableMap()
@@ -385,40 +379,34 @@ class AppViewModel @Inject constructor(
                 bottomSheetChosenMethod.value = HandlingMethod.USE.displayName
             }
 
-            is ShareIntent.ChangeTabInReceivingScreen -> _inputState.value = _inputState.value.copy(materialSelectedItem = intent.tab)
+            is ShareIntent.ChangeTabInReceivingScreen ->
+                _inputState.update { it.copy(materialSelectedItem = intent.tab) }
         }
     }
+
     fun onExpandIntent(intent: ExpandIntent) {
         when (intent) {
 
             ExpandIntent.ToggleMissRollExpanded ->
-                _expandState.value = _expandState.value.copy(
-                    materialSelection = !_expandState.value.materialSelection
-                )
+
+                _expandState.update { it.copy(materialSelection = !_expandState.value.materialSelection) }
 
             ExpandIntent.ToggleStockAreaExpanded ->
-                _expandState.value = _expandState.value.copy(
-                    stockAreaExpanded = !_expandState.value.stockAreaExpanded
-                )
+                _expandState.update { it.copy(stockAreaExpanded = !_expandState.value.stockAreaExpanded) }
 
             ExpandIntent.TogglePackingStyleExpanded ->
-                _expandState.value = _expandState.value.copy(
-                    packingStyleExpanded = !_expandState.value.packingStyleExpanded
-                )
+                _expandState.update { it.copy(packingStyleExpanded = !_expandState.value.packingStyleExpanded) }
 
             ExpandIntent.ToggleHandlingMethodExpanded ->
-                _expandState.value = _expandState.value.copy(
-                    handlingMethodExpanded = !_expandState.value.handlingMethodExpanded
-                )
+                _expandState.update { it.copy(handlingMethodExpanded = !_expandState.value.handlingMethodExpanded) }
 
             ExpandIntent.ToggleFileTransferMethodExpanded ->
-                _expandState.value = _expandState.value.copy(
-                    fileTransferMethodExpanded = !_expandState.value.fileTransferMethodExpanded
-                )
+                _expandState.update { it.copy(fileTransferMethodExpanded = !_expandState.value.fileTransferMethodExpanded) }
 
             is ExpandIntent.TogglePerTagHandlingExpanded -> {
                 val current = perTagExpanded.value[intent.tag] ?: false
-                perTagExpanded.value = perTagExpanded.value.toMutableMap().apply { put(intent.tag, !current) }
+                perTagExpanded.value =
+                    perTagExpanded.value.toMutableMap().apply { put(intent.tag, !current) }
             }
 
             is ExpandIntent.CloseHandlingExpanded -> {
