@@ -20,6 +20,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -67,6 +68,28 @@ fun InventoryCompleteScreen(
             )
         })
     }
+    val inventoryStatusList = listOf(
+        InventoryScanResultStatusModel(
+            status = InventoryScanResult.OK.displayName,
+            icon = R.drawable.scan_ok,
+            color = brightGreenPrimary,
+        ),
+        InventoryScanResultStatusModel(
+            status = InventoryScanResult.SHORTAGE.displayName,
+            icon = R.drawable.scan_shortage,
+            color = brightOrange,
+        ),
+        InventoryScanResultStatusModel(
+            status = InventoryScanResult.OVERLOAD.displayName,
+            icon = R.drawable.scan_overload,
+            color = Color(0xFFF44336),
+        ),
+        InventoryScanResultStatusModel(
+            status = InventoryScanResult.WRONG_LOCATION.displayName,
+            icon = R.drawable.scan_wrong_location,
+            color = deepBlueSky,
+        )
+    )
 
     Layout(
         topBarText = Screen.InventoryComplete.displayName,
@@ -106,7 +129,7 @@ fun InventoryCompleteScreen(
         Column(
             modifier = Modifier
                 .padding(paddingValues)
-                .padding(30.dp)
+                .padding(vertical = 20.dp, horizontal = 30.dp)
                 .fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -123,62 +146,36 @@ fun InventoryCompleteScreen(
                         color = Color.White,
                         shape = RoundedCornerShape(12.dp)
                     )
-                    .fillMaxWidth()
                     .border(1.dp, color = paleSkyBlue, shape = RoundedCornerShape(10.dp)),
             ) {
-                Row(
+                Column(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(10.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Center
+                    verticalArrangement = Arrangement.spacedBy(10.dp)
                 ) {
-                    Column {
-                        listOf(
-                            InventoryScanResultStatusModel(
-                                status = InventoryScanResult.OK.displayName,
-                                icon = R.drawable.scan_ok,
-                                color = brightGreenPrimary
-                            ),
-                            InventoryScanResultStatusModel(
-                                status = InventoryScanResult.SHORTAGE.displayName,
-                                icon = R.drawable.scan_shortage,
-                                color = brightOrange
-                            ),
-                            InventoryScanResultStatusModel(
-                                status = InventoryScanResult.OVERLOAD.displayName,
-                                icon = R.drawable.scan_overload,
-                                color = Color(0xFFF44336)
-                            ),
-                            InventoryScanResultStatusModel(
-                                status = InventoryScanResult.WRONG_LOCATION.displayName,
-                                icon = R.drawable.scan_wrong_location,
-                                color = deepBlueSky
-                            ),
-                        ).map {
+                    inventoryStatusList.forEach { item ->
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
                             Row(
+                                modifier = Modifier.weight(1f),
                                 verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.spacedBy(4.dp)
+                                horizontalArrangement = Arrangement.spacedBy(6.dp)
                             ) {
                                 Icon(
-                                    painter = painterResource(it.icon),
+                                    painter = painterResource(item.icon),
                                     contentDescription = null,
-                                    modifier = Modifier.size(23.dp),
-                                    tint = it.color
+                                    tint = item.color,
+                                    modifier = Modifier.size(23.dp)
                                 )
-                                Text(
-                                    modifier = Modifier.padding(vertical = 5.dp),
-                                    text = it.status, fontSize = 19.sp
-                                )
+                                Text(text = item.status, fontSize = 18.sp)
                             }
-                        }
-                    }
-                    Spacer(modifier = Modifier.width(50.dp))
-                    Column {
-                        for (i in 1 until 5) {
                             Text(
-                                modifier = Modifier.padding(vertical = 5.dp),
-                                text = "${i}件", fontSize = 19.sp
+                                text = "123 件",
+                                fontSize = 18.sp
                             )
                         }
                     }
