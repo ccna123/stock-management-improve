@@ -13,7 +13,7 @@
     <string name="ok">はい</string>
     <string name="no">いいえ</string>
     <string name="return_home">Homeへ戻る</string>
-    <string name="import_file">取り込み</string>
+    <string name="import_file">読み取り</string>
     <string name="export_file">出力</string>
     <string name="finish_inventory">棚卸完了</string>
     <string name="apply_setting">設定適用</string>
@@ -76,6 +76,8 @@
     <string name="planned_register_item_number">登録予定アイテム（%s件）</string>
     <string name="item_name_title">アイテム名</string>
     <string name="item_code_title">アイテムコード</string>
+    <string name="csv_type_select_request">CSVファイルの種類を選択してください</string>
+    <string name="csv_type_selection">CSVファイルの種類選択</string>
 
     <!-- 入力-->
     <string name="grade_hint">グレード入力</string>

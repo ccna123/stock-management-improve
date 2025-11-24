@@ -42,20 +42,22 @@ import com.example.sol_denka_stockmanagement.constant.CsvType
 import com.example.sol_denka_stockmanagement.navigation.Screen
 import com.example.sol_denka_stockmanagement.constant.SelectTitle
 import com.example.sol_denka_stockmanagement.intent.ShareIntent
-import com.example.sol_denka_stockmanagement.model.CsvFileInfoModel
 import com.example.sol_denka_stockmanagement.screen.layout.Layout
 import com.example.sol_denka_stockmanagement.share.dialog.AppDialog
 import com.example.sol_denka_stockmanagement.share.ButtonContainer
 import com.example.sol_denka_stockmanagement.share.InputContainer
 import com.example.sol_denka_stockmanagement.share.InputFieldContainer
-import com.example.sol_denka_stockmanagement.state.GeneralState
 import com.example.sol_denka_stockmanagement.ui.theme.brightGreenPrimary
 import com.example.sol_denka_stockmanagement.ui.theme.skyBlue
 import com.example.sol_denka_stockmanagement.viewmodel.AppViewModel
 import com.example.sol_denka_stockmanagement.screen.csv.components.SingleCsvFile
 import com.example.sol_denka_stockmanagement.share.dialog.NetworkDialog
 import kotlinx.coroutines.launch
+import androidx.compose.runtime.collectAsState
+import androidx.compose.ui.unit.sp
+import com.example.sol_denka_stockmanagement.ui.theme.brightAzure
 
+@OptIn(ExperimentalMaterial3Api::class)
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @Composable
 fun CsvImportScreen(
@@ -66,7 +68,7 @@ fun CsvImportScreen(
     val context = LocalContext.current
     val csvState by csvViewModel.csvState.collectAsStateWithLifecycle()
     val scope = rememberCoroutineScope()
-    val generalState = appViewModel.generalState.value
+    val generalState = appViewModel.generalState.collectAsState().value
     val csvFiles by csvViewModel.csvFiles.collectAsStateWithLifecycle()
     val isImporting by csvViewModel.isImporting.collectAsStateWithLifecycle()
     val importProgress by csvViewModel.importProgress.collectAsStateWithLifecycle()
@@ -162,7 +164,6 @@ fun CsvImportScreen(
                     elevation = 13.dp, clip = true, ambientColor = Color.Gray.copy(alpha = 0.5f),
                     spotColor = Color.DarkGray.copy(alpha = 0.7f)
                 ),
-                shape = RoundedCornerShape(10.dp),
                 buttonTextSize = 20,
                 buttonText = stringResource(R.string.import_file),
                 canClick = csvState.csvType.isNotEmpty(),
@@ -182,38 +183,15 @@ fun CsvImportScreen(
         onBackArrowClick = {
             onNavigate(Screen.Home)
         }) { paddingValues ->
-        CsvImportScreenContent(
-            modifier = Modifier.padding(paddingValues),
-            csvViewModel = csvViewModel,
-            csvState = csvState,
-            generalState = generalState,
-            appViewModel = appViewModel,
-            csvFiles = csvFiles
-        )
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun CsvImportScreenContent(
-    modifier: Modifier,
-    csvViewModel: CsvViewModel,
-    csvState: CsvState,
-    csvFiles: List<CsvFileInfoModel>,
-    generalState: GeneralState,
-    appViewModel: AppViewModel
-) {
-    Column(
-        modifier = modifier
-            .fillMaxSize()
-            .imePadding()
-    ) {
         Column(
             modifier = Modifier
+                .padding(paddingValues)
                 .padding(16.dp)
+                .fillMaxSize()
+                .imePadding()
         ) {
             InputContainer(
-                title = "CSVファイルの種類選択",
+                title = stringResource(R.string.csv_type_selection),
                 isRequired = true,
                 children = {
                     ExposedDropdownMenuBox(
@@ -262,7 +240,7 @@ fun CsvImportScreenContent(
                 }
             )
             Spacer(modifier = Modifier.height(10.dp))
-            HorizontalDivider()
+            HorizontalDivider(color = brightAzure)
             Spacer(modifier = Modifier.height(10.dp))
             LazyColumn(
                 modifier = Modifier.fillMaxWidth(),
@@ -272,7 +250,10 @@ fun CsvImportScreenContent(
                 item {
                     if (csvState.csvType == "") {
                         if (csvFiles.isEmpty()) {
-                            Text(text = "CSVファイルが見つかりません")
+                            Text(
+                                color = Color.Red,
+                                fontSize = 20.sp,
+                                text = stringResource(R.string.csv_type_select_request))
                         }
                     } else {
                         csvFiles.forEachIndexed { index, file ->

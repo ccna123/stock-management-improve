@@ -44,12 +44,14 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.sol_denka_stockmanagement.R
+import com.example.sol_denka_stockmanagement.constant.Tab
 import com.example.sol_denka_stockmanagement.intent.ShareIntent
 import com.example.sol_denka_stockmanagement.navigation.Screen
 import com.example.sol_denka_stockmanagement.model.MenuModel
 import com.example.sol_denka_stockmanagement.screen.layout.Layout
 import com.example.sol_denka_stockmanagement.share.dialog.AppDialog
 import com.example.sol_denka_stockmanagement.share.ButtonContainer
+import com.example.sol_denka_stockmanagement.share.dialog.ConfirmDialog
 import com.example.sol_denka_stockmanagement.ui.theme.brightAzure
 import com.example.sol_denka_stockmanagement.viewmodel.AppViewModel
 import com.example.sol_denka_stockmanagement.viewmodel.ScanViewModel
@@ -78,42 +80,17 @@ fun HomeScreen(
         }
     }
 
-    if (showExitDialog) {
-        AppDialog{
-            Column(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Text(
-                    text = stringResource(R.string.app_exit_confirm),
-                    textAlign = TextAlign.Center,
-                )
-                Spacer(Modifier.height(12.dp))
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceEvenly
-                ) {
-                    ButtonContainer(
-                        modifier = Modifier.weight(1f),
-                        buttonText = stringResource(R.string.ok),
-                        onClick = {
-                            showExitDialog = false
-                            (context as? Activity)?.finish()
-                        }
-                    )
-                    Spacer(modifier = Modifier.width(10.dp))
-                    ButtonContainer(
-                        modifier = Modifier.weight(1f),
-                        buttonText = stringResource(R.string.close),
-                        containerColor = Color.Red,
-                        onClick = {
-                            showExitDialog = false
-                        }
-                    )
-                }
-            }
-        }
-    }
+    ConfirmDialog(
+        showDialog = showExitDialog,
+        dialogTitle = stringResource(R.string.app_exit_confirm),
+        buttonText1 = stringResource(R.string.ok),
+        buttonText2 = stringResource(R.string.no),
+        onOk = {
+            (context as? Activity)?.finish()
+            showExitDialog = false
+        },
+        onCancel = { showExitDialog = false }
+    )
 
     Layout(
         topBarText = Screen.Home.displayName,
