@@ -52,8 +52,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -346,7 +349,8 @@ fun Layout(
         },
         content = {
             Scaffold(
-                modifier = modifier.fillMaxSize(),
+                modifier = modifier
+                    .fillMaxSize(),
                 topBar = {
                     TopAppBar(
                         title = {

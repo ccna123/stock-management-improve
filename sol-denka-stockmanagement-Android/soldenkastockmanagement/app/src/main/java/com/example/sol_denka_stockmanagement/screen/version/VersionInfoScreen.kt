@@ -48,7 +48,7 @@ import com.example.sol_denka_stockmanagement.share.ButtonContainer
 import com.example.sol_denka_stockmanagement.ui.theme.brightAzure
 import com.example.sol_denka_stockmanagement.viewmodel.AppViewModel
 
-@RequiresApi(Build.VERSION_CODES.S)
+@RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @Composable
 fun VersionInfoScreen(
     appViewModel: AppViewModel,
@@ -63,140 +63,125 @@ fun VersionInfoScreen(
         hasBottomBar = false,
         onBackArrowClick = { onNavigate((Screen.Home)) }
     ) { paddingValues ->
-        VersionInfoScreenContent(
-            modifier = Modifier.padding(paddingValues),
-            onNavigate = onNavigate,
-            readerInfo = readerInfo
-        )
-    }
-}
-
-@RequiresApi(Build.VERSION_CODES.S)
-@Composable
-fun VersionInfoScreenContent(
-    modifier: Modifier = Modifier,
-    readerInfo: ReaderInfoModel,
-    onNavigate: (Screen) -> Unit
-) {
-
-    val context = LocalContext.current
-    val versionName = try {
-        val packageInfo = context.packageManager.getPackageInfo(context.packageName, 0)
-        packageInfo.versionName ?: "Unknown"
-    } catch (_: PackageManager.NameNotFoundException) {
-        "Unknown"
-    }
-
-    LazyColumn(
-        modifier = modifier.padding(PaddingValues(horizontal = 16.dp))
-    ) {
-        item {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(paddingValues = PaddingValues(top = 20.dp)),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Center
-            ) {
-                Image(
-                    painterResource(R.drawable.app_info), contentDescription = null,
-                    modifier = Modifier.size(90.dp)
-                )
-                Column {
-                    Text(
-                        fontSize = 15.sp,
-                        text = stringResource(R.string.version_app_name)
+        val context = LocalContext.current
+        val versionName = try {
+            val packageInfo = context.packageManager.getPackageInfo(context.packageName, 0)
+            packageInfo.versionName ?: "Unknown"
+        } catch (_: PackageManager.NameNotFoundException) {
+            "Unknown"
+        }
+        LazyColumn(
+            modifier = Modifier
+                .padding(paddingValues)
+                .padding(PaddingValues(horizontal = 16.dp))
+        ) {
+            item {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(paddingValues = PaddingValues(top = 20.dp)),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    Image(
+                        painterResource(R.drawable.app_info), contentDescription = null,
+                        modifier = Modifier.size(90.dp)
                     )
-                    Text(
-                        fontSize = 15.sp,
-                        text = stringResource(R.string.version_verinfo, versionName)
-                    )
-                    Text(
-                        fontSize = 15.sp,
-                        text = stringResource(R.string.version_copyright)
-                    )
-                }
+                    Column {
+                        Text(
+                            fontSize = 15.sp,
+                            text = stringResource(R.string.version_app_name)
+                        )
+                        Text(
+                            fontSize = 15.sp,
+                            text = stringResource(R.string.version_verinfo, versionName)
+                        )
+                        Text(
+                            fontSize = 15.sp,
+                            text = stringResource(R.string.version_copyright)
+                        )
+                    }
 
-            }
-            Spacer(modifier = Modifier.height(10.dp))
-            HorizontalDivider()
-            Text(text = stringResource(R.string.version_device_title))
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(30.dp),
-            ) {
-                Column {
-                    Text(text = stringResource(R.string.version_device_name))
-                    Text(text = stringResource(R.string.version_device_android))
-                    Text(text = stringResource(R.string.version_device_id))
                 }
-                Column {
-                    Text(text = Build.MODEL)
-                    Text(text = Build.VERSION.RELEASE)
-                    Text(text = Build.ID)
-                }
-            }
-            Spacer(modifier = Modifier.height(20.dp))
-            HorizontalDivider()
-            if (readerInfo.connectionState == ConnectionState.CONNECTED) {
-                Text(text = stringResource(R.string.version_rfid_title))
+                Spacer(modifier = Modifier.height(10.dp))
+                HorizontalDivider(color = brightAzure)
+                Text(text = stringResource(R.string.version_device_title))
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(10.dp)
+                    horizontalArrangement = Arrangement.spacedBy(30.dp),
                 ) {
-                    Text(text = stringResource(R.string.version_rfid_name))
-                    Text(text = readerInfo.readerName)
+                    Column {
+                        Text(text = stringResource(R.string.version_device_name))
+                        Text(text = stringResource(R.string.version_device_android))
+                        Text(text = stringResource(R.string.version_device_id))
+                    }
+                    Column {
+                        Text(text = Build.MODEL)
+                        Text(text = Build.VERSION.RELEASE)
+                        Text(text = Build.ID)
+                    }
                 }
                 Spacer(modifier = Modifier.height(20.dp))
-                HorizontalDivider()
-            }
-            Column(
-                verticalArrangement = Arrangement.spacedBy(10.dp)
-            ) {
-                Text(text = stringResource(R.string.version_lib_title))
-                ButtonContainer(
-                    modifier = Modifier.fillMaxWidth(),
-                    buttonHeight = 35.dp,
-                    shape = RoundedCornerShape(10.dp),
-                    buttonText = stringResource(R.string.version_license_info),
-                    icon = {
-                        Icon(
-                            painter = painterResource(R.drawable.license),
-                            contentDescription = null,
-                            tint = Color.White,
-                            modifier = Modifier.size(20.dp)
-                        )
-                    },
-                    onClick = {
-                        onNavigate(Screen.LicenseInfo)
+                HorizontalDivider(color = brightAzure)
+                if (readerInfo.connectionState == ConnectionState.CONNECTED) {
+                    Text(text = stringResource(R.string.version_rfid_title))
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(10.dp)
+                    ) {
+                        Text(text = stringResource(R.string.version_rfid_name))
+                        Text(text = readerInfo.readerName)
                     }
-                )
-            }
-            Spacer(modifier = Modifier.height(20.dp))
-            HorizontalDivider()
-            Spacer(modifier = Modifier.height(10.dp))
-            Column {
-                Text(
-                    color = brightAzure,
-                    text = stringResource(R.string.version_company_title)
-                )
+                    Spacer(modifier = Modifier.height(20.dp))
+                    HorizontalDivider(color = brightAzure)
+                }
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(10.dp)
+                ) {
+                    Text(text = stringResource(R.string.version_lib_title))
+                    ButtonContainer(
+                        modifier = Modifier.fillMaxWidth(),
+                        buttonHeight = 35.dp,
+                        shape = RoundedCornerShape(10.dp),
+                        buttonText = stringResource(R.string.version_license_info),
+                        icon = {
+                            Icon(
+                                painter = painterResource(R.drawable.license),
+                                contentDescription = null,
+                                tint = Color.White,
+                                modifier = Modifier.size(20.dp)
+                            )
+                        },
+                        onClick = {
+                            onNavigate(Screen.LicenseInfo)
+                        }
+                    )
+                }
+                Spacer(modifier = Modifier.height(20.dp))
+                HorizontalDivider(color = brightAzure)
                 Spacer(modifier = Modifier.height(10.dp))
-                Text(
-                    fontWeight = FontWeight.Bold,
-                    text = stringResource(R.string.version_company_name)
-                )
-                Text(
-                    fontWeight = FontWeight.Bold,
-                    text = stringResource(R.string.version_division_name)
-                )
-                Spacer(modifier = Modifier.height(10.dp))
-                ClickableUrlText()
+                Column {
+                    Text(
+                        color = brightAzure,
+                        text = stringResource(R.string.version_company_title)
+                    )
+                    Spacer(modifier = Modifier.height(10.dp))
+                    Text(
+                        fontWeight = FontWeight.Bold,
+                        text = stringResource(R.string.version_company_name)
+                    )
+                    Text(
+                        fontWeight = FontWeight.Bold,
+                        text = stringResource(R.string.version_division_name)
+                    )
+                    Spacer(modifier = Modifier.height(10.dp))
+                    ClickableUrlText()
+                }
             }
         }
     }
 }
-
 @Composable
 fun ClickableUrlText(modifier: Modifier = Modifier) {
     val context = LocalContext.current
