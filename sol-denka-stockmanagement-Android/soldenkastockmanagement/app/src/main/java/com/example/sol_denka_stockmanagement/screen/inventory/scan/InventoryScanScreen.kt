@@ -50,29 +50,26 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.sol_denka_stockmanagement.R
 import com.example.sol_denka_stockmanagement.constant.Tab
 import com.example.sol_denka_stockmanagement.constant.TagStatus
-import com.example.sol_denka_stockmanagement.intent.ShareIntent
 import com.example.sol_denka_stockmanagement.intent.ReaderSettingIntent
-import com.example.sol_denka_stockmanagement.model.InventoryItemMasterModel
+import com.example.sol_denka_stockmanagement.intent.ShareIntent
 import com.example.sol_denka_stockmanagement.navigation.Screen
 import com.example.sol_denka_stockmanagement.screen.layout.Layout
+import com.example.sol_denka_stockmanagement.screen.setting.sub_screen.reader_setting.ReaderSettingViewModel
 import com.example.sol_denka_stockmanagement.share.ButtonContainer
 import com.example.sol_denka_stockmanagement.share.OptionTabs
 import com.example.sol_denka_stockmanagement.share.ScannedTagDisplay
-import com.example.sol_denka_stockmanagement.state.GeneralState
-import com.example.sol_denka_stockmanagement.ui.theme.orange
-import com.example.sol_denka_stockmanagement.viewmodel.AppViewModel
-import com.example.sol_denka_stockmanagement.screen.setting.sub_screen.reader_setting.ReaderSettingViewModel
-import com.example.sol_denka_stockmanagement.share.AppDialog
-import com.example.sol_denka_stockmanagement.share.RadioPowerDialog
+import com.example.sol_denka_stockmanagement.share.dialog.ConfirmDialog
+import com.example.sol_denka_stockmanagement.share.dialog.RadioPowerDialog
 import com.example.sol_denka_stockmanagement.ui.theme.brightGreenSecondary
+import com.example.sol_denka_stockmanagement.ui.theme.orange
 import com.example.sol_denka_stockmanagement.ui.theme.tealGreen
+import com.example.sol_denka_stockmanagement.viewmodel.AppViewModel
 import com.example.sol_denka_stockmanagement.viewmodel.ScanViewModel
 import kotlinx.coroutines.launch
 
@@ -86,7 +83,7 @@ fun InventoryScanScreen(
     onNavigate: (Screen) -> Unit
 ) {
     val generalState = appViewModel.generalState.collectAsStateWithLifecycle().value
-    val rfidTagList = scanViewModel.rfidTagList.collectAsStateWithLifecycle()
+    val rfidTagList = scanViewModel.rfidTagList.collectAsStateWithLifecycle().value
     val readerSettingState by readerSettingViewModel.readerSettingState.collectAsStateWithLifecycle()
     var showRadioPowerDialog by remember { mutableStateOf(false) }
     var showClearConfirmDialog by remember { mutableStateOf(false) }
@@ -149,42 +146,18 @@ fun InventoryScanScreen(
             showRadioPowerDialog = false
         }
     )
-
-    if (showClearConfirmDialog) {
-        AppDialog {
-            Text(
-                text = stringResource(R.string.clear_processed_tag_dialog),
-                textAlign = TextAlign.Center,
-                color = Color.Black
-            )
-            Spacer(Modifier.height(12.dp))
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceEvenly
-            ) {
-                ButtonContainer(
-                    buttonText = stringResource(R.string.ok),
-                    shape = RoundedCornerShape(10.dp),
-                    buttonTextSize = 20,
-                    onClick = {
-                        scanViewModel.clearProcessedTag()
-                        appViewModel.onGeneralIntent(ShareIntent.ChangeTab(Tab.Left))
-                        showClearConfirmDialog = false
-                    },
-                )
-                ButtonContainer(
-                    buttonText = stringResource(R.string.no),
-                    shape = RoundedCornerShape(10.dp),
-                    containerColor = Color.Red,
-                    buttonTextSize = 20,
-                    onClick = {
-                        showClearConfirmDialog = false
-                    },
-                )
-            }
-        }
-    }
+    ConfirmDialog(
+        showDialog = showClearConfirmDialog,
+        dialogTitle = stringResource(R.string.clear_processed_tag_dialog),
+        buttonText1 = stringResource(R.string.ok),
+        buttonText2 = stringResource(R.string.no),
+        onOk = {
+            scanViewModel.clearProcessedTag()
+            appViewModel.onGeneralIntent(ShareIntent.ChangeTab(Tab.Left))
+            showClearConfirmDialog = false
+        },
+        onCancel = { showClearConfirmDialog = false }
+    )
 
     Layout(
         topBarText = Screen.Inventory.displayName,
@@ -206,7 +179,7 @@ fun InventoryScanScreen(
                     buttonHeight = 35.dp,
                     buttonText = stringResource(R.string.finish_inventory),
                     buttonTextSize = 19,
-                    canClick = isPerformingInventory.not() && rfidTagList.value.count { it.newField.tagStatus == TagStatus.PROCESSED } > 0,
+                    canClick = isPerformingInventory.not() && rfidTagList.count { it.newField.tagStatus == TagStatus.PROCESSED } > 0,
                     icon = {
                         Icon(
                             imageVector = Icons.Default.CheckCircle,
@@ -331,11 +304,11 @@ fun InventoryScanScreen(
                         modifier = Modifier
                             .fillMaxWidth(.5f)
                             .shadow(
-                            elevation = 13.dp,
-                            clip = true,
-                            ambientColor = Color.Gray.copy(alpha = 0.5f),
-                            spotColor = Color.DarkGray.copy(alpha = 0.7f)
-                        ),
+                                elevation = 13.dp,
+                                clip = true,
+                                ambientColor = Color.Gray.copy(alpha = 0.5f),
+                                spotColor = Color.DarkGray.copy(alpha = 0.7f)
+                            ),
                         icon = {
                             Icon(
                                 painter = painterResource(R.drawable.scanner),
@@ -358,28 +331,10 @@ fun InventoryScanScreen(
         onBackArrowClick = {
             onNavigate(Screen.Inventory)
         }) { paddingValues ->
-        InventoryScanScreenContent(
-            modifier = Modifier.padding(paddingValues),
-            appViewModel = appViewModel,
-            generalState = generalState,
-            rfidTagList = rfidTagList.value,
-        )
-    }
-}
-
-@RequiresApi(Build.VERSION_CODES.TIRAMISU)
-@Composable
-fun InventoryScanScreenContent(
-    modifier: Modifier,
-    generalState: GeneralState,
-    appViewModel: AppViewModel,
-    rfidTagList: List<InventoryItemMasterModel>,
-) {
-    Box(
-        modifier = Modifier.fillMaxSize()
-    ) {
         Column(
-            modifier = modifier.fillMaxSize()
+            modifier = Modifier
+                .padding(paddingValues)
+                .fillMaxSize()
         ) {
             Box {
                 Column(
@@ -456,7 +411,6 @@ fun InventoryScanScreenContent(
                             }
                         )
                     }
-
                 }
             }
         }

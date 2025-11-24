@@ -97,9 +97,6 @@ fun InventoryScreen(
                 buttonText = stringResource(R.string.inventory_start),
             )
         },
-        onConfirmProcessedScanDataDialog = {
-            onNavigate(Screen.Home)
-        },
         onBackArrowClick = {
             onNavigate(Screen.Home)
         }) { paddingValues ->

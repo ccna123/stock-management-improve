@@ -1,4 +1,4 @@
-package com.example.sol_denka_stockmanagement.share
+package com.example.sol_denka_stockmanagement.share.dialog
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement

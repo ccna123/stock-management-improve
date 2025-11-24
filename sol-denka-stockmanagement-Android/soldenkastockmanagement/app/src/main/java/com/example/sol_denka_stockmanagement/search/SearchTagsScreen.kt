@@ -57,7 +57,7 @@ import com.example.sol_denka_stockmanagement.ui.theme.paleSkyBlue
 import com.example.sol_denka_stockmanagement.viewmodel.AppViewModel
 import com.example.sol_denka_stockmanagement.screen.setting.sub_screen.reader_setting.ReaderSettingViewModel
 import com.example.sol_denka_stockmanagement.viewmodel.ScanViewModel
-import com.example.sol_denka_stockmanagement.share.RadioPowerDialog
+import com.example.sol_denka_stockmanagement.share.dialog.RadioPowerDialog
 import com.example.sol_denka_stockmanagement.ui.theme.tealGreen
 import kotlinx.coroutines.launch
 import kotlin.collections.filter

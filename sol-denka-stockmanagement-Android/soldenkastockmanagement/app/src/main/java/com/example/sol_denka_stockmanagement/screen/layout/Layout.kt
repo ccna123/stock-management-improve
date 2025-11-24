@@ -70,7 +70,7 @@ import com.example.sol_denka_stockmanagement.navigation.Screen
 import com.example.sol_denka_stockmanagement.helper.ToastManager
 import com.example.sol_denka_stockmanagement.helper.ToastMessage
 import com.example.sol_denka_stockmanagement.model.ReaderInfoModel
-import com.example.sol_denka_stockmanagement.share.AppDialog
+import com.example.sol_denka_stockmanagement.share.dialog.AppDialog
 import com.example.sol_denka_stockmanagement.share.ButtonContainer
 import com.example.sol_denka_stockmanagement.share.MenuDrawer
 import com.example.sol_denka_stockmanagement.ui.theme.brightGreenPrimary
@@ -79,6 +79,7 @@ import com.example.sol_denka_stockmanagement.ui.theme.deepOceanBlue
 import com.example.sol_denka_stockmanagement.ui.theme.paleSkyBlue
 import com.example.sol_denka_stockmanagement.viewmodel.AppViewModel
 import com.example.sol_denka_stockmanagement.screen.setting.sub_screen.reader_setting.ReaderSettingViewModel
+import com.example.sol_denka_stockmanagement.ui.theme.brightAzure
 import com.example.sol_denka_stockmanagement.ui.theme.orange
 import com.example.sol_denka_stockmanagement.viewmodel.ScanViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -100,9 +101,6 @@ fun Layout(
     onNavigate: (Screen) -> Unit,
     bottomButton: (@Composable () -> Unit)? = null,
     topBarButton: (@Composable () -> Unit)? = null,
-    onConfirmProcessedScanDataDialog: (() -> Unit)? = null,
-    onDismissProcessedScanDataDialog: (() -> Unit)? = null,
-    onDisplayDialogPress: (() -> Unit)? = null,
     content: @Composable (PaddingValues) -> Unit
 ) {
     // ✅ Get ReaderController via Hilt entry point
@@ -382,7 +380,7 @@ fun Layout(
                             }
                         },
                         colors = TopAppBarDefaults.topAppBarColors(
-                            containerColor = if (isPerformingInventory) orange else deepOceanBlue
+                            containerColor = if (isPerformingInventory) orange else brightAzure
                         ),
                     )
                 },

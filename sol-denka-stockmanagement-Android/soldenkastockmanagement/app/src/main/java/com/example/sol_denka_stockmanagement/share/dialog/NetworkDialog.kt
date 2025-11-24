@@ -1,4 +1,4 @@
-package com.example.sol_denka_stockmanagement.share
+package com.example.sol_denka_stockmanagement.share.dialog
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -15,7 +15,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.sol_denka_stockmanagement.R
-import com.example.sol_denka_stockmanagement.intent.ShareIntent
+import com.example.sol_denka_stockmanagement.share.ButtonContainer
 import com.example.sol_denka_stockmanagement.viewmodel.AppViewModel
 
 @Composable

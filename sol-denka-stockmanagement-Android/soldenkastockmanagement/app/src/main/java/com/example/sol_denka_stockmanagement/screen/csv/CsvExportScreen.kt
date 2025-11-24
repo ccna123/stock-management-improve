@@ -49,9 +49,7 @@ import com.example.sol_denka_stockmanagement.state.GeneralState
 import com.example.sol_denka_stockmanagement.ui.theme.skyBlue
 import com.example.sol_denka_stockmanagement.viewmodel.AppViewModel
 import com.example.sol_denka_stockmanagement.screen.csv.components.SingleCsvFile
-import com.example.sol_denka_stockmanagement.screen.csv.CsvViewModel
-import com.example.sol_denka_stockmanagement.screen.setting.sub_screen.reader_setting.ReaderSettingViewModel
-import com.example.sol_denka_stockmanagement.share.NetworkDialog
+import com.example.sol_denka_stockmanagement.share.dialog.NetworkDialog
 
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @Composable
