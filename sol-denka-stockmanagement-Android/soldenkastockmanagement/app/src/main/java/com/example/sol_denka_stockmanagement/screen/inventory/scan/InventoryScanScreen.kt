@@ -58,7 +58,6 @@ import com.example.sol_denka_stockmanagement.R
 import com.example.sol_denka_stockmanagement.constant.Tab
 import com.example.sol_denka_stockmanagement.constant.TagStatus
 import com.example.sol_denka_stockmanagement.intent.ShareIntent
-import com.example.sol_denka_stockmanagement.intent.InventoryScanIntent
 import com.example.sol_denka_stockmanagement.intent.ReaderSettingIntent
 import com.example.sol_denka_stockmanagement.model.InventoryItemMasterModel
 import com.example.sol_denka_stockmanagement.navigation.Screen
@@ -72,9 +71,7 @@ import com.example.sol_denka_stockmanagement.viewmodel.AppViewModel
 import com.example.sol_denka_stockmanagement.screen.setting.sub_screen.reader_setting.ReaderSettingViewModel
 import com.example.sol_denka_stockmanagement.share.AppDialog
 import com.example.sol_denka_stockmanagement.share.RadioPowerDialog
-import com.example.sol_denka_stockmanagement.ui.theme.brightAzure
 import com.example.sol_denka_stockmanagement.ui.theme.brightGreenSecondary
-import com.example.sol_denka_stockmanagement.ui.theme.brightOrange
 import com.example.sol_denka_stockmanagement.ui.theme.tealGreen
 import com.example.sol_denka_stockmanagement.viewmodel.ScanViewModel
 import kotlinx.coroutines.launch
@@ -111,7 +108,7 @@ fun InventoryScanScreen(
     RadioPowerDialog(
         showDialog = showRadioPowerDialog,
         readerSettingState = readerSettingState,
-        onMinPower = {
+        onChangeMinPower = {
             readerSettingViewModel.apply {
                 onIntent(
                     ReaderSettingIntent.ChangeRadioPowerSliderPosition(
@@ -121,7 +118,7 @@ fun InventoryScanScreen(
                 onIntent(ReaderSettingIntent.ChangeRadioPower(0))
             }
         },
-        onMaxPower = {
+        onChangeMaxPower = {
             readerSettingViewModel.apply {
                 onIntent(
                     ReaderSettingIntent.ChangeRadioPowerSliderPosition(
@@ -131,14 +128,14 @@ fun InventoryScanScreen(
                 onIntent(ReaderSettingIntent.ChangeRadioPower(30))
             }
         },
-        onChangeSlider = { intValue ->
+        onChangeSlider = { newValue ->
             readerSettingViewModel.apply {
                 onIntent(
                     ReaderSettingIntent.ChangeRadioPowerSliderPosition(
-                        intValue
+                        newValue.toInt()
                     )
                 )
-                onIntent(ReaderSettingIntent.ChangeRadioPower(intValue))
+                onIntent(ReaderSettingIntent.ChangeRadioPower(newValue.toInt()))
             }
         },
         onOk = {
@@ -209,7 +206,7 @@ fun InventoryScanScreen(
                     buttonHeight = 35.dp,
                     buttonText = stringResource(R.string.finish_inventory),
                     buttonTextSize = 19,
-                    canClick = rfidTagList.value.count { it.newField.tagStatus == TagStatus.PROCESSED } > 0,
+                    canClick = isPerformingInventory.not() && rfidTagList.value.count { it.newField.tagStatus == TagStatus.PROCESSED } > 0,
                     icon = {
                         Icon(
                             imageVector = Icons.Default.CheckCircle,
@@ -230,6 +227,7 @@ fun InventoryScanScreen(
                         modifier = Modifier
                             .size(30.dp)
                             .clickable(
+                                enabled = isPerformingInventory.not(),
                                 onClick = {
                                     appViewModel.onGeneralIntent(
                                         ShareIntent.ToggleDropDown(true)

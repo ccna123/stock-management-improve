@@ -58,6 +58,7 @@ import com.example.sol_denka_stockmanagement.screen.setting.sub_screen.app_setti
 import com.example.sol_denka_stockmanagement.viewmodel.AppViewModel
 import com.example.sol_denka_stockmanagement.screen.setting.sub_screen.reader_setting.ReaderSettingViewModel
 import com.example.sol_denka_stockmanagement.screen.setting.sub_screen.reader_setting.ReaderSettingScreen
+import com.example.sol_denka_stockmanagement.ui.theme.brightAzure
 
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @Composable
@@ -260,7 +261,7 @@ fun SettingScreen(
                 )
             }
             Spacer(modifier = Modifier.height(8.dp))
-            HorizontalDivider()
+            HorizontalDivider(color = brightAzure)
             Box(
                 modifier = Modifier
                     .fillMaxSize()

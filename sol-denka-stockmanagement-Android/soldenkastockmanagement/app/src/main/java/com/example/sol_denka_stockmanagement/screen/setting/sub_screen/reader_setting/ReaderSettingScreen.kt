@@ -58,6 +58,7 @@ import com.example.sol_denka_stockmanagement.intent.ReaderSettingIntent
 import com.example.sol_denka_stockmanagement.reader.FakeBeeperVolume
 import com.example.sol_denka_stockmanagement.reader.FakeInventoryState
 import com.example.sol_denka_stockmanagement.reader.FakeSession
+import com.example.sol_denka_stockmanagement.screen.setting.components.reader_setting_tab.RadioPowerSetting
 import com.example.sol_denka_stockmanagement.screen.setting.components.reader_setting_tab.SettingBoxContainer
 import com.example.sol_denka_stockmanagement.screen.setting.components.reader_setting_tab.SettingItemTitle
 import com.example.sol_denka_stockmanagement.share.ButtonContainer
@@ -131,91 +132,49 @@ fun ReaderSettingScreen(
                 }
             }
             Spacer(modifier = Modifier.height(8.dp))
-            HorizontalDivider()
+            HorizontalDivider(color = brightAzure)
 
             // RFID Power
             SettingBoxContainer {
-                SettingItemTitle(
-                    text = stringResource(R.string.setting_rfid_power),
-                    textSize = 20.sp
-                )
-                Text(
-                    modifier = Modifier.fillMaxWidth(),
-                    textAlign = TextAlign.Center,
-                    text = "${readerSettingState.radioPower}dbm / ${
-                        NumberFormat.getNumberInstance(Locale.getDefault())
-                            .format(readerSettingState.radioPowerMw)
-                    }Mw"
-                )
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(PaddingValues(top = 10.dp, start = 15.dp, end = 15.dp)),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    IconButton(
-                        colors = IconButtonDefaults.iconButtonColors(
-                            containerColor = Color.Red
-                        ),
-                        onClick = {
-                            readerSettingViewModel.apply {
-                                onIntent(
-                                    ReaderSettingIntent.ChangeRadioPowerSliderPosition(
-                                        0
-                                    )
+                RadioPowerSetting(
+                    radioPower = readerSettingState.radioPower,
+                    radioPowerMw = readerSettingState.radioPowerMw,
+                    radioPowerSliderPosition = readerSettingState.radioPowerSliderPosition.toFloat(),
+                    onChangeMinPower = {
+                        readerSettingViewModel.apply {
+                            onIntent(
+                                ReaderSettingIntent.ChangeRadioPowerSliderPosition(
+                                    0
                                 )
-                                onIntent(ReaderSettingIntent.ChangeRadioPower(0))
-                            }
+                            )
+                            onIntent(ReaderSettingIntent.ChangeRadioPower(0))
                         }
-                    ) {
-                        Text(text = stringResource(R.string.setting_label_min), color = Color.White)
-                    }
-                    Slider(
-                        value = readerSettingState.radioPowerSliderPosition.toFloat(),
-                        onValueChange = { newValue ->
-                            val intValue =
-                                newValue.roundToInt().coerceIn(0, 30) // Convert to Int and clamp
-                            readerSettingViewModel.apply {
-                                onIntent(
-                                    ReaderSettingIntent.ChangeRadioPowerSliderPosition(
-                                        intValue
-                                    )
+                    },
+                    onChangeMaxPower = {
+                        readerSettingViewModel.apply {
+                            onIntent(
+                                ReaderSettingIntent.ChangeRadioPowerSliderPosition(
+                                    30
                                 )
-                                onIntent(ReaderSettingIntent.ChangeRadioPower(intValue))
-                            }
-                        },
-                        onValueChangeFinished = {},
-                        valueRange = 0f..30f,
-                        colors = SliderDefaults.colors(
-                            thumbColor = brightAzure,
-                            activeTrackColor = brightAzure,
-                            inactiveTrackColor = paleSkyBlue
-                        ),
-                        modifier = Modifier
-                            .padding(vertical = 16.dp)
-                            .width(200.dp)
-                    )
-                    IconButton(
-                        colors = IconButtonDefaults.iconButtonColors(
-                            containerColor = brightAzure
-                        ),
-                        onClick = {
-                            readerSettingViewModel.apply {
-                                onIntent(
-                                    ReaderSettingIntent.ChangeRadioPowerSliderPosition(
-                                        30
-                                    )
-                                )
-                                onIntent(ReaderSettingIntent.ChangeRadioPower(30))
-                            }
+                            )
+                            onIntent(ReaderSettingIntent.ChangeRadioPower(30))
                         }
-                    ) {
-                        Text(text = stringResource(R.string.setting_label_max), color = Color.White)
+                    },
+                    onChangeSlider = {
+                        val intValue =
+                            it.roundToInt().coerceIn(0, 30) // Convert to Int and clamp
+                        readerSettingViewModel.apply {
+                            onIntent(
+                                ReaderSettingIntent.ChangeRadioPowerSliderPosition(
+                                    intValue
+                                )
+                            )
+                            onIntent(ReaderSettingIntent.ChangeRadioPower(intValue))
+                        }
                     }
-                }
+                )
                 Spacer(modifier = Modifier.height(8.dp))
-                HorizontalDivider()
+                HorizontalDivider(color = brightAzure)
             }
             // RFID Advanced
             Text(
@@ -276,7 +235,7 @@ fun ReaderSettingScreen(
                     }
                 }
             )
-            HorizontalDivider()
+            HorizontalDivider(color = brightAzure)
             // Tag Population
             ExpandableSettingSection(
                 title = stringResource(R.string.setting_tag_population_string),
@@ -323,7 +282,7 @@ fun ReaderSettingScreen(
                     )
                 }
             }
-            HorizontalDivider()
+            HorizontalDivider(color = brightAzure)
             // RFID Flag
             ExpandableSettingSection(
                 title = stringResource(R.string.setting_rfid_flag),
@@ -376,7 +335,7 @@ fun ReaderSettingScreen(
                     }
                 }
             )
-            HorizontalDivider()
+            HorizontalDivider(color = brightAzure)
             // RFID Channel
             ExpandableSettingSection(
                 title = stringResource(R.string.setting_rfid_channel),
@@ -463,7 +422,7 @@ fun ExpandableSettingSection(
         }
         AnimatedVisibility(visible = expanded) {
             Column(modifier = Modifier.padding(top = 8.dp)) {
-                if (description.isNotEmpty()){
+                if (description.isNotEmpty()) {
                     Text(description, fontSize = 13.sp, color = Color.Gray)
                     Spacer(Modifier.height(10.dp))
                 }

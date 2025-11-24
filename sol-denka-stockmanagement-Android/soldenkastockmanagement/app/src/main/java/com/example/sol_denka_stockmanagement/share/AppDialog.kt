@@ -29,7 +29,7 @@ fun AppDialog(
                 modifier = Modifier
                     .background(color = Color.White, shape = RoundedCornerShape(16.dp))
                     .fillMaxWidth()
-                    .padding(12.dp), // Inner padding for content
+                    .padding(10.dp), // Inner padding for content
                 horizontalAlignment = Alignment.CenterHorizontally, // Center horizontally
                 verticalArrangement = Arrangement.Center // Center vertically
             ) {

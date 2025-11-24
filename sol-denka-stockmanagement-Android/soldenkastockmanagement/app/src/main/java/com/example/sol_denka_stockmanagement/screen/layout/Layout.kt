@@ -319,28 +319,28 @@ fun Layout(
                                 iconColor = brightGreenPrimary,
                                 onClick = { onNavigate(Screen.CsvImport) }
                             )
-                            HorizontalDivider()
+                            HorizontalDivider(color = paleSkyBlue)
                             MenuDrawer(
                                 menuName = Screen.CsvExport.displayName,
                                 icon = R.drawable.file_export,
                                 iconColor = brightOrange,
                                 onClick = { onNavigate(Screen.CsvExport) }
                             )
-                            HorizontalDivider()
+                            HorizontalDivider(color = paleSkyBlue)
                             MenuDrawer(
                                 menuName = Screen.Setting.displayName,
                                 icon = R.drawable.setting,
                                 iconColor = Color.Black,
                                 onClick = { onNavigate(Screen.Setting) }
                             )
-                            HorizontalDivider()
+                            HorizontalDivider(color = paleSkyBlue)
                             MenuDrawer(
                                 menuName = Screen.VersionInfo.displayName,
                                 icon = R.drawable.app_version_info,
                                 iconColor = deepOceanBlue,
                                 onClick = { onNavigate(Screen.VersionInfo) }
                             )
-                            HorizontalDivider()
+                            HorizontalDivider(color = paleSkyBlue)
                         }
                     }
                 }

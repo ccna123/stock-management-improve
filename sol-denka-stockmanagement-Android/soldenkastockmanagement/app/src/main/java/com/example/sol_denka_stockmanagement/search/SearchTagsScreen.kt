@@ -1,7 +1,6 @@
 package com.example.sol_denka_stockmanagement.search
 
 import android.os.Build
-import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -15,7 +14,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.CheckCircle
@@ -49,21 +47,17 @@ import com.example.sol_denka_stockmanagement.constant.TagStatus
 import com.example.sol_denka_stockmanagement.helper.TagDistanceCalculate
 import com.example.sol_denka_stockmanagement.intent.ReaderSettingIntent
 import com.example.sol_denka_stockmanagement.intent.ShareIntent
-import com.example.sol_denka_stockmanagement.model.InventoryItemMasterModel
 import com.example.sol_denka_stockmanagement.navigation.Screen
 import com.example.sol_denka_stockmanagement.screen.layout.Layout
 import com.example.sol_denka_stockmanagement.search.components.SingleRfidRow
 import com.example.sol_denka_stockmanagement.share.ButtonContainer
-import com.example.sol_denka_stockmanagement.ui.theme.brightAzure
 import com.example.sol_denka_stockmanagement.ui.theme.deepOceanBlue
 import com.example.sol_denka_stockmanagement.ui.theme.orange
 import com.example.sol_denka_stockmanagement.ui.theme.paleSkyBlue
 import com.example.sol_denka_stockmanagement.viewmodel.AppViewModel
-import com.example.sol_denka_stockmanagement.screen.inventory.scan.InventoryScanViewModel
 import com.example.sol_denka_stockmanagement.screen.setting.sub_screen.reader_setting.ReaderSettingViewModel
 import com.example.sol_denka_stockmanagement.viewmodel.ScanViewModel
 import com.example.sol_denka_stockmanagement.share.RadioPowerDialog
-import com.example.sol_denka_stockmanagement.state.GeneralState
 import com.example.sol_denka_stockmanagement.ui.theme.tealGreen
 import kotlinx.coroutines.launch
 import kotlin.collections.filter
@@ -83,7 +77,8 @@ fun SearchTagsScreen(
     var showRadioPowerDialog by remember { mutableStateOf(false) }
     val isPerformingInventory by scanViewModel.isPerformingInventory.collectAsStateWithLifecycle()
     val scope = rememberCoroutineScope()
-    val tagsToDisplay = rfidTagList.value.filter { it.epc in generalState.selectedTags.map { it.epc } }
+    val tagsToDisplay =
+        rfidTagList.value.filter { it.epc in generalState.selectedTags.map { it.epc } }
 
     LaunchedEffect(Unit) {
         scanViewModel.setEnableScan(enabled = true, screen = Screen.SearchTagsScreen(""))
@@ -93,7 +88,7 @@ fun SearchTagsScreen(
     RadioPowerDialog(
         showDialog = showRadioPowerDialog,
         readerSettingState = readerSettingState,
-        onMinPower = {
+        onChangeMinPower = {
             readerSettingViewModel.apply {
                 onIntent(
                     ReaderSettingIntent.ChangeRadioPowerSliderPosition(
@@ -103,7 +98,7 @@ fun SearchTagsScreen(
                 onIntent(ReaderSettingIntent.ChangeRadioPower(0))
             }
         },
-        onMaxPower = {
+        onChangeMaxPower = {
             readerSettingViewModel.apply {
                 onIntent(
                     ReaderSettingIntent.ChangeRadioPowerSliderPosition(
@@ -113,14 +108,14 @@ fun SearchTagsScreen(
                 onIntent(ReaderSettingIntent.ChangeRadioPower(30))
             }
         },
-        onChangeSlider = { intValue ->
+        onChangeSlider = { newValue ->
             readerSettingViewModel.apply {
                 onIntent(
                     ReaderSettingIntent.ChangeRadioPowerSliderPosition(
-                        intValue
+                        newValue.toInt()
                     )
                 )
-                onIntent(ReaderSettingIntent.ChangeRadioPower(intValue))
+                onIntent(ReaderSettingIntent.ChangeRadioPower(newValue.toInt()))
             }
         },
         onOk = {
@@ -230,11 +225,11 @@ fun SearchTagsScreen(
                 modifier = Modifier
                     .fillMaxWidth(0.5f)
                     .shadow(
-                    elevation = 13.dp,
-                    clip = true,
-                    ambientColor = Color.Gray.copy(alpha = 0.5f),
-                    spotColor = Color.DarkGray.copy(alpha = 0.7f)
-                ),
+                        elevation = 13.dp,
+                        clip = true,
+                        ambientColor = Color.Gray.copy(alpha = 0.5f),
+                        spotColor = Color.DarkGray.copy(alpha = 0.7f)
+                    ),
                 icon = {
                     Icon(
                         painter = painterResource(R.drawable.scanner),

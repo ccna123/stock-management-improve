@@ -28,6 +28,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.sol_denka_stockmanagement.R
+import com.example.sol_denka_stockmanagement.ui.theme.brightAzure
 import com.example.sol_denka_stockmanagement.ui.theme.deepBlueSky
 import com.example.sol_denka_stockmanagement.ui.theme.paleSkyBlue
 import java.time.LocalTime
@@ -71,9 +72,9 @@ fun ReceivingScanTagCard(scannedTag: String) {
                     fontSize = 20.sp
                 )
                 HorizontalDivider(
+                    color = brightAzure,
                     modifier = Modifier
                         .padding(10.dp)
-                        .border(1.dp, color = Color.LightGray)
                 )
                 Row(
                     modifier = Modifier
