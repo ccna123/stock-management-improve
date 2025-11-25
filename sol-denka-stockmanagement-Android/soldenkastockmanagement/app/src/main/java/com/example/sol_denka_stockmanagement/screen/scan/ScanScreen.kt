@@ -35,10 +35,12 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.sol_denka_stockmanagement.R
 import com.example.sol_denka_stockmanagement.constant.HandlingMethod
 import com.example.sol_denka_stockmanagement.intent.ExpandIntent
+import com.example.sol_denka_stockmanagement.intent.InputIntent
 import com.example.sol_denka_stockmanagement.intent.ShareIntent
 import com.example.sol_denka_stockmanagement.navigation.Screen
 import com.example.sol_denka_stockmanagement.screen.layout.Layout
 import com.example.sol_denka_stockmanagement.screen.scan.components.ReceivingScanTagCard
+import com.example.sol_denka_stockmanagement.screen.scan.components.ShippingModal
 import com.example.sol_denka_stockmanagement.screen.scan.components.ShippingSingleItem
 import com.example.sol_denka_stockmanagement.screen.scan.components.StorageAreaChangeSingleItem
 import com.example.sol_denka_stockmanagement.share.ButtonContainer
@@ -68,6 +70,8 @@ fun ScanScreen(
 
     val isAllSelected by appViewModel.isAllSelected.collectAsStateWithLifecycle()
     val selectedCount by appViewModel.selectedCount.collectAsStateWithLifecycle()
+    val showModalHandlingMethod by appViewModel.showModalHandlingMethod.collectAsStateWithLifecycle()
+
 
     LaunchedEffect(Unit) {
         scanViewModel.setEnableScan(
@@ -77,6 +81,29 @@ fun ScanScreen(
             }
         )
 //        appViewModel.onGeneralIntent(ShareIntent.ClearTagSelectionList)
+    }
+
+    if (showModalHandlingMethod) {
+        ShippingModal(
+            selectedCount = selectedCount,
+            chosenMethod = appViewModel.bottomSheetChosenMethod.value,
+            onChooseMethod = { method ->
+                appViewModel.onInputIntent(InputIntent.ChangeHandlingMethod(method))
+            },
+            onDismissRequest = {
+                appViewModel.onGeneralIntent(
+                    ShareIntent.ShowModalHandlingMethod(
+                        false
+                    )
+                )
+            },
+            onApplyBulk = {
+                appViewModel.apply {
+                    onInputIntent(InputIntent.BulkApplyHandlingMethod)
+                    onGeneralIntent(ShareIntent.ShowModalHandlingMethod(false))
+                }
+            }
+        )
     }
 
     Layout(
@@ -220,7 +247,11 @@ fun ScanScreen(
                             ),
                             canClick = checkedMap.values.any { it },
                             onClick = {
-                                appViewModel.onGeneralIntent(ShareIntent.ShowModalHandlingMethod(true))
+                                appViewModel.onGeneralIntent(
+                                    ShareIntent.ShowModalHandlingMethod(
+                                        true
+                                    )
+                                )
                             }
                         )
                     }

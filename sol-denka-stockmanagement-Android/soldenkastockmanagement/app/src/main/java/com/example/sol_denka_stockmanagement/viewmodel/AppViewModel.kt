@@ -6,7 +6,6 @@ import android.os.Build
 import android.provider.MediaStore
 import android.util.Log
 import androidx.annotation.RequiresApi
-import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
@@ -17,8 +16,8 @@ import com.example.sol_denka_stockmanagement.helper.NetworkConnectionObserver
 import com.example.sol_denka_stockmanagement.helper.ReaderController
 import com.example.sol_denka_stockmanagement.helper.ToastType
 import com.example.sol_denka_stockmanagement.intent.ExpandIntent
-import com.example.sol_denka_stockmanagement.intent.ShareIntent
 import com.example.sol_denka_stockmanagement.intent.InputIntent
+import com.example.sol_denka_stockmanagement.intent.ShareIntent
 import com.example.sol_denka_stockmanagement.model.ReaderInfoModel
 import com.example.sol_denka_stockmanagement.screen.setting.sub_screen.app_setting.AppSettingState
 import com.example.sol_denka_stockmanagement.state.ErrorState
@@ -37,7 +36,6 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-import kotlin.collections.lastIndex
 
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @HiltViewModel
