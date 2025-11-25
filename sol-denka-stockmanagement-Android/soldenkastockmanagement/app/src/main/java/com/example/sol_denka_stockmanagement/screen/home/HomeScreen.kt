@@ -68,6 +68,13 @@ fun HomeScreen(
     val context = LocalContext.current
     var showExitDialog by remember { mutableStateOf(false) }
 
+    val menuItems = listOf(
+        MenuModel(screen = Screen.Receiving, icon = R.drawable.receiving),
+        MenuModel(screen = Screen.Shipping, icon = R.drawable.shipping),
+        MenuModel(screen = Screen.StorageAreaChange, icon = R.drawable.warehouse),
+        MenuModel(screen = Screen.Inventory, icon = R.drawable.inventory),
+    )
+
     BackHandler(enabled = true) {
         showExitDialog = true
     }
@@ -102,75 +109,60 @@ fun HomeScreen(
         onBackArrowClick = { drawerState: DrawerState ->
             scope.launch { drawerState.open() }
         }) { paddingValues ->
-        HomeScreenContent(
-            modifier = Modifier.padding(paddingValues),
-            onNavigate = onNavigate,
-        )
-    }
-}
-
-@Composable
-fun HomeScreenContent(
-    modifier: Modifier,
-    onNavigate: (Screen) -> Unit,
-) {
-    val menuItems = listOf(
-        MenuModel(screen = Screen.Receiving, icon = R.drawable.receiving),
-        MenuModel(screen = Screen.Shipping, icon = R.drawable.shipping),
-        MenuModel(screen = Screen.StorageAreaChange, icon = R.drawable.warehouse),
-        MenuModel(screen = Screen.Inventory, icon = R.drawable.inventory),
-    )
-    LazyColumn(
-        modifier = modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        item {
-            menuItems.forEach { menu ->
-                Box(
-                    modifier = Modifier
-                        .padding(paddingValues = PaddingValues(top = 14.dp))
-                        .height(105.dp)
-                        .width(280.dp)
-                        .background(
-                            color = brightAzure, shape = RoundedCornerShape(12.dp)
-                        )
-                        .clickable(
-                            indication = LocalIndication.current,
-                            interactionSource = remember { MutableInteractionSource() }
-                        ) {
-                            when (menu.screen) {
-                                Screen.Receiving -> onNavigate(Screen.Scan(Screen.Receiving.routeId))
-                                Screen.Shipping -> onNavigate(Screen.Scan(Screen.Shipping.routeId))
-                                Screen.StorageAreaChange -> onNavigate(Screen.Scan(Screen.StorageAreaChange.routeId))
-                                Screen.Inventory -> onNavigate(Screen.Inventory)
-                                else -> error("No route")
-                            }
-                        }, contentAlignment = Alignment.Center
-                ) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.Center
+        LazyColumn(
+            modifier = Modifier
+                .padding(paddingValues = paddingValues)
+                .fillMaxSize(),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            item {
+                menuItems.forEach { menu ->
+                    Box(
+                        modifier = Modifier
+                            .padding(paddingValues = PaddingValues(top = 14.dp))
+                            .height(105.dp)
+                            .width(280.dp)
+                            .background(
+                                color = brightAzure, shape = RoundedCornerShape(12.dp)
+                            )
+                            .clickable(
+                                indication = LocalIndication.current,
+                                interactionSource = remember { MutableInteractionSource() }
+                            ) {
+                                when (menu.screen) {
+                                    Screen.Receiving -> onNavigate(Screen.Scan(Screen.Receiving.routeId))
+                                    Screen.Shipping -> onNavigate(Screen.Scan(Screen.Shipping.routeId))
+                                    Screen.StorageAreaChange -> onNavigate(Screen.Scan(Screen.StorageAreaChange.routeId))
+                                    Screen.Inventory -> onNavigate(Screen.Inventory)
+                                    else -> error("No route")
+                                }
+                            }, contentAlignment = Alignment.Center
                     ) {
-                        Icon(
-                            painter = painterResource(id = menu.icon),
-                            contentDescription = null,
-                            tint = Color.White,
-                            modifier = Modifier
-                                .size(45.dp)
-                        )
-                        Text(
-                            textAlign = TextAlign.Center,
-                            modifier = Modifier
-                                .padding(16.dp),
-                            color = Color.White,
-                            fontSize = 30.sp,
-                            text = menu.screen.displayName
-                        )
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.Center
+                        ) {
+                            Icon(
+                                painter = painterResource(id = menu.icon),
+                                contentDescription = null,
+                                tint = Color.White,
+                                modifier = Modifier
+                                    .size(45.dp)
+                            )
+                            Text(
+                                textAlign = TextAlign.Center,
+                                modifier = Modifier
+                                    .padding(16.dp),
+                                color = Color.White,
+                                fontSize = 30.sp,
+                                text = menu.screen.displayName
+                            )
+                        }
                     }
+                    Spacer(modifier = Modifier.height(15.dp))
                 }
-                Spacer(modifier = Modifier.height(15.dp))
             }
         }
     }
