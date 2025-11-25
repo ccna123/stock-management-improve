@@ -22,6 +22,7 @@ import com.example.sol_denka_stockmanagement.screen.layout.Layout
 import com.example.sol_denka_stockmanagement.ui.theme.brightAzure
 import com.example.sol_denka_stockmanagement.viewmodel.AppViewModel
 import com.example.sol_denka_stockmanagement.viewmodel.ScanViewModel
+import androidx.compose.runtime.collectAsState
 
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @Composable
@@ -31,7 +32,7 @@ fun DetailScreen(
     onNavigate: (Screen) -> Unit
 ) {
 
-    val generalState = appViewModel.generalState.value
+    val generalState = appViewModel.generalState.collectAsState().value
 
     LaunchedEffect(Unit) {
         scanViewModel.setEnableScan(false)
