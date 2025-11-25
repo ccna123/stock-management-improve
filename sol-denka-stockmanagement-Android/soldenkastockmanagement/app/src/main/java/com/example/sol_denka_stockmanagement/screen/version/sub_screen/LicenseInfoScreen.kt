@@ -12,7 +12,7 @@ import com.example.sol_denka_stockmanagement.navigation.Screen
 import com.example.sol_denka_stockmanagement.screen.layout.Layout
 import com.mikepenz.aboutlibraries.ui.compose.LibrariesContainer
 
-@RequiresApi(Build.VERSION_CODES.S)
+@RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @Composable
 fun LicenseInfoScreen(
     onNavigate: (Screen) -> Unit
