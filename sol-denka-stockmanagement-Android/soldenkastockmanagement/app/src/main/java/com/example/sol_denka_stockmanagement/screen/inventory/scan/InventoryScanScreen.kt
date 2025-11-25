@@ -80,7 +80,8 @@ fun InventoryScanScreen(
     appViewModel: AppViewModel,
     scanViewModel: ScanViewModel,
     readerSettingViewModel: ReaderSettingViewModel,
-    onNavigate: (Screen) -> Unit
+    onNavigate: (Screen) -> Unit,
+    onGoBack: () -> Unit,
 ) {
     val generalState = appViewModel.generalState.collectAsStateWithLifecycle().value
     val rfidTagList = scanViewModel.rfidTagList.collectAsStateWithLifecycle().value
@@ -164,7 +165,6 @@ fun InventoryScanScreen(
         topBarIcon = Icons.AutoMirrored.Filled.ArrowBack,
         currentScreenNameId = Screen.InventoryScan("").routeId,
         prevScreenNameId = prevScreenNameId,
-        onNavigate = onNavigate,
         hasBottomBar = true,
         appViewModel = appViewModel,
         scanViewModel = scanViewModel,
@@ -329,7 +329,7 @@ fun InventoryScanScreen(
             }
         },
         onBackArrowClick = {
-            onNavigate(Screen.Inventory)
+            onGoBack()
         }) { paddingValues ->
         Column(
             modifier = Modifier

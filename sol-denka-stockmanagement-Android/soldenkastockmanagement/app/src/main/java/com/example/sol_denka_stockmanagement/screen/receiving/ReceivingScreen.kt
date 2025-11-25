@@ -78,7 +78,7 @@ import com.example.sol_denka_stockmanagement.ui.theme.skyBlue
 fun ReceivingScreen(
     appViewModel: AppViewModel,
     scanViewModel: ScanViewModel,
-    onNavigate: (Screen) -> Unit
+    onGoBack: () -> Unit,
 ) {
 
     val inputState = appViewModel.inputState.collectAsStateWithLifecycle().value
@@ -97,7 +97,6 @@ fun ReceivingScreen(
     Layout(
         topBarText = stringResource(R.string.receiving),
         topBarIcon = Icons.AutoMirrored.Filled.ArrowBack,
-        onNavigate = onNavigate,
         appViewModel = appViewModel,
         currentScreenNameId = Screen.Receiving.routeId,
         prevScreenNameId = Screen.Receiving.routeId, // for scan screen to navigate back,
@@ -122,7 +121,7 @@ fun ReceivingScreen(
             )
         },
         onBackArrowClick = {
-            onNavigate(Screen.Scan(Screen.Receiving.routeId))
+            onGoBack()
         }) { paddingValues ->
         LazyColumn(
             modifier = Modifier

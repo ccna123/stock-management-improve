@@ -35,12 +35,10 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.sol_denka_stockmanagement.R
 import com.example.sol_denka_stockmanagement.constant.HandlingMethod
 import com.example.sol_denka_stockmanagement.intent.ExpandIntent
-import com.example.sol_denka_stockmanagement.intent.InputIntent
 import com.example.sol_denka_stockmanagement.intent.ShareIntent
 import com.example.sol_denka_stockmanagement.navigation.Screen
 import com.example.sol_denka_stockmanagement.screen.layout.Layout
 import com.example.sol_denka_stockmanagement.screen.scan.components.ReceivingScanTagCard
-import com.example.sol_denka_stockmanagement.screen.scan.components.ShippingModal
 import com.example.sol_denka_stockmanagement.screen.scan.components.ShippingSingleItem
 import com.example.sol_denka_stockmanagement.screen.scan.components.StorageAreaChangeSingleItem
 import com.example.sol_denka_stockmanagement.share.ButtonContainer
@@ -57,7 +55,8 @@ fun ScanScreen(
     scanViewModel: ScanViewModel,
     appViewModel: AppViewModel,
     prevScreenNameId: String,
-    onNavigate: (Screen) -> Unit
+    onNavigate: (Screen) -> Unit,
+    onGoBack: () -> Unit,
 ) {
     val scannedTag2 by scanViewModel.scannedTag2.collectAsStateWithLifecycle()
     val scannedTags3 by scanViewModel.scannedTags3.collectAsStateWithLifecycle()
@@ -69,25 +68,6 @@ fun ScanScreen(
 
     val isAllSelected by appViewModel.isAllSelected.collectAsStateWithLifecycle()
     val selectedCount by appViewModel.selectedCount.collectAsStateWithLifecycle()
-    val showModalHandlingMethod by appViewModel.showModalHandlingMethod.collectAsStateWithLifecycle()
-
-
-    if (showModalHandlingMethod) {
-        ShippingModal(
-            selectedCount = selectedCount,
-            chosenMethod = appViewModel.bottomSheetChosenMethod.value,
-            onChooseMethod = { method ->
-                appViewModel.onInputIntent(InputIntent.ChangeHandlingMethod(method))
-            },
-            onDismissRequest = { appViewModel.onGeneralIntent(ShareIntent.ShowModalHandlingMethod(false)) },
-            onApplyBulk = {
-                appViewModel.apply {
-                    onInputIntent(InputIntent.BulkApplyHandlingMethod)
-                    onGeneralIntent(ShareIntent.ShowModalHandlingMethod(false))
-                }
-            }
-        )
-    }
 
     LaunchedEffect(Unit) {
         scanViewModel.setEnableScan(
@@ -103,7 +83,6 @@ fun ScanScreen(
         topBarText = Screen.fromRouteId(prevScreenNameId)?.displayName ?: "",
         topBarIcon = Icons.AutoMirrored.Filled.ArrowBack,
         currentScreenNameId = Screen.Scan("").routeId,
-        onNavigate = onNavigate,
         scanViewModel = scanViewModel,
         hasBottomBar = true,
         appViewModel = appViewModel,
@@ -189,7 +168,7 @@ fun ScanScreen(
             }
         },
         onBackArrowClick = {
-            onNavigate(Screen.Home)
+            onGoBack()
         }) { paddingValues ->
         Column(
             modifier = Modifier

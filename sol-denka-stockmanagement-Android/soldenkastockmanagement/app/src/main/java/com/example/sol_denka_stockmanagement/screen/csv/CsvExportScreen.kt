@@ -24,6 +24,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
@@ -33,33 +34,31 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.sol_denka_stockmanagement.R
 import com.example.sol_denka_stockmanagement.constant.CsvType
-import com.example.sol_denka_stockmanagement.navigation.Screen
 import com.example.sol_denka_stockmanagement.constant.SelectTitle
 import com.example.sol_denka_stockmanagement.intent.ShareIntent
+import com.example.sol_denka_stockmanagement.model.CsvFileInfoModel
+import com.example.sol_denka_stockmanagement.navigation.Screen
+import com.example.sol_denka_stockmanagement.screen.csv.components.SingleCsvFile
 import com.example.sol_denka_stockmanagement.screen.layout.Layout
 import com.example.sol_denka_stockmanagement.share.ButtonContainer
 import com.example.sol_denka_stockmanagement.share.InputContainer
 import com.example.sol_denka_stockmanagement.share.InputFieldContainer
+import com.example.sol_denka_stockmanagement.share.dialog.NetworkDialog
+import com.example.sol_denka_stockmanagement.state.GeneralState
 import com.example.sol_denka_stockmanagement.ui.theme.skyBlue
 import com.example.sol_denka_stockmanagement.viewmodel.AppViewModel
-import com.example.sol_denka_stockmanagement.screen.csv.components.SingleCsvFile
-import com.example.sol_denka_stockmanagement.share.dialog.NetworkDialog
-import androidx.compose.runtime.collectAsState
-import androidx.compose.ui.unit.sp
-import com.example.sol_denka_stockmanagement.ui.theme.brightAzure
 
-@OptIn(ExperimentalMaterial3Api::class)
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @Composable
 fun CsvExportScreen(
+    csvViewModel: CsvViewModel,
     appViewModel: AppViewModel,
-    onNavigate: (Screen) -> Unit
+    onGoBack: () -> Unit
 ) {
-    val csvViewModel = hiltViewModel<CsvViewModel>()
     val context = LocalContext.current
     val csvState by csvViewModel.csvState.collectAsStateWithLifecycle()
     val scope = rememberCoroutineScope()
@@ -96,7 +95,6 @@ fun CsvExportScreen(
     Layout(
         topBarText = "${Screen.fromRouteId(Screen.CsvExport.routeId)?.displayName}",
         topBarIcon = Icons.AutoMirrored.Filled.ArrowBack,
-        onNavigate = onNavigate,
         appViewModel = appViewModel,
         currentScreenNameId = Screen.CsvExport.routeId,
         prevScreenNameId = Screen.CsvExport.routeId,
@@ -107,6 +105,7 @@ fun CsvExportScreen(
                     elevation = 13.dp, clip = true, ambientColor = Color.Gray.copy(alpha = 0.5f),
                     spotColor = Color.DarkGray.copy(alpha = 0.7f)
                 ),
+                shape = RoundedCornerShape(10.dp),
                 buttonTextSize = 20,
                 buttonText = stringResource(R.string.export_file),
                 canClick = csvState.csvType.isNotEmpty() && isExporting.not(),
@@ -115,7 +114,7 @@ fun CsvExportScreen(
                         appViewModel.onGeneralIntent(
                             ShareIntent.ToggleNetworkDialog(true)
                         )
-                    }else{
+                    } else {
                         csvViewModel.toggleProgressVisibility(true)
                         csvViewModel.exportAllFilesIndividually(
                             context = context,
@@ -136,17 +135,42 @@ fun CsvExportScreen(
             )
         },
         onBackArrowClick = {
-            onNavigate(Screen.Home)
+            onGoBack()
         }) { paddingValues ->
+        CsvExportScreenContent(
+            modifier = Modifier.padding(paddingValues),
+            csvViewModel = csvViewModel,
+            csvState = csvState,
+            generalState = generalState,
+            appViewModel = appViewModel,
+            csvFiles = csvFiles,
+            showProgress = showProgress
+        )
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun CsvExportScreenContent(
+    modifier: Modifier,
+    csvViewModel: CsvViewModel,
+    csvState: CsvState,
+    showProgress: Boolean,
+    csvFiles: List<CsvFileInfoModel>,
+    generalState: GeneralState,
+    appViewModel: AppViewModel
+) {
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+            .imePadding()
+    ) {
         Column(
             modifier = Modifier
-                .padding(paddingValues)
                 .padding(16.dp)
-                .fillMaxSize()
-                .imePadding()
         ) {
             InputContainer(
-                title = stringResource(R.string.csv_type_selection),
+                title = "CSVファイルの種類選択",
                 isRequired = true,
                 children = {
                     ExposedDropdownMenuBox(
@@ -192,8 +216,9 @@ fun CsvExportScreen(
                         }
                     }
                     Spacer(modifier = Modifier.height(10.dp))
-                    HorizontalDivider(color = brightAzure)
+                    HorizontalDivider()
                     Spacer(modifier = Modifier.height(10.dp))
+
                 }
             )
             LazyColumn(
@@ -206,8 +231,9 @@ fun CsvExportScreen(
                         if (csvFiles.isEmpty()) {
                             Text(
                                 color = Color.Red,
-                                fontSize = 20.sp,
-                                text = stringResource(R.string.csv_type_select_request))
+                                fontSize = 17.sp,
+                                text = stringResource(R.string.csv_type_select_request)
+                            )
                         }
                     } else {
                         csvFiles.forEachIndexed { index, file ->

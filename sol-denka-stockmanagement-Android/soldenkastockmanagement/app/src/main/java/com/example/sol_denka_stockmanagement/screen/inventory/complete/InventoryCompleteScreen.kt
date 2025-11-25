@@ -51,7 +51,7 @@ import com.example.sol_denka_stockmanagement.viewmodel.ScanViewModel
 fun InventoryCompleteScreen(
     appViewModel: AppViewModel,
     scanViewModel: ScanViewModel,
-    onNavigate: (Screen) -> Unit
+    onGoBack: () -> Unit,
 ) {
 
     val generalState = appViewModel.generalState.collectAsStateWithLifecycle().value
@@ -92,7 +92,6 @@ fun InventoryCompleteScreen(
     Layout(
         topBarText = Screen.InventoryComplete.displayName,
         topBarIcon = Icons.AutoMirrored.Filled.ArrowBack,
-        onNavigate = onNavigate,
         appViewModel = appViewModel,
         currentScreenNameId = Screen.InventoryComplete.routeId,
         prevScreenNameId = Screen.InventoryComplete.routeId, // for scan screen to navigate back,
@@ -122,7 +121,7 @@ fun InventoryCompleteScreen(
             )
         },
         onBackArrowClick = {
-            onNavigate(Screen.InventoryScan(Screen.Inventory.routeId))
+            onGoBack()
         }) { paddingValues ->
         Column(
             modifier = Modifier

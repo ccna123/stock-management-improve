@@ -2,11 +2,6 @@ package com.example.sol_denka_stockmanagement.screen.shipping
 
 import android.os.Build
 import androidx.annotation.RequiresApi
-import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -38,7 +33,6 @@ import com.example.sol_denka_stockmanagement.screen.layout.Layout
 import com.example.sol_denka_stockmanagement.share.ButtonContainer
 import com.example.sol_denka_stockmanagement.share.InputFieldContainer
 import com.example.sol_denka_stockmanagement.share.ScanResultTable
-import com.example.sol_denka_stockmanagement.ui.theme.paleSkyBlue
 import com.example.sol_denka_stockmanagement.viewmodel.AppViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -46,7 +40,7 @@ import com.example.sol_denka_stockmanagement.viewmodel.AppViewModel
 @Composable
 fun ShippingScreen(
     appViewModel: AppViewModel,
-    onNavigate: (Screen) -> Unit
+    onGoBack: () -> Unit,
 ) {
 
     val errorState = appViewModel.errorState.value
@@ -58,7 +52,6 @@ fun ShippingScreen(
     Layout(
         topBarText = stringResource(R.string.shipping),
         topBarIcon = Icons.AutoMirrored.Filled.ArrowBack,
-        onNavigate = onNavigate,
         appViewModel = appViewModel,
         currentScreenNameId = Screen.Shipping.routeId,
         prevScreenNameId = Screen.Shipping.routeId, // for scan screen to navigate back,
@@ -83,7 +76,7 @@ fun ShippingScreen(
             )
         },
         onBackArrowClick = {
-            onNavigate(Screen.Scan(Screen.Shipping.routeId))
+            onGoBack()
         }) { paddingValues ->
         LazyColumn(
             modifier = Modifier

@@ -15,15 +15,14 @@ import com.mikepenz.aboutlibraries.ui.compose.LibrariesContainer
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @Composable
 fun LicenseInfoScreen(
-    onNavigate: (Screen) -> Unit
+    onGoBack: () -> Unit
 ) {
     Layout(
         topBarText = Screen.LicenseInfo.displayName,
         topBarIcon = Icons.AutoMirrored.Filled.ArrowBack,
-        onNavigate = onNavigate,
         currentScreenNameId = Screen.LicenseInfo.routeId,
         hasBottomBar = false,
-        onBackArrowClick = { onNavigate(Screen.VersionInfo) }
+        onBackArrowClick = { onGoBack() }
     ) { paddingValues ->
         LibrariesContainer(
             modifier = Modifier

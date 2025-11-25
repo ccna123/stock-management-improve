@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.DropdownMenuItem
@@ -21,7 +20,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
@@ -30,21 +28,17 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.sol_denka_stockmanagement.R
-import com.example.sol_denka_stockmanagement.navigation.Screen
 import com.example.sol_denka_stockmanagement.constant.SelectTitle
 import com.example.sol_denka_stockmanagement.constant.StockAreaItem
 import com.example.sol_denka_stockmanagement.intent.ExpandIntent
 import com.example.sol_denka_stockmanagement.intent.InputIntent
 import com.example.sol_denka_stockmanagement.intent.ShareIntent
+import com.example.sol_denka_stockmanagement.navigation.Screen
 import com.example.sol_denka_stockmanagement.screen.layout.Layout
 import com.example.sol_denka_stockmanagement.share.ButtonContainer
 import com.example.sol_denka_stockmanagement.share.InputFieldContainer
-import com.example.sol_denka_stockmanagement.state.ErrorState
-import com.example.sol_denka_stockmanagement.state.ExpandState
-import com.example.sol_denka_stockmanagement.state.InputState
 import com.example.sol_denka_stockmanagement.viewmodel.AppViewModel
 import com.example.sol_denka_stockmanagement.viewmodel.ScanViewModel
-import androidx.compose.runtime.collectAsState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
@@ -52,7 +46,8 @@ import androidx.compose.runtime.collectAsState
 fun InventoryScreen(
     appViewModel: AppViewModel,
     scanViewModel: ScanViewModel,
-    onNavigate: (Screen) -> Unit
+    onNavigate: (Screen) -> Unit,
+    onGoBack: () -> Unit,
 ) {
 
     val inputState = appViewModel.inputState.collectAsStateWithLifecycle().value
@@ -71,7 +66,6 @@ fun InventoryScreen(
     Layout(
         topBarText = stringResource(R.string.inventory),
         topBarIcon = Icons.AutoMirrored.Filled.ArrowBack,
-        onNavigate = onNavigate,
         appViewModel = appViewModel,
         currentScreenNameId = Screen.Inventory.routeId,
         prevScreenNameId = Screen.Inventory.routeId, // for scan screen to navigate back,
@@ -98,7 +92,7 @@ fun InventoryScreen(
             )
         },
         onBackArrowClick = {
-            onNavigate(Screen.Home)
+            onGoBack()
         }) { paddingValues ->
         LazyColumn(
             modifier = Modifier

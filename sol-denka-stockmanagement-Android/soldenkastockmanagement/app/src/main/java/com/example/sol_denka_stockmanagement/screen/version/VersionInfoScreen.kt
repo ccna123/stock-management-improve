@@ -42,7 +42,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.sol_denka_stockmanagement.R
 import com.example.sol_denka_stockmanagement.constant.ConnectionState
 import com.example.sol_denka_stockmanagement.navigation.Screen
-import com.example.sol_denka_stockmanagement.model.ReaderInfoModel
 import com.example.sol_denka_stockmanagement.screen.layout.Layout
 import com.example.sol_denka_stockmanagement.share.ButtonContainer
 import com.example.sol_denka_stockmanagement.ui.theme.brightAzure
@@ -52,16 +51,16 @@ import com.example.sol_denka_stockmanagement.viewmodel.AppViewModel
 @Composable
 fun VersionInfoScreen(
     appViewModel: AppViewModel,
-    onNavigate: (Screen) -> Unit
+    onNavigate: (Screen) -> Unit,
+    onGoBack: () -> Unit,
 ) {
     val readerInfo by appViewModel.readerInfo.collectAsStateWithLifecycle()
     Layout(
         topBarText = Screen.VersionInfo.displayName,
         topBarIcon = Icons.AutoMirrored.Filled.ArrowBack,
-        onNavigate = onNavigate,
         currentScreenNameId = Screen.VersionInfo.routeId,
         hasBottomBar = false,
-        onBackArrowClick = { onNavigate((Screen.Home)) }
+        onBackArrowClick = { onGoBack() }
     ) { paddingValues ->
         val context = LocalContext.current
         val versionName = try {
@@ -182,6 +181,7 @@ fun VersionInfoScreen(
         }
     }
 }
+
 @Composable
 fun ClickableUrlText(modifier: Modifier = Modifier) {
     val context = LocalContext.current

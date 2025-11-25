@@ -69,7 +69,7 @@ fun SearchTagsScreen(
     readerSettingViewModel: ReaderSettingViewModel,
     scanViewModel: ScanViewModel,
     prevScreenNameId: String,
-    onNavigate: (Screen) -> Unit,
+    onGoBack: () -> Unit,
 ) {
     val generalState = appViewModel.generalState.collectAsStateWithLifecycle().value
     val rfidTagList = scanViewModel.rfidTagList.collectAsStateWithLifecycle()
@@ -136,7 +136,6 @@ fun SearchTagsScreen(
         currentScreenNameId = Screen.SearchTagsScreen("").routeId,
         prevScreenNameId = prevScreenNameId,
         hasBottomBar = true,
-        onNavigate = onNavigate,
         appViewModel = appViewModel,
         scanViewModel = scanViewModel,
         readerSettingViewModel = readerSettingViewModel,
@@ -167,7 +166,7 @@ fun SearchTagsScreen(
                                 newStatus = TagStatus.PROCESSED
                             )
                         }
-                        onNavigate(Screen.InventoryScan(Screen.SearchTagsScreen("").routeId))
+                        onGoBack()
                     },
                 )
                 Box {
@@ -247,7 +246,7 @@ fun SearchTagsScreen(
             )
         },
         onBackArrowClick = {
-            onNavigate(Screen.InventoryScan(Screen.Inventory.routeId))
+            onGoBack()
         }) { paddingValues ->
         Column(
             modifier = Modifier.padding(paddingValues)

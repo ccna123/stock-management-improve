@@ -30,6 +30,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.BottomAppBar
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -52,11 +53,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -101,9 +99,12 @@ fun Layout(
     scanViewModel: ScanViewModel? = null,
     readerSettingViewModel: ReaderSettingViewModel? = null,
     onBackArrowClick: (DrawerState) -> Unit,
-    onNavigate: (Screen) -> Unit,
+    onNavigate: ((Screen) -> Unit)? = null,
     bottomButton: (@Composable () -> Unit)? = null,
     topBarButton: (@Composable () -> Unit)? = null,
+    onConfirmProcessedScanDataDialog: (() -> Unit)? = null,
+    onDismissProcessedScanDataDialog: (() -> Unit)? = null,
+    onDisplayDialogPress: (() -> Unit)? = null,
     content: @Composable (PaddingValues) -> Unit
 ) {
     // ✅ Get ReaderController via Hilt entry point
@@ -122,6 +123,9 @@ fun Layout(
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val focusManager = LocalFocusManager.current
     val showFileProgressBar = appViewModel?.showFileProgressDialog?.value
+    val showConnectingDialog = appViewModel?.showConnectingDialog?.collectAsStateWithLifecycle()?.value ?: remember {
+        mutableStateOf(false)
+    }
     val progress by (appViewModel?.progress ?: MutableStateFlow(0f)).collectAsStateWithLifecycle()
     val isFileWorking by (appViewModel?.isFileWorking
         ?: MutableStateFlow(false)).collectAsStateWithLifecycle()
@@ -172,7 +176,7 @@ fun Layout(
                                     Screen.Receiving.routeId,
                                     Screen.Shipping.routeId,
                                     Screen.InventoryComplete.routeId
-                                ) -> onNavigate(Screen.Home)
+                                ) -> onNavigate?.invoke(Screen.Home)
                             }
                         },
                         buttonText = when (prevScreenNameId) {
@@ -191,6 +195,15 @@ fun Layout(
                         },
                     )
                 }
+            }
+        }
+    }
+
+    if (showConnectingDialog == true) {
+        AppDialog {
+            Column {
+                Text(text = "接続中")
+                CircularProgressIndicator()
             }
         }
     }
@@ -318,28 +331,28 @@ fun Layout(
                                 menuName = Screen.CsvImport.displayName,
                                 icon = R.drawable.file_import,
                                 iconColor = brightGreenPrimary,
-                                onClick = { onNavigate(Screen.CsvImport) }
+                                onClick = { onNavigate?.invoke(Screen.CsvImport) }
                             )
                             HorizontalDivider(color = paleSkyBlue)
                             MenuDrawer(
                                 menuName = Screen.CsvExport.displayName,
                                 icon = R.drawable.file_export,
                                 iconColor = brightOrange,
-                                onClick = { onNavigate(Screen.CsvExport) }
+                                onClick = { onNavigate?.invoke(Screen.CsvExport) }
                             )
                             HorizontalDivider(color = paleSkyBlue)
                             MenuDrawer(
                                 menuName = Screen.Setting.displayName,
                                 icon = R.drawable.setting,
                                 iconColor = Color.Black,
-                                onClick = { onNavigate(Screen.Setting) }
+                                onClick = { onNavigate?.invoke(Screen.Setting) }
                             )
                             HorizontalDivider(color = paleSkyBlue)
                             MenuDrawer(
                                 menuName = Screen.VersionInfo.displayName,
                                 icon = R.drawable.app_version_info,
                                 iconColor = deepOceanBlue,
-                                onClick = { onNavigate(Screen.VersionInfo) }
+                                onClick = { onNavigate?.invoke(Screen.VersionInfo) }
                             )
                             HorizontalDivider(color = paleSkyBlue)
                         }
@@ -349,8 +362,7 @@ fun Layout(
         },
         content = {
             Scaffold(
-                modifier = modifier
-                    .fillMaxSize(),
+                modifier = modifier.fillMaxSize(),
                 topBar = {
                     TopAppBar(
                         title = {

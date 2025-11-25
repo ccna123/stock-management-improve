@@ -55,7 +55,7 @@ fun SettingScreen(
     appViewModel: AppViewModel,
     appSettingViewModel: AppSettingViewModel,
     readerSettingViewModel: ReaderSettingViewModel,
-    onNavigate: (Screen) -> Unit
+    onGoBack: () -> Unit
 ) {
     val generalState = appViewModel.generalState.collectAsStateWithLifecycle().value
 //    val appSettingState by appSettingViewModel.appSettingState.collectAsStateWithLifecycle()
@@ -70,7 +70,7 @@ fun SettingScreen(
         onOk = {
             showUnsavedConfirmDialog = false
             readerSettingViewModel.resetToInitialSetting()
-            onNavigate(Screen.Home)
+            onGoBack()
         },
         onCancel = { showUnsavedConfirmDialog = false }
     )
@@ -93,13 +93,11 @@ fun SettingScreen(
     Layout(
         topBarText = Screen.Setting.displayName,
         topBarIcon = Icons.AutoMirrored.Filled.ArrowBack,
-        onNavigate = onNavigate,
         currentScreenNameId = Screen.Setting.routeId,
         hasBottomBar = true,
         bottomButton = {
             ButtonContainer(
-                modifier = Modifier,
-                shape = RoundedCornerShape(12.dp),
+                modifier = Modifier.fillMaxWidth(.5f),
                 onClick = {
                     showApplyConfirmDialog = true
                 },
@@ -111,7 +109,7 @@ fun SettingScreen(
                 showUnsavedConfirmDialog = true
             } else {
                 readerSettingViewModel.resetToInitialSetting()
-                onNavigate(Screen.Home)
+                onGoBack()
             }
         }) { paddingValues ->
         Column(

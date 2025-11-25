@@ -29,7 +29,7 @@ import androidx.compose.runtime.collectAsState
 fun DetailScreen(
     appViewModel: AppViewModel,
     scanViewModel: ScanViewModel,
-    onNavigate: (Screen) -> Unit
+    onGoBack: () -> Unit,
 ) {
 
     val generalState = appViewModel.generalState.collectAsState().value
@@ -44,13 +44,12 @@ fun DetailScreen(
     Layout(
         topBarText = Screen.Detail.displayName,
         topBarIcon = Icons.AutoMirrored.Filled.ArrowBack,
-        onNavigate = onNavigate,
         appViewModel = appViewModel,
         currentScreenNameId = Screen.Detail.routeId,
         prevScreenNameId = Screen.Detail.routeId,
         hasBottomBar = false,
         onBackArrowClick = {
-            onNavigate(Screen.InventoryScan(Screen.Inventory.routeId))
+            onGoBack()
         }
     ) { paddingValues ->
         LazyColumn(

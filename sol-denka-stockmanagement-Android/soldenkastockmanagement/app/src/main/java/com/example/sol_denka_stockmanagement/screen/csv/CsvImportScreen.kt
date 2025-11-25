@@ -35,7 +35,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.sol_denka_stockmanagement.R
 import com.example.sol_denka_stockmanagement.constant.CsvType
@@ -61,10 +60,10 @@ import com.example.sol_denka_stockmanagement.ui.theme.brightAzure
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @Composable
 fun CsvImportScreen(
+    csvViewModel: CsvViewModel,
     appViewModel: AppViewModel,
-    onNavigate: (Screen) -> Unit
+    onGoBack: () -> Unit
 ) {
-    val csvViewModel = hiltViewModel<CsvViewModel>()
     val context = LocalContext.current
     val csvState by csvViewModel.csvState.collectAsStateWithLifecycle()
     val scope = rememberCoroutineScope()
@@ -153,7 +152,6 @@ fun CsvImportScreen(
     Layout(
         topBarText = "${Screen.fromRouteId(Screen.CsvImport.routeId)?.displayName}",
         topBarIcon = Icons.AutoMirrored.Filled.ArrowBack,
-        onNavigate = onNavigate,
         appViewModel = appViewModel,
         currentScreenNameId = Screen.CsvImport.routeId,
         prevScreenNameId = Screen.CsvImport.routeId,
@@ -181,7 +179,7 @@ fun CsvImportScreen(
             )
         },
         onBackArrowClick = {
-            onNavigate(Screen.Home)
+            onGoBack()
         }) { paddingValues ->
         Column(
             modifier = Modifier
@@ -252,8 +250,9 @@ fun CsvImportScreen(
                         if (csvFiles.isEmpty()) {
                             Text(
                                 color = Color.Red,
-                                fontSize = 20.sp,
-                                text = stringResource(R.string.csv_type_select_request))
+                                fontSize = 17.sp,
+                                text = stringResource(R.string.csv_type_select_request)
+                            )
                         }
                     } else {
                         csvFiles.forEachIndexed { index, file ->
