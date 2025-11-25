@@ -6,7 +6,6 @@ import android.os.Build
 import android.provider.MediaStore
 import android.util.Log
 import androidx.annotation.RequiresApi
-import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
@@ -88,8 +87,8 @@ class AppViewModel @Inject constructor(
     private val _selectedCount = MutableStateFlow(0)
     val selectedCount = _selectedCount.asStateFlow()
 
-    private val _showBottomSheet = MutableStateFlow(false)
-    val showBottomSheet = _showBottomSheet.asStateFlow()
+    private val _showModalHandlingMethod = MutableStateFlow(false)
+    val showModalHandlingMethod = _showModalHandlingMethod.asStateFlow()
 
     var bottomSheetChosenMethod = mutableStateOf(HandlingMethod.USE.displayName)
         private set
@@ -361,8 +360,8 @@ class AppViewModel @Inject constructor(
                     .apply { put(intent.tag, intent.method) }
             }
 
-            is ShareIntent.ShowBottomSheet -> {
-                _showBottomSheet.value = intent.showBottomSheet
+            is ShareIntent.ShowModalHandlingMethod -> {
+                _showModalHandlingMethod.value = intent.showBottomSheet
             }
 
             ShareIntent.ResetState -> {
@@ -374,7 +373,7 @@ class AppViewModel @Inject constructor(
                 perTagHandlingMethod.value = emptyMap()
                 _perTagChecked.value = emptyMap()
                 _selectedCount.value = 0
-                _showBottomSheet.value = false
+                _showModalHandlingMethod.value = false
                 _isAllSelected.value = false
                 bottomSheetChosenMethod.value = HandlingMethod.USE.displayName
             }

@@ -2,7 +2,6 @@ package com.example.sol_denka_stockmanagement.screen.scan
 
 import android.os.Build
 import androidx.annotation.RequiresApi
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -16,7 +15,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.HorizontalDivider
@@ -47,7 +45,6 @@ import com.example.sol_denka_stockmanagement.screen.scan.components.ShippingSing
 import com.example.sol_denka_stockmanagement.screen.scan.components.StorageAreaChangeSingleItem
 import com.example.sol_denka_stockmanagement.share.ButtonContainer
 import com.example.sol_denka_stockmanagement.ui.theme.brightAzure
-import com.example.sol_denka_stockmanagement.ui.theme.deepOceanBlue
 import com.example.sol_denka_stockmanagement.ui.theme.orange
 import com.example.sol_denka_stockmanagement.ui.theme.tealGreen
 import com.example.sol_denka_stockmanagement.viewmodel.AppViewModel
@@ -72,21 +69,21 @@ fun ScanScreen(
 
     val isAllSelected by appViewModel.isAllSelected.collectAsStateWithLifecycle()
     val selectedCount by appViewModel.selectedCount.collectAsStateWithLifecycle()
-    val showBottomSheet by appViewModel.showBottomSheet.collectAsStateWithLifecycle()
+    val showModalHandlingMethod by appViewModel.showModalHandlingMethod.collectAsStateWithLifecycle()
 
 
-    if (showBottomSheet) {
+    if (showModalHandlingMethod) {
         ShippingModal(
             selectedCount = selectedCount,
             chosenMethod = appViewModel.bottomSheetChosenMethod.value,
             onChooseMethod = { method ->
                 appViewModel.onInputIntent(InputIntent.ChangeHandlingMethod(method))
             },
-            onDismissRequest = { appViewModel.onGeneralIntent(ShareIntent.ShowBottomSheet(false)) },
+            onDismissRequest = { appViewModel.onGeneralIntent(ShareIntent.ShowModalHandlingMethod(false)) },
             onApplyBulk = {
                 appViewModel.apply {
                     onInputIntent(InputIntent.BulkApplyHandlingMethod)
-                    onGeneralIntent(ShareIntent.ShowBottomSheet(false))
+                    onGeneralIntent(ShareIntent.ShowModalHandlingMethod(false))
                 }
             }
         )
@@ -244,7 +241,7 @@ fun ScanScreen(
                             ),
                             canClick = checkedMap.values.any { it },
                             onClick = {
-                                appViewModel.onGeneralIntent(ShareIntent.ShowBottomSheet(true))
+                                appViewModel.onGeneralIntent(ShareIntent.ShowModalHandlingMethod(true))
                             }
                         )
                     }
