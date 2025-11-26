@@ -79,6 +79,8 @@
     <string name="csv_type_select_request">CSVファイルの種類を選択してください</string>
     <string name="csv_type_selection">CSVファイルの種類選択</string>
     <string name="csv_save_message">CSVファイルの出力、\nWindowsアプリへの送信に成功しました。</string>
+    <string name="read_timestamp">読み取り日時</string>
+    <string name="no_tag_read">まだタグが読み取られていません</string>
 
     <!-- 入力-->
     <string name="grade_hint">グレード入力</string>

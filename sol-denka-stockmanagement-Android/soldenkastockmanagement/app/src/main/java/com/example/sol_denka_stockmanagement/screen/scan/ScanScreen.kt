@@ -44,6 +44,7 @@ import com.example.sol_denka_stockmanagement.screen.scan.components.ShippingModa
 import com.example.sol_denka_stockmanagement.screen.scan.components.ShippingSingleItem
 import com.example.sol_denka_stockmanagement.screen.scan.components.StorageAreaChangeSingleItem
 import com.example.sol_denka_stockmanagement.share.ButtonContainer
+import com.example.sol_denka_stockmanagement.share.dialog.ConfirmDialog
 import com.example.sol_denka_stockmanagement.ui.theme.brightAzure
 import com.example.sol_denka_stockmanagement.ui.theme.orange
 import com.example.sol_denka_stockmanagement.ui.theme.tealGreen
@@ -71,7 +72,7 @@ fun ScanScreen(
     val isAllSelected by appViewModel.isAllSelected.collectAsStateWithLifecycle()
     val selectedCount by appViewModel.selectedCount.collectAsStateWithLifecycle()
     val showModalHandlingMethod by appViewModel.showModalHandlingMethod.collectAsStateWithLifecycle()
-
+    val showClearTagConfirmDialog = appViewModel.showClearTagConfirmDialog.value
 
     LaunchedEffect(Unit) {
         scanViewModel.setEnableScan(
@@ -105,6 +106,32 @@ fun ScanScreen(
             }
         )
     }
+
+    ConfirmDialog(
+        showDialog = showClearTagConfirmDialog,
+        dialogTitle = stringResource(R.string.clear_processed_tag_dialog),
+        buttons = listOf(
+            {
+                ButtonContainer(
+                    buttonText = stringResource(R.string.ok),
+                    onClick = {
+                        scanViewModel.clearProcessedTag()
+                        appViewModel.onGeneralIntent(ShareIntent.ToggleClearTagConfirmDialog)
+                        onGoBack()
+                    }
+                )
+            },
+            {
+                ButtonContainer(
+                    containerColor = Color.Red,
+                    buttonText = stringResource(R.string.no),
+                    onClick = {
+                        appViewModel.onGeneralIntent(ShareIntent.ToggleClearTagConfirmDialog)
+                    }
+                )
+            }
+        )
+    )
 
     Layout(
         topBarText = Screen.fromRouteId(prevScreenNameId)?.displayName ?: "",
@@ -195,7 +222,11 @@ fun ScanScreen(
             }
         },
         onBackArrowClick = {
-            onGoBack()
+            if (scannedTags3.isNotEmpty() || scannedTag2.isNotEmpty()) {
+                appViewModel.onGeneralIntent(ShareIntent.ToggleClearTagConfirmDialog)
+            } else {
+                onGoBack()
+            }
         }) { paddingValues ->
         Column(
             modifier = Modifier

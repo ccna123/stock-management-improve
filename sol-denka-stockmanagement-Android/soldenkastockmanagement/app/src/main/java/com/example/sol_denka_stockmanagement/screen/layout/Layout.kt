@@ -67,6 +67,7 @@ import androidx.compose.ui.zIndex
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.sol_denka_stockmanagement.R
 import com.example.sol_denka_stockmanagement.constant.ConnectionState
+import com.example.sol_denka_stockmanagement.constant.Tab
 import com.example.sol_denka_stockmanagement.helper.ToastManager
 import com.example.sol_denka_stockmanagement.helper.ToastMessage
 import com.example.sol_denka_stockmanagement.intent.ShareIntent
@@ -137,6 +138,7 @@ fun Layout(
         ?: MutableStateFlow(false)).collectAsStateWithLifecycle()
 
     val showAppDialog = appViewModel?.showAppDialog?.value ?: false
+
 
     ConfirmDialog(
         showDialog = showAppDialog,

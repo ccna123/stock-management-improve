@@ -25,6 +25,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.sol_denka_stockmanagement.R
@@ -91,7 +92,7 @@ fun ReceivingScanTagCard(scannedTag: String) {
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
                         text = scannedTag.takeIf { it.isNotEmpty() }
-                            ?: "まだタグが読み取られていません",
+                            ?: stringResource(R.string.no_tag_read),
                         fontSize = 17.sp,
                         color = if (scannedTag.isEmpty()) Color.Red else Color.Black
                     )
@@ -112,8 +113,8 @@ fun ReceivingScanTagCard(scannedTag: String) {
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
-                        text = "読み取り日時：${
-                            if (scannedTag.isEmpty()) "" else LocalTime.now()
+                        text = "${stringResource(R.string.read_timestamp)}：${
+                            if (scannedTag.isEmpty()) "---" else LocalTime.now()
                                 .format(DateTimeFormatter.ofPattern("HH:mm"))
                         }",
                         fontSize = 17.sp
