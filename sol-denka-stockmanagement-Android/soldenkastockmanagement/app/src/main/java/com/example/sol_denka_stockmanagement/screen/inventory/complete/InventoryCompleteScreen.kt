@@ -111,6 +111,11 @@ fun InventoryCompleteScreen(
                     )
                 },
                 onClick = {
+                    appViewModel.onGeneralIntent(
+                        ShareIntent.SaveScanResult(
+                            data = listOf()
+                        )
+                    )
                     if (appViewModel.isNetworkConnected.value.not()) {
                         appViewModel.onGeneralIntent(
                             ShareIntent.ToggleNetworkDialog(true)

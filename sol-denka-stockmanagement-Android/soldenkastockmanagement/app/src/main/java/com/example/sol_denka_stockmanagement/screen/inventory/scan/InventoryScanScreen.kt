@@ -150,14 +150,26 @@ fun InventoryScanScreen(
     ConfirmDialog(
         showDialog = showClearConfirmDialog,
         dialogTitle = stringResource(R.string.clear_processed_tag_dialog),
-        buttonText1 = stringResource(R.string.ok),
-        buttonText2 = stringResource(R.string.no),
-        onOk = {
-            scanViewModel.clearProcessedTag()
-            appViewModel.onGeneralIntent(ShareIntent.ChangeTab(Tab.Left))
-            showClearConfirmDialog = false
-        },
-        onCancel = { showClearConfirmDialog = false }
+        buttons = listOf(
+            {
+                ButtonContainer(
+                    buttonText = stringResource(R.string.ok),
+                    onClick = {
+                        scanViewModel.clearProcessedTag()
+                        appViewModel.onGeneralIntent(ShareIntent.ChangeTab(Tab.Left))
+                        showClearConfirmDialog = false
+                    }
+                )
+            },
+            {
+                ButtonContainer(
+                    buttonText = stringResource(R.string.no),
+                    onClick = {
+                        showClearConfirmDialog = false
+                    }
+                )
+            }
+        )
     )
 
     Layout(

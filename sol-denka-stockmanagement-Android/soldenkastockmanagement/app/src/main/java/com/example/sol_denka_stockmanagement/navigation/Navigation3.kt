@@ -74,6 +74,7 @@ fun Navigation3(
             entry<Screen.Shipping> {
                 ShippingScreen(
                     appViewModel = appViewModel,
+                    onNavigate = {dest -> navigate(dest)},
                     onGoBack = { goBack() }
                 )
             }
@@ -106,12 +107,14 @@ fun Navigation3(
                 ReceivingScreen(
                     appViewModel = appViewModel,
                     scanViewModel = scanViewModel,
+                    onNavigate = {dest -> navigate(dest)},
                     onGoBack = { goBack() }
                 )
             }
             entry<Screen.StorageAreaChange> { destinationScan ->
                 StorageAreaChangeScreen(
                     appViewModel = appViewModel,
+                    onNavigate = {dest -> navigate(dest)},
                     onGoBack = { goBack() }
                 )
             }

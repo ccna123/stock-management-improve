@@ -90,15 +90,22 @@ fun HomeScreen(
     ConfirmDialog(
         showDialog = showExitDialog,
         dialogTitle = stringResource(R.string.app_exit_confirm),
-        buttonText1 = stringResource(R.string.ok),
-        buttonText2 = stringResource(R.string.no),
-        onOk = {
-            (context as? Activity)?.finish()
-            showExitDialog = false
-        },
-        onCancel = { showExitDialog = false }
-    )
+        buttons = listOf(
+            {
+                ButtonContainer(
+                    buttonText = stringResource(R.string.ok),
+                    onClick = { (context as? Activity)?.finish() }
+                )
+            },
+            {
+                ButtonContainer(
+                    buttonText = stringResource(R.string.no),
+                    onClick = { showExitDialog = false }
 
+                )
+            }
+        )
+    )
     Layout(
         topBarText = Screen.Home.displayName,
         topBarIcon = Icons.Default.Menu,

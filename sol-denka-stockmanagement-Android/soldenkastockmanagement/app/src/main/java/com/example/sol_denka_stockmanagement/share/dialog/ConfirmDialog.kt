@@ -22,10 +22,7 @@ import com.example.sol_denka_stockmanagement.share.ButtonContainer
 fun ConfirmDialog(
     showDialog: Boolean,
     dialogTitle: String,
-    buttonText1: String,
-    buttonText2: String,
-    onOk: () -> Unit,
-    onCancel: () -> Unit
+    buttons: List<@Composable () -> Unit>,
 ) {
     if (showDialog.not()) return
     AppDialog {
@@ -40,17 +37,9 @@ fun ConfirmDialog(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceEvenly
         ) {
-            ButtonContainer(
-                buttonText = buttonText1,
-                buttonTextSize = 20,
-                onClick = { onOk() },
-            )
-            ButtonContainer(
-                buttonText = buttonText2,
-                containerColor = Color.Red,
-                buttonTextSize = 20,
-                onClick = { onCancel() },
-            )
+            buttons.forEach { button ->
+                button.invoke()
+            }
         }
     }
 }

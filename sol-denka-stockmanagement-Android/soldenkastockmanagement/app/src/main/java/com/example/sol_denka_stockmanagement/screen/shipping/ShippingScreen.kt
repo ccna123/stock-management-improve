@@ -27,6 +27,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.sol_denka_stockmanagement.R
 import com.example.sol_denka_stockmanagement.constant.MaterialSelectionItem
 import com.example.sol_denka_stockmanagement.intent.InputIntent
+import com.example.sol_denka_stockmanagement.intent.ShareIntent
 import com.example.sol_denka_stockmanagement.model.ScanResultRowModel
 import com.example.sol_denka_stockmanagement.navigation.Screen
 import com.example.sol_denka_stockmanagement.screen.layout.Layout
@@ -40,6 +41,7 @@ import com.example.sol_denka_stockmanagement.viewmodel.AppViewModel
 @Composable
 fun ShippingScreen(
     appViewModel: AppViewModel,
+    onNavigate: (Screen) -> Unit,
     onGoBack: () -> Unit,
 ) {
 
@@ -53,6 +55,7 @@ fun ShippingScreen(
         topBarText = stringResource(R.string.shipping),
         topBarIcon = Icons.AutoMirrored.Filled.ArrowBack,
         appViewModel = appViewModel,
+        onNavigate = onNavigate,
         currentScreenNameId = Screen.Shipping.routeId,
         prevScreenNameId = Screen.Shipping.routeId, // for scan screen to navigate back,
         hasBottomBar = true,
@@ -71,6 +74,11 @@ fun ShippingScreen(
                     )
                 },
                 onClick = {
+                    appViewModel.onGeneralIntent(
+                        ShareIntent.SaveScanResult(
+                            data = listOf()
+                        )
+                    )
                 },
                 buttonText = stringResource(R.string.register),
             )

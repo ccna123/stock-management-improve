@@ -56,6 +56,7 @@ import com.example.sol_denka_stockmanagement.viewmodel.ScanViewModel
 fun ReceivingScreen(
     appViewModel: AppViewModel,
     scanViewModel: ScanViewModel,
+    onNavigate: (Screen) -> Unit,
     onGoBack: () -> Unit,
 ) {
 
@@ -76,6 +77,7 @@ fun ReceivingScreen(
         topBarText = stringResource(R.string.receiving),
         topBarIcon = Icons.AutoMirrored.Filled.ArrowBack,
         appViewModel = appViewModel,
+        onNavigate = onNavigate,
         currentScreenNameId = Screen.Receiving.routeId,
         prevScreenNameId = Screen.Receiving.routeId, // for scan screen to navigate back,
         hasBottomBar = true,
@@ -94,7 +96,13 @@ fun ReceivingScreen(
                     spotColor = Color.DarkGray.copy(alpha = 0.7f)
                 ),
                 canClick = inputState.materialSelectedItem != SelectTitle.SelectMaterial.displayName,
-                onClick = {},
+                onClick = {
+                    appViewModel.onGeneralIntent(
+                        ShareIntent.SaveScanResult(
+                            data = listOf()
+                        )
+                    )
+                },
                 buttonText = stringResource(R.string.register),
             )
         },

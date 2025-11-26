@@ -25,5 +25,5 @@ sealed interface ShareIntent {
     data object ResetState: ShareIntent
     data class ChangeTabInReceivingScreen(val tab: String): ShareIntent
 
-    data class SaveScanResult<T: ICsvExport>(val context: Context, val data: List<T>): ShareIntent
+    data class SaveScanResult<T: ICsvExport>(val data: List<T>): ShareIntent
 }

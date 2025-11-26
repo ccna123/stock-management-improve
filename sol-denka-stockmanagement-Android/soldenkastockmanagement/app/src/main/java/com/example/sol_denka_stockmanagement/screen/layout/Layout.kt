@@ -53,6 +53,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalFocusManager
@@ -67,9 +68,11 @@ import androidx.compose.ui.zIndex
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.sol_denka_stockmanagement.R
 import com.example.sol_denka_stockmanagement.constant.ConnectionState
+import com.example.sol_denka_stockmanagement.constant.SelectTitle
 import com.example.sol_denka_stockmanagement.navigation.Screen
 import com.example.sol_denka_stockmanagement.helper.ToastManager
 import com.example.sol_denka_stockmanagement.helper.ToastMessage
+import com.example.sol_denka_stockmanagement.intent.ShareIntent
 import com.example.sol_denka_stockmanagement.model.ReaderInfoModel
 import com.example.sol_denka_stockmanagement.share.dialog.AppDialog
 import com.example.sol_denka_stockmanagement.share.ButtonContainer
@@ -80,6 +83,7 @@ import com.example.sol_denka_stockmanagement.ui.theme.deepOceanBlue
 import com.example.sol_denka_stockmanagement.ui.theme.paleSkyBlue
 import com.example.sol_denka_stockmanagement.viewmodel.AppViewModel
 import com.example.sol_denka_stockmanagement.screen.setting.sub_screen.reader_setting.ReaderSettingViewModel
+import com.example.sol_denka_stockmanagement.share.dialog.ConfirmDialog
 import com.example.sol_denka_stockmanagement.ui.theme.brightAzure
 import com.example.sol_denka_stockmanagement.ui.theme.orange
 import com.example.sol_denka_stockmanagement.viewmodel.ScanViewModel
@@ -123,15 +127,34 @@ fun Layout(
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val focusManager = LocalFocusManager.current
     val showFileProgressBar = appViewModel?.showFileProgressDialog?.value
-    val showConnectingDialog = appViewModel?.showConnectingDialog?.collectAsStateWithLifecycle()?.value ?: remember {
-        mutableStateOf(false)
-    }
+    val showConnectingDialog =
+        appViewModel?.showConnectingDialog?.collectAsStateWithLifecycle()?.value ?: remember {
+            mutableStateOf(false)
+        }
     val progress by (appViewModel?.progress ?: MutableStateFlow(0f)).collectAsStateWithLifecycle()
     val isFileWorking by (appViewModel?.isFileWorking
         ?: MutableStateFlow(false)).collectAsStateWithLifecycle()
 
     val isPerformingInventory by (scanViewModel?.isPerformingInventory
         ?: MutableStateFlow(false)).collectAsStateWithLifecycle()
+
+    val showAppDialog = appViewModel?.showAppDialog?.value ?: false
+
+    ConfirmDialog(
+        showDialog = showAppDialog,
+        dialogTitle = stringResource(R.string.csv_save_message),
+        buttons = listOf(
+            {
+                ButtonContainer(
+                    buttonText = stringResource(R.string.return_home),
+                    onClick = {
+                        appViewModel?.onGeneralIntent(ShareIntent.ToggleDialog)
+                        onNavigate?.invoke(Screen.Home)
+                    }
+                )
+            }
+        )
+    )
 
     if (showFileProgressBar == true) {
         AppDialog {

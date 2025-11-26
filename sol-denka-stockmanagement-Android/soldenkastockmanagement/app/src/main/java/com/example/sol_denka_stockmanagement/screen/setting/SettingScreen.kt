@@ -65,30 +65,50 @@ fun SettingScreen(
     ConfirmDialog(
         showDialog = showUnsavedConfirmDialog,
         dialogTitle = stringResource(R.string.setting_interrupt_confirm),
-        buttonText1 = stringResource(R.string.ok),
-        buttonText2 = stringResource(R.string.close),
-        onOk = {
-            showUnsavedConfirmDialog = false
-            readerSettingViewModel.resetToInitialSetting()
-            onGoBack()
-        },
-        onCancel = { showUnsavedConfirmDialog = false }
+        buttons = listOf(
+            {
+                ButtonContainer(
+                    buttonText = stringResource(R.string.ok),
+                    onClick = {
+                        showUnsavedConfirmDialog = false
+                        readerSettingViewModel.resetToInitialSetting()
+                        onGoBack()
+                    })
+            }, {
+                ButtonContainer(
+                    buttonText = stringResource(R.string.close),
+                    onClick = {
+                        showUnsavedConfirmDialog = false
+                    })
+            }
+        )
     )
 
     ConfirmDialog(
         showDialog = showApplyConfirmDialog,
         dialogTitle = stringResource(R.string.setting_apply_confirm),
-        buttonText1 = stringResource(R.string.ok),
-        buttonText2 = stringResource(R.string.close),
-        onOk = {
-            val result = readerSettingViewModel.applyReaderSetting()
-            when (result) {
-                true -> ToastManager.showToast("設定に成功しました", ToastType.SUCCESS)
-                false -> ToastManager.showToast("設定に失敗しました", ToastType.ERROR)
+        buttons = listOf(
+            {
+                ButtonContainer(
+                    buttonText = stringResource(R.string.ok),
+                    onClick = {
+                        val result = readerSettingViewModel.applyReaderSetting()
+                        when (result) {
+                            true -> ToastManager.showToast("設定に成功しました", ToastType.SUCCESS)
+                            false -> ToastManager.showToast("設定に失敗しました", ToastType.ERROR)
+                        }
+                        showApplyConfirmDialog = false
+                    }
+                )
+            }, {
+                ButtonContainer(
+                    buttonText = stringResource(R.string.close),
+                    onClick = {
+                        showApplyConfirmDialog = false
+                    }
+                )
             }
-            showApplyConfirmDialog = false
-        },
-        onCancel = { showApplyConfirmDialog = false }
+        )
     )
     Layout(
         topBarText = Screen.Setting.displayName,
@@ -166,6 +186,7 @@ fun SettingScreen(
                                 readerSettingViewModel = readerSettingViewModel
                             )
                         }
+
                         Tab.Right -> {
                             AppSettingScreen(
                                 appSettingViewModel = appSettingViewModel,

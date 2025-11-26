@@ -45,7 +45,8 @@ import javax.inject.Inject
 class AppViewModel @Inject constructor(
     private val readerController: ReaderController,
     private val connectionObserver: NetworkConnectionObserver,
-    private val csvHelper: CsvHelper
+    private val csvHelper: CsvHelper,
+    @ApplicationContext private val appContext: Context
 ) : ViewModel() {
 
 
@@ -79,6 +80,9 @@ class AppViewModel @Inject constructor(
     val perTagExpanded = MutableStateFlow<Map<String, Boolean>>(emptyMap())
 
     val showConnectingDialog = MutableStateFlow(false)
+
+    var showAppDialog = mutableStateOf(false)
+        private set
 
     private val _perTagChecked = MutableStateFlow<Map<String, Boolean>>(emptyMap())
     val perTagChecked: StateFlow<Map<String, Boolean>> = _perTagChecked.asStateFlow()
@@ -280,9 +284,6 @@ class AppViewModel @Inject constructor(
             is ShareIntent.ChangeTab ->
                 _generalState.update { it.copy(tab = intent.tab) }
 
-            is ShareIntent.ToggleDialog ->
-                _generalState.update { it.copy(showAppDialog = !_generalState.value.showAppDialog) }
-
             is ShareIntent.ToggleDropDown ->
                 _generalState.update { it.copy(showDropDown = intent.showDropDown) }
 
@@ -386,36 +387,38 @@ class AppViewModel @Inject constructor(
             is ShareIntent.SaveScanResult<*> -> {
                 viewModelScope.launch(Dispatchers.IO) {
 
-                    val ctx = intent.context
-                    val rows = intent.data      // ALWAYS List<ICsvExport>
-
-                    if (rows.isEmpty()) {
-                        _toastFlow.emit("保存するデータがありません" to ToastType.ERROR)
-                        return@launch
-                    }
-
-                    val first = rows.first()
-
-                    _isFileWorking.value = true
-                    _progress.value = 0f
-
-                    val result = csvHelper.saveCsv(
-                        context = ctx,
-                        csvType = first.toCsvType(),         // model tự biết nó thuộc loại CSV nào
-                        fileName = first.toCsvName(),       // model tự generate filename
-                        rows = rows,                        // list → nhiều row
-                        onProgress = { p -> _progress.value = p }
-                    )
+//                    val ctx = intent.context
+//                    val rows = intent.data      // ALWAYS List<ICsvExport>
+//
+//                    if (rows.isEmpty()) {
+//                        _toastFlow.emit("保存するデータがありません" to ToastType.ERROR)
+//                        return@launch
+//                    }
+//
+//                    val first = rows.first()
+//
+//                    _isFileWorking.value = true
+//                    _progress.value = 0f
+//
+//                    val result = csvHelper.saveCsv(
+//                        context = ctx,
+//                        csvType = first.toCsvType(),         // model tự biết nó thuộc loại CSV nào
+//                        fileName = first.toCsvName(),       // model tự generate filename
+//                        rows = rows,                        // list → nhiều row
+//                        onProgress = { p -> _progress.value = p }
+//                    )
 
                     _isFileWorking.value = false
-
-                    if (result is ProcessResult.Success) {
-                        _toastFlow.emit("CSV 保存成功" to ToastType.SUCCESS)
-                    } else {
-                        _toastFlow.emit("CSV 保存失敗" to ToastType.ERROR)
-                    }
+                    showAppDialog.value = true
+//                    if (result is ProcessResult.Success) {
+//                        _toastFlow.emit("CSV 保存成功" to ToastType.SUCCESS)
+//                    } else {
+//                        _toastFlow.emit("CSV 保存失敗" to ToastType.ERROR)
+//                    }
                 }
             }
+
+            ShareIntent.ToggleDialog -> showAppDialog.value = !showAppDialog.value
         }
     }
 

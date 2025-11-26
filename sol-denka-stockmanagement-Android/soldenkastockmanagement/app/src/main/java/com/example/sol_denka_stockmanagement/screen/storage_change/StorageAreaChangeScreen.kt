@@ -32,6 +32,7 @@ import com.example.sol_denka_stockmanagement.constant.SelectTitle
 import com.example.sol_denka_stockmanagement.constant.StockAreaItem
 import com.example.sol_denka_stockmanagement.intent.ExpandIntent
 import com.example.sol_denka_stockmanagement.intent.InputIntent
+import com.example.sol_denka_stockmanagement.intent.ShareIntent
 import com.example.sol_denka_stockmanagement.model.ScanResultRowModel
 import com.example.sol_denka_stockmanagement.navigation.Screen
 import com.example.sol_denka_stockmanagement.screen.layout.Layout
@@ -45,6 +46,7 @@ import com.example.sol_denka_stockmanagement.viewmodel.AppViewModel
 @Composable
 fun StorageAreaChangeScreen(
     appViewModel: AppViewModel,
+    onNavigate: (Screen) -> Unit,
     onGoBack: () -> Unit
 ) {
 
@@ -59,6 +61,7 @@ fun StorageAreaChangeScreen(
         topBarText = stringResource(R.string.storage_area_change),
         topBarIcon = Icons.AutoMirrored.Filled.ArrowBack,
         appViewModel = appViewModel,
+        onNavigate = onNavigate,
         currentScreenNameId = Screen.Shipping.routeId,
         prevScreenNameId = Screen.Shipping.routeId, // for scan screen to navigate back,
         hasBottomBar = true,
@@ -79,6 +82,11 @@ fun StorageAreaChangeScreen(
                     )
                 },
                 onClick = {
+                    appViewModel.onGeneralIntent(
+                        ShareIntent.SaveScanResult(
+                            data = listOf()
+                        )
+                    )
                 },
                 buttonText = stringResource(R.string.storage_area_change),
             )
