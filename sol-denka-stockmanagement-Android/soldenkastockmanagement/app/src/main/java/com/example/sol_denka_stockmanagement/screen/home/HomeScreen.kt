@@ -10,7 +10,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -44,12 +43,10 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.sol_denka_stockmanagement.R
-import com.example.sol_denka_stockmanagement.constant.Tab
 import com.example.sol_denka_stockmanagement.intent.ShareIntent
-import com.example.sol_denka_stockmanagement.navigation.Screen
 import com.example.sol_denka_stockmanagement.model.MenuModel
+import com.example.sol_denka_stockmanagement.navigation.Screen
 import com.example.sol_denka_stockmanagement.screen.layout.Layout
-import com.example.sol_denka_stockmanagement.share.dialog.AppDialog
 import com.example.sol_denka_stockmanagement.share.ButtonContainer
 import com.example.sol_denka_stockmanagement.share.dialog.ConfirmDialog
 import com.example.sol_denka_stockmanagement.ui.theme.brightAzure
@@ -80,10 +77,12 @@ fun HomeScreen(
     }
 
     LaunchedEffect(Unit) {
-        appViewModel.onGeneralIntent(ShareIntent.ResetState)
+        appViewModel.apply {
+            onGeneralIntent(ShareIntent.ResetState)
+            clearProcessedTag()
+        }
         scanViewModel.apply {
             clearScannedTag()
-            clearProcessedTag()
         }
     }
 
@@ -99,6 +98,7 @@ fun HomeScreen(
             },
             {
                 ButtonContainer(
+                    containerColor = Color.Red,
                     buttonText = stringResource(R.string.no),
                     onClick = { showExitDialog = false }
 

@@ -84,7 +84,7 @@ fun InventoryScanScreen(
     onGoBack: () -> Unit,
 ) {
     val generalState = appViewModel.generalState.collectAsStateWithLifecycle().value
-    val rfidTagList = scanViewModel.rfidTagList.collectAsStateWithLifecycle().value
+    val rfidTagList = appViewModel.rfidTagList.collectAsStateWithLifecycle().value
     val readerSettingState by readerSettingViewModel.readerSettingState.collectAsStateWithLifecycle()
     var showRadioPowerDialog by remember { mutableStateOf(false) }
     var showClearConfirmDialog by remember { mutableStateOf(false) }
@@ -155,7 +155,7 @@ fun InventoryScanScreen(
                 ButtonContainer(
                     buttonText = stringResource(R.string.ok),
                     onClick = {
-                        scanViewModel.clearProcessedTag()
+                        appViewModel.clearProcessedTag()
                         appViewModel.onGeneralIntent(ShareIntent.ChangeTab(Tab.Left))
                         showClearConfirmDialog = false
                     }
@@ -163,6 +163,7 @@ fun InventoryScanScreen(
             },
             {
                 ButtonContainer(
+                    containerColor = Color.Red,
                     buttonText = stringResource(R.string.no),
                     onClick = {
                         showClearConfirmDialog = false

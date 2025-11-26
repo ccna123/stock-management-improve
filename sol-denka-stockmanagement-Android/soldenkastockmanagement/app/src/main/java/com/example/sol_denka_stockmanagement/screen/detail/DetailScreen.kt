@@ -61,7 +61,7 @@ fun DetailScreen(
         ) {
             item {
                 if (currentItem != null) {
-                    Text(text = "スキャンタグ: ${currentItem.epc}")
+                    Text(text = "スキャンタグ: $currentItem")
                 } else {
                     Text(text = "No Data")
                 }

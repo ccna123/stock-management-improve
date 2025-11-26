@@ -27,11 +27,11 @@ import com.example.sol_denka_stockmanagement.ui.theme.brightGreenSecondary
 @Composable
 fun ScannedTagDisplay(
     rfidTagList: List<InventoryItemMasterModel>,
-    selectedTags: List<InventoryItemMasterModel>,
+    selectedTags: List<String>,
     isSelectionMode: Boolean,
-    onClick: (InventoryItemMasterModel) -> Unit,
-    onLongClick: (InventoryItemMasterModel) -> Unit,
-    onCheckedChange : (InventoryItemMasterModel) -> Unit
+    onClick: (String) -> Unit,
+    onLongClick: (String) -> Unit,
+    onCheckedChange : (String) -> Unit
 ) {
     LazyColumn(
         modifier = Modifier
@@ -51,10 +51,10 @@ fun ScannedTagDisplay(
                     .fillMaxWidth()
                     .combinedClickable(
                         onClick = {
-                            onClick(item)
+                            onClick(item.epc)
                         },
                         onLongClick = {
-                            onLongClick(item)
+                            onLongClick(item.epc)
                         }
                     )
             ) {
@@ -63,9 +63,9 @@ fun ScannedTagDisplay(
                         colors = CheckboxDefaults.colors(
                             checkedColor = brightGreenSecondary
                         ),
-                        checked = item in selectedTags,
+                        checked = item.epc in selectedTags,
                         onCheckedChange = {
-                            onCheckedChange(item)
+                            onCheckedChange(item.epc)
                         }
                     )
                 }

@@ -1,7 +1,6 @@
 package com.example.sol_denka_stockmanagement.screen.inventory.input
 
 import android.os.Build
-import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -19,7 +18,6 @@ import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
@@ -55,7 +53,7 @@ fun InventoryScreen(
 
     val inputState = appViewModel.inputState.collectAsStateWithLifecycle().value
     val expandState = appViewModel.expandState.collectAsStateWithLifecycle().value
-    val rfidTagList = scanViewModel.rfidTagList.collectAsStateWithLifecycle().value
+    val rfidTagList = appViewModel.rfidTagList.collectAsStateWithLifecycle().value
     val showClearTagConfirmDialog = appViewModel.showClearTagConfirmDialog.value
 
     LaunchedEffect(Unit) {
@@ -70,7 +68,7 @@ fun InventoryScreen(
                 ButtonContainer(
                     buttonText = stringResource(R.string.ok),
                     onClick = {
-                        scanViewModel.clearProcessedTag()
+                        appViewModel.clearProcessedTag()
                         appViewModel.onGeneralIntent(ShareIntent.ToggleClearTagConfirmDialog)
                         onGoBack()
                     }

@@ -12,9 +12,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.sol_denka_stockmanagement.navigation.Navigation3
+import com.example.sol_denka_stockmanagement.screen.inventory.scan.InventoryScanViewModel
 import com.example.sol_denka_stockmanagement.ui.theme.SoldenkastockmanagementTheme
 import com.example.sol_denka_stockmanagement.screen.setting.sub_screen.app_setting.AppSettingViewModel
 import com.example.sol_denka_stockmanagement.screen.setting.sub_screen.reader_setting.ReaderSettingViewModel
+import com.example.sol_denka_stockmanagement.search.SearchTagsViewModel
 import com.example.sol_denka_stockmanagement.viewmodel.ScanViewModel
 import com.example.sol_denka_stockmanagement.viewmodel.AppViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -26,6 +28,7 @@ class MainActivity : ComponentActivity() {
     private val appSettingViewModel: AppSettingViewModel by viewModels()
     private val readerSettingViewModel: ReaderSettingViewModel by viewModels()
     private val scanViewModel: ScanViewModel by viewModels()
+    private val searchTagsViewModel: SearchTagsViewModel by viewModels()
 
 
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
@@ -39,6 +42,7 @@ class MainActivity : ComponentActivity() {
                     appSettingViewModel = appSettingViewModel,
                     readerSettingViewModel = readerSettingViewModel,
                     scanViewModel = scanViewModel,
+                    searchTagsViewModel = searchTagsViewModel
                 )
             }
         }

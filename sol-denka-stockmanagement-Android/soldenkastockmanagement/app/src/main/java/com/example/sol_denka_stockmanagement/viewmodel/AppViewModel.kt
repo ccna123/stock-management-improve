@@ -11,6 +11,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.sol_denka_stockmanagement.constant.ConnectionState
 import com.example.sol_denka_stockmanagement.constant.HandlingMethod
+import com.example.sol_denka_stockmanagement.constant.TagStatus
+import com.example.sol_denka_stockmanagement.database.repository.InventoryItemMasterRepository
 import com.example.sol_denka_stockmanagement.helper.CsvHelper
 import com.example.sol_denka_stockmanagement.helper.NetworkConnectionObserver
 import com.example.sol_denka_stockmanagement.helper.ReaderController
@@ -18,6 +20,7 @@ import com.example.sol_denka_stockmanagement.helper.ToastType
 import com.example.sol_denka_stockmanagement.intent.ExpandIntent
 import com.example.sol_denka_stockmanagement.intent.InputIntent
 import com.example.sol_denka_stockmanagement.intent.ShareIntent
+import com.example.sol_denka_stockmanagement.model.InventoryItemMasterModel
 import com.example.sol_denka_stockmanagement.model.ReaderInfoModel
 import com.example.sol_denka_stockmanagement.screen.setting.sub_screen.app_setting.AppSettingState
 import com.example.sol_denka_stockmanagement.state.ErrorState
@@ -44,6 +47,7 @@ class AppViewModel @Inject constructor(
     private val readerController: ReaderController,
     private val connectionObserver: NetworkConnectionObserver,
     private val csvHelper: CsvHelper,
+    private val inventoryItemMasterRepository: InventoryItemMasterRepository,
     @ApplicationContext private val appContext: Context
 ) : ViewModel() {
 
@@ -100,6 +104,9 @@ class AppViewModel @Inject constructor(
     var bottomSheetChosenMethod = mutableStateOf(HandlingMethod.USE.displayName)
         private set
 
+    private val _rfidTagList = MutableStateFlow<List<InventoryItemMasterModel>>(emptyList())
+    val rfidTagList = _rfidTagList.asStateFlow()
+
     val readerInfo = readerController.readerInfo.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5000),
@@ -130,6 +137,20 @@ class AppViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             readerController.tryAutoConnect()
         }
+
+        viewModelScope.launch {
+            inventoryItemMasterRepository.get().collect {
+                _rfidTagList.value = it
+            }
+        }
+        viewModelScope.launch {
+            readerController.scannedTags.collect { scannedTag ->
+                scannedTag.keys.forEach { epc ->
+                    updateTagStatus(epc, TagStatus.PROCESSED)
+                }
+            }
+        }
+
         viewModelScope.launch {
             readerController.connectionEvents.collect { evt ->
                 when (evt) {
@@ -228,6 +249,28 @@ class AppViewModel @Inject constructor(
 
     fun hideProgressDialog() {
         showFileProgressDialog.value = false
+    }
+
+    fun updateTagStatus(epc: String, newStatus: TagStatus) {
+        _rfidTagList.update { list ->
+            list.map { item ->
+                if (item.epc == epc) {
+                    item.copy(newField = item.newField.copy(tagStatus = newStatus))
+                } else {
+                    item
+                }
+            }
+        }
+    }
+
+    fun clearProcessedTag() {
+        _rfidTagList.update { list ->
+            list.map { item ->
+                if (item.newField.tagStatus == TagStatus.PROCESSED) {
+                    item.copy(newField = item.newField.copy(tagStatus = TagStatus.UNPROCESSED))
+                } else item
+            }
+        }
     }
 
     fun onInputIntent(intent: InputIntent) {

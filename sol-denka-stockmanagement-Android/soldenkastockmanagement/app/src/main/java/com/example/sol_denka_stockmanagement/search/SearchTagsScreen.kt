@@ -67,18 +67,18 @@ import kotlin.collections.filter
 fun SearchTagsScreen(
     appViewModel: AppViewModel,
     readerSettingViewModel: ReaderSettingViewModel,
+    searchTagsViewModel: SearchTagsViewModel,
     scanViewModel: ScanViewModel,
     prevScreenNameId: String,
     onGoBack: () -> Unit,
 ) {
     val generalState = appViewModel.generalState.collectAsStateWithLifecycle().value
-    val rfidTagList = scanViewModel.rfidTagList.collectAsStateWithLifecycle()
     val readerSettingState by readerSettingViewModel.readerSettingState.collectAsStateWithLifecycle()
     var showRadioPowerDialog by remember { mutableStateOf(false) }
     val isPerformingInventory by appViewModel.isPerformingInventory.collectAsStateWithLifecycle()
     val scope = rememberCoroutineScope()
-    val tagsToDisplay =
-        rfidTagList.value.filter { it.epc in generalState.selectedTags.map { it.epc } }
+    val tagsToDisplay = generalState.selectedTags
+    val rssiMap = searchTagsViewModel.rssiMap.collectAsStateWithLifecycle().value
 
     LaunchedEffect(Unit) {
         scanViewModel.setEnableScan(enabled = true, screen = Screen.SearchTagsScreen(""))
@@ -161,8 +161,8 @@ fun SearchTagsScreen(
                     buttonText = stringResource(R.string.finish_search),
                     onClick = {
                         generalState.foundTags.forEach { foundTag ->
-                            scanViewModel.updateTagStatus(
-                                epc = foundTag.epc,
+                            appViewModel.updateTagStatus(
+                                epc = foundTag,
                                 newStatus = TagStatus.PROCESSED
                             )
                         }
@@ -299,9 +299,10 @@ fun SearchTagsScreen(
             LazyColumn {
                 item {
                     tagsToDisplay.forEach { item ->
+                        val rssi = rssiMap[item] ?: -100f
                         SingleRfidRow(
-                            boxWidth = TagDistanceCalculate.calculateBoxWidth(item.newField.rssi),
-                            rfidNo = item.epc,
+                            boxWidth = TagDistanceCalculate.calculateBoxWidth(rssi),
+                            rfidNo = item,
                             isPressed = item in generalState.foundTags,
                             onChange = {
                                 appViewModel.onGeneralIntent(ShareIntent.ToggleFoundTag(item))

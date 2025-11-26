@@ -8,9 +8,9 @@ data class GeneralState(
     // Input fields
     val tab: Tab = Tab.Left,
     val isSelectionMode: Boolean = false,
-    var selectedTags: List<InventoryItemMasterModel> = emptyList(),
+    var selectedTags: List<String> = emptyList(),
     var selectedTags1: List<String> = emptyList(),
-    var foundTags: List<InventoryItemMasterModel> = emptyList(),
+    var foundTags: List<String> = emptyList(),
     val currentIndex: Int = 0,
     val currentItem: String? = null,
     val targetScreenId: Screen? = null,

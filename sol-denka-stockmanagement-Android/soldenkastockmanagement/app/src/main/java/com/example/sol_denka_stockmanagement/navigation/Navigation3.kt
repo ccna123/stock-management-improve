@@ -18,6 +18,7 @@ import com.example.sol_denka_stockmanagement.screen.home.HomeScreen
 import com.example.sol_denka_stockmanagement.screen.inventory.complete.InventoryCompleteScreen
 import com.example.sol_denka_stockmanagement.screen.inventory.input.InventoryScreen
 import com.example.sol_denka_stockmanagement.screen.inventory.scan.InventoryScanScreen
+import com.example.sol_denka_stockmanagement.screen.inventory.scan.InventoryScanViewModel
 import com.example.sol_denka_stockmanagement.screen.receiving.ReceivingScreen
 import com.example.sol_denka_stockmanagement.screen.scan.ScanScreen
 import com.example.sol_denka_stockmanagement.screen.shipping.ShippingScreen
@@ -30,12 +31,14 @@ import com.example.sol_denka_stockmanagement.viewmodel.AppViewModel
 import com.example.sol_denka_stockmanagement.screen.setting.SettingScreen
 import com.example.sol_denka_stockmanagement.screen.storage_area_change.StorageAreaChangeScreen
 import com.example.sol_denka_stockmanagement.search.SearchTagsScreen
+import com.example.sol_denka_stockmanagement.search.SearchTagsViewModel
 import kotlin.collections.listOf
 
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @Composable
 fun Navigation3(
     appViewModel: AppViewModel,
+    searchTagsViewModel: SearchTagsViewModel,
     appSettingViewModel: AppSettingViewModel,
     readerSettingViewModel: ReaderSettingViewModel,
     scanViewModel: ScanViewModel,
@@ -133,6 +136,7 @@ fun Navigation3(
                     prevScreenNameId = destinationScan.preScreen,
                     readerSettingViewModel = readerSettingViewModel,
                     scanViewModel = scanViewModel,
+                    searchTagsViewModel = searchTagsViewModel,
                     onGoBack = { goBack() }
                 )
             }
