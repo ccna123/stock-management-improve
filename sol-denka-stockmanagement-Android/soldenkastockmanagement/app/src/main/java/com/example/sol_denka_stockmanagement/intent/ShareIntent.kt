@@ -1,5 +1,7 @@
 package com.example.sol_denka_stockmanagement.intent
 
+import android.content.Context
+import com.example.sol_denka_stockmanagement.app_interface.ICsvExport
 import com.example.sol_denka_stockmanagement.constant.Tab
 import com.example.sol_denka_stockmanagement.model.InventoryItemMasterModel
 
@@ -22,4 +24,6 @@ sealed interface ShareIntent {
     data class ShowModalHandlingMethod(val showBottomSheet: Boolean): ShareIntent
     data object ResetState: ShareIntent
     data class ChangeTabInReceivingScreen(val tab: String): ShareIntent
+
+    data class SaveScanResult<T: ICsvExport>(val context: Context, val data: List<T>): ShareIntent
 }

@@ -5,6 +5,7 @@ import android.content.Context
 import android.os.Environment
 import android.provider.MediaStore
 import android.util.Log
+import com.example.sol_denka_stockmanagement.app_interface.ICsvExport
 import com.example.sol_denka_stockmanagement.constant.CsvType
 import com.example.sol_denka_stockmanagement.constant.StatusCode
 import com.example.sol_denka_stockmanagement.model.CsvFileInfoModel
@@ -357,18 +358,25 @@ class CsvHelper @Inject constructor(
         return Pair(privateKeyFile, knownHosts)
     }
 
-    suspend fun saveCsv(
+    suspend fun <T : ICsvExport> saveCsv(
         context: Context,
         csvType: String,
         fileName: String,
-        csvContent: String,
+        rows: List<T>,
         onProgress: (Float) -> Unit
     ): ProcessResult = withContext(Dispatchers.IO) {
-
         try {
+            if (rows.isEmpty()) {
+                return@withContext ProcessResult.Failure(
+                    statusCode = StatusCode.FAILED,
+                    message = "保存するデータがありません"
+                )
+            }
+
             val resolver = context.contentResolver
             val externalUri = MediaStore.Files.getContentUri("external")
 
+            // map csvType -> local folder (Export/InventoryResult, Export/StockEvent, ...)
             val (_, localFolder) = mapCsvTypeToFolders(csvType)
                 ?: return@withContext ProcessResult.Failure(
                     statusCode = StatusCode.FAILED,
@@ -376,14 +384,28 @@ class CsvHelper @Inject constructor(
                 )
 
             val relativePath =
-                Environment.DIRECTORY_DOWNLOADS + "/$ROOT_FOLDER/$localFolder"
+                Environment.DIRECTORY_DOWNLOADS + "/$ROOT_FOLDER/$localFolder/"
 
-            // delete existing file if same name
+            // Remove file that has same name
             resolver.delete(
                 externalUri,
                 "${MediaStore.MediaColumns.RELATIVE_PATH}=? AND ${MediaStore.MediaColumns.DISPLAY_NAME}=?",
                 arrayOf(relativePath, fileName)
             )
+
+            // Get header from first row
+            val headerLine = rows.first().toHeader().joinToString(",")
+
+            // Build data
+            val dataLines = rows.joinToString("\n") { it.toRow().joinToString(",") }
+
+            // Content assemble
+            val fullContent = buildString {
+                append(headerLine)
+                append("\r\n")
+                append(dataLines)
+                append("\r\n")
+            }
 
             val values = ContentValues().apply {
                 put(MediaStore.MediaColumns.DISPLAY_NAME, fileName)
@@ -397,7 +419,7 @@ class CsvHelper @Inject constructor(
                     message = "CSVファイルの作成に失敗しました"
                 )
 
-            val bytes = csvContent.toByteArray()
+            val bytes = fullContent.toByteArray()
             val totalBytes = bytes.size.takeIf { it > 0 } ?: 1
             var written = 0
 
@@ -411,24 +433,26 @@ class CsvHelper @Inject constructor(
                     offset += count
                     written += count
 
-                    val progress = (written.toFloat() / totalBytes)
-                        .coerceIn(0f, 1f)
-
+                    val progress = (written.toFloat() / totalBytes).coerceIn(0f, 1f)
                     onProgress(progress)
                 }
-
                 output.flush()
-            }
+            } ?: return@withContext ProcessResult.Failure(
+                statusCode = StatusCode.FAILED,
+                message = "CSVファイルの書き込みに失敗しました"
+            )
 
-            Log.i("TSS", "✅ CSV saved with progress: $relativePath/$fileName")
-
+            Log.i("TSS", "✅ CSV saved: $relativePath$fileName")
             onProgress(1f)
 
             ProcessResult.Success(statusCode = StatusCode.OK)
 
         } catch (e: Exception) {
-            Log.e("TSS", "❌ saveCsvToSharedStorageWithProgress: ${e.message}", e)
-            ProcessResult.Failure(statusCode = StatusCode.FAILED, message = e.message ?: "Unknown")
+            Log.e("TSS", "❌ saveCsv error: ${e.message}", e)
+            ProcessResult.Failure(
+                statusCode = StatusCode.FAILED,
+                message = e.message ?: "Unknown"
+            )
         }
     }
 }

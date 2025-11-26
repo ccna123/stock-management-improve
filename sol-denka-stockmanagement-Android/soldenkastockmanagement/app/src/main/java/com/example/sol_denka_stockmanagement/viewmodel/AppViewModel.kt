@@ -12,7 +12,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.sol_denka_stockmanagement.constant.ConnectionState
 import com.example.sol_denka_stockmanagement.constant.HandlingMethod
+import com.example.sol_denka_stockmanagement.helper.CsvHelper
 import com.example.sol_denka_stockmanagement.helper.NetworkConnectionObserver
+import com.example.sol_denka_stockmanagement.helper.ProcessResult
 import com.example.sol_denka_stockmanagement.helper.ReaderController
 import com.example.sol_denka_stockmanagement.helper.ToastType
 import com.example.sol_denka_stockmanagement.intent.ExpandIntent
@@ -25,6 +27,7 @@ import com.example.sol_denka_stockmanagement.state.ExpandState
 import com.example.sol_denka_stockmanagement.state.GeneralState
 import com.example.sol_denka_stockmanagement.state.InputState
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -40,9 +43,9 @@ import javax.inject.Inject
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @HiltViewModel
 class AppViewModel @Inject constructor(
-    private val application: Application,
     private val readerController: ReaderController,
-    private val connectionObserver: NetworkConnectionObserver
+    private val connectionObserver: NetworkConnectionObserver,
+    private val csvHelper: CsvHelper
 ) : ViewModel() {
 
 
@@ -379,6 +382,40 @@ class AppViewModel @Inject constructor(
 
             is ShareIntent.ChangeTabInReceivingScreen ->
                 _inputState.update { it.copy(materialSelectedItem = intent.tab) }
+
+            is ShareIntent.SaveScanResult<*> -> {
+                viewModelScope.launch(Dispatchers.IO) {
+
+                    val ctx = intent.context
+                    val rows = intent.data      // ALWAYS List<ICsvExport>
+
+                    if (rows.isEmpty()) {
+                        _toastFlow.emit("保存するデータがありません" to ToastType.ERROR)
+                        return@launch
+                    }
+
+                    val first = rows.first()
+
+                    _isFileWorking.value = true
+                    _progress.value = 0f
+
+                    val result = csvHelper.saveCsv(
+                        context = ctx,
+                        csvType = first.toCsvType(),         // model tự biết nó thuộc loại CSV nào
+                        fileName = first.toCsvName(),       // model tự generate filename
+                        rows = rows,                        // list → nhiều row
+                        onProgress = { p -> _progress.value = p }
+                    )
+
+                    _isFileWorking.value = false
+
+                    if (result is ProcessResult.Success) {
+                        _toastFlow.emit("CSV 保存成功" to ToastType.SUCCESS)
+                    } else {
+                        _toastFlow.emit("CSV 保存失敗" to ToastType.ERROR)
+                    }
+                }
+            }
         }
     }
 
