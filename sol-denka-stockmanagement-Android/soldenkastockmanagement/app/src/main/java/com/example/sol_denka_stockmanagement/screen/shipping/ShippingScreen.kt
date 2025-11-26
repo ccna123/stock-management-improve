@@ -89,7 +89,7 @@ fun ShippingScreen(
         }) { paddingValues ->
         LazyColumn(
             modifier = Modifier
-                .padding(top = paddingValues.calculateTopPadding())
+                .padding(paddingValues)
                 .padding(16.dp)
                 .imePadding()
         ) {
@@ -113,7 +113,7 @@ fun ShippingScreen(
                 )
                 Spacer(modifier = Modifier.height(20.dp))
                 InputFieldContainer(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier.fillMaxWidth().height(200.dp),
                     value = inputState.remark,
                     label = "備考",
                     hintText = stringResource(R.string.remark_hint),
@@ -122,6 +122,7 @@ fun ShippingScreen(
                     readOnly = false,
                     isDropDown = false,
                     enable = true,
+                    singleLine = false,
                     onChange = { newValue ->
                         val filteredValue = newValue.trimStart().filter { char ->
                             (char.isLetterOrDigit() && char.toString()

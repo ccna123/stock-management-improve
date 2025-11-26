@@ -169,7 +169,7 @@ fun StorageAreaChangeScreen(
                 }
                 Spacer(modifier = Modifier.height(10.dp))
                 InputFieldContainer(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier.fillMaxWidth().height(200.dp),
                     value = inputState.remark,
                     label = stringResource(R.string.remark) + "（オプション）",
                     hintText = stringResource(R.string.remark_hint),
@@ -177,6 +177,7 @@ fun StorageAreaChangeScreen(
                     readOnly = false,
                     isDropDown = false,
                     enable = true,
+                    singleLine = false,
                     onChange = { newValue ->
                         val filteredValue = newValue.trimStart().filter { char ->
                             (char.isLetterOrDigit() && char.toString()
