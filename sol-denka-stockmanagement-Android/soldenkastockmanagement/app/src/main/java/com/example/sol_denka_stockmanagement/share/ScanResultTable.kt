@@ -14,6 +14,7 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.sol_denka_stockmanagement.R
@@ -22,7 +23,7 @@ import com.example.sol_denka_stockmanagement.model.ScanResultRowModel
 import com.example.sol_denka_stockmanagement.ui.theme.paleSkyBlue
 
 @Composable
-fun ScanResultTable(scanResult: List<ScanResultRowModel>, tableHeader: List<String>) {
+fun ScanResultTable(tableHeight: Dp = 150.dp, scanResult: List<ScanResultRowModel>, tableHeader: List<String>) {
     Column{
         val localTempFontSize = compositionLocalOf { 13.sp }
         CompositionLocalProvider(localTempFontSize provides localTempFontSize.current) {
@@ -43,7 +44,7 @@ fun ScanResultTable(scanResult: List<ScanResultRowModel>, tableHeader: List<Stri
         }
         LazyColumn(
             modifier = Modifier
-                .height(150.dp)
+                .height(tableHeight)
         ) {
             items(scanResult) { tag ->
                 Row(

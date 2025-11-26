@@ -97,6 +97,7 @@ fun ShippingScreen(
                 Text(text = stringResource(R.string.planned_register_item_number, selectedCount))
                 Spacer(modifier = Modifier.height(18.dp))
                 ScanResultTable(
+                    tableHeight = 250.dp,
                     tableHeader = listOf(
                         stringResource(R.string.item_name_title),
                         stringResource(R.string.item_code_title),
