@@ -87,7 +87,7 @@ fun InventoryScanScreen(
     val rfidTagList = appViewModel.rfidTagList.collectAsStateWithLifecycle().value
     val readerSettingState by readerSettingViewModel.readerSettingState.collectAsStateWithLifecycle()
     var showRadioPowerDialog by remember { mutableStateOf(false) }
-    var showClearConfirmDialog by remember { mutableStateOf(false) }
+    val showClearTagConfirmDialog = appViewModel.showClearTagConfirmDialog.value
     val isPerformingInventory by appViewModel.isPerformingInventory.collectAsStateWithLifecycle()
     val scope = rememberCoroutineScope()
 
@@ -148,16 +148,18 @@ fun InventoryScanScreen(
         }
     )
     ConfirmDialog(
-        showDialog = showClearConfirmDialog,
+        showDialog = showClearTagConfirmDialog,
         dialogTitle = stringResource(R.string.clear_processed_tag_dialog),
         buttons = listOf(
             {
                 ButtonContainer(
                     buttonText = stringResource(R.string.ok),
                     onClick = {
-                        appViewModel.clearProcessedTag()
-                        appViewModel.onGeneralIntent(ShareIntent.ChangeTab(Tab.Left))
-                        showClearConfirmDialog = false
+                        appViewModel.apply {
+                            clearProcessedTag()
+                            onGeneralIntent(ShareIntent.ChangeTab(Tab.Left))
+                            onGeneralIntent(ShareIntent.ToggleClearTagConfirmDialog)
+                        }
                     }
                 )
             },
@@ -166,7 +168,7 @@ fun InventoryScanScreen(
                     containerColor = Color.Red,
                     buttonText = stringResource(R.string.no),
                     onClick = {
-                        showClearConfirmDialog = false
+                        appViewModel.onGeneralIntent(ShareIntent.ToggleClearTagConfirmDialog)
                     }
                 )
             }
@@ -241,10 +243,11 @@ fun InventoryScanScreen(
                         DropdownMenuItem(
                             text = { Text(text = stringResource(R.string.clear)) },
                             onClick = {
-                                showClearConfirmDialog = true
-                                appViewModel.onGeneralIntent(
-                                    ShareIntent.ToggleDropDown(false)
-                                )
+                                appViewModel.apply {
+                                    onGeneralIntent(ShareIntent.ToggleClearTagConfirmDialog)
+                                    onGeneralIntent(
+                                        ShareIntent.ToggleDropDown(false))
+                                }
                             }
                         )
                     }
