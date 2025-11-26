@@ -1,6 +1,7 @@
 package com.example.sol_denka_stockmanagement.screen.inventory.input
 
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -30,6 +31,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.sol_denka_stockmanagement.R
 import com.example.sol_denka_stockmanagement.constant.SelectTitle
 import com.example.sol_denka_stockmanagement.constant.StockAreaItem
+import com.example.sol_denka_stockmanagement.constant.TagStatus
 import com.example.sol_denka_stockmanagement.intent.ExpandIntent
 import com.example.sol_denka_stockmanagement.intent.InputIntent
 import com.example.sol_denka_stockmanagement.intent.ShareIntent
@@ -37,6 +39,7 @@ import com.example.sol_denka_stockmanagement.navigation.Screen
 import com.example.sol_denka_stockmanagement.screen.layout.Layout
 import com.example.sol_denka_stockmanagement.share.ButtonContainer
 import com.example.sol_denka_stockmanagement.share.InputFieldContainer
+import com.example.sol_denka_stockmanagement.share.dialog.ConfirmDialog
 import com.example.sol_denka_stockmanagement.viewmodel.AppViewModel
 import com.example.sol_denka_stockmanagement.viewmodel.ScanViewModel
 
@@ -52,6 +55,8 @@ fun InventoryScreen(
 
     val inputState = appViewModel.inputState.collectAsStateWithLifecycle().value
     val expandState = appViewModel.expandState.collectAsStateWithLifecycle().value
+    val rfidTagList = scanViewModel.rfidTagList.collectAsStateWithLifecycle().value
+    val showClearTagConfirmDialog = appViewModel.showClearTagConfirmDialog.value
 
     LaunchedEffect(Unit) {
         scanViewModel.setEnableScan(false)
@@ -62,6 +67,31 @@ fun InventoryScreen(
             appViewModel.onGeneralIntent(ShareIntent.ResetState)
         }
     }
+    ConfirmDialog(
+        showDialog = showClearTagConfirmDialog,
+        dialogTitle = stringResource(R.string.clear_processed_tag_dialog),
+        buttons = listOf(
+            {
+                ButtonContainer(
+                    buttonText = stringResource(R.string.ok),
+                    onClick = {
+                        scanViewModel.clearProcessedTag()
+                        appViewModel.onGeneralIntent(ShareIntent.ToggleClearTagConfirmDialog)
+                        onGoBack()
+                    }
+                )
+            },
+            {
+                ButtonContainer(
+                    containerColor = Color.Red,
+                    buttonText = stringResource(R.string.no),
+                    onClick = {
+                        appViewModel.onGeneralIntent(ShareIntent.ToggleClearTagConfirmDialog)
+                    }
+                )
+            }
+        )
+    )
 
     Layout(
         topBarText = stringResource(R.string.inventory),
@@ -92,7 +122,11 @@ fun InventoryScreen(
             )
         },
         onBackArrowClick = {
-            onGoBack()
+            if (rfidTagList.count { it.newField.tagStatus == TagStatus.PROCESSED } > 0) {
+                appViewModel.onGeneralIntent(ShareIntent.ToggleClearTagConfirmDialog)
+            } else {
+                onGoBack()
+            }
         }) { paddingValues ->
         LazyColumn(
             modifier = Modifier
@@ -107,7 +141,12 @@ fun InventoryScreen(
                     expanded = expandState.stockAreaExpanded,
                     onExpandedChange = { appViewModel.onExpandIntent(ExpandIntent.ToggleStockAreaExpanded) }) {
                     InputFieldContainer(
-                        modifier = Modifier.menuAnchor(type = ExposedDropdownMenuAnchorType.PrimaryNotEditable, enabled = true).fillMaxWidth(),
+                        modifier = Modifier
+                            .menuAnchor(
+                                type = ExposedDropdownMenuAnchorType.PrimaryNotEditable,
+                                enabled = true
+                            )
+                            .fillMaxWidth(),
                         value = if (inputState.stockArea == StockAreaItem.SELECTION_TITLE.displayName) "" else inputState.stockArea,
                         hintText = StockAreaItem.SELECTION_TITLE.displayName,
                         isNumeric = false,

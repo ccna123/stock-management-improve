@@ -115,7 +115,7 @@ fun ScanScreen(
                 ButtonContainer(
                     buttonText = stringResource(R.string.ok),
                     onClick = {
-                        scanViewModel.clearProcessedTag()
+                        scanViewModel.clearScannedTag()
                         appViewModel.onGeneralIntent(ShareIntent.ToggleClearTagConfirmDialog)
                         onGoBack()
                     }
