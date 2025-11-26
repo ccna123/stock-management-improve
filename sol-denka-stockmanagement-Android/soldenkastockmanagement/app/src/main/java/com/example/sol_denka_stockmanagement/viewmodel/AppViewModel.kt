@@ -1,6 +1,5 @@
 package com.example.sol_denka_stockmanagement.viewmodel
 
-import android.app.Application
 import android.content.Context
 import android.os.Build
 import android.provider.MediaStore
@@ -14,7 +13,6 @@ import com.example.sol_denka_stockmanagement.constant.ConnectionState
 import com.example.sol_denka_stockmanagement.constant.HandlingMethod
 import com.example.sol_denka_stockmanagement.helper.CsvHelper
 import com.example.sol_denka_stockmanagement.helper.NetworkConnectionObserver
-import com.example.sol_denka_stockmanagement.helper.ProcessResult
 import com.example.sol_denka_stockmanagement.helper.ReaderController
 import com.example.sol_denka_stockmanagement.helper.ToastType
 import com.example.sol_denka_stockmanagement.intent.ExpandIntent

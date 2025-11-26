@@ -50,6 +50,7 @@ fun ShippingScreen(
     val inputState = appViewModel.inputState.collectAsStateWithLifecycle().value
     val generalState = appViewModel.generalState.collectAsStateWithLifecycle().value
     val checkedMap by appViewModel.perTagHandlingMethod.collectAsStateWithLifecycle()
+    val selectedCount by appViewModel.selectedCount.collectAsStateWithLifecycle()
 
     Layout(
         topBarText = stringResource(R.string.shipping),
@@ -93,7 +94,7 @@ fun ShippingScreen(
                 .imePadding()
         ) {
             item {
-                Text(text = stringResource(R.string.planned_register_item_number))
+                Text(text = stringResource(R.string.planned_register_item_number, selectedCount))
                 Spacer(modifier = Modifier.height(18.dp))
                 ScanResultTable(
                     tableHeader = listOf(
