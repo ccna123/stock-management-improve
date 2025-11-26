@@ -120,7 +120,11 @@ class ReaderSettingViewModel @Inject constructor(
     }
 
     fun setRadioPower(radioPower: Int) {
-        readerController.setRadioPower(radioPower)
+        readerController.apply {
+            setRadioPower(radioPower)
+            emitUpdatedInfoFromFake()
+        }
+        initialReaderSettingsState.value = _readerSettingState.value
     }
 
     fun applyReaderSetting(): Boolean {
