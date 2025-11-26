@@ -89,6 +89,9 @@ class AppViewModel @Inject constructor(
     var showClearTagConfirmDialog = mutableStateOf(false)
         private set
 
+    var showRadioPowerChangeDialog = mutableStateOf(false)
+        private set
+
     private val _perTagChecked = MutableStateFlow<Map<String, Boolean>>(emptyMap())
     val perTagChecked: StateFlow<Map<String, Boolean>> = _perTagChecked.asStateFlow()
 
@@ -471,6 +474,7 @@ class AppViewModel @Inject constructor(
 
             ShareIntent.ToggleDialog -> showAppDialog.value = !showAppDialog.value
             ShareIntent.ToggleClearTagConfirmDialog -> showClearTagConfirmDialog.value = !showClearTagConfirmDialog.value
+            ShareIntent.ToggleRadioPowerChangeDialog -> showRadioPowerChangeDialog.value = !showRadioPowerChangeDialog.value
         }
     }
 

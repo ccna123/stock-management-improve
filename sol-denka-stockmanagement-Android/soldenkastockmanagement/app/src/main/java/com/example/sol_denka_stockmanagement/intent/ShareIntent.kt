@@ -2,13 +2,13 @@ package com.example.sol_denka_stockmanagement.intent
 
 import com.example.sol_denka_stockmanagement.app_interface.ICsvExport
 import com.example.sol_denka_stockmanagement.constant.Tab
-import com.example.sol_denka_stockmanagement.model.InventoryItemMasterModel
 
 
 sealed interface ShareIntent {
     data class ChangeTab(val tab: Tab): ShareIntent
     data object ToggleDialog: ShareIntent
     data object ToggleClearTagConfirmDialog: ShareIntent
+    data object ToggleRadioPowerChangeDialog: ShareIntent
     data class ToggleDropDown(val showDropDown: Boolean): ShareIntent
     data class ToggleSelectionMode(val selectionMode: Boolean): ShareIntent
     data class ToggleTagSelection(val item: String): ShareIntent

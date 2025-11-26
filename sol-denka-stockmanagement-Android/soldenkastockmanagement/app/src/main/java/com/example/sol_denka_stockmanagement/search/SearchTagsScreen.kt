@@ -74,7 +74,7 @@ fun SearchTagsScreen(
 ) {
     val generalState = appViewModel.generalState.collectAsStateWithLifecycle().value
     val readerSettingState by readerSettingViewModel.readerSettingState.collectAsStateWithLifecycle()
-    var showRadioPowerDialog by remember { mutableStateOf(false) }
+    val showRadioPowerChangeDialog = appViewModel.showRadioPowerChangeDialog.value
     val isPerformingInventory by appViewModel.isPerformingInventory.collectAsStateWithLifecycle()
     val scope = rememberCoroutineScope()
     val tagsToDisplay = generalState.selectedTags
@@ -86,7 +86,7 @@ fun SearchTagsScreen(
     }
 
     RadioPowerDialog(
-        showDialog = showRadioPowerDialog,
+        showDialog = showRadioPowerChangeDialog,
         readerSettingState = readerSettingState,
         onChangeMinPower = {
             readerSettingViewModel.apply {
@@ -123,10 +123,10 @@ fun SearchTagsScreen(
                 onIntent(ReaderSettingIntent.ChangeRadioPower(readerSettingState.radioPower))
                 setRadioPower(readerSettingState.radioPower)
             }
-            showRadioPowerDialog = false
+            appViewModel.onGeneralIntent(ShareIntent.ToggleRadioPowerChangeDialog)
         },
         onDismiss = {
-            showRadioPowerDialog = false
+            appViewModel.onGeneralIntent(ShareIntent.ToggleRadioPowerChangeDialog)
         }
     )
 
@@ -195,10 +195,12 @@ fun SearchTagsScreen(
                         DropdownMenuItem(
                             text = { Text(text = stringResource(R.string.setting_rfid_power)) },
                             onClick = {
-                                showRadioPowerDialog = true
-                                appViewModel.onGeneralIntent(
-                                    ShareIntent.ToggleDropDown(false)
-                                )
+                                appViewModel.apply {
+                                    onGeneralIntent(ShareIntent.ToggleRadioPowerChangeDialog)
+                                    onGeneralIntent(
+                                        ShareIntent.ToggleDropDown(false)
+                                    )
+                                }
                             }
                         )
                         DropdownMenuItem(
