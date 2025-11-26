@@ -62,11 +62,6 @@ fun InventoryScreen(
         scanViewModel.setEnableScan(false)
     }
 
-    DisposableEffect(Unit) {
-        onDispose {
-            appViewModel.onGeneralIntent(ShareIntent.ResetState)
-        }
-    }
     ConfirmDialog(
         showDialog = showClearTagConfirmDialog,
         dialogTitle = stringResource(R.string.clear_processed_tag_dialog),
