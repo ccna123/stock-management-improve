@@ -118,6 +118,13 @@ class AppViewModel @Inject constructor(
         false // Compute initial value synchronously
     )
 
+    val isPerformingInventory = readerController.isPerformingInventory
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = false
+        )
+
 
     init {
         viewModelScope.launch(Dispatchers.IO) {

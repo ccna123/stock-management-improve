@@ -63,7 +63,7 @@ fun ScanScreen(
 ) {
     val scannedTag2 by scanViewModel.scannedTag2.collectAsStateWithLifecycle()
     val scannedTags3 by scanViewModel.scannedTags3.collectAsStateWithLifecycle()
-    val isPerformingInventory by scanViewModel.isPerformingInventory.collectAsStateWithLifecycle()
+    val isPerformingInventory by appViewModel.isPerformingInventory.collectAsStateWithLifecycle()
     val scope = rememberCoroutineScope()
     val expandedMap by appViewModel.perTagExpanded.collectAsStateWithLifecycle()
     val handlingMap by appViewModel.perTagHandlingMethod.collectAsStateWithLifecycle()

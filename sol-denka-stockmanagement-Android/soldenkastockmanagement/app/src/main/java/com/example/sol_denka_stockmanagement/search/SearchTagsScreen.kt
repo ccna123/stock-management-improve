@@ -75,7 +75,7 @@ fun SearchTagsScreen(
     val rfidTagList = scanViewModel.rfidTagList.collectAsStateWithLifecycle()
     val readerSettingState by readerSettingViewModel.readerSettingState.collectAsStateWithLifecycle()
     var showRadioPowerDialog by remember { mutableStateOf(false) }
-    val isPerformingInventory by scanViewModel.isPerformingInventory.collectAsStateWithLifecycle()
+    val isPerformingInventory by appViewModel.isPerformingInventory.collectAsStateWithLifecycle()
     val scope = rememberCoroutineScope()
     val tagsToDisplay =
         rfidTagList.value.filter { it.epc in generalState.selectedTags.map { it.epc } }

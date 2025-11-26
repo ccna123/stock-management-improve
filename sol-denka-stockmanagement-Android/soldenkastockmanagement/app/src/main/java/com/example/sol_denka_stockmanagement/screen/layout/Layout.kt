@@ -134,7 +134,7 @@ fun Layout(
     val isFileWorking by (appViewModel?.isFileWorking
         ?: MutableStateFlow(false)).collectAsStateWithLifecycle()
 
-    val isPerformingInventory by (scanViewModel?.isPerformingInventory
+    val isPerformingInventory by (appViewModel?.isPerformingInventory
         ?: MutableStateFlow(false)).collectAsStateWithLifecycle()
 
     val showAppDialog = appViewModel?.showAppDialog?.value ?: false

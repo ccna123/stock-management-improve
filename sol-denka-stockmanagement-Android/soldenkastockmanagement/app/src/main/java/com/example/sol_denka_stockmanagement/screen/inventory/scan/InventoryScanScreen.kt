@@ -88,7 +88,7 @@ fun InventoryScanScreen(
     val readerSettingState by readerSettingViewModel.readerSettingState.collectAsStateWithLifecycle()
     var showRadioPowerDialog by remember { mutableStateOf(false) }
     var showClearConfirmDialog by remember { mutableStateOf(false) }
-    val isPerformingInventory by scanViewModel.isPerformingInventory.collectAsStateWithLifecycle()
+    val isPerformingInventory by appViewModel.isPerformingInventory.collectAsStateWithLifecycle()
     val scope = rememberCoroutineScope()
 
     LaunchedEffect(Unit) {
