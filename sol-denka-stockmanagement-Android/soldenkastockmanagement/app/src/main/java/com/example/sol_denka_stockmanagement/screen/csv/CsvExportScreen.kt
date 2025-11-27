@@ -3,7 +3,9 @@ package com.example.sol_denka_stockmanagement.screen.csv
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -26,7 +28,6 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
@@ -40,7 +41,6 @@ import com.example.sol_denka_stockmanagement.R
 import com.example.sol_denka_stockmanagement.constant.CsvType
 import com.example.sol_denka_stockmanagement.constant.SelectTitle
 import com.example.sol_denka_stockmanagement.intent.ShareIntent
-import com.example.sol_denka_stockmanagement.model.CsvFileInfoModel
 import com.example.sol_denka_stockmanagement.navigation.Screen
 import com.example.sol_denka_stockmanagement.screen.csv.components.SingleCsvFile
 import com.example.sol_denka_stockmanagement.screen.layout.Layout
@@ -48,10 +48,12 @@ import com.example.sol_denka_stockmanagement.share.ButtonContainer
 import com.example.sol_denka_stockmanagement.share.InputContainer
 import com.example.sol_denka_stockmanagement.share.InputFieldContainer
 import com.example.sol_denka_stockmanagement.share.dialog.NetworkDialog
-import com.example.sol_denka_stockmanagement.state.GeneralState
+import com.example.sol_denka_stockmanagement.ui.theme.brightAzure
+import com.example.sol_denka_stockmanagement.ui.theme.paleSkyBlue
 import com.example.sol_denka_stockmanagement.ui.theme.skyBlue
 import com.example.sol_denka_stockmanagement.viewmodel.AppViewModel
 
+@OptIn(ExperimentalMaterial3Api::class)
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @Composable
 fun CsvExportScreen(
@@ -61,7 +63,6 @@ fun CsvExportScreen(
 ) {
     val context = LocalContext.current
     val csvState by csvViewModel.csvState.collectAsStateWithLifecycle()
-    val scope = rememberCoroutineScope()
     val generalState = appViewModel.generalState.collectAsState().value
     val csvFiles by csvViewModel.csvFiles.collectAsStateWithLifecycle()
     val showProgress by csvViewModel.showProgress.collectAsStateWithLifecycle()
@@ -137,90 +138,78 @@ fun CsvExportScreen(
         onBackArrowClick = {
             onGoBack()
         }) { paddingValues ->
-        CsvExportScreenContent(
-            modifier = Modifier.padding(paddingValues),
-            csvViewModel = csvViewModel,
-            csvState = csvState,
-            generalState = generalState,
-            appViewModel = appViewModel,
-            csvFiles = csvFiles,
-            showProgress = showProgress
-        )
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun CsvExportScreenContent(
-    modifier: Modifier,
-    csvViewModel: CsvViewModel,
-    csvState: CsvState,
-    showProgress: Boolean,
-    csvFiles: List<CsvFileInfoModel>,
-    generalState: GeneralState,
-    appViewModel: AppViewModel
-) {
-    Column(
-        modifier = modifier
-            .fillMaxSize()
-            .imePadding()
-    ) {
         Column(
             modifier = Modifier
-                .padding(16.dp)
+                .padding(paddingValues)
+                .fillMaxSize()
+                .imePadding()
         ) {
-            InputContainer(
-                title = "CSVファイルの種類選択",
-                isRequired = true,
-                children = {
-                    ExposedDropdownMenuBox(
-                        expanded = csvState.csvTypeExpanded,
-                        onExpandedChange = { csvViewModel.toggleCsvTypeExpanded() }) {
-                        InputFieldContainer(
-                            modifier = Modifier
-                                .menuAnchor(
-                                    type = ExposedDropdownMenuAnchorType.PrimaryNotEditable,
-                                    enabled = true
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp)
+                    .shadow(
+                        elevation = 3.dp,
+                        shape = RoundedCornerShape(12.dp),
+                        clip = false, // 👈 allow the shadow to bleed outside the box
+                    )
+                    .border(1.dp, color = paleSkyBlue, shape = RoundedCornerShape(12.dp))
+                    .background(Color.White, RoundedCornerShape(12.dp))
+            ) {
+                Column(
+                    modifier = Modifier
+                        .padding(16.dp)
+                ) {
+                    InputContainer(
+                        title = "CSVファイルの種類選択",
+                        isRequired = true,
+                        children = {
+                            ExposedDropdownMenuBox(
+                                expanded = csvState.csvTypeExpanded,
+                                onExpandedChange = { csvViewModel.toggleCsvTypeExpanded() }) {
+                                InputFieldContainer(
+                                    modifier = Modifier
+                                        .menuAnchor(
+                                            type = ExposedDropdownMenuAnchorType.PrimaryNotEditable,
+                                            enabled = true
+                                        )
+                                        .fillMaxWidth(),
+                                    value = if (csvState.csvType == SelectTitle.SelectCsvType.displayName) "" else csvState.csvType,
+                                    hintText = SelectTitle.SelectCsvType.displayName,
+                                    isNumeric = false,
+                                    shape = RoundedCornerShape(13.dp),
+                                    onChange = { csvViewModel.updateState { copy(csvType = it) } },
+                                    readOnly = true,
+                                    isDropDown = true,
+                                    enable = true,
                                 )
-                                .fillMaxWidth(),
-                            value = if (csvState.csvType == SelectTitle.SelectCsvType.displayName) "" else csvState.csvType,
-                            hintText = SelectTitle.SelectCsvType.displayName,
-                            isNumeric = false,
-                            shape = RoundedCornerShape(13.dp),
-                            onChange = { csvViewModel.updateState { copy(csvType = it) } },
-                            readOnly = true,
-                            isDropDown = true,
-                            enable = true,
-                        )
-                        ExposedDropdownMenu(
-                            expanded = csvState.csvTypeExpanded,
-                            onDismissRequest = { csvViewModel.toggleCsvTypeExpanded() }
-                        ) {
-                            listOf(
-                                SelectTitle.SelectCsvType.displayName,
-                                CsvType.StockEvent.displayName,
-                                CsvType.InventoryResult.displayName
-                            ).forEach { csvType ->
-                                DropdownMenuItem(
-                                    text = { Text(text = csvType) },
-                                    onClick = {
-                                        csvViewModel.updateState {
-                                            copy(
-                                                csvType = if (csvType == SelectTitle.SelectCsvType.displayName) "" else csvType
-                                            )
-                                        }
-                                        csvViewModel.toggleCsvTypeExpanded()
+                                ExposedDropdownMenu(
+                                    expanded = csvState.csvTypeExpanded,
+                                    onDismissRequest = { csvViewModel.toggleCsvTypeExpanded() }
+                                ) {
+                                    listOf(
+                                        SelectTitle.SelectCsvType.displayName,
+                                        CsvType.StockEvent.displayName,
+                                        CsvType.InventoryResult.displayName
+                                    ).forEach { csvType ->
+                                        DropdownMenuItem(
+                                            text = { Text(text = csvType) },
+                                            onClick = {
+                                                csvViewModel.updateState {
+                                                    copy(
+                                                        csvType = if (csvType == SelectTitle.SelectCsvType.displayName) "" else csvType
+                                                    )
+                                                }
+                                                csvViewModel.toggleCsvTypeExpanded()
+                                            }
+                                        )
                                     }
-                                )
+                                }
                             }
                         }
-                    }
-                    Spacer(modifier = Modifier.height(10.dp))
-                    HorizontalDivider()
-                    Spacer(modifier = Modifier.height(10.dp))
-
+                    )
                 }
-            )
+            }
             LazyColumn(
                 modifier = Modifier.fillMaxWidth(),
                 verticalArrangement = Arrangement.Center,
