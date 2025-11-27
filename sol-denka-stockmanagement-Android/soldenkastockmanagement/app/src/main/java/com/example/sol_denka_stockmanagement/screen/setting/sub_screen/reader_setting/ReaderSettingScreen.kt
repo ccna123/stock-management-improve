@@ -6,7 +6,6 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -15,31 +14,20 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.CutCornerShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material.icons.filled.ExpandMore
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.RadioButton
-import androidx.compose.material3.Slider
-import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -49,13 +37,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.sol_denka_stockmanagement.R
-import com.example.sol_denka_stockmanagement.intent.ReaderSettingIntent
 import com.example.sol_denka_stockmanagement.reader.FakeBeeperVolume
+import com.example.sol_denka_stockmanagement.reader.FakeChannel
 import com.example.sol_denka_stockmanagement.reader.FakeInventoryState
 import com.example.sol_denka_stockmanagement.reader.FakeSession
 import com.example.sol_denka_stockmanagement.screen.setting.components.reader_setting_tab.RadioPowerSetting
@@ -64,19 +50,32 @@ import com.example.sol_denka_stockmanagement.screen.setting.components.reader_se
 import com.example.sol_denka_stockmanagement.share.ButtonContainer
 import com.example.sol_denka_stockmanagement.share.InputFieldContainer
 import com.example.sol_denka_stockmanagement.ui.theme.brightAzure
-import com.example.sol_denka_stockmanagement.ui.theme.paleSkyBlue
 import com.example.sol_denka_stockmanagement.ui.theme.skyBlue
-import java.text.NumberFormat
-import java.util.Locale
-import kotlin.math.roundToInt
 
 @OptIn(ExperimentalMaterial3Api::class)
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @Composable
 fun ReaderSettingScreen(
-    readerSettingViewModel: ReaderSettingViewModel
+    buzzerVolume: FakeBeeperVolume,
+    radioPower: Int,
+    radioPowerMw: Int,
+    radioPowerSliderPosition: Int,
+    session: FakeSession,
+    tagPopulation: String,
+    tagAccessFlag: FakeInventoryState,
+    enabledChannels: List<FakeChannel>,
+    supportedChannels: List<FakeChannel>,
+    onChangeVolume: (FakeBeeperVolume) -> Unit,
+    onChangePower: (Int) -> Unit,
+    onChangeMinPower: (Int) -> Unit,
+    onChangeMaxPower: (Int) -> Unit,
+    onChangeSlider: (Int) -> Unit,
+    onChangeSession: (FakeSession) -> Unit,
+    onChangeTagAccessFlag: (FakeInventoryState) -> Unit,
+    onChangeChannel: (FakeChannel) -> Unit,
+    onChangeTagPopulation: (String) -> Unit
 ) {
-    val readerSettingState by readerSettingViewModel.readerSettingState.collectAsState()
+
     var isSessionExpanded by remember { mutableStateOf(false) }
     var isFlagExpanded by remember { mutableStateOf(false) }
     var isTagPopulationExpanded by remember { mutableStateOf(false) }
@@ -114,18 +113,12 @@ fun ReaderSettingScreen(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .weight(1f),
-                                containerColor = if (readerSettingState.buzzerVolume == volume) brightAzure else Color.LightGray.copy(
+                                containerColor = if (buzzerVolume == volume) brightAzure else Color.LightGray.copy(
                                     alpha = 0.6f
                                 ),
                                 buttonText = volume.displayName,
                                 buttonTextSize = 20,
-                                onClick = {
-                                    readerSettingViewModel.onIntent(
-                                        ReaderSettingIntent.ChangeVolume(
-                                            volume
-                                        )
-                                    )
-                                }
+                                onClick = { onChangeVolume(volume) }
                             )
                         }
                     }
@@ -137,40 +130,20 @@ fun ReaderSettingScreen(
             // RFID Power
             SettingBoxContainer {
                 RadioPowerSetting(
-                    radioPower = readerSettingState.radioPower,
-                    radioPowerMw = readerSettingState.radioPowerMw,
-                    radioPowerSliderPosition = readerSettingState.radioPowerSliderPosition.toFloat(),
+                    radioPower = radioPower,
+                    radioPowerMw = radioPowerMw,
+                    radioPowerSliderPosition = radioPowerSliderPosition.toFloat(),
                     onChangeMinPower = {
-                        readerSettingViewModel.apply {
-                            onIntent(
-                                ReaderSettingIntent.ChangeRadioPowerSliderPosition(
-                                    0
-                                )
-                            )
-                            onIntent(ReaderSettingIntent.ChangeRadioPower(0))
-                        }
+                        onChangeMinPower(0)
+                        onChangePower(0)
                     },
                     onChangeMaxPower = {
-                        readerSettingViewModel.apply {
-                            onIntent(
-                                ReaderSettingIntent.ChangeRadioPowerSliderPosition(
-                                    30
-                                )
-                            )
-                            onIntent(ReaderSettingIntent.ChangeRadioPower(30))
-                        }
+                        onChangeMaxPower(30)
+                        onChangePower(30)
                     },
                     onChangeSlider = {
-                        val intValue =
-                            it.roundToInt().coerceIn(0, 30) // Convert to Int and clamp
-                        readerSettingViewModel.apply {
-                            onIntent(
-                                ReaderSettingIntent.ChangeRadioPowerSliderPosition(
-                                    intValue
-                                )
-                            )
-                            onIntent(ReaderSettingIntent.ChangeRadioPower(intValue))
-                        }
+                        onChangeSlider(it)
+                        onChangePower(it)
                     }
                 )
                 Spacer(modifier = Modifier.height(8.dp))
@@ -188,7 +161,7 @@ fun ReaderSettingScreen(
                 title = stringResource(R.string.setting_rfid_session),
                 description = stringResource(R.string.setting_rfid_session_des),
                 expanded = isSessionExpanded,
-                value = readerSettingState.rfidSession.toString(),
+                value = session.toString(),
                 onExpandToggle = { isSessionExpanded = !isSessionExpanded },
                 content = {
                     Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
@@ -197,11 +170,11 @@ fun ReaderSettingScreen(
                             FakeSession.SESSION_S1,
                             FakeSession.SESSION_S2,
                             FakeSession.SESSION_S3,
-                        ).forEach { session ->
+                        ).forEach { rfidSession ->
                             Row(
                                 modifier = Modifier
                                     .background(
-                                        color = if (readerSettingState.rfidSession == session) skyBlue.copy(
+                                        color = if (rfidSession == session) skyBlue.copy(
                                             alpha = 0.4f
                                         ) else Color.Unspecified, shape = RoundedCornerShape(10.dp)
                                     )
@@ -210,25 +183,13 @@ fun ReaderSettingScreen(
                                 horizontalArrangement = Arrangement.spacedBy(10.dp)
                             ) {
                                 RadioButton(
-                                    selected = readerSettingState.rfidSession == session,
-                                    onClick = {
-                                        readerSettingViewModel.onIntent(
-                                            ReaderSettingIntent.ChangeSession(
-                                                session
-                                            )
-                                        )
-                                    },
+                                    selected = rfidSession == session,
+                                    onClick = { onChangeSession(rfidSession) },
                                     enabled = true,
                                 )
                                 DropdownMenuItem(
                                     text = { Text(session.toString()) },
-                                    onClick = {
-                                        readerSettingViewModel.onIntent(
-                                            ReaderSettingIntent.ChangeSession(
-                                                session
-                                            )
-                                        )
-                                    }
+                                    onClick = { onChangeSession(rfidSession) }
                                 )
                             }
                         }
@@ -241,7 +202,7 @@ fun ReaderSettingScreen(
                 title = stringResource(R.string.setting_tag_population_string),
                 description = stringResource(R.string.setting_rfid_tag_population_des),
                 expanded = isTagPopulationExpanded,
-                value = readerSettingState.tagPopulation,
+                value = tagPopulation,
                 onExpandToggle = { isTagPopulationExpanded = !isTagPopulationExpanded }
             ) {
                 Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -250,34 +211,22 @@ fun ReaderSettingScreen(
                         50 to "中程度（10〜50タグ）",
                         100 to "多い（50〜100タグ）",
                         200 to "非常に多い（100タグ以上）"
-                    ).forEach { (key, label) ->
-                        DropdownMenuItem(
-                            text = { Text(label) },
-                            onClick = {
-                                readerSettingViewModel.onIntent(
-                                    ReaderSettingIntent.ChangeTagPopulation(key.toString())
-                                )
-                                isTagPopulationExpanded = false
-                            }
+                    ).forEach { (_, label) ->
+                        Text(
+                            text = label,
                         )
                     }
                     // Optional manual input box
                     InputFieldContainer(
                         modifier = Modifier.fillMaxWidth(),
-                        value = readerSettingState.tagPopulation,
+                        value = tagPopulation,
                         hintText = stringResource(R.string.tag_population_hint),
                         isNumeric = true,
                         readOnly = false,
                         isDropDown = false,
                         enable = true,
                         onChange = { newValue ->
-                            val filteredValue =
-                                newValue.filter { char -> char.isDigit() || char == '.' }
-                            readerSettingViewModel.onIntent(
-                                ReaderSettingIntent.ChangeTagPopulation(
-                                    filteredValue
-                                )
-                            )
+                            onChangeTagPopulation(newValue)
                         }
                     )
                 }
@@ -287,7 +236,7 @@ fun ReaderSettingScreen(
             ExpandableSettingSection(
                 title = stringResource(R.string.setting_rfid_flag),
                 description = stringResource(R.string.setting_rfid_flag_des),
-                value = readerSettingState.tagAccessFlag.toString(),
+                value = tagAccessFlag.toString(),
                 expanded = isFlagExpanded,
                 onExpandToggle = { isFlagExpanded = !isFlagExpanded },
                 content = {
@@ -300,7 +249,7 @@ fun ReaderSettingScreen(
                             Row(
                                 modifier = Modifier
                                     .background(
-                                        color = if (readerSettingState.tagAccessFlag == accessFlag) skyBlue.copy(
+                                        color = if (tagAccessFlag == accessFlag) skyBlue.copy(
                                             alpha = 0.4f
                                         ) else Color.Unspecified, shape = RoundedCornerShape(10.dp)
                                     )
@@ -309,24 +258,16 @@ fun ReaderSettingScreen(
                                 horizontalArrangement = Arrangement.spacedBy(10.dp)
                             ) {
                                 RadioButton(
-                                    selected = readerSettingState.tagAccessFlag == accessFlag,
+                                    selected = tagAccessFlag == accessFlag,
                                     onClick = {
-                                        readerSettingViewModel.onIntent(
-                                            ReaderSettingIntent.ChangeTagAccessFlag(
-                                                accessFlag
-                                            )
-                                        )
+                                        onChangeTagAccessFlag(accessFlag)
                                     },
                                     enabled = true,
                                 )
                                 DropdownMenuItem(
                                     text = { Text(accessFlag.toString()) },
                                     onClick = {
-                                        readerSettingViewModel.onIntent(
-                                            ReaderSettingIntent.ChangeTagAccessFlag(
-                                                accessFlag
-                                            )
-                                        )
+                                        onChangeTagAccessFlag(accessFlag)
                                     }
                                 )
                             }
@@ -340,19 +281,19 @@ fun ReaderSettingScreen(
             ExpandableSettingSection(
                 title = stringResource(R.string.setting_rfid_channel),
                 description = stringResource(R.string.setting_rfid_channel_des),
-                value = readerSettingState.enabledRfidChannel.joinToString(", "),
+                value = enabledChannels.joinToString(", "),
                 expanded = isUsedChannelExpanded,
                 onExpandToggle = { isUsedChannelExpanded = !isUsedChannelExpanded },
                 content = {
                     Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                        readerSettingState.supportedChannels.forEach { channel ->
+                        supportedChannels.forEach { channel ->
                             Row(
                                 modifier = Modifier.fillMaxWidth(),
                                 verticalAlignment = Alignment.CenterVertically,
                                 horizontalArrangement = Arrangement.spacedBy(10.dp)
                             ) {
                                 Switch(
-                                    checked = channel in readerSettingState.enabledRfidChannel,
+                                    checked = channel in enabledChannels,
                                     colors = SwitchDefaults.colors(
                                         checkedThumbColor = Color.White,               // circle (on)
                                         checkedTrackColor = brightAzure,         // track (on)
@@ -364,18 +305,7 @@ fun ReaderSettingScreen(
                                     ),
                                     modifier = Modifier
                                         .graphicsLayer(scaleX = 0.8f, scaleY = 0.8f),
-                                    onCheckedChange = { isChecked ->
-                                        val updatedList = if (isChecked) {
-                                            readerSettingState.enabledRfidChannel + channel
-                                        } else {
-                                            readerSettingState.enabledRfidChannel - channel
-                                        }
-                                        readerSettingViewModel.onIntent(
-                                            ReaderSettingIntent.ChangeUsedChannel(
-                                                updatedList
-                                            )
-                                        )
-                                    },
+                                    onCheckedChange = { onChangeChannel(channel) },
                                 )
                                 DropdownMenuItem(
                                     text = { Text(channel.name) },

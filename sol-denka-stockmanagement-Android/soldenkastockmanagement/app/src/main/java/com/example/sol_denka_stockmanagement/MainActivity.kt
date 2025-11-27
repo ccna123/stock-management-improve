@@ -9,6 +9,7 @@ import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import com.example.sol_denka_stockmanagement.navigation.Navigation3
 import com.example.sol_denka_stockmanagement.screen.inventory.InventoryViewModel
+import com.example.sol_denka_stockmanagement.screen.setting.SettingViewModel
 import com.example.sol_denka_stockmanagement.ui.theme.SoldenkastockmanagementTheme
 import com.example.sol_denka_stockmanagement.screen.setting.sub_screen.app_setting.AppSettingViewModel
 import com.example.sol_denka_stockmanagement.screen.setting.sub_screen.reader_setting.ReaderSettingViewModel
@@ -26,6 +27,7 @@ class MainActivity : ComponentActivity() {
     private val scanViewModel: ScanViewModel by viewModels()
     private val searchTagsViewModel: SearchTagsViewModel by viewModels()
     private val inventoryViewModel: InventoryViewModel by viewModels()
+    private val settingViewModel: SettingViewModel by viewModels()
 
 
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
@@ -40,7 +42,8 @@ class MainActivity : ComponentActivity() {
                     readerSettingViewModel = readerSettingViewModel,
                     scanViewModel = scanViewModel,
                     searchTagsViewModel = searchTagsViewModel,
-                    inventoryViewModel = inventoryViewModel
+                    inventoryViewModel = inventoryViewModel,
+                    settingViewModel = settingViewModel
                 )
             }
         }

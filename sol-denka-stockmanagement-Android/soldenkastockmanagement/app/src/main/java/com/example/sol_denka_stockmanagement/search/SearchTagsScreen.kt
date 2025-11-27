@@ -46,6 +46,7 @@ import com.example.sol_denka_stockmanagement.intent.ReaderSettingIntent
 import com.example.sol_denka_stockmanagement.intent.ShareIntent
 import com.example.sol_denka_stockmanagement.navigation.Screen
 import com.example.sol_denka_stockmanagement.screen.layout.Layout
+import com.example.sol_denka_stockmanagement.screen.setting.SettingViewModel
 import com.example.sol_denka_stockmanagement.screen.setting.sub_screen.reader_setting.ReaderSettingViewModel
 import com.example.sol_denka_stockmanagement.search.components.SingleRfidRow
 import com.example.sol_denka_stockmanagement.share.ButtonContainer
@@ -62,14 +63,14 @@ import kotlinx.coroutines.launch
 @Composable
 fun SearchTagsScreen(
     appViewModel: AppViewModel,
-    readerSettingViewModel: ReaderSettingViewModel,
     searchTagsViewModel: SearchTagsViewModel,
+    settingViewModel: SettingViewModel,
     scanViewModel: ScanViewModel,
     prevScreenNameId: String,
     onGoBack: () -> Unit,
 ) {
     val generalState = appViewModel.generalState.collectAsStateWithLifecycle().value
-    val readerSettingState by readerSettingViewModel.readerSettingState.collectAsStateWithLifecycle()
+    val readerSettingState by settingViewModel.readerSettingState.collectAsStateWithLifecycle()
     val showRadioPowerChangeDialog = appViewModel.showRadioPowerChangeDialog.value
     val isPerformingInventory by appViewModel.isPerformingInventory.collectAsStateWithLifecycle()
     val scope = rememberCoroutineScope()
@@ -85,38 +86,38 @@ fun SearchTagsScreen(
         showDialog = showRadioPowerChangeDialog,
         readerSettingState = readerSettingState,
         onChangeMinPower = {
-            readerSettingViewModel.apply {
-                onIntent(
+            settingViewModel.apply {
+                onReaderSettingIntent(
                     ReaderSettingIntent.ChangeRadioPowerSliderPosition(
                         0
                     )
                 )
-                onIntent(ReaderSettingIntent.ChangeRadioPower(0))
+                onReaderSettingIntent(ReaderSettingIntent.ChangeRadioPower(0))
             }
         },
         onChangeMaxPower = {
-            readerSettingViewModel.apply {
-                onIntent(
+            settingViewModel.apply {
+                onReaderSettingIntent(
                     ReaderSettingIntent.ChangeRadioPowerSliderPosition(
                         30
                     )
                 )
-                onIntent(ReaderSettingIntent.ChangeRadioPower(30))
+                onReaderSettingIntent(ReaderSettingIntent.ChangeRadioPower(30))
             }
         },
         onChangeSlider = { newValue ->
-            readerSettingViewModel.apply {
-                onIntent(
+            settingViewModel.apply {
+                onReaderSettingIntent(
                     ReaderSettingIntent.ChangeRadioPowerSliderPosition(
                         newValue.toInt()
                     )
                 )
-                onIntent(ReaderSettingIntent.ChangeRadioPower(newValue.toInt()))
+                onReaderSettingIntent(ReaderSettingIntent.ChangeRadioPower(newValue.toInt()))
             }
         },
         onOk = {
-            readerSettingViewModel.apply {
-                onIntent(ReaderSettingIntent.ChangeRadioPower(readerSettingState.radioPower))
+            settingViewModel.apply {
+                onReaderSettingIntent(ReaderSettingIntent.ChangeRadioPower(readerSettingState.radioPower))
                 setRadioPower(readerSettingState.radioPower)
             }
             appViewModel.onGeneralIntent(ShareIntent.ToggleRadioPowerChangeDialog)
@@ -134,7 +135,6 @@ fun SearchTagsScreen(
         hasBottomBar = true,
         appViewModel = appViewModel,
         scanViewModel = scanViewModel,
-        readerSettingViewModel = readerSettingViewModel,
         topBarButton = {
             Row(
                 modifier = Modifier.fillMaxWidth(),

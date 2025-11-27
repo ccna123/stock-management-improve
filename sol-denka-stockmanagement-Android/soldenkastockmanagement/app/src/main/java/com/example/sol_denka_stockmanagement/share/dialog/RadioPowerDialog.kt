@@ -25,7 +25,7 @@ fun RadioPowerDialog(
     readerSettingState: ReaderSettingState,
     onChangeMinPower: () -> Unit,
     onChangeMaxPower: () -> Unit,
-    onChangeSlider: (Float) -> Unit,
+    onChangeSlider: (Int) -> Unit,
     onOk: () -> Unit,
     onDismiss: () -> Unit
 ) {

@@ -36,13 +36,11 @@ import com.example.sol_denka_stockmanagement.R
 import com.example.sol_denka_stockmanagement.constant.Tab
 import com.example.sol_denka_stockmanagement.helper.ToastManager
 import com.example.sol_denka_stockmanagement.helper.ToastType
+import com.example.sol_denka_stockmanagement.intent.ReaderSettingIntent
 import com.example.sol_denka_stockmanagement.intent.ShareIntent
 import com.example.sol_denka_stockmanagement.navigation.Screen
 import com.example.sol_denka_stockmanagement.screen.layout.Layout
-import com.example.sol_denka_stockmanagement.screen.setting.sub_screen.app_setting.AppSettingScreen
-import com.example.sol_denka_stockmanagement.screen.setting.sub_screen.app_setting.AppSettingViewModel
 import com.example.sol_denka_stockmanagement.screen.setting.sub_screen.reader_setting.ReaderSettingScreen
-import com.example.sol_denka_stockmanagement.screen.setting.sub_screen.reader_setting.ReaderSettingViewModel
 import com.example.sol_denka_stockmanagement.share.ButtonContainer
 import com.example.sol_denka_stockmanagement.share.OptionTabs
 import com.example.sol_denka_stockmanagement.share.dialog.ConfirmDialog
@@ -53,11 +51,11 @@ import com.example.sol_denka_stockmanagement.viewmodel.AppViewModel
 @Composable
 fun SettingScreen(
     appViewModel: AppViewModel,
-    appSettingViewModel: AppSettingViewModel,
-    readerSettingViewModel: ReaderSettingViewModel,
+    settingViewModel: SettingViewModel,
     onGoBack: () -> Unit
 ) {
     val generalState = appViewModel.generalState.collectAsStateWithLifecycle().value
+    val readerSettingState = settingViewModel.readerSettingState.collectAsStateWithLifecycle().value
 //    val appSettingState by appSettingViewModel.appSettingState.collectAsStateWithLifecycle()
     var showApplyConfirmDialog by remember { mutableStateOf(false) }
     var showUnsavedConfirmDialog by remember { mutableStateOf(false) }
@@ -71,7 +69,7 @@ fun SettingScreen(
                     buttonText = stringResource(R.string.ok),
                     onClick = {
                         showUnsavedConfirmDialog = false
-                        readerSettingViewModel.resetToInitialSetting()
+                        settingViewModel.resetToInitialSetting()
                         onGoBack()
                     })
             }, {
@@ -93,7 +91,7 @@ fun SettingScreen(
                 ButtonContainer(
                     buttonText = stringResource(R.string.ok),
                     onClick = {
-                        val result = readerSettingViewModel.applyReaderSetting()
+                        val result = settingViewModel.applyReaderSetting()
                         when (result) {
                             true -> ToastManager.showToast("設定に成功しました", ToastType.SUCCESS)
                             false -> ToastManager.showToast("設定に失敗しました", ToastType.ERROR)
@@ -127,10 +125,10 @@ fun SettingScreen(
             )
         },
         onBackArrowClick = {
-            if (readerSettingViewModel.isSettingChangedWithoutApply()) {
+            if (settingViewModel.isSettingChangedWithoutApply()) {
                 showUnsavedConfirmDialog = true
             } else {
-                readerSettingViewModel.resetToInitialSetting()
+                settingViewModel.resetToInitialSetting()
                 onGoBack()
             }
         }) { paddingValues ->
@@ -185,15 +183,105 @@ fun SettingScreen(
                     when (tab) {
                         Tab.Left -> {
                             ReaderSettingScreen(
-                                readerSettingViewModel = readerSettingViewModel
+                                buzzerVolume = readerSettingState.buzzerVolume,
+                                radioPower = readerSettingState.radioPower,
+                                radioPowerMw = readerSettingState.radioPowerMw,
+                                radioPowerSliderPosition = readerSettingState.radioPowerSliderPosition,
+                                session = readerSettingState.rfidSession,
+                                tagPopulation = readerSettingState.tagPopulation,
+                                tagAccessFlag = readerSettingState.tagAccessFlag,
+                                enabledChannels = readerSettingState.enabledRfidChannel,
+                                supportedChannels = readerSettingState.supportedChannels,
+                                onChangeVolume = { volume ->
+                                    settingViewModel.onReaderSettingIntent(
+                                        ReaderSettingIntent.ChangeVolume(
+                                            volume
+                                        )
+                                    )
+                                },
+                                onChangePower = {},
+                                onChangeMinPower = {
+                                    settingViewModel.apply {
+                                        onReaderSettingIntent(
+                                            ReaderSettingIntent.ChangeRadioPowerSliderPosition(
+                                                0
+                                            )
+                                        )
+                                        onReaderSettingIntent(ReaderSettingIntent.ChangeRadioPower(0))
+                                    }
+                                },
+                                onChangeMaxPower = {
+                                    settingViewModel.apply {
+                                        onReaderSettingIntent(
+                                            ReaderSettingIntent.ChangeRadioPowerSliderPosition(
+                                                30
+                                            )
+                                        )
+                                        onReaderSettingIntent(
+                                            ReaderSettingIntent.ChangeRadioPower(
+                                                30
+                                            )
+                                        )
+                                    }
+                                },
+                                onChangeSlider = {
+                                    val intValue = it.coerceIn(0, 30)
+                                    settingViewModel.apply {
+                                        onReaderSettingIntent(
+                                            ReaderSettingIntent.ChangeRadioPowerSliderPosition(
+                                                intValue
+                                            )
+                                        )
+                                        onReaderSettingIntent(
+                                            ReaderSettingIntent.ChangeRadioPower(
+                                                intValue
+                                            )
+                                        )
+                                    }
+                                },
+                                onChangeSession = {
+                                    settingViewModel.onReaderSettingIntent(
+                                        ReaderSettingIntent.ChangeSession(
+                                            it
+                                        )
+                                    )
+                                },
+                                onChangeTagAccessFlag = {
+                                    settingViewModel.onReaderSettingIntent(
+                                        ReaderSettingIntent.ChangeTagAccessFlag(
+                                            it
+                                        )
+                                    )
+                                },
+                                onChangeChannel = { channel ->
+                                    val updated =
+                                        if (channel in readerSettingState.enabledRfidChannel) {
+                                            readerSettingState.enabledRfidChannel - channel
+                                        } else {
+                                            readerSettingState.enabledRfidChannel + channel
+                                        }
+
+                                    settingViewModel.onReaderSettingIntent(
+                                        ReaderSettingIntent.ChangeUsedChannel(updated)
+                                    )
+                                },
+                                onChangeTagPopulation = {
+                                    val filteredValue =
+                                        it.filter { char -> char.isDigit() || char == '.' }
+                                    settingViewModel.onReaderSettingIntent(
+                                        ReaderSettingIntent.ChangeTagPopulation(
+                                            filteredValue
+                                        )
+                                    )
+                                },
                             )
                         }
 
                         Tab.Right -> {
-                            AppSettingScreen(
-                                appSettingViewModel = appSettingViewModel,
-                                appViewModel = appViewModel
-                            )
+//                            AppSettingScreen(
+//                                appSettingViewModel = appSettingViewModel,
+//                                appViewModel = appViewModel
+//                            )
                         }
                     }
                 }

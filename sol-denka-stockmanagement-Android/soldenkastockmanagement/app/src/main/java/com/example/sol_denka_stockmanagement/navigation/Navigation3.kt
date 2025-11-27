@@ -29,6 +29,7 @@ import com.example.sol_denka_stockmanagement.screen.setting.sub_screen.app_setti
 import com.example.sol_denka_stockmanagement.screen.setting.sub_screen.reader_setting.ReaderSettingViewModel
 import com.example.sol_denka_stockmanagement.viewmodel.AppViewModel
 import com.example.sol_denka_stockmanagement.screen.setting.SettingScreen
+import com.example.sol_denka_stockmanagement.screen.setting.SettingViewModel
 import com.example.sol_denka_stockmanagement.screen.storage_area_change.StorageAreaChangeScreen
 import com.example.sol_denka_stockmanagement.search.SearchTagsScreen
 import com.example.sol_denka_stockmanagement.search.SearchTagsViewModel
@@ -43,6 +44,7 @@ fun Navigation3(
     readerSettingViewModel: ReaderSettingViewModel,
     inventoryViewModel: InventoryViewModel,
     scanViewModel: ScanViewModel,
+    settingViewModel: SettingViewModel
 ) {
     val backStack = remember { mutableStateListOf<Screen>(Screen.Home) }
     val entryDecorators =
@@ -95,7 +97,7 @@ fun Navigation3(
                 InventoryScanScreen(
                     appViewModel = appViewModel,
                     scanViewModel = scanViewModel,
-                    readerSettingViewModel = readerSettingViewModel,
+                    settingViewModel = settingViewModel,
                     prevScreenNameId = destinationScan.preScreen,
                     inventoryViewModel = inventoryViewModel,
                     onNavigate = { dest -> navigate(dest) },
@@ -137,7 +139,7 @@ fun Navigation3(
                 SearchTagsScreen(
                     appViewModel = appViewModel,
                     prevScreenNameId = destinationScan.preScreen,
-                    readerSettingViewModel = readerSettingViewModel,
+                    settingViewModel = settingViewModel,
                     scanViewModel = scanViewModel,
                     searchTagsViewModel = searchTagsViewModel,
                     onGoBack = { goBack() }
@@ -158,8 +160,7 @@ fun Navigation3(
             entry<Screen.Setting> {
                 SettingScreen(
                     appViewModel = appViewModel,
-                    appSettingViewModel = appSettingViewModel,
-                    readerSettingViewModel = readerSettingViewModel,
+                    settingViewModel = settingViewModel,
                     onGoBack = { goBack() }
                 )
             }

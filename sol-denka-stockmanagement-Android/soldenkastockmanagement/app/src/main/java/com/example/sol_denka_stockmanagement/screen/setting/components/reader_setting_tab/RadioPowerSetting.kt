@@ -35,7 +35,7 @@ fun RadioPowerSetting(
     radioPowerSliderPosition: Float,
     onChangeMinPower: () -> Unit,
     onChangeMaxPower: () -> Unit,
-    onChangeSlider: (Float) -> Unit,
+    onChangeSlider: (Int) -> Unit,
 ) {
     SettingItemTitle(
         text = stringResource(R.string.setting_rfid_power),
@@ -66,7 +66,7 @@ fun RadioPowerSetting(
         }
         Slider(
             value = radioPowerSliderPosition,
-            onValueChange = { newValue -> onChangeSlider(newValue) },
+            onValueChange = { newValue -> onChangeSlider(newValue.toInt()) },
             onValueChangeFinished = {},
             valueRange = 0f..30f,
             colors = SliderDefaults.colors(

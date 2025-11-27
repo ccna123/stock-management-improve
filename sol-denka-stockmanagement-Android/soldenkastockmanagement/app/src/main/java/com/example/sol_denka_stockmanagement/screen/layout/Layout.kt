@@ -100,7 +100,6 @@ fun Layout(
     hasBottomBar: Boolean = true,
     appViewModel: AppViewModel? = null,
     scanViewModel: ScanViewModel? = null,
-    readerSettingViewModel: ReaderSettingViewModel? = null,
     onBackArrowClick: (DrawerState) -> Unit,
     onNavigate: ((Screen) -> Unit)? = null,
     bottomButton: (@Composable () -> Unit)? = null,
