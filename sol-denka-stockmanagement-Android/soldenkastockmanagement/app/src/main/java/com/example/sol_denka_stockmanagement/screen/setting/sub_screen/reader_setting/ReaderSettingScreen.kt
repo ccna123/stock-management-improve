@@ -188,7 +188,7 @@ fun ReaderSettingScreen(
                                     enabled = true,
                                 )
                                 DropdownMenuItem(
-                                    text = { Text(session.toString()) },
+                                    text = { Text(rfidSession.toString()) },
                                     onClick = { onChangeSession(rfidSession) }
                                 )
                             }
