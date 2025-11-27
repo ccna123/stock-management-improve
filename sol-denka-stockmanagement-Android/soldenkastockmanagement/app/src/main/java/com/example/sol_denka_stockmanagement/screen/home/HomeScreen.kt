@@ -79,7 +79,6 @@ fun HomeScreen(
     LaunchedEffect(Unit) {
         appViewModel.apply {
             onGeneralIntent(ShareIntent.ResetState)
-            clearProcessedTag()
         }
         scanViewModel.apply {
             clearScannedTag()

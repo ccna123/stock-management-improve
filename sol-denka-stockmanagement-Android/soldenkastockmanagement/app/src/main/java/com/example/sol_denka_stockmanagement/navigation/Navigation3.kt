@@ -18,7 +18,7 @@ import com.example.sol_denka_stockmanagement.screen.home.HomeScreen
 import com.example.sol_denka_stockmanagement.screen.inventory.complete.InventoryCompleteScreen
 import com.example.sol_denka_stockmanagement.screen.inventory.input.InventoryScreen
 import com.example.sol_denka_stockmanagement.screen.inventory.scan.InventoryScanScreen
-import com.example.sol_denka_stockmanagement.screen.inventory.scan.InventoryScanViewModel
+import com.example.sol_denka_stockmanagement.screen.inventory.InventoryViewModel
 import com.example.sol_denka_stockmanagement.screen.receiving.ReceivingScreen
 import com.example.sol_denka_stockmanagement.screen.scan.ScanScreen
 import com.example.sol_denka_stockmanagement.screen.shipping.ShippingScreen
@@ -41,6 +41,7 @@ fun Navigation3(
     searchTagsViewModel: SearchTagsViewModel,
     appSettingViewModel: AppSettingViewModel,
     readerSettingViewModel: ReaderSettingViewModel,
+    inventoryViewModel: InventoryViewModel,
     scanViewModel: ScanViewModel,
 ) {
     val backStack = remember { mutableStateListOf<Screen>(Screen.Home) }
@@ -85,6 +86,7 @@ fun Navigation3(
                 InventoryScreen(
                     appViewModel = appViewModel,
                     scanViewModel = scanViewModel,
+                    inventoryViewModel = inventoryViewModel,
                     onNavigate = { dest -> navigate(dest) },
                     onGoBack = { goBack() }
                 )
@@ -95,6 +97,7 @@ fun Navigation3(
                     scanViewModel = scanViewModel,
                     readerSettingViewModel = readerSettingViewModel,
                     prevScreenNameId = destinationScan.preScreen,
+                    inventoryViewModel = inventoryViewModel,
                     onNavigate = { dest -> navigate(dest) },
                     onGoBack = { goBack() }
                 )

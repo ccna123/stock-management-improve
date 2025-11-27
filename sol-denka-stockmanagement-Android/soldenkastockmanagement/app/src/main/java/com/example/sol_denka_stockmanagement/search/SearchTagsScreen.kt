@@ -157,9 +157,9 @@ fun SearchTagsScreen(
                     buttonText = stringResource(R.string.finish_search),
                     onClick = {
                         generalState.foundTags.forEach { foundTag ->
-                            appViewModel.updateTagStatus(
+                            searchTagsViewModel.updateTagStatus(
                                 epc = foundTag,
-                                newStatus = TagStatus.PROCESSED
+                                status = TagStatus.PROCESSED
                             )
                         }
                         onGoBack()

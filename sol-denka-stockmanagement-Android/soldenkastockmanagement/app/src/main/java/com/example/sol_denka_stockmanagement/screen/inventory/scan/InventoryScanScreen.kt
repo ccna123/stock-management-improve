@@ -40,10 +40,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
@@ -59,6 +56,7 @@ import com.example.sol_denka_stockmanagement.constant.TagStatus
 import com.example.sol_denka_stockmanagement.intent.ReaderSettingIntent
 import com.example.sol_denka_stockmanagement.intent.ShareIntent
 import com.example.sol_denka_stockmanagement.navigation.Screen
+import com.example.sol_denka_stockmanagement.screen.inventory.InventoryViewModel
 import com.example.sol_denka_stockmanagement.screen.layout.Layout
 import com.example.sol_denka_stockmanagement.screen.setting.sub_screen.reader_setting.ReaderSettingViewModel
 import com.example.sol_denka_stockmanagement.share.ButtonContainer
@@ -79,12 +77,13 @@ fun InventoryScanScreen(
     prevScreenNameId: String,
     appViewModel: AppViewModel,
     scanViewModel: ScanViewModel,
+    inventoryViewModel: InventoryViewModel,
     readerSettingViewModel: ReaderSettingViewModel,
     onNavigate: (Screen) -> Unit,
     onGoBack: () -> Unit,
 ) {
     val generalState = appViewModel.generalState.collectAsStateWithLifecycle().value
-    val rfidTagList = appViewModel.rfidTagList.collectAsStateWithLifecycle().value
+    val rfidTagList = inventoryViewModel.rfidTagList.collectAsStateWithLifecycle().value
     val readerSettingState by readerSettingViewModel.readerSettingState.collectAsStateWithLifecycle()
     val showClearTagConfirmDialog = appViewModel.showClearTagConfirmDialog.value
     val showRadioPowerChangeDialog = appViewModel.showRadioPowerChangeDialog.value
@@ -156,10 +155,10 @@ fun InventoryScanScreen(
                     buttonText = stringResource(R.string.ok),
                     onClick = {
                         appViewModel.apply {
-                            clearProcessedTag()
                             onGeneralIntent(ShareIntent.ChangeTab(Tab.Left))
                             onGeneralIntent(ShareIntent.ToggleClearTagConfirmDialog)
                         }
+                        inventoryViewModel.clearAll()
                     }
                 )
             },

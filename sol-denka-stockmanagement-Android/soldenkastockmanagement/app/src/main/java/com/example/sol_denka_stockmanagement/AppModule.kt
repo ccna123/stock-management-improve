@@ -9,6 +9,7 @@ import androidx.room.Room
 import com.example.sol_denka_stockmanagement.database.AppDatabase
 import com.example.sol_denka_stockmanagement.database.dao.InventoryItemMasterDao
 import com.example.sol_denka_stockmanagement.helper.ReaderController
+import com.example.sol_denka_stockmanagement.helper.TagController
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -33,6 +34,13 @@ object AppModule {
     @Singleton
     fun provideReaderController(@ApplicationContext context: Context): ReaderController {
         return ReaderController(context = context as Application)
+    }
+
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
+    @Provides
+    @Singleton
+    fun provideTagController(@ApplicationContext context: Context): TagController {
+        return TagController()
     }
 
 
