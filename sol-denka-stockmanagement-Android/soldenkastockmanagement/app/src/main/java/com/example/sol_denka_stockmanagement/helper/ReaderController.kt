@@ -23,6 +23,7 @@ import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -43,20 +44,11 @@ class ReaderController @Inject constructor(
     private val _scannedTags = MutableStateFlow<Map<String, TagInfoModel>>(emptyMap())
     val scannedTags: StateFlow<Map<String, TagInfoModel>> = _scannedTags.asStateFlow()
 
-    private val _scannedTags1 = MutableStateFlow<Map<String, Float>>(emptyMap())
-    val scannedTags1: StateFlow<Map<String, Float>> = _scannedTags1.asStateFlow()
-
-    private val _scannedTags2 = MutableStateFlow<String>("")
-    val scannedTags2: StateFlow<String> = _scannedTags2.asStateFlow()
-
-    private val _scannedTags3 = MutableStateFlow<Set<String>>(emptySet())
-    val scannedTags3: StateFlow<Set<String>> = _scannedTags3.asStateFlow()
-
     private val _connectionState = MutableStateFlow(ConnectionState.DISCONNECTED)
     val connectionState: StateFlow<ConnectionState> = _connectionState
 
     // one-shot transition events
-    private val _connectionEvents = kotlinx.coroutines.flow.MutableSharedFlow<ConnectionState>(
+    private val _connectionEvents = MutableSharedFlow<ConnectionState>(
         replay = 0, extraBufferCapacity = 1
     )
     val connectionEvents = _connectionEvents // expose as SharedFlow
@@ -173,11 +165,9 @@ class ReaderController @Inject constructor(
 
         fakeReader?.setEventListener(listener)
     }
+
     fun clearScannedTag() {
         _scannedTags.value = emptyMap()
-        _scannedTags1.value = emptyMap()
-        _scannedTags2.value = ""
-        _scannedTags3.value = emptySet()
     }
 
     fun emitUpdatedInfoFromFake() {
@@ -188,7 +178,11 @@ class ReaderController @Inject constructor(
     fun resetRssi() {
         scope.launch(Dispatchers.IO) {
             try {
-                _scannedTags1.update { it.mapValues { -100f } }
+                _scannedTags.update { old ->
+                    old.mapValues { (_, value) ->
+                        value.copy(rssi = -100f)
+                    }
+                }
             } catch (e: Exception) {
                 Log.e("TSS", "resetRssi failed: ${e.message}")
             }
@@ -199,21 +193,15 @@ class ReaderController @Inject constructor(
     fun processScannedTags(epcs: List<TagInfoModel>) {
         scope.launch(Dispatchers.Main.immediate) {
             val uniqueTags = epcs.distinctBy { it.rfidNo }
-            uniqueTags.forEach { epc ->
-                when (_screen.value.routeId) {
-                    Screen.SearchTagsScreen("").routeId -> {
-                        _scannedTags1.value = _scannedTags1.value + (epc.rfidNo to epc.rssi)
-                    }
-                    Screen.Receiving.routeId -> {
-                        _scannedTags2.value = epc.rfidNo
-                    }
-                    Screen.Scan("").routeId -> {
-                        _scannedTags3.update { it + epc.rfidNo }
-                    }
-                    else -> {
-                        _scannedTags.value = _scannedTags.value + (epc.rfidNo to epc)
-                    }
+            _scannedTags.update { currentTags ->
+                val updated = currentTags.toMutableMap()
+                uniqueTags.forEach { epc ->
+                    updated[epc.rfidNo] = TagInfoModel(
+                        rfidNo = epc.rfidNo,
+                        rssi = epc.rssi
+                    )
                 }
+                updated
             }
         }
     }

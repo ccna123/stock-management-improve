@@ -14,8 +14,7 @@ class ScanViewModel @Inject constructor(
     private val readerController: ReaderController,
 ) : ViewModel() {
 
-    val scannedTag2 = readerController.scannedTags2
-    val scannedTags3 = readerController.scannedTags3
+    val scannedTags = readerController.scannedTags
 
     suspend fun startInventory() {
         readerController.startInventory()

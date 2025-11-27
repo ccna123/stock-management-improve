@@ -22,8 +22,8 @@ class SearchTagsViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            readerController.scannedTags1.collect { newMap ->
-                _rssiMap.value = newMap
+            readerController.scannedTags.collect { newMap ->
+                _rssiMap.value = newMap.mapValues { it.value.rssi }
             }
         }
     }

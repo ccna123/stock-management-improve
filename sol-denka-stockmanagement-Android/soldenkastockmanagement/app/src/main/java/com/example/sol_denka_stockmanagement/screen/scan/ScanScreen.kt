@@ -61,8 +61,7 @@ fun ScanScreen(
     onNavigate: (Screen) -> Unit,
     onGoBack: () -> Unit,
 ) {
-    val scannedTag2 by scanViewModel.scannedTag2.collectAsStateWithLifecycle()
-    val scannedTags3 by scanViewModel.scannedTags3.collectAsStateWithLifecycle()
+    val scannedTags by scanViewModel.scannedTags.collectAsStateWithLifecycle()
     val isPerformingInventory by appViewModel.isPerformingInventory.collectAsStateWithLifecycle()
     val scope = rememberCoroutineScope()
     val expandedMap by appViewModel.perTagExpanded.collectAsStateWithLifecycle()
@@ -197,7 +196,7 @@ fun ScanScreen(
                             Screen.StorageAreaChange.routeId
                         ) -> checkedMap.values.any { it }
 
-                        Screen.Receiving.routeId -> scannedTag2.isNotEmpty()
+                        Screen.Receiving.routeId -> scannedTags.isNotEmpty()
                         else -> true
                     },
                     icon = {
@@ -222,7 +221,7 @@ fun ScanScreen(
             }
         },
         onBackArrowClick = {
-            if (scannedTags3.isNotEmpty() || scannedTag2.isNotEmpty()) {
+            if (scannedTags.isNotEmpty()) {
                 appViewModel.onGeneralIntent(ShareIntent.ToggleClearTagConfirmDialog)
             } else {
                 onGoBack()
@@ -235,7 +234,7 @@ fun ScanScreen(
                 .fillMaxSize()
         ) {
             if (prevScreenNameId == Screen.Receiving.routeId) {
-                ReceivingScanTagCard(scannedTag = scannedTag2)
+                ReceivingScanTagCard(scannedTag = scannedTags.values.lastOrNull()?.rfidNo ?: "")
             } else {
 
                 Row(
@@ -250,11 +249,11 @@ fun ScanScreen(
                             R.string.select_all
                         ),
                         containerColor = if (isAllSelected) Color.Red else brightAzure,
-                        canClick = scannedTags3.isNotEmpty(),
+                        canClick = scannedTags.isNotEmpty(),
                         onClick = {
                             appViewModel.onGeneralIntent(
                                 ShareIntent.ToggleSelectionAll(
-                                    tagList = scannedTags3.toSet()
+                                    tagList = scannedTags.keys
                                 )
                             )
                         }
@@ -289,28 +288,28 @@ fun ScanScreen(
                 }
                 Spacer(modifier = Modifier.height(10.dp))
                 LazyColumn {
-                    items(scannedTags3.toList(), key = { tag -> tag }) { tag ->
+                    items(scannedTags.toList(), key = { tag -> tag }) { tag ->
                         when (prevScreenNameId) {
                             Screen.Shipping.routeId -> {
-                                val isExpanded = expandedMap[tag] ?: false
-                                val isChecked = checkedMap[tag] ?: false
-                                val value = handlingMap[tag] ?: ""
+                                val isExpanded = expandedMap[tag.first] ?: false
+                                val isChecked = checkedMap[tag.first] ?: false
+                                val value = handlingMap[tag.first] ?: ""
                                 ShippingSingleItem(
-                                    tag = tag,
+                                    tag = tag.first,
                                     isChecked = isChecked,
                                     onSelect = {
                                         appViewModel.onGeneralIntent(
                                             ShareIntent.ToggleTagSelection1(
-                                                tag = tag,
-                                                totalTag = scannedTags3.size
+                                                tag = tag.first,
+                                                totalTag = scannedTags.size
                                             )
                                         )
                                     },
                                     onCheckedChange = {
                                         appViewModel.onGeneralIntent(
                                             ShareIntent.ToggleTagSelection1(
-                                                tag = tag,
-                                                totalTag = scannedTags3.size
+                                                tag = tag.first,
+                                                totalTag = scannedTags.size
                                             )
                                         )
                                     },
@@ -319,19 +318,19 @@ fun ScanScreen(
                                     onExpandedChange = {
                                         appViewModel.onExpandIntent(
                                             ExpandIntent.TogglePerTagHandlingExpanded(
-                                                tag
+                                                tag.first
                                             )
                                         )
                                     },
                                     onDismissRequest = {
                                         appViewModel.onExpandIntent(
-                                            ExpandIntent.CloseHandlingExpanded(tag)
+                                            ExpandIntent.CloseHandlingExpanded(tag.first)
                                         )
                                     },
                                     onValueChange = { newValue ->
                                         appViewModel.onGeneralIntent(
                                             ShareIntent.ChangePerTagHandlingMethod(
-                                                tag = tag,
+                                                tag = tag.first,
                                                 method = newValue
                                             )
                                         )
@@ -342,34 +341,34 @@ fun ScanScreen(
                                             else method
 
                                         appViewModel.onGeneralIntent(
-                                            ShareIntent.ChangePerTagHandlingMethod(tag, finalValue)
+                                            ShareIntent.ChangePerTagHandlingMethod(tag.first, finalValue)
                                         )
 
                                         appViewModel.onExpandIntent(
-                                            ExpandIntent.CloseHandlingExpanded(tag)
+                                            ExpandIntent.CloseHandlingExpanded(tag.first)
                                         )
                                     }
                                 )
                             }
 
                             Screen.StorageAreaChange.routeId -> {
-                                val isChecked = checkedMap[tag] ?: false
+                                val isChecked = checkedMap[tag.first] ?: false
                                 StorageAreaChangeSingleItem(
-                                    tag = tag,
+                                    tag = tag.first,
                                     isChecked = isChecked,
                                     onCheckedChange = {
                                         appViewModel.onGeneralIntent(
                                             ShareIntent.ToggleTagSelection1(
-                                                tag = tag,
-                                                totalTag = scannedTags3.size
+                                                tag = tag.first,
+                                                totalTag = scannedTags.size
                                             )
                                         )
                                     },
                                     onClick = {
                                         appViewModel.onGeneralIntent(
                                             ShareIntent.ToggleTagSelection1(
-                                                tag = tag,
-                                                totalTag = scannedTags3.size
+                                                tag = tag.first,
+                                                totalTag = scannedTags.size
                                             )
                                         )
                                     }
