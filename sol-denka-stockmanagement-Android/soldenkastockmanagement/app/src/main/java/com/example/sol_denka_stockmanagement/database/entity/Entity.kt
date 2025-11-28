@@ -381,6 +381,32 @@ data class InBoundEventEntity(
     @ColumnInfo(name = "registered_at") val registeredAt: String,
 )
 
+@Entity(
+    tableName = "TagMaster",
+    indices = [
+        Index(value = ["ledger_item_id"], unique = true),
+        Index(value = ["epc"], unique = true)
+    ],
+    foreignKeys = [
+        ForeignKey(
+            entity = LedgerItemEntity::class,
+            parentColumns = ["ledger_item_id"],
+            childColumns = ["ledger_item_id"],
+            onDelete = ForeignKey.SET_NULL,
+            onUpdate = ForeignKey.CASCADE
+        )
+    ]
+)
+data class TagMasterEntity(
+
+    @PrimaryKey @ColumnInfo(name = "tag_id") val tagId: Int,
+    @ColumnInfo(name = "ledger_item_id") val ledgerItemId: Int?,
+    @ColumnInfo(name = "epc") val epc: String,
+    @ColumnInfo(name = "created_at") val createdAt: String,
+    @ColumnInfo(name = "updated_at") val updatedAt: String,
+)
+
+
 
 
 
