@@ -15,6 +15,9 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ConfirmationNumber
+import androidx.compose.material.icons.filled.Numbers
+import androidx.compose.material.icons.filled.QrCodeScanner
 import androidx.compose.material.icons.filled.Timer
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -62,62 +65,116 @@ fun ReceivingScanTagCard(scannedTag: String) {
         ) {
             Column(
                 modifier = Modifier
+                    .padding(16.dp)
                     .fillMaxWidth(),
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text(
-                    modifier = Modifier
-                        .padding(vertical = 16.dp),
-                    text = "読み取りタグ",
-                    fontSize = 20.sp
-                )
-                HorizontalDivider(
-                    color = brightAzure,
-                    modifier = Modifier
-                        .padding(10.dp)
-                )
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(start = 20.dp),
-                    verticalAlignment = Alignment.CenterVertically,
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalArrangement = Arrangement.Center,
                 ) {
-                    Icon(
-                        painter = painterResource(R.drawable.tag),
-                        contentDescription = null,
-                        modifier = Modifier.size(25.dp),
-                        tint = deepBlueSky
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Icon(
+                            painter = painterResource(R.drawable.tag),
+                            contentDescription = null,
+                            modifier = Modifier.size(25.dp),
+                            tint = deepBlueSky
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            text = stringResource(R.string.scanned_tag),
+                            fontSize = 20.sp,
+                        )
+                    }
+                    Spacer(modifier = Modifier.height(8.dp))
                     Text(
                         text = scannedTag.takeIf { it.isNotEmpty() }
-                            ?: stringResource(R.string.no_tag_read),
-                        fontSize = 17.sp,
-                        color = if (scannedTag.isEmpty()) Color.Red else Color.Black
+                            ?: "-",
+                        fontSize = 18.sp,
                     )
                 }
-                Spacer(modifier = Modifier.height(15.dp))
-                // ✅ Timestamp row
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(start = 20.dp),
-                    verticalAlignment = Alignment.CenterVertically,
+                Spacer(modifier = Modifier.height(20.dp))
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalArrangement = Arrangement.Center,
                 ) {
-                    Icon(
-                        imageVector = Icons.Default.Timer,
-                        contentDescription = null,
-                        modifier = Modifier.size(25.dp),
-                        tint = Color(0xFF616161)
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Icon(
+                            painter = painterResource(R.drawable.item_code),
+                            contentDescription = null,
+                            modifier = Modifier.size(25.dp),
+                            tint = Color(0xFF5C6BC0)
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            text = stringResource(R.string.tariff_code),
+                            fontSize = 17.sp
+                        )
+                    }
+                    Spacer(modifier = Modifier.height(8.dp))
                     Text(
-                        text = "${stringResource(R.string.read_timestamp)}：${
-                            if (scannedTag.isEmpty()) "---" else LocalTime.now()
-                                .format(DateTimeFormatter.ofPattern("HH:mm"))
-                        }",
+                        text = "-",
                         fontSize = 17.sp
+                    )
+                }
+                Spacer(modifier = Modifier.height(20.dp))
+                Column {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Icon(
+                            painter = painterResource(R.drawable.item_name),
+                            contentDescription = null,
+                            modifier = Modifier.size(25.dp),
+                            tint = Color(0xFF8D8D8D)
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            text = stringResource(R.string.item_name_title),
+                            fontSize = 20.sp
+                        )
+                    }
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(
+                        text = "-",
+                        fontSize = 18.sp
+                    )
+                }
+                Spacer(modifier = Modifier.height(8.dp))
+                Column {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Timer,
+                            contentDescription = null,
+                            modifier = Modifier.size(25.dp),
+                            tint = Color(0xFFFF9800)
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            text = stringResource(R.string.read_timestamp),
+                            fontSize = 20.sp
+                        )
+                    }
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(
+                        text = if (scannedTag.isEmpty()) "-" else LocalTime.now()
+                            .format(DateTimeFormatter.ofPattern("HH:mm")),
+                        fontSize = 18.sp
                     )
                 }
                 Spacer(modifier = Modifier.height(20.dp))
