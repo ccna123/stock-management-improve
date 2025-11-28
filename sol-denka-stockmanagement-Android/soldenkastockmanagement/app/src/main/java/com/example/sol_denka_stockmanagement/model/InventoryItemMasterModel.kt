@@ -13,7 +13,7 @@ data class InventoryItemMasterModel(
     val status: String,
     val createdAt: String,
     val updatedAt: String,
-    val newField: AdditionalFields
+    val newField: AdditionalFieldsModel
 )
 
 fun InventoryItemMasterModel.toInventoryItemMasterEntity(): InventoryItemMasterEntity {
@@ -41,7 +41,7 @@ fun InventoryItemMasterEntity.toInventoryItemMasterModel(): InventoryItemMasterM
         status = status,
         createdAt = createdAt,
         updatedAt = updatedAt,
-        newField = AdditionalFields(
+        newField = AdditionalFieldsModel(
             tagStatus = TagStatus.UNPROCESSED,
             rssi = -100f
         )

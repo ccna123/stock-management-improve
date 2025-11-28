@@ -1,9 +1,9 @@
 package com.example.sol_denka_stockmanagement.constant
 
-enum class OperationMode() {
-    INVENTORY,
-    READ_TAG
-}
+import java.time.LocalDateTime
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
+
 enum class CommonsString(val displayName: String) {
     InvalidInput("Invalid Input")
 }
@@ -61,6 +61,9 @@ enum class CsvType(val displayName: String) {
     LedgerMaster("台長アイテムマスタCSV"),
     InventoryResult("棚卸結果データCSV"),
     StockEvent("入出庫イベントデータCSV"),
+    InboundResult("入庫結果CSV"),
+    OutboundResult("出庫結果CSV"),
+    LocationChange("保管場所変更CSV"),
 }
 enum class StockInOutEventCsvHeader {
     item_id,
@@ -76,10 +79,14 @@ enum class StockInOutEventCsvHeader {
 }
 
 enum class InventoryResultCsvHeader {
-    item_id,
-    epc,
-    scan_result_type,
+    location_id,
+    inventory_result_type_id,
+    ledger_item_id,
+    tag_id,
+    device_id,
+    memo,
     scanned_at,
+    executed_at
 }
 
 enum class MaterialMasterCsvHeader{
@@ -114,6 +121,34 @@ enum class LedgerMasterCsvHeader{
     status,
     created_at,
     updated_at
+}
+
+enum class InboundResultCsvHeader{
+    tag_id,
+    item_type_id,
+    location_id,
+    device_id,
+    weight,
+    grade,
+    specific_gravity,
+    thickness,
+    width,
+    length,
+    quantity,
+    winder_info,
+    missroll_reason,
+    occurred_at,
+    registerd_at
+}
+
+enum class OutboundResultCsvHeader{
+    ledger_item_id,
+    tag_id,
+    process_id,
+    device_id,
+    memo,
+    occurred_at,
+    registerd_at
 }
 
 enum class InventoryScanResult(val displayName: String) {
@@ -163,4 +198,9 @@ enum class StatusCode{
 enum class TagStatus{
     PROCESSED,
     UNPROCESSED
+}
+
+fun generateTimeStamp(): String {
+    val formatter = DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss_SSS")
+    return LocalDateTime.now(ZoneId.of("Asia/Tokyo")).format(formatter)
 }

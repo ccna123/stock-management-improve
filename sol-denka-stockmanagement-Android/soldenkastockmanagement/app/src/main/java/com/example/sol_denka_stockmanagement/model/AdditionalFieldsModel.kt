@@ -2,7 +2,7 @@ package com.example.sol_denka_stockmanagement.model
 
 import com.example.sol_denka_stockmanagement.constant.TagStatus
 
-data class AdditionalFields(
+data class AdditionalFieldsModel(
     var tagStatus: TagStatus,
     val rssi: Float
 )

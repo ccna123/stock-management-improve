@@ -2,7 +2,7 @@ package com.example.sol_denka_stockmanagement.database.repository
 
 import com.example.sol_denka_stockmanagement.constant.TagStatus
 import com.example.sol_denka_stockmanagement.database.dao.InventoryItemMasterDao
-import com.example.sol_denka_stockmanagement.model.AdditionalFields
+import com.example.sol_denka_stockmanagement.model.AdditionalFieldsModel
 import com.example.sol_denka_stockmanagement.model.InventoryItemMasterModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -30,7 +30,7 @@ class InventoryItemMasterRepository @Inject constructor(
                 status = if (index % 2 == 0) "Available" else "Checked",
                 createdAt = "2025-11-12T10:00:00+09:00",
                 updatedAt = "2025-11-12T12:00:00+09:00",
-                newField = AdditionalFields(
+                newField = AdditionalFieldsModel(
                     tagStatus = TagStatus.UNPROCESSED,
                     rssi = -100f
                 )

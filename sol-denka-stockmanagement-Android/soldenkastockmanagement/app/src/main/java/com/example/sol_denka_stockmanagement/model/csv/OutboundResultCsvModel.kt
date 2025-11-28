@@ -1,0 +1,41 @@
+package com.example.sol_denka_stockmanagement.model.csv
+
+import com.example.sol_denka_stockmanagement.app_interface.ICsvExport
+import com.example.sol_denka_stockmanagement.constant.CsvType
+import com.example.sol_denka_stockmanagement.constant.OutboundResultCsvHeader
+import com.example.sol_denka_stockmanagement.constant.generateTimeStamp
+
+data class OutboundResultCsvModel(
+    val ledgerItemId: String,
+    val tagId: String,
+    val processTypeId: String,
+    val deviceId: String,
+    val memo: String,
+    val occurredAt: String,
+    val registeredAt: String,
+
+    ) : ICsvExport {
+    override fun toHeader(): List<String> = listOf(
+        OutboundResultCsvHeader.ledger_item_id.name,
+        OutboundResultCsvHeader.tag_id.name,
+        OutboundResultCsvHeader.process_id.name,
+        OutboundResultCsvHeader.device_id.name,
+        OutboundResultCsvHeader.memo.name,
+        OutboundResultCsvHeader.occurred_at.name,
+        OutboundResultCsvHeader.registerd_at.name
+    )
+
+    override fun toRow(): List<String> = listOf(
+        ledgerItemId,
+        tagId,
+        processTypeId,
+        deviceId,
+        memo,
+        occurredAt,
+        registeredAt
+    )
+
+    override fun toCsvType(): String = CsvType.OutboundResult.displayName
+
+    override fun toCsvName(): String = "outbound_result_${generateTimeStamp()}.csv"
+}
