@@ -1,6 +1,5 @@
 package com.example.sol_denka_stockmanagement.share
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.RowScope
@@ -17,14 +16,26 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 @Composable
-fun RowScope.TableCell(content: String, weight: Float, contentSize: TextUnit = 16.sp) {
+fun RowScope.TableCell(
+    modifier: Modifier = Modifier,
+    content: String,
+    weight: Float,
+    textColor: Color = Color.Black,
+    contentSize: TextUnit = 16.sp,
+    shape: RoundedCornerShape = RoundedCornerShape(0.dp)
+) {
     Box(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxHeight()
-            .border(.5.dp, color = Color.Black.copy(alpha = 0.3f))
-            .weight(weight),
+            .weight(weight)
+            .border(
+                width = 0.6.dp,
+                color = Color.LightGray.copy(alpha = .4f),
+                shape = shape
+            )
+            .padding(vertical = 10.dp),
         contentAlignment = Alignment.Center
     ) {
-        Text(text = content, fontSize = contentSize, modifier = Modifier.padding(8.dp))
+        Text(text = content, fontSize = contentSize, color = textColor)
     }
 }

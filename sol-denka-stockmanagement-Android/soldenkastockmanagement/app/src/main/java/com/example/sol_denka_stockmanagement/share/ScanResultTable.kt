@@ -22,46 +22,88 @@ import com.example.sol_denka_stockmanagement.ui.theme.brightAzure
 import com.example.sol_denka_stockmanagement.ui.theme.paleSkyBlue
 
 @Composable
-fun ScanResultTable(tableHeight: Dp = 250.dp, scanResult: List<ScanResultRowModel>, tableHeader: List<String>) {
-    Column{
-            Row(
-                modifier = Modifier
-                    .border(1.dp, color = brightAzure)
-                    .background(color = paleSkyBlue)
-                    .fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                tableHeader.map { tableHeader ->
-                    TableCell(
-                        content = tableHeader,
-                        contentSize = 13.sp,
-                        weight = 1f
-                    )
+fun ScanResultTable(
+    tableHeight: Dp = 250.dp,
+    scanResult: List<ScanResultRowModel>,
+    tableHeader: List<String>
+) {
+    val corner = 14.dp
+
+    Column {
+
+        // ---------- HEADER ----------
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(
+                    brightAzure,
+                    RoundedCornerShape(topStart = corner, topEnd = corner)
+                )
+                .border(
+                    1.dp,
+                    brightAzure,
+                    RoundedCornerShape(topStart = corner, topEnd = corner)
+                ),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+
+            tableHeader.forEachIndexed { index, title ->
+
+                val shape = when (index) {
+                    0 -> RoundedCornerShape(topStart = corner)
+                    tableHeader.lastIndex -> RoundedCornerShape(topEnd = corner)
+                    else -> RoundedCornerShape(0.dp)
+                }
+
+                TableCell(
+                    content = title,
+                    weight = 1f,
+                    contentSize = 13.sp,
+                    shape = shape,
+                    textColor = Color.White
+                )
             }
         }
+
+        // ---------- BODY ----------
         LazyColumn(
             modifier = Modifier
-                .border(1.dp, color = brightAzure)
+                .fillMaxWidth()
                 .height(tableHeight)
+                .border(
+                    1.dp,
+                    brightAzure,
+                    RoundedCornerShape(bottomStart = corner, bottomEnd = corner)
+                )
+                .background(
+                    Color.White,
+                    RoundedCornerShape(bottomStart = corner, bottomEnd = corner)
+                )
         ) {
-            items(scanResult) { tag ->
+            items(scanResult) { row ->
+
                 Row(
                     modifier = Modifier
-                        .border(1.dp, color = Color.LightGray)
-                        .height(IntrinsicSize.Min)
-                        .fillMaxWidth(),
+                        .fillMaxWidth()
+                        .height(IntrinsicSize.Min),
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
+
+                    // Cell 1
                     TableCell(
-                        content = tag.itemName,
+                        content = row.itemName,
                         weight = 1f
                     )
+
+                    // Cell 2
                     TableCell(
-                        content = tag.itemCode,
+                        content = row.itemCode,
                         weight = 1f
                     )
+
+                    // Cell 3
                     TableCell(
-                        content = tag.lastColumn,
+                        content = row.lastColumn,
                         weight = 1f
                     )
                 }
