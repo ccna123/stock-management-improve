@@ -30,7 +30,7 @@ import com.example.sol_denka_stockmanagement.screen.setting.sub_screen.reader_se
 import com.example.sol_denka_stockmanagement.viewmodel.AppViewModel
 import com.example.sol_denka_stockmanagement.screen.setting.SettingScreen
 import com.example.sol_denka_stockmanagement.screen.setting.SettingViewModel
-import com.example.sol_denka_stockmanagement.screen.storage_area_change.StorageAreaChangeScreen
+import com.example.sol_denka_stockmanagement.screen.storage_change.StorageAreaChangeScreen
 import com.example.sol_denka_stockmanagement.search.SearchTagsScreen
 import com.example.sol_denka_stockmanagement.search.SearchTagsViewModel
 import kotlin.collections.listOf
@@ -40,8 +40,6 @@ import kotlin.collections.listOf
 fun Navigation3(
     appViewModel: AppViewModel,
     searchTagsViewModel: SearchTagsViewModel,
-    appSettingViewModel: AppSettingViewModel,
-    readerSettingViewModel: ReaderSettingViewModel,
     inventoryViewModel: InventoryViewModel,
     scanViewModel: ScanViewModel,
     settingViewModel: SettingViewModel

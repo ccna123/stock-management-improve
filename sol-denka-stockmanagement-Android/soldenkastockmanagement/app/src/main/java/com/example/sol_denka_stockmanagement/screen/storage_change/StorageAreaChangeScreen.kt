@@ -1,4 +1,4 @@
-package com.example.sol_denka_stockmanagement.screen.storage_area_change
+package com.example.sol_denka_stockmanagement.screen.storage_change
 
 import android.os.Build
 import androidx.annotation.RequiresApi
@@ -50,10 +50,8 @@ fun StorageAreaChangeScreen(
     onGoBack: () -> Unit
 ) {
 
-    val errorState = appViewModel.errorState.value
     val expandState = appViewModel.expandState.collectAsStateWithLifecycle().value
     val inputState = appViewModel.inputState.collectAsStateWithLifecycle().value
-    val generalState = appViewModel.generalState.collectAsStateWithLifecycle().value
     val selectedCount by appViewModel.selectedCount.collectAsStateWithLifecycle()
     val checkedMap by appViewModel.perTagChecked.collectAsStateWithLifecycle()
 

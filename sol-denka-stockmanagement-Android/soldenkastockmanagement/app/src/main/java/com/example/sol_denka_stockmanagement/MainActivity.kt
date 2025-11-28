@@ -38,8 +38,6 @@ class MainActivity : ComponentActivity() {
             SoldenkastockmanagementTheme {
                 Navigation3(
                     appViewModel = appViewModel,
-                    appSettingViewModel = appSettingViewModel,
-                    readerSettingViewModel = readerSettingViewModel,
                     scanViewModel = scanViewModel,
                     searchTagsViewModel = searchTagsViewModel,
                     inventoryViewModel = inventoryViewModel,
