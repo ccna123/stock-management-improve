@@ -33,7 +33,7 @@ import com.example.sol_denka_stockmanagement.constant.StockAreaItem
 import com.example.sol_denka_stockmanagement.intent.ExpandIntent
 import com.example.sol_denka_stockmanagement.intent.InputIntent
 import com.example.sol_denka_stockmanagement.intent.ShareIntent
-import com.example.sol_denka_stockmanagement.model.ScanResultRowModel
+import com.example.sol_denka_stockmanagement.model.scan.ScanResultRowModel
 import com.example.sol_denka_stockmanagement.navigation.Screen
 import com.example.sol_denka_stockmanagement.screen.layout.Layout
 import com.example.sol_denka_stockmanagement.share.ButtonContainer

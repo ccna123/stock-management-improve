@@ -1,4 +1,4 @@
-package com.example.sol_denka_stockmanagement.model
+package com.example.sol_denka_stockmanagement.model.common
 
 import com.example.sol_denka_stockmanagement.constant.TagStatus
 

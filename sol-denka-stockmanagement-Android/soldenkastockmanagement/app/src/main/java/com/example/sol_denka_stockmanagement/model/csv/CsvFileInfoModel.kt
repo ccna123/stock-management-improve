@@ -1,4 +1,4 @@
-package com.example.sol_denka_stockmanagement.model
+package com.example.sol_denka_stockmanagement.model.csv
 
 data class CsvFileInfoModel(
     val fileName: String,

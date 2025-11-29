@@ -1,13 +1,10 @@
-package com.example.sol_denka_stockmanagement.model
+package com.example.sol_denka_stockmanagement.model.reader
 
 import com.example.sol_denka_stockmanagement.constant.ConnectionState
 import com.example.sol_denka_stockmanagement.reader.FakeBeeperVolume
 import com.example.sol_denka_stockmanagement.reader.FakeChannel
 import com.example.sol_denka_stockmanagement.reader.FakeInventoryState
 import com.example.sol_denka_stockmanagement.reader.FakeSession
-import com.zebra.rfid.api3.BEEPER_VOLUME
-import com.zebra.rfid.api3.INVENTORY_STATE
-import com.zebra.rfid.api3.SESSION
 import kotlin.math.pow
 import kotlin.math.roundToInt
 

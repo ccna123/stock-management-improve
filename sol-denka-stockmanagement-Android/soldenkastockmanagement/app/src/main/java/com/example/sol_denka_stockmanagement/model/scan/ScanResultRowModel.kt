@@ -1,4 +1,4 @@
-package com.example.sol_denka_stockmanagement.model
+package com.example.sol_denka_stockmanagement.model.scan
 
 data class ScanResultRowModel(
     val itemName:String,

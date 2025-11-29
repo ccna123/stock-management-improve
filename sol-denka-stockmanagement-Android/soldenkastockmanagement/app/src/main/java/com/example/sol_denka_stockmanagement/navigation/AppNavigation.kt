@@ -25,8 +25,6 @@ import com.example.sol_denka_stockmanagement.screen.shipping.ShippingScreen
 import com.example.sol_denka_stockmanagement.screen.version.VersionInfoScreen
 import com.example.sol_denka_stockmanagement.screen.version.sub_screen.LicenseInfoScreen
 import com.example.sol_denka_stockmanagement.viewmodel.ScanViewModel
-import com.example.sol_denka_stockmanagement.screen.setting.sub_screen.app_setting.AppSettingViewModel
-import com.example.sol_denka_stockmanagement.screen.setting.sub_screen.reader_setting.ReaderSettingViewModel
 import com.example.sol_denka_stockmanagement.viewmodel.AppViewModel
 import com.example.sol_denka_stockmanagement.screen.setting.SettingScreen
 import com.example.sol_denka_stockmanagement.screen.setting.SettingViewModel

@@ -1,7 +1,7 @@
 package com.example.sol_denka_stockmanagement.share
 
 import com.example.sol_denka_stockmanagement.constant.ConnectionState
-import com.example.sol_denka_stockmanagement.model.TagInfoModel
+import com.example.sol_denka_stockmanagement.model.common.TagInfoModel
 import com.example.sol_denka_stockmanagement.reader.FakeBeeperVolume
 import com.example.sol_denka_stockmanagement.reader.FakeChannel
 import com.example.sol_denka_stockmanagement.reader.FakeInventoryState

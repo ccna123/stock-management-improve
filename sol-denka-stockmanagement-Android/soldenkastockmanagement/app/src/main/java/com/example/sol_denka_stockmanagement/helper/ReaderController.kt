@@ -7,15 +7,14 @@ import androidx.annotation.RequiresApi
 import androidx.compose.runtime.mutableStateOf
 import com.example.sol_denka_stockmanagement.app_interface.IDeviceManager
 import com.example.sol_denka_stockmanagement.constant.ConnectionState
-import com.example.sol_denka_stockmanagement.model.ReaderInfoModel
-import com.example.sol_denka_stockmanagement.model.TagInfoModel
+import com.example.sol_denka_stockmanagement.model.reader.ReaderInfoModel
+import com.example.sol_denka_stockmanagement.model.common.TagInfoModel
 import com.example.sol_denka_stockmanagement.navigation.Screen
 import com.example.sol_denka_stockmanagement.reader.FakeBeeperVolume
 import com.example.sol_denka_stockmanagement.reader.FakeChannel
 import com.example.sol_denka_stockmanagement.reader.FakeInventoryState
 import com.example.sol_denka_stockmanagement.reader.FakeReader
 import com.example.sol_denka_stockmanagement.reader.FakeSession
-import com.example.sol_denka_stockmanagement.screen.scan.ScanScreen
 import com.example.sol_denka_stockmanagement.share.DeviceEvent
 import com.example.sol_denka_stockmanagement.state.ReaderSettingState
 import kotlinx.coroutines.CoroutineScope

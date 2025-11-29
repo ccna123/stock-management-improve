@@ -8,7 +8,7 @@ import android.util.Log
 import com.example.sol_denka_stockmanagement.app_interface.ICsvExport
 import com.example.sol_denka_stockmanagement.constant.CsvType
 import com.example.sol_denka_stockmanagement.constant.StatusCode
-import com.example.sol_denka_stockmanagement.model.CsvFileInfoModel
+import com.example.sol_denka_stockmanagement.model.csv.CsvFileInfoModel
 import com.jcraft.jsch.ChannelSftp
 import com.jcraft.jsch.JSch
 import com.jcraft.jsch.Session

@@ -1,4 +1,4 @@
-package com.example.sol_denka_stockmanagement.model
+package com.example.sol_denka_stockmanagement.screen.home.model
 
 import com.example.sol_denka_stockmanagement.navigation.Screen
 

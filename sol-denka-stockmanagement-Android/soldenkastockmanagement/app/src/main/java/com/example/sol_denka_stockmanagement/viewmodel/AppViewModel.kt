@@ -18,7 +18,7 @@ import com.example.sol_denka_stockmanagement.helper.ToastType
 import com.example.sol_denka_stockmanagement.intent.ExpandIntent
 import com.example.sol_denka_stockmanagement.intent.InputIntent
 import com.example.sol_denka_stockmanagement.intent.ShareIntent
-import com.example.sol_denka_stockmanagement.model.ReaderInfoModel
+import com.example.sol_denka_stockmanagement.model.reader.ReaderInfoModel
 import com.example.sol_denka_stockmanagement.screen.setting.sub_screen.app_setting.AppSettingState
 import com.example.sol_denka_stockmanagement.state.ErrorState
 import com.example.sol_denka_stockmanagement.state.ExpandState

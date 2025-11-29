@@ -17,7 +17,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.sol_denka_stockmanagement.model.ScanResultRowModel
+import com.example.sol_denka_stockmanagement.model.scan.ScanResultRowModel
 import com.example.sol_denka_stockmanagement.ui.theme.brightAzure
 import com.example.sol_denka_stockmanagement.ui.theme.paleSkyBlue
 

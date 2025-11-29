@@ -1,7 +1,7 @@
 package com.example.sol_denka_stockmanagement.helper
 
 import android.content.Context
-import com.example.sol_denka_stockmanagement.model.SftpConfigModel
+import com.example.sol_denka_stockmanagement.model.sftp.SftpConfigModel
 import org.json.JSONObject
 
 object JsonFileManager {

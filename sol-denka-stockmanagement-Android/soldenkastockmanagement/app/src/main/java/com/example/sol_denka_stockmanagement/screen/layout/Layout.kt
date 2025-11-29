@@ -71,7 +71,7 @@ import com.example.sol_denka_stockmanagement.constant.Tab
 import com.example.sol_denka_stockmanagement.helper.ToastManager
 import com.example.sol_denka_stockmanagement.helper.ToastMessage
 import com.example.sol_denka_stockmanagement.intent.ShareIntent
-import com.example.sol_denka_stockmanagement.model.ReaderInfoModel
+import com.example.sol_denka_stockmanagement.model.reader.ReaderInfoModel
 import com.example.sol_denka_stockmanagement.navigation.Screen
 import com.example.sol_denka_stockmanagement.screen.setting.sub_screen.reader_setting.ReaderSettingViewModel
 import com.example.sol_denka_stockmanagement.share.ButtonContainer

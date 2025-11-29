@@ -7,7 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.sol_denka_stockmanagement.helper.CsvHelper
 import com.example.sol_denka_stockmanagement.helper.JsonFileManager
 import com.example.sol_denka_stockmanagement.helper.ProcessResult
-import com.example.sol_denka_stockmanagement.model.CsvFileInfoModel
+import com.example.sol_denka_stockmanagement.model.csv.CsvFileInfoModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
