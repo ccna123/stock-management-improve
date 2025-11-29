@@ -10,25 +10,43 @@ import com.example.sol_denka_stockmanagement.database.dao.InventoryResultDao
 import com.example.sol_denka_stockmanagement.database.dao.InventoryTaskDao
 import com.example.sol_denka_stockmanagement.database.dao.LocationDao
 import com.example.sol_denka_stockmanagement.database.dao.MaterialDao
-import com.example.sol_denka_stockmanagement.database.entity.CsvHistoryEntity
-import com.example.sol_denka_stockmanagement.database.entity.EventTypeMasterEntity
-import com.example.sol_denka_stockmanagement.database.entity.InOutEventEntity
-import com.example.sol_denka_stockmanagement.database.entity.InventoryItemMasterEntity
-import com.example.sol_denka_stockmanagement.database.entity.InventoryResultEntity
-import com.example.sol_denka_stockmanagement.database.entity.InventoryTaskEntity
-import com.example.sol_denka_stockmanagement.database.entity.LocationMasterEntity
-import com.example.sol_denka_stockmanagement.database.entity.MaterialMasterEntity
+import com.example.sol_denka_stockmanagement.database.entity.csv.CsvHistoryEntity
+import com.example.sol_denka_stockmanagement.database.entity.csv.CsvTaskTypeEntity
+import com.example.sol_denka_stockmanagement.database.entity.inbound.InboundEventEntity
+import com.example.sol_denka_stockmanagement.database.entity.inbound.InboundSessionEntity
+import com.example.sol_denka_stockmanagement.database.entity.inventory.InventoryResultLocalEntity
+import com.example.sol_denka_stockmanagement.database.entity.inventory.InventoryResultTypeEntity
+import com.example.sol_denka_stockmanagement.database.entity.inventory.InventorySessionEntity
+import com.example.sol_denka_stockmanagement.database.entity.location.LocationChangeEventEntity
+import com.example.sol_denka_stockmanagement.database.entity.location.LocationChangeSessionEntity
+import com.example.sol_denka_stockmanagement.database.entity.location.LocationMasterEntity
+import com.example.sol_denka_stockmanagement.database.entity.item.ItemTypeMasterEntity
+import com.example.sol_denka_stockmanagement.database.entity.item.ItemUnitMasterEntity
+import com.example.sol_denka_stockmanagement.database.entity.leger.LedgerItemEntity
+import com.example.sol_denka_stockmanagement.database.entity.tag.TagMasterEntity
+import com.example.sol_denka_stockmanagement.database.entity.outbound.OutBoundEventEntity
+import com.example.sol_denka_stockmanagement.database.entity.outbound.OutboundSessionEntity
+import com.example.sol_denka_stockmanagement.database.entity.process.ProcessTypeEntity
 
 @Database(
     entities = [
-        LocationMasterEntity::class,
-        MaterialMasterEntity::class,
         CsvHistoryEntity::class,
-        EventTypeMasterEntity::class,
-        InventoryItemMasterEntity::class,
-        InventoryTaskEntity::class,
-        InventoryResultEntity::class,
-        InOutEventEntity::class,
+        CsvTaskTypeEntity::class,
+        InboundEventEntity::class,
+        InboundSessionEntity::class,
+        InventorySessionEntity::class,
+        InventoryResultTypeEntity::class,
+        InventoryResultLocalEntity::class,
+        LocationChangeEventEntity::class,
+        LocationChangeSessionEntity::class,
+        LocationMasterEntity::class,
+        ItemTypeMasterEntity::class,
+        ItemUnitMasterEntity::class,
+        LedgerItemEntity::class,
+        TagMasterEntity::class,
+        OutBoundEventEntity::class,
+        OutboundSessionEntity::class,
+        ProcessTypeEntity::class
     ],
     version = 1
 )

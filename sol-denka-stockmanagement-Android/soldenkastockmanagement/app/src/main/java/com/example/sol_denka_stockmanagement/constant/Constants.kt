@@ -15,7 +15,6 @@ enum class FileTransferMethod(val displayName: String) {
 }
 
 enum class HandlingMethod(val displayName: String) {
-    SELECTION_TITLE("処理方法選択"),
     USE("使用"),
     SALE("売却"),
     CRUSHING("粉砕")
@@ -28,13 +27,11 @@ enum class MaterialSelectionItem(val displayName: String) {
     PELLET("ペレット"),
 }
 enum class PackingStyleItem(val displayName: String) {
-    SELECTION_TITLE("荷姿選択"),
     FLEXIBLE_CONTAINER_1T("1tフレコン"),
     PAPER_BAG_25KG("25Kg詰PPT防湿紙入り3層紙袋"),
 }
 
 enum class StockAreaItem(val displayName: String) {
-    SELECTION_TITLE("保管場所選択"),
     STOCK_AREA1("保管場所1"),
     STOCK_AREA2("保管場所2"),
     STOCK_AREA3("保管場所3"),
@@ -178,12 +175,11 @@ enum class CsvHistoryResult(val displayName: String){
     SUCCESS("SUCCESS"),
     FAILURE("FAILURE")
 }
-enum class InventoryResultType(val displayName: String) {
+enum class InventoryResultCode(val displayName: String) {
     FOUND_OK("FOUND_OK"),
     FOUND_WRONG_LOCATION("FOUND_WRONG_LOCATION"),
     NOT_FOUND("NOT_FOUND"),
 }
-
 enum class ConnectionState {
     DISCONNECTED,
     CONNECTING,

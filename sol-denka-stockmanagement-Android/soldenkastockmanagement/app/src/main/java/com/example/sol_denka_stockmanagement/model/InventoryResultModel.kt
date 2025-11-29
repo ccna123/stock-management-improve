@@ -1,6 +1,6 @@
 package com.example.sol_denka_stockmanagement.model
 
-import com.example.sol_denka_stockmanagement.constant.InventoryResultType
+import com.example.sol_denka_stockmanagement.constant.InventoryResultCode
 import com.example.sol_denka_stockmanagement.database.entity.InventoryResultEntity
 
 data class InventoryResultModel(
@@ -8,7 +8,7 @@ data class InventoryResultModel(
     val taskId: Int,
     val itemId: Int,
     val epc: String,
-    val scanResultType: InventoryResultType,
+    val scanResultType: InventoryResultCode,
     val scannedAt: String
 )
 
