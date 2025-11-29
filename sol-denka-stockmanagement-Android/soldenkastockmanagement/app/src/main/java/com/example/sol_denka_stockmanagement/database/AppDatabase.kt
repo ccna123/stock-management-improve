@@ -70,8 +70,6 @@ import com.example.sol_denka_stockmanagement.database.entity.process.ProcessType
 )
 abstract class AppDatabase : RoomDatabase() {
 
-    abstract val InventoryItemMasterEntity: Any
-
     // CSV
     abstract fun csvHistoryDao(): CsvHistoryDao
     abstract fun csvTaskTypeDao(): CsvTaskTypeDao

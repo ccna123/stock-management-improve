@@ -22,6 +22,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.sol_denka_stockmanagement.R
 import com.example.sol_denka_stockmanagement.constant.HandlingMethod
+import com.example.sol_denka_stockmanagement.constant.SelectTitle
 import com.example.sol_denka_stockmanagement.share.dialog.AppDialog
 import com.example.sol_denka_stockmanagement.share.ButtonContainer
 
@@ -42,7 +43,7 @@ fun ShippingModal(
             Text(
                 fontSize = 19.sp,
                 fontWeight = FontWeight.Bold,
-                text = HandlingMethod.SELECTION_TITLE.displayName
+                text = SelectTitle.SelectHandlingMethod.displayName
             )
             Spacer(modifier = Modifier.height(10.dp))
             Text(text = stringResource(R.string.bulk_apply_item_number, selectedCount))

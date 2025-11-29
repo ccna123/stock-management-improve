@@ -6,7 +6,7 @@ import androidx.room.PrimaryKey
 
 @Entity(tableName = "InboundSession")
 data class InboundSessionEntity(
-    @PrimaryKey @ColumnInfo(name = "in_bound_session_id") val inboundSessionId: Int,
+    @PrimaryKey @ColumnInfo(name = "inbound_session_id") val inboundSessionId: Int,
     @ColumnInfo(name = "device_id") val deviceId: String,
     @ColumnInfo(name = "executed_at") val executedAt: String,
 )

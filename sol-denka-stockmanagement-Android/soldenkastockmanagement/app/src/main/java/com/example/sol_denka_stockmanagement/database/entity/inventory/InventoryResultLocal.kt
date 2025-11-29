@@ -19,8 +19,8 @@ import com.example.sol_denka_stockmanagement.database.entity.tag.TagMasterEntity
         ),
         ForeignKey(
             entity = InventoryResultTypeEntity::class,
-            parentColumns = ["inventory_result_type"],
-            childColumns = ["inventory_result_type"],
+            parentColumns = ["inventory_result_type_id"],
+            childColumns = ["inventory_result_type_id"],
             onDelete = ForeignKey.CASCADE,
             onUpdate = ForeignKey.CASCADE
 
@@ -44,7 +44,7 @@ import com.example.sol_denka_stockmanagement.database.entity.tag.TagMasterEntity
     ],
     indices = [
         Index(value = ["inventory_session_id"]),
-        Index(value = ["inventory_result_type"]),
+        Index(value = ["inventory_result_type_id"]),
         Index(value = ["ledger_item_id"]),
         Index(value = ["tag_id"])
     ]
@@ -52,7 +52,7 @@ import com.example.sol_denka_stockmanagement.database.entity.tag.TagMasterEntity
 data class InventoryResultLocalEntity(
     @PrimaryKey @ColumnInfo(name = "inventory_result_id") val inventoryResultId: Int,
     @ColumnInfo(name = "inventory_session_id") val inventorySessionId: Int,
-    @ColumnInfo(name = "inventory_result_type") val inventoryResultType: Int,
+    @ColumnInfo(name = "inventory_result_type_id") val inventoryResultTypeId: Int,
     @ColumnInfo(name = "ledger_item_id") val ledgerItemId: Int,
     @ColumnInfo(name = "tag_id") val tagId: Int,
     @ColumnInfo(name = "memo") val memo: String?,

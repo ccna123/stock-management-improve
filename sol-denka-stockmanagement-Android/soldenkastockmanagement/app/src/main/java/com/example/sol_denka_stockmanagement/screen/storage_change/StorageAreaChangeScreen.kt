@@ -126,8 +126,8 @@ fun StorageAreaChangeScreen(
                                 enabled = true
                             )
                             .fillMaxWidth(),
-                        value = if (inputState.stockArea == StockAreaItem.SELECTION_TITLE.displayName) "" else inputState.stockArea,
-                        hintText = StockAreaItem.SELECTION_TITLE.displayName,
+                        value = if (inputState.stockArea == SelectTitle.SelectStockArea.displayName) "" else inputState.stockArea,
+                        hintText = SelectTitle.SelectStockArea.displayName,
                         isNumeric = false,
                         onChange = { newValue ->
                             appViewModel.onInputIntent(
@@ -146,7 +146,7 @@ fun StorageAreaChangeScreen(
                         onDismissRequest = { appViewModel.onExpandIntent(ExpandIntent.ToggleStockAreaExpanded) }
                     ) {
                         listOf(
-                            StockAreaItem.SELECTION_TITLE.displayName,
+                            SelectTitle.SelectStockArea.displayName,
                             StockAreaItem.STOCK_AREA1.displayName,
                             StockAreaItem.STOCK_AREA2.displayName,
                             StockAreaItem.STOCK_AREA3.displayName,

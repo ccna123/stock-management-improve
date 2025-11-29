@@ -1,7 +1,7 @@
 package com.example.sol_denka_stockmanagement.screen.detail
 
 import androidx.lifecycle.ViewModel
-import com.example.sol_denka_stockmanagement.model.InventoryItemMasterModel
+import com.example.sol_denka_stockmanagement.model.tag.TagMasterModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -11,13 +11,13 @@ import javax.inject.Inject
 @HiltViewModel
 class DetailViewModel @Inject constructor(): ViewModel() {
 
-    private val _selectedList = MutableStateFlow<List<InventoryItemMasterModel>>(emptyList())
-    val selectedList: StateFlow<List<InventoryItemMasterModel>> = _selectedList
+    private val _selectedList = MutableStateFlow<List<TagMasterModel>>(emptyList())
+    val selectedList: StateFlow<List<TagMasterModel>> = _selectedList
 
     private val _currentIndex = MutableStateFlow(0)
     val currentIndex: StateFlow<Int> = _currentIndex
 
-    fun setItems(items: List<InventoryItemMasterModel>) {
+    fun setItems(items: List<TagMasterModel>) {
         _selectedList.value = items
         _currentIndex.value = 0
     }

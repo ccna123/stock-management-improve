@@ -90,7 +90,7 @@ fun ShippingSingleItem(
                 onDismissRequest = { onDismissRequest() }
             ) {
                 listOf(
-                    HandlingMethod.SELECTION_TITLE.displayName,
+                    SelectTitle.SelectHandlingMethod.displayName,
                     HandlingMethod.USE.displayName,
                     HandlingMethod.SALE.displayName,
                     HandlingMethod.CRUSHING.displayName,

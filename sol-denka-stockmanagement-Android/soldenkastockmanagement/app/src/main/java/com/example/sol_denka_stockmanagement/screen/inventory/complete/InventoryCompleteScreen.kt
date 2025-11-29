@@ -34,6 +34,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.sol_denka_stockmanagement.R
 import com.example.sol_denka_stockmanagement.constant.InventoryScanResult
 import com.example.sol_denka_stockmanagement.intent.ShareIntent
+import com.example.sol_denka_stockmanagement.model.inventory.InventoryCompleteModel
 import com.example.sol_denka_stockmanagement.navigation.Screen
 import com.example.sol_denka_stockmanagement.screen.layout.Layout
 import com.example.sol_denka_stockmanagement.share.ButtonContainer
@@ -66,22 +67,22 @@ fun InventoryCompleteScreen(
         })
     }
     val inventoryStatusList = listOf(
-        InventoryScanResultStatusModel(
+        InventoryCompleteModel(
             status = InventoryScanResult.OK.displayName,
             icon = R.drawable.scan_ok,
             color = brightGreenPrimary,
         ),
-        InventoryScanResultStatusModel(
+        InventoryCompleteModel(
             status = InventoryScanResult.SHORTAGE.displayName,
             icon = R.drawable.scan_shortage,
             color = brightOrange,
         ),
-        InventoryScanResultStatusModel(
+        InventoryCompleteModel(
             status = InventoryScanResult.OVERLOAD.displayName,
             icon = R.drawable.scan_overload,
             color = Color(0xFFF44336),
         ),
-        InventoryScanResultStatusModel(
+        InventoryCompleteModel(
             status = InventoryScanResult.WRONG_LOCATION.displayName,
             icon = R.drawable.scan_wrong_location,
             color = deepBlueSky,

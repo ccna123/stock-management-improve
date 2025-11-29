@@ -59,7 +59,6 @@ import com.example.sol_denka_stockmanagement.navigation.Screen
 import com.example.sol_denka_stockmanagement.screen.inventory.InventoryViewModel
 import com.example.sol_denka_stockmanagement.screen.layout.Layout
 import com.example.sol_denka_stockmanagement.screen.setting.SettingViewModel
-import com.example.sol_denka_stockmanagement.screen.setting.sub_screen.reader_setting.ReaderSettingViewModel
 import com.example.sol_denka_stockmanagement.share.ButtonContainer
 import com.example.sol_denka_stockmanagement.share.OptionTabs
 import com.example.sol_denka_stockmanagement.share.ScannedTagDisplay
@@ -130,10 +129,10 @@ fun InventoryScanScreen(
             settingViewModel.apply {
                 onReaderSettingIntent(
                     ReaderSettingIntent.ChangeRadioPowerSliderPosition(
-                        newValue.toInt()
+                        newValue
                     )
                 )
-                onReaderSettingIntent(ReaderSettingIntent.ChangeRadioPower(newValue.toInt()))
+                onReaderSettingIntent(ReaderSettingIntent.ChangeRadioPower(newValue))
             }
         },
         onOk = {
@@ -193,7 +192,7 @@ fun InventoryScanScreen(
                     buttonHeight = 35.dp,
                     buttonText = stringResource(R.string.finish_inventory),
                     buttonTextSize = 19,
-                    canClick = isPerformingInventory.not() && rfidTagList.count { it.newField.tagStatus == TagStatus.PROCESSED } > 0,
+                    canClick = isPerformingInventory.not() && rfidTagList.count { it.newFields.tagStatus == TagStatus.PROCESSED } > 0,
                     icon = {
                         Icon(
                             imageVector = Icons.Default.CheckCircle,
@@ -371,7 +370,7 @@ fun InventoryScanScreen(
                     ) {
                         Text(text = stringResource(R.string.process_status), fontSize = 26.sp)
                         Text(
-                            text = "${rfidTagList.count { it.newField.tagStatus == TagStatus.PROCESSED }}/${rfidTagList.size}",
+                            text = "${rfidTagList.count { it.newFields.tagStatus == TagStatus.PROCESSED }}/${rfidTagList.size}",
                             fontSize = 26.sp
                         )
                     }
@@ -404,8 +403,8 @@ fun InventoryScanScreen(
                     ) { tab ->
 
                         val displayList = when (tab) {
-                            Tab.Left -> rfidTagList.filter { it.newField.tagStatus == TagStatus.UNPROCESSED }
-                            Tab.Right -> rfidTagList.filter { it.newField.tagStatus == TagStatus.PROCESSED }
+                            Tab.Left -> rfidTagList.filter { it.newFields.tagStatus == TagStatus.UNPROCESSED }
+                            Tab.Right -> rfidTagList.filter { it.newFields.tagStatus == TagStatus.PROCESSED }
                         }
 
                         ScannedTagDisplay(

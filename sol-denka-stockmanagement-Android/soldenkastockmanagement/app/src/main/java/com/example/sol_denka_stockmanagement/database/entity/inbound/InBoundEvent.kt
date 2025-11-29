@@ -3,25 +3,27 @@ package com.example.sol_denka_stockmanagement.database.entity.inbound
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
+import androidx.room.Index
 import androidx.room.PrimaryKey
 import com.example.sol_denka_stockmanagement.database.entity.item.ItemTypeMasterEntity
 import com.example.sol_denka_stockmanagement.database.entity.leger.LedgerItemEntity
 import com.example.sol_denka_stockmanagement.database.entity.location.LocationMasterEntity
+import com.example.sol_denka_stockmanagement.database.entity.tag.TagMasterEntity
 
 @Entity(
     tableName = "InBoundEvent",
     foreignKeys = [
         ForeignKey(
             entity = InboundSessionEntity::class,
-            parentColumns = ["in_bound_session_id"],
-            childColumns = ["in_bound_session_id"],
+            parentColumns = ["inbound_session_id"],
+            childColumns = ["inbound_session_id"],
             onDelete = ForeignKey.CASCADE,
             onUpdate = ForeignKey.CASCADE
         ),
         ForeignKey(
-            entity = LedgerItemEntity::class,
-            parentColumns = ["ledger_item_id"],
-            childColumns = ["ledger_item_id"],
+            entity = TagMasterEntity::class,
+            parentColumns = ["tag_id"],
+            childColumns = ["tag_id"],
             onDelete = ForeignKey.CASCADE,
             onUpdate = ForeignKey.CASCADE
         ),
@@ -39,6 +41,12 @@ import com.example.sol_denka_stockmanagement.database.entity.location.LocationMa
             onDelete = ForeignKey.CASCADE,
             onUpdate = ForeignKey.CASCADE
         )
+    ],
+    indices = [
+        Index(value = ["inbound_session_id"]),
+        Index(value = ["item_type_id"]),
+        Index(value = ["location_id"]),
+        Index(value = ["tag_id"]),
     ]
 )
 data class InboundEventEntity(

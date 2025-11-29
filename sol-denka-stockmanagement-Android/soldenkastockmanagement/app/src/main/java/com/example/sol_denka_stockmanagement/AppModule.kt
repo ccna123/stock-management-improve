@@ -8,6 +8,7 @@ import androidx.annotation.RequiresApi
 import androidx.room.Room
 import com.example.sol_denka_stockmanagement.database.AppDatabase
 import com.example.sol_denka_stockmanagement.database.dao.inventory.InventoryResultTypeDao
+import com.example.sol_denka_stockmanagement.database.dao.tag.TagDao
 import com.example.sol_denka_stockmanagement.helper.ReaderController
 import com.example.sol_denka_stockmanagement.helper.TagController
 import dagger.Module
@@ -68,13 +69,11 @@ object AppModule {
             .fallbackToDestructiveMigration(false)
             .build()
     }
-
     @Provides
     @Singleton
-    fun provideInventoryItemMasterDao(db: AppDatabase): InventoryResultTypeDao {
-        return db.inventoryItemMasterDao()
+    fun provideTagDao(database: AppDatabase): TagDao {
+        return database.tagDao()
     }
-
 //    @Provides
 //    @Singleton
 //    fun provideAppSettingStorage(): JsonFileSettingStorage<AppSettingModel> {

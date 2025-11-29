@@ -13,8 +13,8 @@ import com.example.sol_denka_stockmanagement.database.entity.process.ProcessType
     foreignKeys = [
         ForeignKey(
             entity = OutboundSessionEntity::class,
-            parentColumns = ["out_bound_session_id"],
-            childColumns = ["out_bound_session_id"],
+            parentColumns = ["outbound_session_id"],
+            childColumns = ["outbound_session_id"],
             onDelete = ForeignKey.CASCADE,
             onUpdate = ForeignKey.CASCADE
         ),
@@ -34,7 +34,7 @@ import com.example.sol_denka_stockmanagement.database.entity.process.ProcessType
         )
     ],
     indices = [
-        Index(value = ["out_bound_session_id"]),
+        Index(value = ["outbound_session_id"]),
         Index(value = ["ledger_item_id"]),
         Index(value = ["process_type_id"]),
     ]

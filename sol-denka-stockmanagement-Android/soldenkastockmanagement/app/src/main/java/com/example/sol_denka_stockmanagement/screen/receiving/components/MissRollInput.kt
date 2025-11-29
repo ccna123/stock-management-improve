@@ -16,9 +16,6 @@ import androidx.compose.ui.unit.dp
 import com.example.sol_denka_stockmanagement.R
 import com.example.sol_denka_stockmanagement.constant.PackingStyleItem
 import com.example.sol_denka_stockmanagement.constant.SelectTitle
-import com.example.sol_denka_stockmanagement.constant.StockAreaItem
-import com.example.sol_denka_stockmanagement.intent.ExpandIntent
-import com.example.sol_denka_stockmanagement.intent.InputIntent
 import com.example.sol_denka_stockmanagement.share.InputFieldContainer
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -117,9 +114,9 @@ fun MissRollInput(
                     enabled = true
                 )
                 .fillMaxWidth(),
-            value = if (packingStyle == PackingStyleItem.SELECTION_TITLE.displayName) "" else packingStyle,
+            value = if (packingStyle == SelectTitle.SelectPackingStyle.displayName) "" else packingStyle,
             isNumeric = false,
-            hintText = PackingStyleItem.SELECTION_TITLE.displayName,
+            hintText = SelectTitle.SelectPackingStyle.displayName,
             onChange = { newValue ->
                 onPackingStyleChange(newValue)
             },
@@ -132,7 +129,7 @@ fun MissRollInput(
             onDismissRequest = { onPackingStyleExpand(false) }
         ) {
             listOf(
-                PackingStyleItem.SELECTION_TITLE.displayName,
+                SelectTitle.SelectPackingStyle.displayName,
                 PackingStyleItem.FLEXIBLE_CONTAINER_1T.displayName,
                 PackingStyleItem.PAPER_BAG_25KG.displayName,
             ).forEach { packingStyle ->

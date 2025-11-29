@@ -21,12 +21,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.sol_denka_stockmanagement.model.InventoryItemMasterModel
+import com.example.sol_denka_stockmanagement.model.tag.TagMasterModel
 import com.example.sol_denka_stockmanagement.ui.theme.brightGreenSecondary
 
 @Composable
 fun ScannedTagDisplay(
-    rfidTagList: List<InventoryItemMasterModel>,
+    rfidTagList: List<TagMasterModel>,
     selectedTags: List<String>,
     isSelectionMode: Boolean,
     onClick: (String) -> Unit,

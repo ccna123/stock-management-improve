@@ -5,7 +5,7 @@ import com.example.sol_denka_stockmanagement.database.entity.inventory.Inventory
 data class InventoryResultLocalModel(
     val inventoryResultId: Int,
     val inventorySessionId: Int,
-    val inventoryResultType: Int,
+    val inventoryResultTypeId: Int,
     val ledgerItemId: Int,
     val tagId: Int,
     val memo: String?,
@@ -13,11 +13,21 @@ data class InventoryResultLocalModel(
 )
 
 fun InventoryResultLocalEntity.toModel() = InventoryResultLocalModel(
-    inventoryResultId, inventorySessionId, inventoryResultType,
-    ledgerItemId, tagId, memo, scannedAt
+    inventoryResultId = inventoryResultId,
+    inventorySessionId = inventorySessionId,
+    inventoryResultTypeId = inventoryResultTypeId,
+    ledgerItemId = ledgerItemId,
+    tagId = tagId,
+    memo = memo,
+    scannedAt = scannedAt
 )
 
 fun InventoryResultLocalModel.toEntity() = InventoryResultLocalEntity(
-    inventoryResultId, inventorySessionId, inventoryResultType,
-    ledgerItemId, tagId, memo, scannedAt
+    inventoryResultId = inventoryResultId,
+    inventorySessionId = inventorySessionId,
+    inventoryResultTypeId = inventoryResultTypeId,
+    ledgerItemId = ledgerItemId,
+    tagId = tagId,
+    memo = memo,
+    scannedAt = scannedAt
 )

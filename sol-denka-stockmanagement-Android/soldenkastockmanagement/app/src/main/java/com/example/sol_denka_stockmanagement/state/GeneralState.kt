@@ -2,7 +2,6 @@ package com.example.sol_denka_stockmanagement.state
 
 import com.example.sol_denka_stockmanagement.navigation.Screen
 import com.example.sol_denka_stockmanagement.constant.Tab
-import com.example.sol_denka_stockmanagement.model.InventoryItemMasterModel
 
 data class GeneralState(
     // Input fields
