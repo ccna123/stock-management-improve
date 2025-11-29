@@ -8,9 +8,9 @@ import com.example.sol_denka_stockmanagement.constant.InventoryResultCode
 @Entity(tableName = "InventoryResultType")
 data class InventoryResultTypeEntity(
     @PrimaryKey @ColumnInfo(name = "inventory_result_type_id") val inventoryResultTypeId: Int,
-    @PrimaryKey @ColumnInfo(name = "inventory_result_code") val inventoryResultCode: InventoryResultCode,
-    @PrimaryKey @ColumnInfo(name = "inventory_result_name") val inventoryResultName: String,
-    @PrimaryKey @ColumnInfo(name = "created_at") val createdAt: String,
-    @PrimaryKey @ColumnInfo(name = "updated_at") val updatedAt: String,
+    @ColumnInfo(name = "inventory_result_code") val inventoryResultCode: InventoryResultCode,
+    @ColumnInfo(name = "inventory_result_name") val inventoryResultName: String,
+    @ColumnInfo(name = "created_at") val createdAt: String,
+    @ColumnInfo(name = "updated_at") val updatedAt: String,
 
     )
