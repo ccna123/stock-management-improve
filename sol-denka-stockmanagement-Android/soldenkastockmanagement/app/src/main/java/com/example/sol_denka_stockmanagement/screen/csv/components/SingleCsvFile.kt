@@ -33,7 +33,7 @@ fun SingleCsvFile(
 ) {
     Column(
         modifier = modifier
-            .padding(if (index % 2 == 0) 10.dp else 0.dp)
+            .padding(12.dp)
             .fillMaxWidth()
     ) {
         Text(

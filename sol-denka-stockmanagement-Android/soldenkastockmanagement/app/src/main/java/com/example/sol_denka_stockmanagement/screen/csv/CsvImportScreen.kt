@@ -276,10 +276,12 @@ fun CsvImportScreen(
                                 csvFileName = file.fileName,
                                 csvFileSize = file.fileSize,
                                 index = index,
-                                modifier = Modifier.background(
-                                    shape = RoundedCornerShape(10.dp),
-                                    color = if (index % 2 == 0) skyBlue.copy(alpha = 0.2f) else Color.Unspecified
-                                )
+                                modifier = Modifier
+                                    .padding(10.dp)
+                                    .background(
+                                        shape = RoundedCornerShape(10.dp),
+                                        color = if (index % 2 == 0) skyBlue.copy(alpha = 0.2f) else Color.Unspecified
+                                    )
                             )
                             Spacer(modifier = Modifier.height(10.dp))
                             HorizontalDivider()

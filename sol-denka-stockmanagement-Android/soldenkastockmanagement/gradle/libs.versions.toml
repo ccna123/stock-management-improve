@@ -30,6 +30,7 @@ lifecycleViewmodelNav3 = "2.10.0-alpha05"
 kotlinSerialization = "2.1.21"
 kotlinxSerializationCore = "1.9.0"
 material3AdaptiveNav3 = "1.0.0-alpha03"
+documentfile = "1.1.0"
 
 [libraries]
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" } # Add this
@@ -72,6 +73,7 @@ androidx-navigation3-ui = { module = "androidx.navigation3:navigation3-ui", vers
 androidx-lifecycle-viewmodel-navigation3 = { module = "androidx.lifecycle:lifecycle-viewmodel-navigation3", version.ref = "lifecycleViewmodelNav3" }
 kotlinx-serialization-core = { module = "org.jetbrains.kotlinx:kotlinx-serialization-core", version.ref = "kotlinxSerializationCore" }
 androidx-material3-adaptive-navigation3 = { group = "androidx.compose.material3.adaptive", name = "adaptive-navigation3", version.ref = "material3AdaptiveNav3" }
+androidx-documentfile = { group = "androidx.documentfile", name = "documentfile", version.ref = "documentfile" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
