@@ -194,7 +194,7 @@ class CsvHelper @Inject constructor(
 
                         val sourceFile = File(
                             Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),
-                            "StockManagementApp/Export/${if (isInventoryResult) "InventoryResultLocalDao" else "StockEvent"}/${file.fileName}"
+                            "StockManagementApp/Export/${if (isInventoryResult) "InventoryResultLocalRepository" else "StockEvent"}/${file.fileName}"
                         )
 
                         if (!sourceFile.exists()) {

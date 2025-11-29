@@ -7,7 +7,7 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.room.Room
 import com.example.sol_denka_stockmanagement.database.AppDatabase
-import com.example.sol_denka_stockmanagement.database.dao.inventory.InventoryItemMasterDao
+import com.example.sol_denka_stockmanagement.database.dao.inventory.InventoryResultTypeDao
 import com.example.sol_denka_stockmanagement.helper.ReaderController
 import com.example.sol_denka_stockmanagement.helper.TagController
 import dagger.Module
@@ -71,7 +71,7 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideInventoryItemMasterDao(db: AppDatabase): InventoryItemMasterDao {
+    fun provideInventoryItemMasterDao(db: AppDatabase): InventoryResultTypeDao {
         return db.inventoryItemMasterDao()
     }
 

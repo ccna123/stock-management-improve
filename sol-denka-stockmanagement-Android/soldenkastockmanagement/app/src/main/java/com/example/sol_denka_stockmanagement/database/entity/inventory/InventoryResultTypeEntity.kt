@@ -5,7 +5,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.example.sol_denka_stockmanagement.constant.InventoryResultCode
 
-@Entity(tableName = "InventoryResultTypeEntity")
+@Entity(tableName = "InventoryResultType")
 data class InventoryResultTypeEntity(
     @PrimaryKey @ColumnInfo(name = "inventory_result_type_id") val inventoryResultTypeId: Int,
     @PrimaryKey @ColumnInfo(name = "inventory_result_code") val inventoryResultCode: InventoryResultCode,

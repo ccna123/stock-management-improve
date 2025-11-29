@@ -1,7 +1,7 @@
 package com.example.sol_denka_stockmanagement.database.repository
 
 import com.example.sol_denka_stockmanagement.constant.TagStatus
-import com.example.sol_denka_stockmanagement.database.dao.inventory.InventoryItemMasterDao
+import com.example.sol_denka_stockmanagement.database.dao.inventory.InventoryResultTypeDao
 import com.example.sol_denka_stockmanagement.model.AdditionalFieldsModel
 import com.example.sol_denka_stockmanagement.model.InventoryItemMasterModel
 import kotlinx.coroutines.flow.Flow
@@ -11,7 +11,7 @@ import javax.inject.Singleton
 
 @Singleton
 class InventoryItemMasterRepository @Inject constructor(
-    private val inventoryItemMasterDao: InventoryItemMasterDao,
+    private val inventoryResultTypeDao: InventoryResultTypeDao,
 ) {
 
     private val _mockData = MutableStateFlow(
