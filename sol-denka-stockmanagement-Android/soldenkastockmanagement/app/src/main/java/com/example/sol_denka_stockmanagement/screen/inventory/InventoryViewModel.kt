@@ -6,10 +6,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.sol_denka_stockmanagement.app_interface.ITagOperation
 import com.example.sol_denka_stockmanagement.constant.TagStatus
-import com.example.sol_denka_stockmanagement.database.repository.InventoryItemMasterRepository
+import com.example.sol_denka_stockmanagement.database.repository.tag.TagRepository
 import com.example.sol_denka_stockmanagement.helper.ReaderController
 import com.example.sol_denka_stockmanagement.helper.TagController
-import com.example.sol_denka_stockmanagement.model.InventoryItemMasterModel
+import com.example.sol_denka_stockmanagement.model.tag.TagMasterModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -22,23 +22,23 @@ import javax.inject.Inject
 class InventoryViewModel @Inject constructor(
     private val tagController: TagController,
     private val readerController: ReaderController,
-    private val inventoryItemMasterRepository: InventoryItemMasterRepository
+    private val tagRepository: TagRepository
 ) : ViewModel(), ITagOperation {
 
-    private val _rfidTagList = MutableStateFlow<List<InventoryItemMasterModel>>(emptyList())
+    private val _rfidTagList = MutableStateFlow<List<TagMasterModel>>(emptyList())
     val rfidTagList = _rfidTagList.asStateFlow()
 
     init {
 
         viewModelScope.launch {
             combine(
-                inventoryItemMasterRepository.get(),
+                tagRepository.get(),
                 tagController.statusMap
             ) { masterList, statusMap ->
                 masterList.map { item ->
-                    val newStatus = statusMap[item.epc] ?: item.newField.tagStatus
+                    val newStatus = statusMap[item.epc] ?: item.newFields.tagStatus
                     item.copy(
-                        newField = item.newField.copy(tagStatus = newStatus)
+                        newFields = item.newFields.copy(tagStatus = newStatus)
                     )
                 }
             }.collect { mergedList ->

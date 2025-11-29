@@ -1,15 +1,29 @@
 package com.example.sol_denka_stockmanagement.model.csv
 
-import androidx.room.ColumnInfo
-import androidx.room.Entity
-import androidx.room.PrimaryKey
+import com.example.sol_denka_stockmanagement.database.entity.csv.CsvTaskTypeEntity
 
-@Entity(tableName = "CsvTaskType")
 data class CsvTaskTypeModel(
-    @PrimaryKey @ColumnInfo(name = "csv_task_type_id") val csvTaskTypeId: Int,
-    @ColumnInfo(name = "csv_task_code") val csvTaskCode: String,
-    @ColumnInfo(name = "csv_task_name") val csvTaskName: String,
-    @ColumnInfo(name = "created_at") val createdAt: String,
-    @ColumnInfo(name = "updated_at") val updatedAt: String,
-
+    val csvTaskTypeId: Int,
+    val csvTaskCode: String,
+    val csvTaskName: String,
+    val createdAt: String,
+    val updatedAt: String
 )
+
+fun CsvTaskTypeEntity.toModel() = CsvTaskTypeModel(
+    csvTaskTypeId = csvTaskTypeId,
+    csvTaskCode = csvTaskCode,
+    csvTaskName = csvTaskName,
+    createdAt = createdAt,
+    updatedAt = updatedAt
+)
+
+fun CsvTaskTypeModel.toEntity() = CsvTaskTypeEntity(
+    csvTaskTypeId = csvTaskTypeId,
+    csvTaskCode = csvTaskCode,
+    csvTaskName = csvTaskName,
+    createdAt = createdAt,
+    updatedAt = updatedAt
+)
+
+
