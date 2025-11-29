@@ -4,7 +4,7 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
-@Entity(tableName = "LocationChangeSessionEntity")
+@Entity(tableName = "LocationChangeSession")
 data class LocationChangeSessionEntity(
     @PrimaryKey @ColumnInfo(name = "location_change_session_id") val locationChangeSessionId: Int,
     @ColumnInfo(name = "device_id") val deviceId: String,

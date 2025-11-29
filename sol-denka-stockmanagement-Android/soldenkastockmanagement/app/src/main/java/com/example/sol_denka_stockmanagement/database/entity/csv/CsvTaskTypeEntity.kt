@@ -4,7 +4,7 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
-@Entity(tableName = "CsvTaskTypeEntity")
+@Entity(tableName = "CsvTaskType")
 data class CsvTaskTypeEntity(
     @PrimaryKey @ColumnInfo(name = "csv_task_type_id") val csvTaskTypeId: Int,
     @ColumnInfo(name = "csv_task_code") val csvTaskCode: String,

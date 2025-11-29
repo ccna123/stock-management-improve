@@ -1,12 +1,12 @@
-package com.example.sol_denka_stockmanagement.database.dao
+package com.example.sol_denka_stockmanagement.database.dao.location
 
 import androidx.room.Dao
+import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
-import androidx.room.Delete
 import com.example.sol_denka_stockmanagement.app_interface.IDao
-import com.example.sol_denka_stockmanagement.database.entity.LocationMasterEntity
+import com.example.sol_denka_stockmanagement.database.entity.location.LocationMasterEntity
 import kotlinx.coroutines.flow.Flow
 
 @Dao

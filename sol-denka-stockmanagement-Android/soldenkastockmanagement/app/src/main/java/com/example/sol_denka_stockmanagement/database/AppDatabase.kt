@@ -2,14 +2,12 @@ package com.example.sol_denka_stockmanagement.database
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
-import com.example.sol_denka_stockmanagement.database.dao.CsvHistoryDao
-import com.example.sol_denka_stockmanagement.database.dao.EventTypeDao
-import com.example.sol_denka_stockmanagement.database.dao.InOutEventDao
-import com.example.sol_denka_stockmanagement.database.dao.InventoryItemMasterDao
-import com.example.sol_denka_stockmanagement.database.dao.InventoryResultDao
-import com.example.sol_denka_stockmanagement.database.dao.InventoryTaskDao
-import com.example.sol_denka_stockmanagement.database.dao.LocationDao
-import com.example.sol_denka_stockmanagement.database.dao.MaterialDao
+import com.example.sol_denka_stockmanagement.database.dao.csv.CsvHistoryDao
+import com.example.sol_denka_stockmanagement.database.dao.inbound.InboundEventDao
+import com.example.sol_denka_stockmanagement.database.dao.inventory.InventoryItemMasterDao
+import com.example.sol_denka_stockmanagement.database.dao.inventory.InventoryResultLocalDao
+import com.example.sol_denka_stockmanagement.database.dao.leger.InventorySessionDao
+import com.example.sol_denka_stockmanagement.database.dao.location.LocationDao
 import com.example.sol_denka_stockmanagement.database.entity.csv.CsvHistoryEntity
 import com.example.sol_denka_stockmanagement.database.entity.csv.CsvTaskTypeEntity
 import com.example.sol_denka_stockmanagement.database.entity.inbound.InboundEventEntity
@@ -56,7 +54,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun csvHistoryDao(): CsvHistoryDao
     abstract fun eventTypeDao(): EventTypeDao
     abstract fun inventoryItemMasterDao(): InventoryItemMasterDao
-    abstract fun inventoryTaskDao(): InventoryTaskDao
-    abstract fun inventoryResultDao(): InventoryResultDao
-    abstract fun inOutEventDao(): InOutEventDao
+    abstract fun inventoryTaskDao(): InventorySessionDao
+    abstract fun inventoryResultDao(): InventoryResultLocalDao
+    abstract fun inOutEventDao(): InboundEventDao
 }

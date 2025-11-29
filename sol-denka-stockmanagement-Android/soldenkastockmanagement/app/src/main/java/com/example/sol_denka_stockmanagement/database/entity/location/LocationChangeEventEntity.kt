@@ -8,7 +8,7 @@ import androidx.room.PrimaryKey
 import com.example.sol_denka_stockmanagement.database.entity.leger.LedgerItemEntity
 
 @Entity(
-    tableName = "LocationChangeEventEntity", foreignKeys = [
+    tableName = "LocationChangeEvent", foreignKeys = [
         ForeignKey(
             entity = LocationChangeSessionEntity::class,
             parentColumns = ["location_change_session_id"],

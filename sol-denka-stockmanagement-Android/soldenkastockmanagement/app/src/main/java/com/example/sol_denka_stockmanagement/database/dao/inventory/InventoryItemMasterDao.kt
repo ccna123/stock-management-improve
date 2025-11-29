@@ -1,4 +1,4 @@
-package com.example.sol_denka_stockmanagement.database.dao
+package com.example.sol_denka_stockmanagement.database.dao.inventory
 
 import androidx.room.Dao
 import androidx.room.Delete

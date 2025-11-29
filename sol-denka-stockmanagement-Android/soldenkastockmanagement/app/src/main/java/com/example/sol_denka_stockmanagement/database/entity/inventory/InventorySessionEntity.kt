@@ -6,7 +6,7 @@ import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
 import com.example.sol_denka_stockmanagement.database.entity.location.LocationMasterEntity
 
-@Entity(tableName = "InventorySessionEntity", foreignKeys = [
+@Entity(tableName = "InventorySession", foreignKeys = [
     ForeignKey(
         entity = LocationMasterEntity::class,
         parentColumns = ["location_id"],

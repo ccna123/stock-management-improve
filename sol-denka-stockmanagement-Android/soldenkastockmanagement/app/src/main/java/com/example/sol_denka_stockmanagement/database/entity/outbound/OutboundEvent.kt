@@ -9,7 +9,7 @@ import com.example.sol_denka_stockmanagement.database.entity.leger.LedgerItemEnt
 import com.example.sol_denka_stockmanagement.database.entity.process.ProcessTypeEntity
 
 @Entity(
-    tableName = "OutBoundEvent",
+    tableName = "OutboundEvent",
     foreignKeys = [
         ForeignKey(
             entity = OutboundSessionEntity::class,

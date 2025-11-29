@@ -157,7 +157,7 @@ class AppViewModel @Inject constructor(
                 _isFileWorking.value = true
                 _progress.value = 0f
 
-                // 1️⃣ Get all CSV files in both InventoryResultDao & StockEvent folders
+                // 1️⃣ Get all CSV files in both InventoryResultLocalDao & StockEvent folders
                 val csvFiles = mutableListOf<Pair<String, Long>>()
                 val resolver = context.contentResolver
                 val externalUri = MediaStore.Files.getContentUri("external")
@@ -172,7 +172,7 @@ class AppViewModel @Inject constructor(
                     "${MediaStore.Files.FileColumns.RELATIVE_PATH} LIKE ? OR " +
                             "${MediaStore.Files.FileColumns.RELATIVE_PATH} LIKE ?"
                 val selectionArgs = arrayOf(
-                    "%Documents/StockManagementApp/InventoryResultDao%",
+                    "%Documents/StockManagementApp/InventoryResultLocalDao%",
                     "%Documents/StockManagementApp/StockEvent%"
                 )
 
