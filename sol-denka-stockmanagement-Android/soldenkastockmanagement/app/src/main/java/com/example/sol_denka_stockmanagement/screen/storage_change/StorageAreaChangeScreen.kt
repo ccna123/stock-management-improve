@@ -29,7 +29,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.sol_denka_stockmanagement.R
 import com.example.sol_denka_stockmanagement.constant.MaterialSelectionItem
 import com.example.sol_denka_stockmanagement.constant.SelectTitle
-import com.example.sol_denka_stockmanagement.constant.StockAreaItem
 import com.example.sol_denka_stockmanagement.intent.ExpandIntent
 import com.example.sol_denka_stockmanagement.intent.InputIntent
 import com.example.sol_denka_stockmanagement.intent.ShareIntent
@@ -54,6 +53,7 @@ fun StorageAreaChangeScreen(
     val inputState = appViewModel.inputState.collectAsStateWithLifecycle().value
     val selectedCount by appViewModel.selectedCount.collectAsStateWithLifecycle()
     val checkedMap by appViewModel.perTagChecked.collectAsStateWithLifecycle()
+    val locationMaster by appViewModel.locationMaster.collectAsStateWithLifecycle()
 
     Layout(
         topBarText = stringResource(R.string.storage_area_change),
@@ -68,7 +68,9 @@ fun StorageAreaChangeScreen(
                 modifier = Modifier
                     .fillMaxWidth(0.5f)
                     .shadow(
-                        elevation = 13.dp, clip = true, ambientColor = Color.Gray.copy(alpha = 0.5f),
+                        elevation = 13.dp,
+                        clip = true,
+                        ambientColor = Color.Gray.copy(alpha = 0.5f),
                         spotColor = Color.DarkGray.copy(alpha = 0.7f)
                     ),
                 icon = {
@@ -126,12 +128,12 @@ fun StorageAreaChangeScreen(
                                 enabled = true
                             )
                             .fillMaxWidth(),
-                        value = if (inputState.stockArea == SelectTitle.SelectStockArea.displayName) "" else inputState.stockArea,
-                        hintText = SelectTitle.SelectStockArea.displayName,
+                        value = if (inputState.stockArea == SelectTitle.SelectLocation.displayName) "" else inputState.stockArea,
+                        hintText = SelectTitle.SelectLocation.displayName,
                         isNumeric = false,
                         onChange = { newValue ->
                             appViewModel.onInputIntent(
-                                InputIntent.ChangeStockArea(
+                                InputIntent.ChangeLocation(
                                     newValue
                                 )
                             )
@@ -145,19 +147,21 @@ fun StorageAreaChangeScreen(
                         expanded = expandState.stockAreaExpanded,
                         onDismissRequest = { appViewModel.onExpandIntent(ExpandIntent.ToggleStockAreaExpanded) }
                     ) {
-                        listOf(
-                            SelectTitle.SelectStockArea.displayName,
-                            StockAreaItem.STOCK_AREA1.displayName,
-                            StockAreaItem.STOCK_AREA2.displayName,
-                            StockAreaItem.STOCK_AREA3.displayName,
-                            StockAreaItem.STOCK_AREA4.displayName,
-                            StockAreaItem.STOCK_AREA5.displayName,
-                        ).forEach { stockArea ->
+                        DropdownMenuItem(
+                            text = { Text(text = SelectTitle.SelectLocation.displayName) },
+                            onClick = {
+                                appViewModel.apply {
+                                    onInputIntent(InputIntent.ChangeLocation(""))
+                                    onExpandIntent(ExpandIntent.ToggleStockAreaExpanded)
+                                }
+                            }
+                        )
+                        locationMaster.forEach { location ->
                             DropdownMenuItem(
-                                text = { Text(text = stockArea) },
+                                text = { Text(text = location.locationName ?: "") },
                                 onClick = {
                                     appViewModel.apply {
-                                        onInputIntent(InputIntent.ChangeStockArea(if (stockArea == SelectTitle.SelectStockArea.displayName) "" else stockArea))
+                                        onInputIntent(InputIntent.ChangeLocation(if (location.locationName == SelectTitle.SelectLocation.displayName) "" else location.locationName ?: ""))
                                         onExpandIntent(ExpandIntent.ToggleStockAreaExpanded)
                                     }
                                 }
@@ -167,7 +171,9 @@ fun StorageAreaChangeScreen(
                 }
                 Spacer(modifier = Modifier.height(10.dp))
                 InputFieldContainer(
-                    modifier = Modifier.fillMaxWidth().height(200.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(200.dp),
                     value = inputState.remark,
                     label = stringResource(R.string.remark) + "（オプション）",
                     hintText = stringResource(R.string.remark_hint),

@@ -19,6 +19,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
@@ -28,7 +29,6 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.sol_denka_stockmanagement.R
 import com.example.sol_denka_stockmanagement.constant.SelectTitle
-import com.example.sol_denka_stockmanagement.constant.StockAreaItem
 import com.example.sol_denka_stockmanagement.constant.TagStatus
 import com.example.sol_denka_stockmanagement.intent.ExpandIntent
 import com.example.sol_denka_stockmanagement.intent.InputIntent
@@ -57,6 +57,7 @@ fun InventoryScreen(
     val expandState = appViewModel.expandState.collectAsStateWithLifecycle().value
     val rfidTagList = inventoryViewModel.rfidTagList.collectAsStateWithLifecycle().value
     val showClearTagConfirmDialog = appViewModel.showClearTagConfirmDialog.value
+    val locationMaster by appViewModel.locationMaster.collectAsStateWithLifecycle()
 
     LaunchedEffect(Unit) {
         scanViewModel.setEnableScan(false)
@@ -142,12 +143,12 @@ fun InventoryScreen(
                                 enabled = true
                             )
                             .fillMaxWidth(),
-                        value = if (inputState.stockArea == SelectTitle.SelectStockArea.displayName) "" else inputState.stockArea,
-                        hintText = SelectTitle.SelectStockArea.displayName,
+                        value = if (inputState.stockArea == SelectTitle.SelectLocation.displayName) "" else inputState.stockArea,
+                        hintText = SelectTitle.SelectLocation.displayName,
                         isNumeric = false,
                         onChange = { newValue ->
                             appViewModel.onInputIntent(
-                                InputIntent.ChangeStockArea(
+                                InputIntent.ChangeLocation(
                                     newValue
                                 )
                             )
@@ -161,19 +162,21 @@ fun InventoryScreen(
                         expanded = expandState.stockAreaExpanded,
                         onDismissRequest = { appViewModel.onExpandIntent(ExpandIntent.ToggleStockAreaExpanded) }
                     ) {
-                        listOf(
-                            SelectTitle.SelectStockArea.displayName,
-                            StockAreaItem.STOCK_AREA1.displayName,
-                            StockAreaItem.STOCK_AREA2.displayName,
-                            StockAreaItem.STOCK_AREA3.displayName,
-                            StockAreaItem.STOCK_AREA4.displayName,
-                            StockAreaItem.STOCK_AREA5.displayName,
-                        ).forEach { stockArea ->
+                        DropdownMenuItem(
+                            text = { Text(text = SelectTitle.SelectLocation.displayName) },
+                            onClick = {
+                                appViewModel.apply {
+                                    onInputIntent(InputIntent.ChangeLocation(""))
+                                    onExpandIntent(ExpandIntent.ToggleStockAreaExpanded)
+                                }
+                            }
+                        )
+                        locationMaster.forEach { location ->
                             DropdownMenuItem(
-                                text = { Text(text = stockArea) },
+                                text = { Text(text = location.locationName ?: "") },
                                 onClick = {
                                     appViewModel.apply {
-                                        onInputIntent(InputIntent.ChangeStockArea(if (stockArea == SelectTitle.SelectStockArea.displayName) "" else stockArea))
+                                        onInputIntent(InputIntent.ChangeLocation(if (location.locationName == SelectTitle.SelectLocation.displayName) "" else location.locationName ?: ""))
                                         onExpandIntent(ExpandIntent.ToggleStockAreaExpanded)
                                     }
                                 }

@@ -45,7 +45,7 @@ enum class Tab(val displayName: String) {
 
 enum class SelectTitle(val displayName: String) {
     SelectMissRoll("資材選択"),
-    SelectStockArea("保管場所選択"),
+    SelectLocation("保管場所選択"),
     SelectCsvType("CSVファイル種類選択"),
     SelectHandlingMethod("処理方法選択"),
     SelectPackingStyle("荷姿選択"),

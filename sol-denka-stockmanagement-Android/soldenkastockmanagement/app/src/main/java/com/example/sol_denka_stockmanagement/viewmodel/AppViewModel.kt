@@ -11,6 +11,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.sol_denka_stockmanagement.constant.ConnectionState
 import com.example.sol_denka_stockmanagement.constant.HandlingMethod
+import com.example.sol_denka_stockmanagement.database.repository.location.LocationRepository
 import com.example.sol_denka_stockmanagement.helper.csv.CsvHelper
 import com.example.sol_denka_stockmanagement.helper.NetworkConnectionObserver
 import com.example.sol_denka_stockmanagement.helper.ReaderController
@@ -18,6 +19,7 @@ import com.example.sol_denka_stockmanagement.helper.ToastType
 import com.example.sol_denka_stockmanagement.intent.ExpandIntent
 import com.example.sol_denka_stockmanagement.intent.InputIntent
 import com.example.sol_denka_stockmanagement.intent.ShareIntent
+import com.example.sol_denka_stockmanagement.model.location.LocationMasterModel
 import com.example.sol_denka_stockmanagement.model.reader.ReaderInfoModel
 import com.example.sol_denka_stockmanagement.screen.setting.sub_screen.app_setting.AppSettingState
 import com.example.sol_denka_stockmanagement.state.ErrorState
@@ -25,7 +27,6 @@ import com.example.sol_denka_stockmanagement.state.ExpandState
 import com.example.sol_denka_stockmanagement.state.GeneralState
 import com.example.sol_denka_stockmanagement.state.InputState
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -43,6 +44,7 @@ import javax.inject.Inject
 class AppViewModel @Inject constructor(
     private val readerController: ReaderController,
     private val connectionObserver: NetworkConnectionObserver,
+    private val locationRepository: LocationRepository,
     private val csvHelper: CsvHelper,
 ) : ViewModel() {
 
@@ -102,6 +104,9 @@ class AppViewModel @Inject constructor(
     var bottomSheetChosenMethod = mutableStateOf(HandlingMethod.USE.displayName)
         private set
 
+    private val _locationMaster = MutableStateFlow<List<LocationMasterModel>>(emptyList())
+    val locationMaster = _locationMaster.asStateFlow()
+
     val readerInfo = readerController.readerInfo.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5000),
@@ -131,6 +136,12 @@ class AppViewModel @Inject constructor(
     init {
         viewModelScope.launch(Dispatchers.IO) {
             readerController.tryAutoConnect()
+        }
+
+        viewModelScope.launch {
+            locationRepository.get().collect { locations ->
+                _locationMaster.value = locations
+            }
         }
 
         viewModelScope.launch {
@@ -241,7 +252,7 @@ class AppViewModel @Inject constructor(
                 bottomSheetChosenMethod.value = intent.value
             }
 
-            is InputIntent.ChangeStockArea ->
+            is InputIntent.ChangeLocation ->
                 _inputState.update { it.copy(stockArea = intent.value) }
 
             is InputIntent.ChangeRemark ->

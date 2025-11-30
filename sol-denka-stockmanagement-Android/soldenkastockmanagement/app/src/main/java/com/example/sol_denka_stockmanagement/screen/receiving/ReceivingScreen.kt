@@ -214,7 +214,7 @@ fun ReceivingScreen(
                         },
                         onStockAreaChange = {
                             appViewModel.onInputIntent(
-                                InputIntent.ChangeStockArea(
+                                InputIntent.ChangeLocation(
                                     it
                                 )
                             )
@@ -245,7 +245,7 @@ fun ReceivingScreen(
                             },
                             onStockAreaChange = {
                                 appViewModel.onInputIntent(
-                                    InputIntent.ChangeStockArea(
+                                    InputIntent.ChangeLocation(
                                         it
                                     )
                                 )
