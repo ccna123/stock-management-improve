@@ -12,8 +12,8 @@ sealed class Screen(
 ) {
     data object Home : Screen("home", "ホーム")
     data object Inventory : Screen("inventory", "棚卸")
-    data object Receiving : Screen("receiving", "入庫")
-    data object Shipping : Screen("shipping", "出庫")
+    data object Inbound : Screen("inbound", "入庫")
+    data object Outbound : Screen("outbound", "出庫")
     data object Setting : Screen("setting", "設定")
     data class InventoryScan(val preScreen: String) : Screen("inventory_scan", "棚卸")
     data object VersionInfo : Screen("version_info", "バージョン情報")
@@ -32,8 +32,8 @@ sealed class Screen(
         fun fromRouteId(id: String): Screen? = when (id) {
             Home.routeId -> Home
             Inventory.routeId -> Inventory
-            Receiving.routeId -> Receiving
-            Shipping.routeId -> Shipping
+            Inbound.routeId -> Inbound
+            Outbound.routeId -> Outbound
             Setting.routeId -> Setting
             VersionInfo.routeId -> VersionInfo
             LicenseInfo.routeId -> LicenseInfo

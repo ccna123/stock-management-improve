@@ -1,4 +1,4 @@
-package com.example.sol_denka_stockmanagement.screen.receiving
+package com.example.sol_denka_stockmanagement.screen.inbound
 
 import android.os.Build
 import androidx.annotation.RequiresApi
@@ -42,8 +42,8 @@ import com.example.sol_denka_stockmanagement.intent.InputIntent
 import com.example.sol_denka_stockmanagement.intent.ShareIntent
 import com.example.sol_denka_stockmanagement.navigation.Screen
 import com.example.sol_denka_stockmanagement.screen.layout.Layout
-import com.example.sol_denka_stockmanagement.screen.receiving.components.LiterInput
-import com.example.sol_denka_stockmanagement.screen.receiving.components.MissRollInput
+import com.example.sol_denka_stockmanagement.screen.inbound.components.LiterInput
+import com.example.sol_denka_stockmanagement.screen.inbound.components.MissRollInput
 import com.example.sol_denka_stockmanagement.share.ButtonContainer
 import com.example.sol_denka_stockmanagement.share.InputFieldContainer
 import com.example.sol_denka_stockmanagement.ui.theme.paleSkyBlue
@@ -53,7 +53,7 @@ import com.example.sol_denka_stockmanagement.viewmodel.ScanViewModel
 @OptIn(ExperimentalMaterial3Api::class)
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @Composable
-fun ReceivingScreen(
+fun InboundScreen(
     appViewModel: AppViewModel,
     scanViewModel: ScanViewModel,
     onNavigate: (Screen) -> Unit,
@@ -78,8 +78,8 @@ fun ReceivingScreen(
         topBarIcon = Icons.AutoMirrored.Filled.ArrowBack,
         appViewModel = appViewModel,
         onNavigate = onNavigate,
-        currentScreenNameId = Screen.Receiving.routeId,
-        prevScreenNameId = Screen.Receiving.routeId, // for scan screen to navigate back,
+        currentScreenNameId = Screen.Inbound.routeId,
+        prevScreenNameId = Screen.Inbound.routeId, // for scan screen to navigate back,
         hasBottomBar = true,
         bottomButton = {
             ButtonContainer(

@@ -1,4 +1,4 @@
-package com.example.sol_denka_stockmanagement.screen.shipping
+package com.example.sol_denka_stockmanagement.screen.outbound
 
 import android.os.Build
 import androidx.annotation.RequiresApi
@@ -39,7 +39,7 @@ import com.example.sol_denka_stockmanagement.viewmodel.AppViewModel
 @OptIn(ExperimentalMaterial3Api::class)
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @Composable
-fun ShippingScreen(
+fun OutboundScreen(
     appViewModel: AppViewModel,
     onNavigate: (Screen) -> Unit,
     onGoBack: () -> Unit,
@@ -57,8 +57,8 @@ fun ShippingScreen(
         topBarIcon = Icons.AutoMirrored.Filled.ArrowBack,
         appViewModel = appViewModel,
         onNavigate = onNavigate,
-        currentScreenNameId = Screen.Shipping.routeId,
-        prevScreenNameId = Screen.Shipping.routeId, // for scan screen to navigate back,
+        currentScreenNameId = Screen.Outbound.routeId,
+        prevScreenNameId = Screen.Outbound.routeId, // for scan screen to navigate back,
         hasBottomBar = true,
         bottomButton = {
             ButtonContainer(

@@ -61,8 +61,8 @@ fun StorageAreaChangeScreen(
         topBarIcon = Icons.AutoMirrored.Filled.ArrowBack,
         appViewModel = appViewModel,
         onNavigate = onNavigate,
-        currentScreenNameId = Screen.Shipping.routeId,
-        prevScreenNameId = Screen.Shipping.routeId, // for scan screen to navigate back,
+        currentScreenNameId = Screen.Outbound.routeId,
+        prevScreenNameId = Screen.Outbound.routeId, // for scan screen to navigate back,
         hasBottomBar = true,
         bottomButton = {
             ButtonContainer(

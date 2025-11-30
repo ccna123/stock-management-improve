@@ -19,9 +19,9 @@ import com.example.sol_denka_stockmanagement.screen.inventory.complete.Inventory
 import com.example.sol_denka_stockmanagement.screen.inventory.input.InventoryScreen
 import com.example.sol_denka_stockmanagement.screen.inventory.scan.InventoryScanScreen
 import com.example.sol_denka_stockmanagement.screen.inventory.InventoryViewModel
-import com.example.sol_denka_stockmanagement.screen.receiving.ReceivingScreen
+import com.example.sol_denka_stockmanagement.screen.inbound.InboundScreen
 import com.example.sol_denka_stockmanagement.screen.scan.ScanScreen
-import com.example.sol_denka_stockmanagement.screen.shipping.ShippingScreen
+import com.example.sol_denka_stockmanagement.screen.outbound.OutboundScreen
 import com.example.sol_denka_stockmanagement.screen.version.VersionInfoScreen
 import com.example.sol_denka_stockmanagement.screen.version.sub_screen.LicenseInfoScreen
 import com.example.sol_denka_stockmanagement.viewmodel.ScanViewModel
@@ -73,8 +73,8 @@ fun Navigation3(
                     onNavigate = { dest -> navigate(dest) }
                 )
             }
-            entry<Screen.Shipping> {
-                ShippingScreen(
+            entry<Screen.Outbound> {
+                OutboundScreen(
                     appViewModel = appViewModel,
                     onNavigate = {dest -> navigate(dest)},
                     onGoBack = { goBack() }
@@ -107,8 +107,8 @@ fun Navigation3(
                     onGoBack = { goBack() }
                 )
             }
-            entry<Screen.Receiving> {
-                ReceivingScreen(
+            entry<Screen.Inbound> {
+                InboundScreen(
                     appViewModel = appViewModel,
                     scanViewModel = scanViewModel,
                     onNavigate = {dest -> navigate(dest)},

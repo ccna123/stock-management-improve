@@ -1,4 +1,4 @@
-package com.example.sol_denka_stockmanagement.screen.receiving.components
+package com.example.sol_denka_stockmanagement.screen.inbound.components
 
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth

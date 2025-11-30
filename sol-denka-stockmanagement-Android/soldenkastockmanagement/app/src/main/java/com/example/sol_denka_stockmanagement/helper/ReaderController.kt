@@ -60,7 +60,7 @@ class ReaderController @Inject constructor(
     val readerInfo: StateFlow<ReaderInfoModel> = _readerInfo.asStateFlow()
 
     private val _canScan = mutableStateOf(false)
-    private val _screen = mutableStateOf<Screen>(Screen.Receiving)
+    private val _screen = mutableStateOf<Screen>(Screen.Inbound)
 
     init {
         fakeReader = FakeReader()
@@ -257,7 +257,7 @@ class ReaderController @Inject constructor(
         }
     }
 
-    fun setScanEnabled(enabled: Boolean, screen: Screen = Screen.Receiving) {
+    fun setScanEnabled(enabled: Boolean, screen: Screen = Screen.Inbound) {
         _canScan.value = enabled
         _screen.value = screen
     }

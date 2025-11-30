@@ -67,13 +67,11 @@ import androidx.compose.ui.zIndex
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.sol_denka_stockmanagement.R
 import com.example.sol_denka_stockmanagement.constant.ConnectionState
-import com.example.sol_denka_stockmanagement.constant.Tab
 import com.example.sol_denka_stockmanagement.helper.ToastManager
 import com.example.sol_denka_stockmanagement.helper.ToastMessage
 import com.example.sol_denka_stockmanagement.intent.ShareIntent
 import com.example.sol_denka_stockmanagement.model.reader.ReaderInfoModel
 import com.example.sol_denka_stockmanagement.navigation.Screen
-import com.example.sol_denka_stockmanagement.screen.setting.sub_screen.reader_setting.ReaderSettingViewModel
 import com.example.sol_denka_stockmanagement.share.ButtonContainer
 import com.example.sol_denka_stockmanagement.share.MenuDrawer
 import com.example.sol_denka_stockmanagement.share.dialog.AppDialog
@@ -167,8 +165,8 @@ fun Layout(
                         Screen.CsvExport.routeId -> if (isFileWorking) "CSVファイル出力中" else "CSVファイル出力に成功しました"
 
                         in listOf(
-                            Screen.Receiving.routeId,
-                            Screen.Shipping.routeId,
+                            Screen.Inbound.routeId,
+                            Screen.Outbound.routeId,
                             Screen.InventoryComplete.routeId
                         ) -> if (isFileWorking) "CSVファイル出力中" else "CSVファイルの出力\nWindowsアプリへの送信に成功しました"
 
@@ -195,8 +193,8 @@ fun Layout(
                             appViewModel.hideProgressDialog()
                             when (prevScreenNameId) {
                                 in listOf(
-                                    Screen.Receiving.routeId,
-                                    Screen.Shipping.routeId,
+                                    Screen.Inbound.routeId,
+                                    Screen.Outbound.routeId,
                                     Screen.InventoryComplete.routeId
                                 ) -> onNavigate?.invoke(Screen.Home)
                             }
@@ -208,8 +206,8 @@ fun Layout(
                             ) -> "閉じる"
 
                             in listOf(
-                                Screen.Receiving.routeId,
-                                Screen.Shipping.routeId,
+                                Screen.Inbound.routeId,
+                                Screen.Outbound.routeId,
                                 Screen.InventoryComplete.routeId
                             ) -> "Homeへ戻る"
 

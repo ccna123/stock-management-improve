@@ -33,7 +33,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.sol_denka_stockmanagement.R
-import com.example.sol_denka_stockmanagement.constant.HandlingMethod
 import com.example.sol_denka_stockmanagement.constant.SelectTitle
 import com.example.sol_denka_stockmanagement.intent.ExpandIntent
 import com.example.sol_denka_stockmanagement.intent.InputIntent
@@ -77,7 +76,7 @@ fun ScanScreen(
     LaunchedEffect(Unit) {
         scanViewModel.setEnableScan(
             enabled = true, screen = when (prevScreenNameId) {
-                Screen.Receiving.routeId -> Screen.Receiving
+                Screen.Inbound.routeId -> Screen.Inbound
                 else -> Screen.Scan("")
             }
         )
@@ -175,11 +174,11 @@ fun ScanScreen(
                 ButtonContainer(
                     buttonText = when (prevScreenNameId) {
                         in listOf(
-                            Screen.Shipping.routeId,
+                            Screen.Outbound.routeId,
                             Screen.StorageAreaChange.routeId
                         ) -> "${stringResource(R.string.register_info)}(${selectedCount}件)"
 
-                        Screen.Receiving.routeId -> stringResource(R.string.register_info)
+                        Screen.Inbound.routeId -> stringResource(R.string.register_info)
                         else -> ""
                     },
                     modifier = Modifier
@@ -193,11 +192,11 @@ fun ScanScreen(
                         ),
                     canClick = when (prevScreenNameId) {
                         in listOf(
-                            Screen.Shipping.routeId,
+                            Screen.Outbound.routeId,
                             Screen.StorageAreaChange.routeId
                         ) -> checkedMap.values.any { it }
 
-                        Screen.Receiving.routeId -> scannedTags.isNotEmpty()
+                        Screen.Inbound.routeId -> scannedTags.isNotEmpty()
                         else -> true
                     },
                     icon = {
@@ -211,9 +210,9 @@ fun ScanScreen(
                     onClick = {
                         onNavigate(
                             when (prevScreenNameId) {
-                                Screen.Shipping.routeId -> Screen.Shipping
+                                Screen.Outbound.routeId -> Screen.Outbound
                                 Screen.StorageAreaChange.routeId -> Screen.StorageAreaChange
-                                Screen.Receiving.routeId -> Screen.Receiving
+                                Screen.Inbound.routeId -> Screen.Inbound
                                 else -> Screen.Home
                             }
                         )
@@ -234,7 +233,7 @@ fun ScanScreen(
                 .padding(20.dp)
                 .fillMaxSize()
         ) {
-            if (prevScreenNameId == Screen.Receiving.routeId) {
+            if (prevScreenNameId == Screen.Inbound.routeId) {
                 ReceivingScanTagCard(scannedTag = scannedTags.values.lastOrNull()?.rfidNo ?: "")
             } else {
 
@@ -263,7 +262,7 @@ fun ScanScreen(
                 Spacer(modifier = Modifier.height(5.dp))
                 HorizontalDivider(color = brightAzure)
                 Spacer(modifier = Modifier.height(10.dp))
-                if (prevScreenNameId == Screen.Shipping.routeId) {
+                if (prevScreenNameId == Screen.Outbound.routeId) {
                     Box(
                         modifier = Modifier
                             .fillMaxWidth(),
@@ -291,7 +290,7 @@ fun ScanScreen(
                 LazyColumn {
                     items(scannedTags.toList(), key = { tag -> tag }) { tag ->
                         when (prevScreenNameId) {
-                            Screen.Shipping.routeId -> {
+                            Screen.Outbound.routeId -> {
                                 val isExpanded = expandedMap[tag.first] ?: false
                                 val isChecked = checkedMap[tag.first] ?: false
                                 val value = handlingMap[tag.first] ?: ""
