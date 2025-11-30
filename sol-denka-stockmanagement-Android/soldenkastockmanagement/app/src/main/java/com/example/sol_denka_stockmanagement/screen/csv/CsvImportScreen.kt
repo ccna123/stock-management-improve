@@ -21,16 +21,12 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuAnchorType
 import androidx.compose.material3.ExposedDropdownMenuBox
-import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -58,7 +54,6 @@ import com.example.sol_denka_stockmanagement.share.dialog.NetworkDialog
 import com.example.sol_denka_stockmanagement.ui.theme.brightAzure
 import com.example.sol_denka_stockmanagement.ui.theme.brightGreenPrimary
 import com.example.sol_denka_stockmanagement.ui.theme.paleSkyBlue
-import com.example.sol_denka_stockmanagement.ui.theme.skyBlue
 import com.example.sol_denka_stockmanagement.viewmodel.AppViewModel
 import kotlinx.coroutines.launch
 
@@ -86,7 +81,7 @@ fun CsvImportScreen(
             in listOf(
                 CsvType.MaterialMaster.displayName,
                 CsvType.LedgerMaster.displayName,
-                CsvType.StorageAreaMaster.displayName,
+                CsvType.LocationMaster.displayName,
             ) -> {
                 csvViewModel.fetchCsvFiles(context)
                 csvViewModel.toggleProgressVisibility(false)
@@ -253,7 +248,7 @@ fun CsvImportScreen(
                                         SelectTitle.SelectCsvType.displayName,
                                         CsvType.MaterialMaster.displayName,
                                         CsvType.LedgerMaster.displayName,
-                                        CsvType.StorageAreaMaster.displayName
+                                        CsvType.LocationMaster.displayName
                                     ).forEach { csvType ->
                                         DropdownMenuItem(
                                             text = { Text(text = csvType) },

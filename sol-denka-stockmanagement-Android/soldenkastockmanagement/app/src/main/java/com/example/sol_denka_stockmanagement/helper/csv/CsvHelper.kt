@@ -10,6 +10,7 @@ import com.example.sol_denka_stockmanagement.app_interface.ICsvExport
 import com.example.sol_denka_stockmanagement.app_interface.ICsvImport
 import com.example.sol_denka_stockmanagement.constant.CsvType
 import com.example.sol_denka_stockmanagement.constant.StatusCode
+import com.example.sol_denka_stockmanagement.database.repository.leger.LedgerItemRepository
 import com.example.sol_denka_stockmanagement.database.repository.location.LocationRepository
 import com.example.sol_denka_stockmanagement.helper.ProcessResult
 import com.example.sol_denka_stockmanagement.model.csv.CsvFileInfoModel
@@ -27,7 +28,8 @@ import java.util.Vector
 import javax.inject.Inject
 
 class CsvHelper @Inject constructor(
-    private val locationRepository: LocationRepository
+    private val locationRepository: LocationRepository,
+    private val ledgerItemRepository: LedgerItemRepository
 ) {
     companion object {
         private const val ROOT_FOLDER = "StockManagementApp"
@@ -99,8 +101,8 @@ class CsvHelper @Inject constructor(
                 "$IMPORT/$LEDGER_MASTER"
             )
 
-            CsvType.StorageAreaMaster.displayName -> Pair(
-                "Import/StorageAreaMaster",
+            CsvType.LocationMaster.displayName -> Pair(
+                "Import/LocationMaster",
                 "$IMPORT/$LOCATION_MASTER"
             )
 
@@ -376,7 +378,7 @@ class CsvHelper @Inject constructor(
 
             // 👉 Temporary choose the 1st file
             val fileObj = File(files.first().filePath, files.first().fileName)
-
+            Log.e("TSS", "fileName: ${files.first().fileName}")
             if (!fileObj.exists()) {
                 return@withContext ProcessResult.Failure(
                     statusCode = StatusCode.FAILED,
@@ -401,8 +403,6 @@ class CsvHelper @Inject constructor(
             val total = maxOf(1, lines.size)
             var count = 0
 
-            Log.e("TSS", "total: $total", )
-
             lines.chunked(20).forEach { chunk ->
                 importer.import(chunk)
                 count += chunk.size
@@ -425,7 +425,8 @@ class CsvHelper @Inject constructor(
 
     private fun getImporter(csvType: String): ICsvImport? {
         return when (csvType) {
-            CsvType.StorageAreaMaster.displayName -> LocationMasterImporter(repository = locationRepository)
+            CsvType.LocationMaster.displayName -> LocationMasterImporter(repository = locationRepository)
+            CsvType.LedgerMaster.displayName -> LedgerItemMasterImporter(repository = ledgerItemRepository)
             else -> null
         }
     }

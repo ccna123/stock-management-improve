@@ -96,6 +96,12 @@ object AppModule {
     fun provideItemTypeDao(database: AppDatabase): ItemTypeDao {
         return database.itemTypeDao()
     }
+
+    @Provides
+    @Singleton
+    fun provideLedgerItemDao(database: AppDatabase): LedgerItemDao {
+        return database.ledgerItemDao()
+    }
 //    @Provides
 //    @Singleton
 //    fun provideAppSettingStorage(): JsonFileSettingStorage<AppSettingModel> {

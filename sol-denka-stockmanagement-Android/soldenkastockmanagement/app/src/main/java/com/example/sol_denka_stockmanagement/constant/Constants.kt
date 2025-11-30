@@ -54,7 +54,7 @@ enum class SelectTitle(val displayName: String) {
 
 enum class CsvType(val displayName: String) {
     MaterialMaster("資材マスタCSV"),
-    StorageAreaMaster("保管場所マスタCSV"),
+    LocationMaster("保管場所マスタCSV"),
     LedgerMaster("台長アイテムマスタCSV"),
     InventoryResult("棚卸結果データCSV"),
     StockEvent("入出庫イベントデータCSV"),
