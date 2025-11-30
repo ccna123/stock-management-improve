@@ -2,7 +2,9 @@ package com.example.sol_denka_stockmanagement.helper
 
 import android.content.ContentValues
 import android.content.Context
+import android.os.Build
 import android.os.Environment
+import android.os.Environment.isExternalStorageManager
 import android.provider.MediaStore
 import android.util.Log
 import com.example.sol_denka_stockmanagement.app_interface.ICsvExport
@@ -19,10 +21,6 @@ import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.supervisorScope
 import kotlinx.coroutines.withContext
 import java.io.File
-import java.time.ZoneId
-import java.time.ZonedDateTime
-import java.time.format.DateTimeFormatter
-import java.util.Locale
 import java.util.Vector
 import javax.inject.Inject
 
@@ -121,62 +119,69 @@ class CsvHelper @Inject constructor(
 
     suspend fun listCsvFiles(csvType: String): List<CsvFileInfoModel> =
         withContext(Dispatchers.IO) {
-            val csvFiles = mutableListOf<CsvFileInfoModel>()
+
+            // 1) CHECK PERMISSION
+            if (!hasAllFilesAccess()) {
+                Log.e("TSS", "❌ MANAGE_EXTERNAL_STORAGE missing! Cannot list files.")
+                return@withContext emptyList()
+            }
+
+            val result = mutableListOf<CsvFileInfoModel>()
 
             try {
                 val (_, localFolder) = mapCsvTypeToFolders(csvType)
-                    ?: return@withContext emptyList<CsvFileInfoModel>()
+                    ?: return@withContext emptyList()
 
                 val targetDir = File(
                     Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),
                     "$ROOT_FOLDER/$localFolder"
                 )
 
-                Log.w("TSS", "📁 Checking folder: ${targetDir.absolutePath}")
+                Log.w("TSS", "📁 Reading folder (File API FULL ACCESS): ${targetDir.absolutePath}")
 
                 if (!targetDir.exists()) {
-                    Log.w("TSS", "⚠️ Folder not found, creating...")
+                    Log.w("TSS", "📁 Folder NOT exists → creating...")
                     targetDir.mkdirs()
                 }
 
+                // 2) LIST FILES DIRECTLY FROM DISK
                 val files = targetDir.listFiles()?.filter {
                     it.isFile && it.name.lowercase().endsWith(".csv")
-                }?.sortedByDescending { it.lastModified() } ?: emptyList()
+                } ?: emptyList()
 
-                Log.w("TSS", "📄 Found ${files.size} file(s): ${files.joinToString { it.name }}")
+                Log.w(
+                    "TSS",
+                    "📄 FOUND ${files.size} file(s): ${files.joinToString { it.name }}"
+                )
 
-                files.forEach { file ->
-                    val sizeBytes = file.length().toDouble()
-                    val sizeFormatted = when {
-                        sizeBytes >= 1024 * 1024 * 1024 -> String.format(
-                            Locale.getDefault(),
-                            "%.1f GB",
-                            sizeBytes / (1024 * 1024 * 1024)
+                // 3) FORMAT RESULT
+                result.addAll(
+                    files.map { file ->
+                        CsvFileInfoModel(
+                            fileName = file.name,
+                            fileSize = formatSize(file.length())
                         )
-
-                        sizeBytes >= 1024 * 1024 -> String.format(
-                            Locale.getDefault(),
-                            "%.1f MB",
-                            sizeBytes / (1024 * 1024)
-                        )
-
-                        sizeBytes >= 1024 -> String.format(
-                            Locale.getDefault(),
-                            "%.1f KB",
-                            sizeBytes / 1024
-                        )
-
-                        else -> String.format(Locale.getDefault(), "%.0f B", sizeBytes)
                     }
-                    csvFiles.add(CsvFileInfoModel(file.name, sizeFormatted))
-                }
+                )
 
             } catch (e: Exception) {
-                Log.e("TSS", "❌ Error reading CSV folder: ${e.message}", e)
+                Log.e("TSS", "❌ listCsvFiles ERROR: ${e.message}")
             }
 
-            csvFiles
+            result
         }
+
+    // ---------------------------------------------
+    // FORMAT SIZE (Readable)
+    // ---------------------------------------------
+    private fun formatSize(sizeBytes: Long): String {
+        val size = sizeBytes.toDouble()
+        return when {
+            size >= 1024 * 1024 -> String.format("%.1f MB", size / (1024 * 1024))
+            size >= 1024 -> String.format("%.1f KB", size / 1024)
+            else -> "$sizeBytes B"
+        }
+    }
     suspend fun exportAllFilesIndividually(
         context: Context,
         files: List<CsvFileInfoModel>,
@@ -332,15 +337,6 @@ class CsvHelper @Inject constructor(
             )
         }
     }
-    /** Local time ISO string for CSV content (e.g., 2025-11-01T14:15:12+09:00) */
-    private fun nowIsoTime(): String =
-        ZonedDateTime.now(ZoneId.systemDefault())
-            .format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssXXX", Locale.getDefault()))
-
-    /** Timestamp for file name (e.g., 2025_11_01_14_15_12) */
-    private fun nowForFileName(): String =
-        ZonedDateTime.now(ZoneId.systemDefault())
-            .format(DateTimeFormatter.ofPattern("yyyy_MM_dd_HH_mm_ss", Locale.getDefault()))
 
     private fun getPrivateKeyAndKnownHosts(context: Context): Pair<File, File> {
         val privateKeyFile = File(context.filesDir, "android_sftp")
@@ -357,6 +353,13 @@ class CsvHelper @Inject constructor(
         }
         return Pair(privateKeyFile, knownHosts)
     }
+
+    private fun hasAllFilesAccess(): Boolean {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            isExternalStorageManager()
+        } else true
+    }
+
 
     suspend fun <T : ICsvExport> saveCsv(
         context: Context,
