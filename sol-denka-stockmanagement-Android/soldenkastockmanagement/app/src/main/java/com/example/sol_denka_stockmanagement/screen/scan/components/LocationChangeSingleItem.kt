@@ -17,7 +17,7 @@ import com.example.sol_denka_stockmanagement.constant.MaterialSelectionItem
 import com.example.sol_denka_stockmanagement.ui.theme.brightGreenSecondary
 
 @Composable
-fun StorageAreaChangeSingleItem(
+fun LocationChangeSingleItem(
     tag: String,
     isChecked: Boolean,
     onCheckedChange: () -> Unit,

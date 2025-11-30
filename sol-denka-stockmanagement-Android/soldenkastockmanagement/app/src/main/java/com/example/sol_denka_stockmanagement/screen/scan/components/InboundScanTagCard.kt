@@ -15,11 +15,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ConfirmationNumber
-import androidx.compose.material.icons.filled.Numbers
-import androidx.compose.material.icons.filled.QrCodeScanner
 import androidx.compose.material.icons.filled.Timer
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -32,14 +28,13 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.sol_denka_stockmanagement.R
-import com.example.sol_denka_stockmanagement.ui.theme.brightAzure
 import com.example.sol_denka_stockmanagement.ui.theme.deepBlueSky
 import com.example.sol_denka_stockmanagement.ui.theme.paleSkyBlue
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 
 @Composable
-fun ReceivingScanTagCard(scannedTag: String) {
+fun InboundScanTagCard(epc: String, itemName: String, itemCode: String) {
     Column(
         modifier = Modifier
             .fillMaxSize(),
@@ -93,8 +88,7 @@ fun ReceivingScanTagCard(scannedTag: String) {
                     }
                     Spacer(modifier = Modifier.height(8.dp))
                     Text(
-                        text = scannedTag.takeIf { it.isNotEmpty() }
-                            ?: "-",
+                        text = epc,
                         fontSize = 18.sp,
                     )
                 }
@@ -122,7 +116,7 @@ fun ReceivingScanTagCard(scannedTag: String) {
                     }
                     Spacer(modifier = Modifier.height(8.dp))
                     Text(
-                        text = "-",
+                        text = itemCode,
                         fontSize = 17.sp
                     )
                 }
@@ -147,11 +141,11 @@ fun ReceivingScanTagCard(scannedTag: String) {
                     }
                     Spacer(modifier = Modifier.height(8.dp))
                     Text(
-                        text = "-",
+                        text = itemName,
                         fontSize = 18.sp
                     )
                 }
-                Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.height(20.dp))
                 Column {
                     Row(
                         modifier = Modifier
@@ -172,7 +166,7 @@ fun ReceivingScanTagCard(scannedTag: String) {
                     }
                     Spacer(modifier = Modifier.height(8.dp))
                     Text(
-                        text = if (scannedTag.isEmpty()) "-" else LocalTime.now()
+                        text = if (epc.isEmpty()) "-" else LocalTime.now()
                             .format(DateTimeFormatter.ofPattern("HH:mm")),
                         fontSize = 18.sp
                     )

@@ -33,16 +33,17 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.sol_denka_stockmanagement.R
+import com.example.sol_denka_stockmanagement.constant.ScanMode
 import com.example.sol_denka_stockmanagement.constant.SelectTitle
 import com.example.sol_denka_stockmanagement.intent.ExpandIntent
 import com.example.sol_denka_stockmanagement.intent.InputIntent
 import com.example.sol_denka_stockmanagement.intent.ShareIntent
 import com.example.sol_denka_stockmanagement.navigation.Screen
 import com.example.sol_denka_stockmanagement.screen.layout.Layout
-import com.example.sol_denka_stockmanagement.screen.scan.components.ReceivingScanTagCard
+import com.example.sol_denka_stockmanagement.screen.scan.components.InboundScanTagCard
 import com.example.sol_denka_stockmanagement.screen.scan.components.ShippingModal
-import com.example.sol_denka_stockmanagement.screen.scan.components.ShippingSingleItem
-import com.example.sol_denka_stockmanagement.screen.scan.components.StorageAreaChangeSingleItem
+import com.example.sol_denka_stockmanagement.screen.scan.components.OutboundSingleItem
+import com.example.sol_denka_stockmanagement.screen.scan.components.LocationChangeSingleItem
 import com.example.sol_denka_stockmanagement.share.ButtonContainer
 import com.example.sol_denka_stockmanagement.share.dialog.ConfirmDialog
 import com.example.sol_denka_stockmanagement.ui.theme.brightAzure
@@ -62,6 +63,7 @@ fun ScanScreen(
     onGoBack: () -> Unit,
 ) {
     val scannedTags by scanViewModel.scannedTags.collectAsStateWithLifecycle()
+    val inboundDetail by scanViewModel.inboundDetail.collectAsStateWithLifecycle()
     val isPerformingInventory by appViewModel.isPerformingInventory.collectAsStateWithLifecycle()
     val scope = rememberCoroutineScope()
     val expandedMap by appViewModel.perTagExpanded.collectAsStateWithLifecycle()
@@ -74,14 +76,16 @@ fun ScanScreen(
     val showClearTagConfirmDialog = appViewModel.showClearTagConfirmDialog.value
 
     LaunchedEffect(Unit) {
-        scanViewModel.setEnableScan(
-            enabled = true, screen = when (prevScreenNameId) {
-                Screen.Inbound.routeId -> Screen.Inbound
-                else -> Screen.Scan("")
-            }
-        )
-//        appViewModel.onGeneralIntent(ShareIntent.ClearTagSelectionList)
+        val mode = when (prevScreenNameId) {
+            Screen.Inbound.routeId -> ScanMode.INBOUND
+            Screen.Outbound.routeId -> ScanMode.OUTBOUND
+            Screen.StorageAreaChange.routeId -> ScanMode.LOCATION_CHANGE
+            else -> ScanMode.INBOUND
+        }
+        scanViewModel.setScanMode(mode)
+        scanViewModel.setEnableScan(true, screen = Screen.fromRouteId(prevScreenNameId)!!)
     }
+
 
     if (showModalHandlingMethod) {
         ShippingModal(
@@ -234,7 +238,11 @@ fun ScanScreen(
                 .fillMaxSize()
         ) {
             if (prevScreenNameId == Screen.Inbound.routeId) {
-                ReceivingScanTagCard(scannedTag = scannedTags.values.lastOrNull()?.rfidNo ?: "")
+                InboundScanTagCard(
+                    epc = inboundDetail?.epc ?: "-",
+                    itemName = inboundDetail?.itemName ?: "-",
+                    itemCode = inboundDetail?.itemCode ?: "-"
+                )
             } else {
 
                 Row(
@@ -294,7 +302,7 @@ fun ScanScreen(
                                 val isExpanded = expandedMap[tag.first] ?: false
                                 val isChecked = checkedMap[tag.first] ?: false
                                 val value = handlingMap[tag.first] ?: ""
-                                ShippingSingleItem(
+                                OutboundSingleItem(
                                     tag = tag.first,
                                     isChecked = isChecked,
                                     onSelect = {
@@ -353,7 +361,7 @@ fun ScanScreen(
 
                             Screen.StorageAreaChange.routeId -> {
                                 val isChecked = checkedMap[tag.first] ?: false
-                                StorageAreaChangeSingleItem(
+                                LocationChangeSingleItem(
                                     tag = tag.first,
                                     isChecked = isChecked,
                                     onCheckedChange = {

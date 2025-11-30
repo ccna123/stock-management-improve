@@ -196,6 +196,12 @@ enum class TagStatus{
     UNPROCESSED
 }
 
+enum class ScanMode{
+    INBOUND,
+    OUTBOUND,
+    LOCATION_CHANGE
+}
+
 fun generateTimeStamp(): String {
     val formatter = DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss_SSS")
     return LocalDateTime.now(ZoneId.of("Asia/Tokyo")).format(formatter)
