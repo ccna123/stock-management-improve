@@ -1,4 +1,4 @@
-package com.example.sol_denka_stockmanagement.screen.storage_change
+package com.example.sol_denka_stockmanagement.screen.location_change
 
 import android.os.Build
 import androidx.annotation.RequiresApi
@@ -19,6 +19,7 @@ import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
@@ -44,8 +45,9 @@ import com.example.sol_denka_stockmanagement.viewmodel.AppViewModel
 @OptIn(ExperimentalMaterial3Api::class)
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @Composable
-fun StorageAreaChangeScreen(
+fun LocationChangeScreen(
     appViewModel: AppViewModel,
+    locationChangeViewModel: LocationChangeViewModel,
     onNavigate: (Screen) -> Unit,
     onGoBack: () -> Unit
 ) {
@@ -55,6 +57,12 @@ fun StorageAreaChangeScreen(
     val selectedCount by appViewModel.selectedCount.collectAsStateWithLifecycle()
     val checkedMap by appViewModel.perTagChecked.collectAsStateWithLifecycle()
     val locationMaster by appViewModel.locationMaster.collectAsStateWithLifecycle()
+    val locationChangePreview by locationChangeViewModel.locationChangePreview.collectAsStateWithLifecycle()
+
+    LaunchedEffect(checkedMap) {
+        val selectedEpc = checkedMap.map { it.key }
+        locationChangeViewModel.getTagDetailForLocationChange(selectedEpc)
+    }
 
     Layout(
         topBarText = stringResource(R.string.storage_area_change),
@@ -113,11 +121,11 @@ fun StorageAreaChangeScreen(
                             stringResource(R.string.item_code_title),
                             stringResource(R.string.storage_area)
                         ),
-                        scanResult = checkedMap.filter { it.value }.keys.toList().map { tag ->
+                        scanResult = locationChangePreview.map { tag ->
                             ScanResultRowModel(
-                                itemName = MaterialSelectionItem.MISS_ROLL.displayName,
-                                itemCode = tag,
-                                lastColumn = "保管場所A"
+                                itemName = tag.itemName,
+                                itemCode = tag.epc,
+                                lastColumn = tag.location
                             )
                         },
                     )

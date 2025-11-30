@@ -6,12 +6,13 @@ import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
 import com.example.sol_denka_stockmanagement.app_interface.IDao
+import com.example.sol_denka_stockmanagement.database.dao.location.LocationChangeScanResult
 import com.example.sol_denka_stockmanagement.database.entity.tag.TagMasterEntity
 import com.example.sol_denka_stockmanagement.model.inbound.InboundScanResult
 import kotlinx.coroutines.flow.Flow
 
 @Dao
-interface TagDao: IDao<TagMasterEntity> {
+interface TagDao : IDao<TagMasterEntity> {
 
     @Query("SELECT * FROM TagMaster")
     override fun get(): Flow<List<TagMasterEntity>>
@@ -25,9 +26,24 @@ interface TagDao: IDao<TagMasterEntity> {
     @Delete
     override suspend fun delete(e: TagMasterEntity)
 
-    @Query("SELECT t.epc, i.item_type_name AS itemName, i.item_type_code AS itemCode FROM tagmaster t\n" +
-            "LEFT JOIN ledgeritem l ON l.ledger_item_id = t.ledger_item_id\n" +
-            "LEFT JOIN itemtypemaster i ON i.item_type_id = l.item_type_id\n" +
-            "WHERE t.epc = :epc")
+    @Query(
+        "SELECT t.epc, i.item_type_name AS itemName, i.item_type_code AS itemCode FROM tagmaster t\n" +
+                "LEFT JOIN ledgeritem l ON l.ledger_item_id = t.ledger_item_id\n" +
+                "LEFT JOIN itemtypemaster i ON i.item_type_id = l.item_type_id\n" +
+                "WHERE t.epc = :epc"
+    )
     suspend fun getTagDetailForInbound(epc: String): InboundScanResult
+
+    @Query(
+        "SELECT t.epc,\n" +
+                "           i.item_type_name AS itemName,\n" +
+                "           i.item_type_code AS itemCode,\n" +
+                "           l.location_name AS location\n" +
+                "    FROM tagmaster t\n" +
+                "    LEFT JOIN ledgeritem li ON li.ledger_item_id = t.ledger_item_id\n" +
+                "    LEFT JOIN itemtypemaster i ON i.item_type_id = li.item_type_id\n" +
+                "    LEFT JOIN locationmaster l ON l.location_id = li.location_id\n" +
+                "    WHERE t.epc IN (:epcList)"
+    )
+    suspend fun getTagDetailForLocationChange(epcList: List<String>): List<LocationChangeScanResult>
 }

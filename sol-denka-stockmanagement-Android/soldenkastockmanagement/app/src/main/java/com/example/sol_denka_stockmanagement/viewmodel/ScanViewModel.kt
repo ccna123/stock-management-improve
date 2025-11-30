@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.sol_denka_stockmanagement.constant.ScanMode
 import com.example.sol_denka_stockmanagement.constant.generateTimeStamp
+import com.example.sol_denka_stockmanagement.database.dao.location.LocationChangeScanResult
 import com.example.sol_denka_stockmanagement.database.repository.tag.TagRepository
 import com.example.sol_denka_stockmanagement.helper.ReaderController
 import com.example.sol_denka_stockmanagement.model.inbound.InboundScanResult
@@ -35,6 +36,10 @@ class ScanViewModel @Inject constructor(
     // Tag detail for inbound scan
     private val _inboundDetail = MutableStateFlow<InboundScanResult?>(null)
     val inboundDetail = _inboundDetail.asStateFlow()
+
+    private val _locationChangePreview =
+        MutableStateFlow<List<LocationChangeScanResult>>(emptyList())
+    val locationChangePreview = _locationChangePreview.asStateFlow()
 
     init {
         viewModelScope.launch(Dispatchers.IO) {

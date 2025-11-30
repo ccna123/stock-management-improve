@@ -215,7 +215,13 @@ fun ScanScreen(
                         onNavigate(
                             when (prevScreenNameId) {
                                 Screen.Outbound.routeId -> Screen.Outbound
-                                Screen.StorageAreaChange.routeId -> Screen.StorageAreaChange
+                                Screen.StorageAreaChange.routeId -> {
+                                    val selectedEpc = scannedTags
+                                        .filter { checkedMap[it.key] == true }
+                                        .map { it.key }
+                                    Screen.StorageAreaChange
+                                }
+
                                 Screen.Inbound.routeId -> Screen.Inbound
                                 else -> Screen.Home
                             }
@@ -350,7 +356,10 @@ fun ScanScreen(
                                             else method
 
                                         appViewModel.onGeneralIntent(
-                                            ShareIntent.ChangePerTagHandlingMethod(tag.first, finalValue)
+                                            ShareIntent.ChangePerTagHandlingMethod(
+                                                tag.first,
+                                                finalValue
+                                            )
                                         )
 
                                         appViewModel.onExpandIntent(
