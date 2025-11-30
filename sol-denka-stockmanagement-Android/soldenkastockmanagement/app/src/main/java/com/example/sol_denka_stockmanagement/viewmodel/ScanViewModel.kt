@@ -6,6 +6,7 @@ import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.sol_denka_stockmanagement.constant.ScanMode
+import com.example.sol_denka_stockmanagement.constant.generateTimeStamp
 import com.example.sol_denka_stockmanagement.database.repository.tag.TagRepository
 import com.example.sol_denka_stockmanagement.helper.ReaderController
 import com.example.sol_denka_stockmanagement.model.inbound.InboundScanResult
@@ -15,6 +16,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import java.time.LocalDateTime
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
@@ -61,7 +65,10 @@ class ScanViewModel @Inject constructor(
         readerController.stopInventory()
     }
 
-    fun clearScannedTag() = readerController.clearScannedTag()
+    fun clearScannedTag(){
+        readerController.clearScannedTag()
+        _inboundDetail.value = null
+    }
 
     fun setEnableScan(enabled: Boolean, screen: Screen = Screen.Inbound) =
         readerController.setScanEnabled(enabled, screen = screen)
@@ -72,7 +79,8 @@ class ScanViewModel @Inject constructor(
             _inboundDetail.value = InboundScanResult(
                 epc = detail.epc,
                 itemName = detail.itemName,
-                itemCode = detail.itemCode
+                itemCode = detail.itemCode,
+                timeStamp = LocalDateTime.now(ZoneId.of("Asia/Tokyo")).format(DateTimeFormatter.ofPattern("HH:mm"))
             )
         }
     }

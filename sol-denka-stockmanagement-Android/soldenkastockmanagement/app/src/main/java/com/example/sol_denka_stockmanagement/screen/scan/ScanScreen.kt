@@ -241,7 +241,8 @@ fun ScanScreen(
                 InboundScanTagCard(
                     epc = inboundDetail?.epc ?: "-",
                     itemName = inboundDetail?.itemName ?: "-",
-                    itemCode = inboundDetail?.itemCode ?: "-"
+                    itemCode = inboundDetail?.itemCode ?: "-",
+                    timeStamp = inboundDetail?.timeStamp ?: "-"
                 )
             } else {
 

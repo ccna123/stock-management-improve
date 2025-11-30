@@ -30,11 +30,9 @@ import androidx.compose.ui.unit.sp
 import com.example.sol_denka_stockmanagement.R
 import com.example.sol_denka_stockmanagement.ui.theme.deepBlueSky
 import com.example.sol_denka_stockmanagement.ui.theme.paleSkyBlue
-import java.time.LocalTime
-import java.time.format.DateTimeFormatter
 
 @Composable
-fun InboundScanTagCard(epc: String, itemName: String, itemCode: String) {
+fun InboundScanTagCard(epc: String, itemName: String, itemCode: String, timeStamp: String) {
     Column(
         modifier = Modifier
             .fillMaxSize(),
@@ -166,8 +164,7 @@ fun InboundScanTagCard(epc: String, itemName: String, itemCode: String) {
                     }
                     Spacer(modifier = Modifier.height(8.dp))
                     Text(
-                        text = if (epc.isEmpty()) "-" else LocalTime.now()
-                            .format(DateTimeFormatter.ofPattern("HH:mm")),
+                        text = timeStamp,
                         fontSize = 18.sp
                     )
                 }
