@@ -2,6 +2,7 @@ package com.example.sol_denka_stockmanagement.screen.storage_change
 
 import android.os.Build
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -94,106 +95,115 @@ fun StorageAreaChangeScreen(
         onBackArrowClick = {
             onGoBack()
         }) { paddingValues ->
-        LazyColumn(
-            modifier = Modifier
+        Column(
+            Modifier
                 .padding(paddingValues)
                 .padding(16.dp)
-                .imePadding()
         ) {
-            item {
-                Text(text = stringResource(R.string.planned_register_item_number, selectedCount))
-                Spacer(modifier = Modifier.height(18.dp))
-                ScanResultTable(
-                    tableHeader = listOf(
-                        stringResource(R.string.item_name_title),
-                        stringResource(R.string.item_code_title),
-                        stringResource(R.string.storage_area)
-                    ),
-                    scanResult = checkedMap.filter { it.value }.keys.toList().map { tag ->
-                        ScanResultRowModel(
-                            itemName = MaterialSelectionItem.MISS_ROLL.displayName,
-                            itemCode = tag,
-                            lastColumn = "保管場所A"
-                        )
-                    },
-                )
-                Spacer(modifier = Modifier.height(20.dp))
-                ExposedDropdownMenuBox(
-                    expanded = expandState.stockAreaExpanded,
-                    onExpandedChange = { appViewModel.onExpandIntent(ExpandIntent.ToggleStockAreaExpanded) }) {
-                    InputFieldContainer(
-                        modifier = Modifier
-                            .menuAnchor(
-                                type = ExposedDropdownMenuAnchorType.PrimaryNotEditable,
-                                enabled = true
-                            )
-                            .fillMaxWidth(),
-                        value = if (inputState.stockArea == SelectTitle.SelectLocation.displayName) "" else inputState.stockArea,
-                        hintText = SelectTitle.SelectLocation.displayName,
-                        isNumeric = false,
-                        onChange = { newValue ->
-                            appViewModel.onInputIntent(
-                                InputIntent.ChangeLocation(
-                                    newValue
-                                )
+            Text(text = stringResource(R.string.planned_register_item_number, selectedCount))
+            Spacer(modifier = Modifier.height(18.dp))
+            LazyColumn(
+                modifier = Modifier
+                    .imePadding()
+            ) {
+                item {
+                    ScanResultTable(
+                        tableHeader = listOf(
+                            stringResource(R.string.item_name_title),
+                            stringResource(R.string.item_code_title),
+                            stringResource(R.string.storage_area)
+                        ),
+                        scanResult = checkedMap.filter { it.value }.keys.toList().map { tag ->
+                            ScanResultRowModel(
+                                itemName = MaterialSelectionItem.MISS_ROLL.displayName,
+                                itemCode = tag,
+                                lastColumn = "保管場所A"
                             )
                         },
-                        readOnly = true,
-                        isDropDown = true,
-                        enable = true,
-                        onEnterPressed = {}
                     )
-                    ExposedDropdownMenu(
+                    Spacer(modifier = Modifier.height(20.dp))
+                    ExposedDropdownMenuBox(
                         expanded = expandState.stockAreaExpanded,
-                        onDismissRequest = { appViewModel.onExpandIntent(ExpandIntent.ToggleStockAreaExpanded) }
-                    ) {
-                        DropdownMenuItem(
-                            text = { Text(text = SelectTitle.SelectLocation.displayName) },
-                            onClick = {
-                                appViewModel.apply {
-                                    onInputIntent(InputIntent.ChangeLocation(""))
-                                    onExpandIntent(ExpandIntent.ToggleStockAreaExpanded)
-                                }
-                            }
+                        onExpandedChange = { appViewModel.onExpandIntent(ExpandIntent.ToggleStockAreaExpanded) }) {
+                        InputFieldContainer(
+                            modifier = Modifier
+                                .menuAnchor(
+                                    type = ExposedDropdownMenuAnchorType.PrimaryNotEditable,
+                                    enabled = true
+                                )
+                                .fillMaxWidth(),
+                            value = if (inputState.stockArea == SelectTitle.SelectLocation.displayName) "" else inputState.stockArea,
+                            hintText = SelectTitle.SelectLocation.displayName,
+                            isNumeric = false,
+                            onChange = { newValue ->
+                                appViewModel.onInputIntent(
+                                    InputIntent.ChangeLocation(
+                                        newValue
+                                    )
+                                )
+                            },
+                            readOnly = true,
+                            isDropDown = true,
+                            enable = true,
+                            onEnterPressed = {}
                         )
-                        locationMaster.forEach { location ->
+                        ExposedDropdownMenu(
+                            expanded = expandState.stockAreaExpanded,
+                            onDismissRequest = { appViewModel.onExpandIntent(ExpandIntent.ToggleStockAreaExpanded) }
+                        ) {
                             DropdownMenuItem(
-                                text = { Text(text = location.locationName ?: "") },
+                                text = { Text(text = SelectTitle.SelectLocation.displayName) },
                                 onClick = {
                                     appViewModel.apply {
-                                        onInputIntent(InputIntent.ChangeLocation(if (location.locationName == SelectTitle.SelectLocation.displayName) "" else location.locationName ?: ""))
+                                        onInputIntent(InputIntent.ChangeLocation(""))
                                         onExpandIntent(ExpandIntent.ToggleStockAreaExpanded)
                                     }
                                 }
                             )
+                            locationMaster.forEach { location ->
+                                DropdownMenuItem(
+                                    text = { Text(text = location.locationName ?: "") },
+                                    onClick = {
+                                        appViewModel.apply {
+                                            onInputIntent(
+                                                InputIntent.ChangeLocation(
+                                                    if (location.locationName == SelectTitle.SelectLocation.displayName) "" else location.locationName
+                                                        ?: ""
+                                                )
+                                            )
+                                            onExpandIntent(ExpandIntent.ToggleStockAreaExpanded)
+                                        }
+                                    }
+                                )
+                            }
                         }
                     }
-                }
-                Spacer(modifier = Modifier.height(10.dp))
-                InputFieldContainer(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(200.dp),
-                    value = inputState.remark,
-                    label = stringResource(R.string.remark) + "（オプション）",
-                    hintText = stringResource(R.string.remark_hint),
-                    isNumeric = false,
-                    readOnly = false,
-                    isDropDown = false,
-                    enable = true,
-                    singleLine = false,
-                    onChange = { newValue ->
-                        val filteredValue = newValue.trimStart().filter { char ->
-                            (char.isLetterOrDigit() && char.toString()
-                                .toByteArray().size == 1) || char == '-'
-                        }
-                        appViewModel.onInputIntent(
-                            InputIntent.ChangeRemark(
-                                filteredValue
+                    Spacer(modifier = Modifier.height(10.dp))
+                    InputFieldContainer(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(200.dp),
+                        value = inputState.remark,
+                        label = stringResource(R.string.remark) + "（オプション）",
+                        hintText = stringResource(R.string.remark_hint),
+                        isNumeric = false,
+                        readOnly = false,
+                        isDropDown = false,
+                        enable = true,
+                        singleLine = false,
+                        onChange = { newValue ->
+                            val filteredValue = newValue.trimStart().filter { char ->
+                                (char.isLetterOrDigit() && char.toString()
+                                    .toByteArray().size == 1) || char == '-'
+                            }
+                            appViewModel.onInputIntent(
+                                InputIntent.ChangeRemark(
+                                    filteredValue
+                                )
                             )
-                        )
-                    }
-                )
+                        }
+                    )
+                }
             }
         }
     }
