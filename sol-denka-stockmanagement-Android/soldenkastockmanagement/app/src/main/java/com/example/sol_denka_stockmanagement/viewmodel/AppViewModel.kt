@@ -15,6 +15,7 @@ import com.example.sol_denka_stockmanagement.database.repository.item.ItemTypeRe
 import com.example.sol_denka_stockmanagement.database.repository.item.ItemUnitRepository
 import com.example.sol_denka_stockmanagement.database.repository.leger.LedgerItemRepository
 import com.example.sol_denka_stockmanagement.database.repository.location.LocationRepository
+import com.example.sol_denka_stockmanagement.database.repository.tag.TagRepository
 import com.example.sol_denka_stockmanagement.helper.csv.CsvHelper
 import com.example.sol_denka_stockmanagement.helper.NetworkConnectionObserver
 import com.example.sol_denka_stockmanagement.helper.ReaderController
@@ -48,8 +49,6 @@ class AppViewModel @Inject constructor(
     private val readerController: ReaderController,
     private val connectionObserver: NetworkConnectionObserver,
     private val locationRepository: LocationRepository,
-    private val itemUnitRepository: ItemUnitRepository,
-    private val itemTypeRepository: ItemTypeRepository,
     private val csvHelper: CsvHelper,
 ) : ViewModel() {
 

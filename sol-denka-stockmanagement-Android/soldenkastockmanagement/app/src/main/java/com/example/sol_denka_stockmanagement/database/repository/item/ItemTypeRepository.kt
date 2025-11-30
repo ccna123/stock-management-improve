@@ -1,5 +1,6 @@
 package com.example.sol_denka_stockmanagement.database.repository.item
 
+import android.util.Log
 import com.example.sol_denka_stockmanagement.constant.generateTimeStamp
 import com.example.sol_denka_stockmanagement.database.dao.item.ItemTypeDao
 import com.example.sol_denka_stockmanagement.model.item.ItemTypeMasterModel
@@ -67,9 +68,9 @@ class ItemTypeRepository @Inject constructor(
 
         if (existing.isEmpty()) {
             presetTypes.forEach { dao.insert(it.toEntity()) }
-            println("📦 [ItemTypeRepository] Preset ItemTypes inserted")
+            Log.i("TSS", "[ItemTypeRepository] Preset ItemTypes inserted")
         } else {
-            println("📦 [ItemTypeRepository] Preset already exists → skip")
+            Log.i("TSS", "[ItemTypeRepository] Preset already exists → skip")
         }
     }
 
