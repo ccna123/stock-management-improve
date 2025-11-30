@@ -59,8 +59,8 @@ fun LocationChangeScreen(
     val locationMaster by appViewModel.locationMaster.collectAsStateWithLifecycle()
     val locationChangePreview by locationChangeViewModel.locationChangePreview.collectAsStateWithLifecycle()
 
-    LaunchedEffect(checkedMap) {
-        val selectedEpc = checkedMap.map { it.key }
+    LaunchedEffect(Unit) {
+        val selectedEpc = checkedMap.filter { it.value }.map { it.key }
         locationChangeViewModel.getTagDetailForLocationChange(selectedEpc)
     }
 
