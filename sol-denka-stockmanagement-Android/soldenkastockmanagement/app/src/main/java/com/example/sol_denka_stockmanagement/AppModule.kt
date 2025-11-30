@@ -8,6 +8,7 @@ import androidx.annotation.RequiresApi
 import androidx.room.Room
 import com.example.sol_denka_stockmanagement.database.AppDatabase
 import com.example.sol_denka_stockmanagement.database.dao.inventory.InventoryResultTypeDao
+import com.example.sol_denka_stockmanagement.database.dao.location.LocationDao
 import com.example.sol_denka_stockmanagement.database.dao.tag.TagDao
 import com.example.sol_denka_stockmanagement.helper.ReaderController
 import com.example.sol_denka_stockmanagement.helper.TagController
@@ -73,6 +74,12 @@ object AppModule {
     @Singleton
     fun provideTagDao(database: AppDatabase): TagDao {
         return database.tagDao()
+    }
+
+    @Provides
+    @Singleton
+    fun provideLocationDao(database: AppDatabase): LocationDao {
+        return database.locationDao()
     }
 //    @Provides
 //    @Singleton

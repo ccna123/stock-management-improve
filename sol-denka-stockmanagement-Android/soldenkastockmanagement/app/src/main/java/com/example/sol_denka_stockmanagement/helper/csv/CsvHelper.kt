@@ -1,15 +1,17 @@
-package com.example.sol_denka_stockmanagement.helper
+package com.example.sol_denka_stockmanagement.helper.csv
 
 import android.content.ContentValues
 import android.content.Context
 import android.os.Build
 import android.os.Environment
-import android.os.Environment.isExternalStorageManager
 import android.provider.MediaStore
 import android.util.Log
 import com.example.sol_denka_stockmanagement.app_interface.ICsvExport
+import com.example.sol_denka_stockmanagement.app_interface.ICsvImport
 import com.example.sol_denka_stockmanagement.constant.CsvType
 import com.example.sol_denka_stockmanagement.constant.StatusCode
+import com.example.sol_denka_stockmanagement.database.repository.location.LocationRepository
+import com.example.sol_denka_stockmanagement.helper.ProcessResult
 import com.example.sol_denka_stockmanagement.model.csv.CsvFileInfoModel
 import com.jcraft.jsch.ChannelSftp
 import com.jcraft.jsch.JSch
@@ -25,6 +27,7 @@ import java.util.Vector
 import javax.inject.Inject
 
 class CsvHelper @Inject constructor(
+    private val locationRepository: LocationRepository
 ) {
     companion object {
         private const val ROOT_FOLDER = "StockManagementApp"
@@ -34,9 +37,8 @@ class CsvHelper @Inject constructor(
         private const val INVENTORY_RESULT = "InventoryResult"
         private const val STOCK_EVENT = "StockEvent"
 
-        private const val MATERIAL_MASTER = "MaterialMaster"
         private const val LEDGER_MASTER = "LedgerMaster"
-        private const val STORAGE_AREA_MASTER = "StorageAreaMaster"
+        private const val LOCATION_MASTER = "LocationMaster"
         private const val STOCK_MASTER = "StockMaster"
     }
 
@@ -80,9 +82,8 @@ class CsvHelper @Inject constructor(
 
             // Import folders
             ensureScopedFolder("$ROOT_FOLDER/$IMPORT")
-            ensureScopedFolder("$ROOT_FOLDER/$IMPORT/$MATERIAL_MASTER")
             ensureScopedFolder("$ROOT_FOLDER/$IMPORT/$LEDGER_MASTER")
-            ensureScopedFolder("$ROOT_FOLDER/$IMPORT/$STORAGE_AREA_MASTER")
+            ensureScopedFolder("$ROOT_FOLDER/$IMPORT/$LOCATION_MASTER")
             ensureScopedFolder("$ROOT_FOLDER/$IMPORT/$STOCK_MASTER")
             Log.i("TSS", "✅ Folder structure ensured")
         } catch (e: Exception) {
@@ -92,10 +93,6 @@ class CsvHelper @Inject constructor(
 
     private fun mapCsvTypeToFolders(csvType: String): Pair<String, String>? {
         return when (csvType) {
-            CsvType.MaterialMaster.displayName -> Pair(
-                "Import/MaterialMasterEntity",
-                "$IMPORT/$MATERIAL_MASTER"
-            )
 
             CsvType.LedgerMaster.displayName -> Pair(
                 "Import/LedgerMaster",
@@ -104,7 +101,7 @@ class CsvHelper @Inject constructor(
 
             CsvType.StorageAreaMaster.displayName -> Pair(
                 "Import/StorageAreaMaster",
-                "$IMPORT/$STORAGE_AREA_MASTER"
+                "$IMPORT/$LOCATION_MASTER"
             )
 
             CsvType.InventoryResult.displayName -> Pair(
@@ -159,7 +156,8 @@ class CsvHelper @Inject constructor(
                     files.map { file ->
                         CsvFileInfoModel(
                             fileName = file.name,
-                            fileSize = formatSize(file.length())
+                            fileSize = formatSize(file.length()),
+                            filePath = targetDir.absolutePath
                         )
                     }
                 )
@@ -182,6 +180,7 @@ class CsvHelper @Inject constructor(
             else -> "$sizeBytes B"
         }
     }
+
     suspend fun exportAllFilesIndividually(
         context: Context,
         files: List<CsvFileInfoModel>,
@@ -223,7 +222,8 @@ class CsvHelper @Inject constructor(
                                     output.write(buffer, 0, bytesRead)
                                     copiedBytes += bytesRead
 
-                                    val progress = (copiedBytes.toFloat() / totalBytes).coerceIn(0f, 1f)
+                                    val progress =
+                                        (copiedBytes.toFloat() / totalBytes).coerceIn(0f, 1f)
                                     onProgressUpdate(index, progress)
                                 }
                             }
@@ -247,6 +247,7 @@ class CsvHelper @Inject constructor(
             }.awaitAll()
         }
     }
+
     suspend fun downloadCsvFromSftp(
         context: Context,
         host: String,
@@ -356,8 +357,77 @@ class CsvHelper @Inject constructor(
 
     private fun hasAllFilesAccess(): Boolean {
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            isExternalStorageManager()
+            Environment.isExternalStorageManager()
         } else true
+    }
+
+    suspend fun import(
+        csvType: String,
+        onProgress: (Float) -> Unit
+    ): ProcessResult = withContext(Dispatchers.IO) {
+        try {
+            val files = listCsvFiles(csvType)
+            if (files.isEmpty()) {
+                return@withContext ProcessResult.Failure(
+                    statusCode = StatusCode.FAILED,
+                    message = "該当するCSVファイルが見つかりません"
+                )
+            }
+
+            // 👉 Temporary choose the 1st file
+            val fileObj = File(files.first().filePath, files.first().fileName)
+
+            if (!fileObj.exists()) {
+                return@withContext ProcessResult.Failure(
+                    statusCode = StatusCode.FAILED,
+                    message = "CSVファイルが見つかりません"
+                )
+            }
+
+            val lines = fileObj.readLines(Charsets.UTF_8)
+            if (lines.isEmpty()) {
+                return@withContext ProcessResult.Failure(
+                    statusCode = StatusCode.FAILED,
+                    message = "CSV内容が空です"
+                )
+            }
+
+            val importer = getImporter(csvType)
+                ?: return@withContext ProcessResult.Failure(
+                    statusCode = StatusCode.FAILED,
+                    message = "$csvType のImporterが見つかりません"
+                )
+
+            val total = maxOf(1, lines.size)
+            var count = 0
+
+            Log.e("TSS", "total: $total", )
+
+            lines.chunked(20).forEach { chunk ->
+                importer.import(chunk)
+                count += chunk.size
+
+                val progress = (count.toFloat() / total).coerceIn(0f, 1f)
+                onProgress(progress)
+            }
+
+            onProgress(1f)
+            ProcessResult.Success()
+
+        } catch (e: Exception) {
+            ProcessResult.Failure(
+                statusCode = StatusCode.FAILED,
+                message = e.message ?: "Unknown error"
+            )
+        }
+    }
+
+
+    private fun getImporter(csvType: String): ICsvImport? {
+        return when (csvType) {
+            CsvType.StorageAreaMaster.displayName -> LocationMasterImporter(repository = locationRepository)
+            else -> null
+        }
     }
 
 

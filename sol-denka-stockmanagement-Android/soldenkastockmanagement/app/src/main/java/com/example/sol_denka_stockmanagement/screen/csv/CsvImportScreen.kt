@@ -29,6 +29,8 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -43,6 +45,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.sol_denka_stockmanagement.R
 import com.example.sol_denka_stockmanagement.constant.CsvType
 import com.example.sol_denka_stockmanagement.constant.SelectTitle
+import com.example.sol_denka_stockmanagement.helper.ProcessResult
 import com.example.sol_denka_stockmanagement.intent.ShareIntent
 import com.example.sol_denka_stockmanagement.navigation.Screen
 import com.example.sol_denka_stockmanagement.screen.csv.components.SingleCsvFile
@@ -76,6 +79,7 @@ fun CsvImportScreen(
     val importProgress by csvViewModel.importProgress.collectAsStateWithLifecycle()
     val showProcessResultDialog by csvViewModel.showProcessResultDialog.collectAsStateWithLifecycle()
     val processResultMessage by csvViewModel.processResultMessage.collectAsStateWithLifecycle()
+    val importResultStatus by csvViewModel.importResultStatus.collectAsStateWithLifecycle()
 
     LaunchedEffect(csvState.csvType) {
         when (csvState.csvType) {
@@ -100,29 +104,29 @@ fun CsvImportScreen(
         })
     }
 
-    if (isImporting) {
-        AppDialog {
-            Column(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Text(
-                    text = if (importProgress < 1f) "CSVファイル取り込み中" else "CSVファイル取り込みに成功しました",
-                    textAlign = TextAlign.Center,
-                    color = if (importProgress < 1f) Color.Black else brightGreenPrimary
-                )
-                Spacer(Modifier.height(12.dp))
-                LinearProgressIndicator(
-                    progress = {
-                        importProgress
-                    },
-                    modifier = Modifier
-                        .height(6.dp),
-                )
-                Text("${(importProgress * 100).toInt()}%")
-            }
-        }
-    }
+//    if (isImporting) {
+//        AppDialog {
+//            Column(
+//                modifier = Modifier.fillMaxWidth(),
+//                horizontalAlignment = Alignment.CenterHorizontally
+//            ) {
+//                Text(
+//                    text = if (importProgress < 1f) "CSVファイル取り込み中" else "CSVファイル取り込みに成功しました",
+//                    textAlign = TextAlign.Center,
+//                    color = if (importProgress < 1f) Color.Black else brightGreenPrimary
+//                )
+//                Spacer(Modifier.height(12.dp))
+//                LinearProgressIndicator(
+//                    progress = {
+//                        importProgress
+//                    },
+//                    modifier = Modifier
+//                        .height(6.dp),
+//                )
+//                Text("${(importProgress * 100).toInt()}%")
+//            }
+//        }
+//    }
 
     if (showProcessResultDialog) {
         AppDialog {
@@ -133,10 +137,19 @@ fun CsvImportScreen(
                 Text(
                     text = processResultMessage ?: "",
                     textAlign = TextAlign.Center,
-                    color = Color.Red
+                    color = when(importResultStatus){
+                        is ProcessResult.Failure -> Color.Red
+                        is ProcessResult.Success -> brightGreenPrimary
+                        null -> Color.Unspecified
+                    }
                 )
                 Spacer(Modifier.height(12.dp))
                 ButtonContainer(
+                    containerColor = when(importResultStatus){
+                        is ProcessResult.Failure -> Color.Red
+                        is ProcessResult.Success -> brightAzure
+                        null -> Color.Unspecified
+                    },
                     buttonText = stringResource(R.string.close),
                     onClick = {
                         csvViewModel.dismissProcessResultDialog()
@@ -169,15 +182,19 @@ fun CsvImportScreen(
                 buttonText = stringResource(R.string.import_file),
                 canClick = csvState.csvType.isNotEmpty(),
                 onClick = {
-                    if (appViewModel.isNetworkConnected.value.not()) {
-                        appViewModel.onGeneralIntent(
-                            ShareIntent.ToggleNetworkDialog(true)
-                        )
-                    } else {
-                        scope.launch {
-                            csvViewModel.downloadCsvFromSftp(context)
-                        }
+                    scope.launch {
+                        csvViewModel.importMaster()
                     }
+//                    if (appViewModel.isNetworkConnected.value.not()) {
+//                        appViewModel.onGeneralIntent(
+//                            ShareIntent.ToggleNetworkDialog(true)
+//                        )
+//                    } else {
+//                        scope.launch {
+////                            csvViewModel.downloadCsvFromSftp(context)
+//                            csvViewModel.importMaster()
+//                        }
+//                    }
                 },
             )
         },

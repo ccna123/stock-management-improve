@@ -4,7 +4,8 @@ import android.content.Context
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.sol_denka_stockmanagement.helper.CsvHelper
+import com.example.sol_denka_stockmanagement.constant.CsvType
+import com.example.sol_denka_stockmanagement.helper.csv.CsvHelper
 import com.example.sol_denka_stockmanagement.helper.JsonFileManager
 import com.example.sol_denka_stockmanagement.helper.ProcessResult
 import com.example.sol_denka_stockmanagement.model.csv.CsvFileInfoModel
@@ -55,6 +56,9 @@ class CsvViewModel @Inject constructor(
 
     private val _showProcessResultDialog = MutableStateFlow(false)
     val showProcessResultDialog = _showProcessResultDialog.asStateFlow()
+
+    private val _importResultStatus = MutableStateFlow<ProcessResult?>(null)
+    val importResultStatus = _importResultStatus.asStateFlow()
 
     // Update UI state in a consistent way
     fun updateState(updates: CsvState.() -> CsvState) {
@@ -133,6 +137,33 @@ class CsvViewModel @Inject constructor(
             result // ✅ return whatever helper produced
         }
     }
+
+    suspend fun importMaster(){
+        return withContext(Dispatchers.IO) {
+            _isImporting.value = true
+            _importProgress.value = 0f
+
+            val result = helper.import(
+                csvType = _csvState.value.csvType,
+                onProgress = { p ->
+                    _importProgress.value = p
+                }
+            )
+
+            _isImporting.value = false
+            _importResultStatus.value = result
+
+            when (result) {
+                is ProcessResult.Success -> {
+                    showProcessResultDialog("取り込み成功しました")
+                }
+                is ProcessResult.Failure -> {
+                    showProcessResultDialog(result.message)
+                }
+            }
+        }
+    }
+
 
 
     private fun updateFileProgress(index: Int, progress: Float) {

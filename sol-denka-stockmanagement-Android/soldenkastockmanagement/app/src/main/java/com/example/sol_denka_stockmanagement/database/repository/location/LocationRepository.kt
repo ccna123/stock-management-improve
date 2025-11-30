@@ -17,6 +17,7 @@ class LocationRepository @Inject constructor(
         entityList.map { it.toModel() }
     }
     suspend fun insert(model: LocationMasterModel) = dao.insert(model.toEntity())
+    suspend fun insertAll(model: List<LocationMasterModel>) = dao.insertAll(model.map { it.toEntity() })
     suspend fun update(model: LocationMasterModel) = dao.update(model.toEntity())
     suspend fun delete(model: LocationMasterModel) = dao.delete(model.toEntity())
 }
