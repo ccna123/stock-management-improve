@@ -1,10 +1,16 @@
 package com.example.sol_denka_stockmanagement.share
 
 import androidx.compose.foundation.border
+import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -33,7 +39,8 @@ fun RowScope.TableCell(
                 color = Color.LightGray.copy(alpha = .4f),
                 shape = shape
             )
-            .padding(vertical = 10.dp),
+            .padding(vertical = 10.dp)
+            .horizontalScroll(rememberScrollState()),
         contentAlignment = Alignment.Center
     ) {
         Text(text = content, fontSize = contentSize, color = textColor)
