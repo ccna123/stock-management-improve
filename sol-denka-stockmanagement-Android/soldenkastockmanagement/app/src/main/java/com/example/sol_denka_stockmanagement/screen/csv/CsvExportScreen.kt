@@ -225,7 +225,7 @@ fun CsvExportScreen(
                             )
                         }
                     } else {
-                        csvFiles.forEachIndexed { index, file ->
+                        csvFiles.takeIf { it.isNotEmpty() }?.forEachIndexed { index, file ->
                             SingleCsvFile(
                                 index = index,
                                 csvFileName = file.fileName,
@@ -235,15 +235,11 @@ fun CsvExportScreen(
                                 isError = file.isFailed,
                                 showProgress = showProgress,
                                 modifier = Modifier
-                                    .background(
-                                        shape = RoundedCornerShape(10.dp),
-                                        color = if (index % 2 == 0) skyBlue.copy(alpha = 0.2f) else Color.Unspecified
-                                    )
+                                    .padding(10.dp)
                             )
-                            Spacer(modifier = Modifier.height(10.dp))
-                            HorizontalDivider()
-                            Spacer(modifier = Modifier.height(10.dp))
-                        }
+                        } ?: Text(
+                            color = Color.Red,
+                            text = stringResource(R.string.no_csv_file_found))
                     }
                 }
             }

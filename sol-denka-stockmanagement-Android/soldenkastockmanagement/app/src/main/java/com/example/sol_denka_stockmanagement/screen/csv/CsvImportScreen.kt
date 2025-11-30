@@ -52,6 +52,7 @@ import com.example.sol_denka_stockmanagement.share.InputContainer
 import com.example.sol_denka_stockmanagement.share.InputFieldContainer
 import com.example.sol_denka_stockmanagement.share.dialog.AppDialog
 import com.example.sol_denka_stockmanagement.share.dialog.NetworkDialog
+import com.example.sol_denka_stockmanagement.ui.theme.brightAzure
 import com.example.sol_denka_stockmanagement.ui.theme.brightGreenPrimary
 import com.example.sol_denka_stockmanagement.ui.theme.paleSkyBlue
 import com.example.sol_denka_stockmanagement.ui.theme.skyBlue
@@ -255,7 +256,6 @@ fun CsvImportScreen(
                     )
                 }
             }
-            Spacer(modifier = Modifier.height(20.dp))
             LazyColumn(
                 modifier = Modifier.fillMaxWidth(),
                 verticalArrangement = Arrangement.Center,
@@ -271,22 +271,19 @@ fun CsvImportScreen(
                             )
                         }
                     } else {
-                        csvFiles.forEachIndexed { index, file ->
+                        csvFiles.takeIf { it.isNotEmpty() }?.forEachIndexed { index, file ->
                             SingleCsvFile(
                                 csvFileName = file.fileName,
                                 csvFileSize = file.fileSize,
                                 index = index,
                                 modifier = Modifier
                                     .padding(10.dp)
-                                    .background(
-                                        shape = RoundedCornerShape(10.dp),
-                                        color = if (index % 2 == 0) skyBlue.copy(alpha = 0.2f) else Color.Unspecified
-                                    )
                             )
-                            Spacer(modifier = Modifier.height(10.dp))
-                            HorizontalDivider()
-                            Spacer(modifier = Modifier.height(10.dp))
                         }
+                            ?: Text(
+                                color = Color.Red,
+                                text = stringResource(R.string.no_csv_file_found)
+                            )
                     }
                 }
             }
