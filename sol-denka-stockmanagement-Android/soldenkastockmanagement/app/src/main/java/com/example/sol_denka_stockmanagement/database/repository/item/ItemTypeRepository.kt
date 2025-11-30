@@ -1,5 +1,6 @@
 package com.example.sol_denka_stockmanagement.database.repository.item
 
+import com.example.sol_denka_stockmanagement.constant.generateTimeStamp
 import com.example.sol_denka_stockmanagement.database.dao.item.ItemTypeDao
 import com.example.sol_denka_stockmanagement.model.item.ItemTypeMasterModel
 import com.example.sol_denka_stockmanagement.model.item.toEntity
@@ -19,16 +20,40 @@ class ItemTypeRepository @Inject constructor(
 ) {
 
     private val presetTypes = listOf(
-        ItemTypeMasterModel(101, "RM001", "原材料ゴム1", 3, "", ""),
-        ItemTypeMasterModel(102, "RM002", "原材料ゴム2", 3, "", ""),
-        ItemTypeMasterModel(103, "FM001", "フィルムシート1", 7, "", ""),
-        ItemTypeMasterModel(104, "FM002", "フィルムシート2", 7, "", ""),
-        ItemTypeMasterModel(105, "CT001", "カット品A", 6, "", ""),
-        ItemTypeMasterModel(106, "CT002", "カット品B", 6, "", ""),
-        ItemTypeMasterModel(107, "PD001", "製品タイプA", 2, "", ""),
-        ItemTypeMasterModel(108, "PD002", "製品タイプB", 2, "", ""),
-        ItemTypeMasterModel(109, "QC001", "品質検査サンプル1", 1, "", ""),
-        ItemTypeMasterModel(110, "QC002", "品質検査サンプル2", 1, "", "")
+        ItemTypeMasterModel(
+            101, "RM001", "原材料ゴム1", 3, generateTimeStamp(),
+            generateTimeStamp()
+        ),
+        ItemTypeMasterModel(
+            102, "RM002", "原材料ゴム2", 3, generateTimeStamp(),
+            generateTimeStamp()
+        ),
+        ItemTypeMasterModel(
+            103, "FM001", "フィルムシート1", 7,
+            generateTimeStamp(), generateTimeStamp()
+        ),
+        ItemTypeMasterModel(
+            104, "FM002", "フィルムシート2", 7,
+            generateTimeStamp(), generateTimeStamp()
+        ),
+        ItemTypeMasterModel(105, "CT001", "カット品A", 6, generateTimeStamp(), generateTimeStamp()),
+        ItemTypeMasterModel(106, "CT002", "カット品B", 6, generateTimeStamp(), generateTimeStamp()),
+        ItemTypeMasterModel(
+            107, "PD001", "製品タイプA", 2, generateTimeStamp(),
+            generateTimeStamp()
+        ),
+        ItemTypeMasterModel(
+            108, "PD002", "製品タイプB", 2, generateTimeStamp(),
+            generateTimeStamp()
+        ),
+        ItemTypeMasterModel(
+            109, "QC001", "品質検査サンプル1", 1,
+            generateTimeStamp(), generateTimeStamp()
+        ),
+        ItemTypeMasterModel(
+            110, "QC002", "品質検査サンプル2", 1,
+            generateTimeStamp(), generateTimeStamp()
+        )
     )
 
     init {
