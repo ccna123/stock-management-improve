@@ -30,6 +30,7 @@ import com.example.sol_denka_stockmanagement.screen.setting.SettingScreen
 import com.example.sol_denka_stockmanagement.screen.setting.SettingViewModel
 import com.example.sol_denka_stockmanagement.screen.location_change.LocationChangeScreen
 import com.example.sol_denka_stockmanagement.screen.location_change.LocationChangeViewModel
+import com.example.sol_denka_stockmanagement.screen.outbound.OutboundViewModel
 import com.example.sol_denka_stockmanagement.search.SearchTagsScreen
 import com.example.sol_denka_stockmanagement.search.SearchTagsViewModel
 import kotlin.collections.listOf
@@ -75,8 +76,10 @@ fun Navigation3(
                 )
             }
             entry<Screen.Outbound> {
+                val outboundViewModel = hiltViewModel<OutboundViewModel>()
                 OutboundScreen(
                     appViewModel = appViewModel,
+                    outboundViewModel = outboundViewModel,
                     onNavigate = {dest -> navigate(dest)},
                     onGoBack = { goBack() }
                 )

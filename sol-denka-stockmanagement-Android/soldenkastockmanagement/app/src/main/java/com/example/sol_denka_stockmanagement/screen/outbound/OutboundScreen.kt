@@ -16,6 +16,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
@@ -41,16 +42,20 @@ import com.example.sol_denka_stockmanagement.viewmodel.AppViewModel
 @Composable
 fun OutboundScreen(
     appViewModel: AppViewModel,
+    outboundViewModel: OutboundViewModel,
     onNavigate: (Screen) -> Unit,
     onGoBack: () -> Unit,
 ) {
 
-    val errorState = appViewModel.errorState.value
-    val expandState = appViewModel.expandState.collectAsStateWithLifecycle().value
     val inputState = appViewModel.inputState.collectAsStateWithLifecycle().value
-    val generalState = appViewModel.generalState.collectAsStateWithLifecycle().value
-    val checkedMap by appViewModel.perTagHandlingMethod.collectAsStateWithLifecycle()
+    val checkedMap by appViewModel.perTagChecked.collectAsStateWithLifecycle()
+    val processTypeMap by appViewModel.perTagHandlingMethod.collectAsStateWithLifecycle()
     val selectedCount by appViewModel.selectedCount.collectAsStateWithLifecycle()
+    val outboundList by outboundViewModel.outboundList.collectAsStateWithLifecycle()
+
+    LaunchedEffect(checkedMap, processTypeMap) {
+        outboundViewModel.loadOutboundItems(checkedMap, processTypeMap)
+    }
 
     Layout(
         topBarText = stringResource(R.string.shipping),
@@ -103,11 +108,11 @@ fun OutboundScreen(
                         stringResource(R.string.item_code_title),
                         stringResource(R.string.handling_method)
                     ),
-                    scanResult = checkedMap.keys.map { tag ->
+                    scanResult = outboundList.map { tag ->
                         ScanResultRowModel(
-                            itemName = MaterialSelectionItem.MISS_ROLL.displayName,
-                            itemCode = tag,
-                            lastColumn = checkedMap[tag] ?: "未設定"
+                            itemName = tag.itemName,
+                            itemCode = tag.epc,
+                            lastColumn = tag.processType
                         )
                     },
                 )

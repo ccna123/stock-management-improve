@@ -9,6 +9,8 @@ import com.example.sol_denka_stockmanagement.app_interface.IDao
 import com.example.sol_denka_stockmanagement.database.dao.location.LocationChangeScanResult
 import com.example.sol_denka_stockmanagement.database.entity.tag.TagMasterEntity
 import com.example.sol_denka_stockmanagement.model.inbound.InboundScanResult
+import com.example.sol_denka_stockmanagement.model.outbound.OutboundScanResult
+import com.example.sol_denka_stockmanagement.model.outbound.OutboundScanResultDTO
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -46,4 +48,14 @@ interface TagDao : IDao<TagMasterEntity> {
                 "    WHERE t.epc IN (:epcList)"
     )
     suspend fun getTagDetailForLocationChange(epcList: List<String>): List<LocationChangeScanResult>
+
+    @Query(
+        "SELECT t.epc,\n" +
+                "           i.item_type_name AS itemName\n" +
+                "    FROM tagmaster t\n" +
+                "    LEFT JOIN ledgeritem li ON li.ledger_item_id = t.ledger_item_id\n" +
+                "    LEFT JOIN itemtypemaster i ON i.item_type_id = li.item_type_id\n" +
+                "    WHERE t.epc IN (:epcList)"
+    )
+    suspend fun getTagDetailForOutbound(epcList: List<String>): List<OutboundScanResultDTO>
 }
