@@ -200,7 +200,10 @@ enum class TagStatus{
 enum class ScanMode{
     INBOUND,
     OUTBOUND,
-    LOCATION_CHANGE
+    LOCATION_CHANGE,
+    INVENTORY_SCAN,
+    SEARCH,
+    NONE
 }
 
 fun generateTimeStamp(): String {

@@ -34,7 +34,6 @@ import com.example.sol_denka_stockmanagement.intent.ExpandIntent
 import com.example.sol_denka_stockmanagement.intent.InputIntent
 import com.example.sol_denka_stockmanagement.intent.ShareIntent
 import com.example.sol_denka_stockmanagement.navigation.Screen
-import com.example.sol_denka_stockmanagement.screen.inventory.InventoryViewModel
 import com.example.sol_denka_stockmanagement.screen.layout.Layout
 import com.example.sol_denka_stockmanagement.share.ButtonContainer
 import com.example.sol_denka_stockmanagement.share.InputFieldContainer
@@ -48,14 +47,13 @@ import com.example.sol_denka_stockmanagement.viewmodel.ScanViewModel
 fun InventoryScreen(
     appViewModel: AppViewModel,
     scanViewModel: ScanViewModel,
-    inventoryViewModel: InventoryViewModel,
     onNavigate: (Screen) -> Unit,
     onGoBack: () -> Unit,
 ) {
 
     val inputState = appViewModel.inputState.collectAsStateWithLifecycle().value
     val expandState = appViewModel.expandState.collectAsStateWithLifecycle().value
-    val rfidTagList = inventoryViewModel.rfidTagList.collectAsStateWithLifecycle().value
+    val rfidTagList = scanViewModel.rfidTagList.collectAsStateWithLifecycle().value
     val showClearTagConfirmDialog = appViewModel.showClearTagConfirmDialog.value
     val locationMaster by appViewModel.locationMaster.collectAsStateWithLifecycle()
 
@@ -71,7 +69,7 @@ fun InventoryScreen(
                 ButtonContainer(
                     buttonText = stringResource(R.string.ok),
                     onClick = {
-                        inventoryViewModel.clearAll()
+                        scanViewModel.clearAll()
                         appViewModel.onGeneralIntent(ShareIntent.ToggleClearTagConfirmDialog)
                         onGoBack()
                     }

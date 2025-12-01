@@ -40,6 +40,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.sol_denka_stockmanagement.R
+import com.example.sol_denka_stockmanagement.constant.ScanMode
 import com.example.sol_denka_stockmanagement.constant.TagStatus
 import com.example.sol_denka_stockmanagement.helper.TagDistanceCalculate
 import com.example.sol_denka_stockmanagement.intent.ReaderSettingIntent
@@ -78,7 +79,8 @@ fun SearchTagsScreen(
     val rssiMap = searchTagsViewModel.rssiMap.collectAsStateWithLifecycle().value
 
     LaunchedEffect(Unit) {
-        scanViewModel.setEnableScan(enabled = true, screen = Screen.SearchTagsScreen(""))
+        scanViewModel.setEnableScan(enabled = true)
+        scanViewModel.setScanMode(ScanMode.SEARCH)
         appViewModel.onGeneralIntent(ShareIntent.ClearFoundTag)
     }
 
@@ -244,6 +246,8 @@ fun SearchTagsScreen(
             )
         },
         onBackArrowClick = {
+            scanViewModel.clearScannedTag()
+            scanViewModel.setScanMode(ScanMode.NONE)
             onGoBack()
         }) { paddingValues ->
         Column(

@@ -51,12 +51,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.sol_denka_stockmanagement.R
+import com.example.sol_denka_stockmanagement.constant.ScanMode
 import com.example.sol_denka_stockmanagement.constant.Tab
 import com.example.sol_denka_stockmanagement.constant.TagStatus
 import com.example.sol_denka_stockmanagement.intent.ReaderSettingIntent
 import com.example.sol_denka_stockmanagement.intent.ShareIntent
 import com.example.sol_denka_stockmanagement.navigation.Screen
-import com.example.sol_denka_stockmanagement.screen.inventory.InventoryViewModel
 import com.example.sol_denka_stockmanagement.screen.layout.Layout
 import com.example.sol_denka_stockmanagement.screen.setting.SettingViewModel
 import com.example.sol_denka_stockmanagement.share.ButtonContainer
@@ -77,13 +77,12 @@ fun InventoryScanScreen(
     prevScreenNameId: String,
     appViewModel: AppViewModel,
     scanViewModel: ScanViewModel,
-    inventoryViewModel: InventoryViewModel,
     settingViewModel: SettingViewModel,
     onNavigate: (Screen) -> Unit,
     onGoBack: () -> Unit,
 ) {
     val generalState = appViewModel.generalState.collectAsStateWithLifecycle().value
-    val rfidTagList = inventoryViewModel.rfidTagList.collectAsStateWithLifecycle().value
+    val rfidTagList = scanViewModel.rfidTagList.collectAsStateWithLifecycle().value
     val readerSettingState by settingViewModel.readerSettingState.collectAsStateWithLifecycle()
     val showClearTagConfirmDialog = appViewModel.showClearTagConfirmDialog.value
     val showRadioPowerChangeDialog = appViewModel.showRadioPowerChangeDialog.value
@@ -91,7 +90,8 @@ fun InventoryScanScreen(
     val scope = rememberCoroutineScope()
 
     LaunchedEffect(Unit) {
-        scanViewModel.setEnableScan(enabled = true, Screen.InventoryScan(""))
+        scanViewModel.setEnableScan(enabled = true)
+        scanViewModel.setScanMode(ScanMode.INVENTORY_SCAN)
         appViewModel.apply {
             onGeneralIntent(
                 ShareIntent.ToggleSelectionMode(false),
@@ -158,7 +158,7 @@ fun InventoryScanScreen(
                             onGeneralIntent(ShareIntent.ChangeTab(Tab.Left))
                             onGeneralIntent(ShareIntent.ToggleClearTagConfirmDialog)
                         }
-                        inventoryViewModel.clearAll()
+                        scanViewModel.clearAll()
                     }
                 )
             },

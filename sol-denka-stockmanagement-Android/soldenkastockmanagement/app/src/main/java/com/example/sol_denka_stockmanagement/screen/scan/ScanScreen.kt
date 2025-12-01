@@ -80,10 +80,10 @@ fun ScanScreen(
             Screen.Inbound.routeId -> ScanMode.INBOUND
             Screen.Outbound.routeId -> ScanMode.OUTBOUND
             Screen.StorageAreaChange.routeId -> ScanMode.LOCATION_CHANGE
-            else -> ScanMode.INBOUND
+            else -> ScanMode.NONE
         }
         scanViewModel.setScanMode(mode)
-        scanViewModel.setEnableScan(true, screen = Screen.fromRouteId(prevScreenNameId)!!)
+        scanViewModel.setEnableScan(true)
     }
 
 
