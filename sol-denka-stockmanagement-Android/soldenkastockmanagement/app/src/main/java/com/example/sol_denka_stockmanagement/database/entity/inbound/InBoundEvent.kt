@@ -6,7 +6,6 @@ import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
 import com.example.sol_denka_stockmanagement.database.entity.item.ItemTypeMasterEntity
-import com.example.sol_denka_stockmanagement.database.entity.leger.LedgerItemEntity
 import com.example.sol_denka_stockmanagement.database.entity.location.LocationMasterEntity
 import com.example.sol_denka_stockmanagement.database.entity.tag.TagMasterEntity
 

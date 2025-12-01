@@ -16,7 +16,7 @@ import com.example.sol_denka_stockmanagement.database.dao.location.LocationChang
 import com.example.sol_denka_stockmanagement.database.dao.item.ItemTypeDao
 import com.example.sol_denka_stockmanagement.database.dao.item.ItemUnitDao
 import com.example.sol_denka_stockmanagement.database.dao.leger.LedgerItemDao
-import com.example.sol_denka_stockmanagement.database.dao.tag.TagDao
+import com.example.sol_denka_stockmanagement.database.dao.tag.TagMasterDao
 import com.example.sol_denka_stockmanagement.database.dao.outbound.OutboundEventDao
 import com.example.sol_denka_stockmanagement.database.dao.outbound.OutboundSessionDao
 import com.example.sol_denka_stockmanagement.database.dao.process.ProcessTypeDao
@@ -33,7 +33,7 @@ import com.example.sol_denka_stockmanagement.database.entity.location.LocationCh
 import com.example.sol_denka_stockmanagement.database.entity.location.LocationMasterEntity
 import com.example.sol_denka_stockmanagement.database.entity.item.ItemTypeMasterEntity
 import com.example.sol_denka_stockmanagement.database.entity.item.ItemUnitMasterEntity
-import com.example.sol_denka_stockmanagement.database.entity.leger.LedgerItemEntity
+import com.example.sol_denka_stockmanagement.database.entity.ledger.LedgerItemEntity
 import com.example.sol_denka_stockmanagement.database.entity.tag.TagMasterEntity
 import com.example.sol_denka_stockmanagement.database.entity.outbound.OutBoundEventEntity
 import com.example.sol_denka_stockmanagement.database.entity.outbound.OutboundSessionEntity
@@ -66,7 +66,7 @@ import com.example.sol_denka_stockmanagement.database.entity.process.ProcessType
 
         ProcessTypeEntity::class
     ],
-    version = 1
+    version = 4
 )
 abstract class AppDatabase : RoomDatabase() {
 
@@ -96,7 +96,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun ledgerItemDao(): LedgerItemDao
 
     // Tag
-    abstract fun tagDao(): TagDao
+    abstract fun tagDao(): TagMasterDao
 
     // Outbound
     abstract fun outboundEventDao(): OutboundEventDao

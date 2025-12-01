@@ -1,4 +1,4 @@
-package com.example.sol_denka_stockmanagement.database.entity.leger
+package com.example.sol_denka_stockmanagement.database.entity.ledger
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity

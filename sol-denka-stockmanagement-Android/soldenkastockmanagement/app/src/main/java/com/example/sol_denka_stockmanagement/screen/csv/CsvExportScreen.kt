@@ -7,10 +7,8 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -21,7 +19,6 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuAnchorType
 import androidx.compose.material3.ExposedDropdownMenuBox
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -48,9 +45,7 @@ import com.example.sol_denka_stockmanagement.share.ButtonContainer
 import com.example.sol_denka_stockmanagement.share.InputContainer
 import com.example.sol_denka_stockmanagement.share.InputFieldContainer
 import com.example.sol_denka_stockmanagement.share.dialog.NetworkDialog
-import com.example.sol_denka_stockmanagement.ui.theme.brightAzure
 import com.example.sol_denka_stockmanagement.ui.theme.paleSkyBlue
-import com.example.sol_denka_stockmanagement.ui.theme.skyBlue
 import com.example.sol_denka_stockmanagement.viewmodel.AppViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -77,7 +72,7 @@ fun CsvExportScreen(
     LaunchedEffect(csvState.csvType) {
         when (csvState.csvType) {
             in listOf(CsvType.InventoryResult.displayName, CsvType.StockEvent.displayName) -> {
-                csvViewModel.fetchCsvFiles(context)
+                csvViewModel.fetchCsvFiles()
                 csvViewModel.toggleProgressVisibility(false)
             }
 

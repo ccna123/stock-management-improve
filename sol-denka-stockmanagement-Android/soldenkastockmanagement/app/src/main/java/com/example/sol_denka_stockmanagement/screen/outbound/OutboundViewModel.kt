@@ -1,11 +1,8 @@
 package com.example.sol_denka_stockmanagement.screen.outbound
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.sol_denka_stockmanagement.database.dao.location.LocationChangeScanResult
-import com.example.sol_denka_stockmanagement.database.dao.tag.TagDao
-import com.example.sol_denka_stockmanagement.database.repository.tag.TagRepository
+import com.example.sol_denka_stockmanagement.database.repository.tag.TagMasterRepository
 import com.example.sol_denka_stockmanagement.model.outbound.OutboundScanResult
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
@@ -16,7 +13,7 @@ import kotlinx.coroutines.launch
 
 @HiltViewModel
 class OutboundViewModel @Inject constructor(
-    private val tagRepository: TagRepository
+    private val tagMasterRepository: TagMasterRepository
 ) : ViewModel() {
 
     private val _outboundList = MutableStateFlow<List<OutboundScanResult>>(emptyList())
@@ -37,7 +34,7 @@ class OutboundViewModel @Inject constructor(
                 return@launch
             }
 
-            val detailList = tagRepository.getTagDetailForOutbound(selectedEpcList)
+            val detailList = tagMasterRepository.getTagDetailForOutbound(selectedEpcList)
             val detailMap = detailList.associateBy { it.epc }
 
             val result = selectedEpcList.map { epc ->

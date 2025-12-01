@@ -1,14 +1,12 @@
 package com.example.sol_denka_stockmanagement.viewmodel
 
 import android.os.Build
-import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.sol_denka_stockmanagement.constant.ScanMode
-import com.example.sol_denka_stockmanagement.constant.generateTimeStamp
 import com.example.sol_denka_stockmanagement.database.dao.location.LocationChangeScanResult
-import com.example.sol_denka_stockmanagement.database.repository.tag.TagRepository
+import com.example.sol_denka_stockmanagement.database.repository.tag.TagMasterRepository
 import com.example.sol_denka_stockmanagement.helper.ReaderController
 import com.example.sol_denka_stockmanagement.model.inbound.InboundScanResult
 import com.example.sol_denka_stockmanagement.navigation.Screen
@@ -26,7 +24,7 @@ import javax.inject.Inject
 @HiltViewModel
 class ScanViewModel @Inject constructor(
     private val readerController: ReaderController,
-    private val tagRepository: TagRepository
+    private val tagMasterRepository: TagMasterRepository
 ) : ViewModel() {
 
     val scannedTags = readerController.scannedTags
@@ -80,7 +78,7 @@ class ScanViewModel @Inject constructor(
 
     private fun getTagDetailForInbound(epc: String) {
         viewModelScope.launch(Dispatchers.IO) {
-            val detail = tagRepository.getTagDetailForInbound(epc)
+            val detail = tagMasterRepository.getTagDetailForInbound(epc)
             _inboundDetail.value = InboundScanResult(
                 epc = detail.epc,
                 itemName = detail.itemName,

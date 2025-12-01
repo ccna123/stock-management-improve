@@ -4,10 +4,9 @@ import android.content.Context
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.sol_denka_stockmanagement.constant.CsvType
-import com.example.sol_denka_stockmanagement.helper.csv.CsvHelper
 import com.example.sol_denka_stockmanagement.helper.JsonFileManager
 import com.example.sol_denka_stockmanagement.helper.ProcessResult
+import com.example.sol_denka_stockmanagement.helper.csv.CsvHelper
 import com.example.sol_denka_stockmanagement.model.csv.CsvFileInfoModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -64,7 +63,7 @@ class CsvViewModel @Inject constructor(
     fun updateState(updates: CsvState.() -> CsvState) {
         _csvState.update { it.updates() }
     }
-    suspend fun fetchCsvFiles(context: Context){
+    suspend fun fetchCsvFiles(){
         val result =  helper.listCsvFiles(
             csvType = _csvState.value.csvType
         )
@@ -130,7 +129,7 @@ class CsvViewModel @Inject constructor(
                 }
             )
             if (result is ProcessResult.Success) {
-                fetchCsvFiles(context)
+                fetchCsvFiles()
             } else if (result is ProcessResult.Failure) {
                 showProcessResultDialog(result.message)
             }

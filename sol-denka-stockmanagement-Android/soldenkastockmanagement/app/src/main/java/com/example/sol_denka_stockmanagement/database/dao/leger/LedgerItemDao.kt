@@ -7,7 +7,7 @@ import androidx.room.OnConflictStrategy.Companion.REPLACE
 import androidx.room.Query
 import androidx.room.Update
 import com.example.sol_denka_stockmanagement.app_interface.IDao
-import com.example.sol_denka_stockmanagement.database.entity.leger.LedgerItemEntity
+import com.example.sol_denka_stockmanagement.database.entity.ledger.LedgerItemEntity
 import kotlinx.coroutines.flow.Flow
 
 @Dao

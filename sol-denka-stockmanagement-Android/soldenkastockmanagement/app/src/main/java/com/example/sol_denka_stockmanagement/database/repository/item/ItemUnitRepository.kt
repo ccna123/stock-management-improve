@@ -1,5 +1,6 @@
 package com.example.sol_denka_stockmanagement.database.repository.item
 
+import android.util.Log
 import com.example.sol_denka_stockmanagement.constant.generateTimeStamp
 import com.example.sol_denka_stockmanagement.database.dao.item.ItemUnitDao
 import com.example.sol_denka_stockmanagement.model.item.ItemUnitMasterModel
@@ -29,22 +30,13 @@ class ItemUnitRepository @Inject constructor(
         ItemUnitMasterModel(9, "UNIT-CM", generateTimeStamp(), generateTimeStamp()),
         ItemUnitMasterModel(10, "UNIT-L", generateTimeStamp(), generateTimeStamp())
     )
-
-    init {
-        // Insert preset when repository is created
-        CoroutineScope(Dispatchers.IO).launch {
-            ensurePresetInserted()
-        }
-    }
-
-    /** Đảm bảo preset chỉ insert 1 lần */
-    private suspend fun ensurePresetInserted() {
+    suspend fun ensurePresetInserted() {
         val existing = dao.get().firstOrNull() ?: emptyList()
         if (existing.isEmpty()) {
             presetUnits.forEach { dao.insert(it.toEntity()) }
-            println("📦 [ItemUnitRepository] Preset Item Units inserted into DB")
+            Log.i("TSS", "📦 [ItemUnitRepository] Preset Item Units inserted into DB")
         } else {
-            println("📦 [ItemUnitRepository] Preset already exists → skip insert")
+            Log.i("TSS", "📦 [ItemUnitRepository] Preset already exists → skip insert")
         }
     }
 

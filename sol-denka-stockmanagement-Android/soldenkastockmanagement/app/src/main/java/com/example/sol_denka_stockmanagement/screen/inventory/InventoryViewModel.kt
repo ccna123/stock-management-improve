@@ -6,7 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.sol_denka_stockmanagement.app_interface.ITagOperation
 import com.example.sol_denka_stockmanagement.constant.TagStatus
-import com.example.sol_denka_stockmanagement.database.repository.tag.TagRepository
+import com.example.sol_denka_stockmanagement.database.repository.tag.TagMasterRepository
 import com.example.sol_denka_stockmanagement.helper.ReaderController
 import com.example.sol_denka_stockmanagement.helper.TagController
 import com.example.sol_denka_stockmanagement.model.tag.TagMasterModel
@@ -22,7 +22,7 @@ import javax.inject.Inject
 class InventoryViewModel @Inject constructor(
     private val tagController: TagController,
     private val readerController: ReaderController,
-    private val tagRepository: TagRepository
+    private val tagMasterRepository: TagMasterRepository
 ) : ViewModel(), ITagOperation {
 
     private val _rfidTagList = MutableStateFlow<List<TagMasterModel>>(emptyList())
@@ -32,7 +32,7 @@ class InventoryViewModel @Inject constructor(
 
         viewModelScope.launch {
             combine(
-                tagRepository.get(),
+                tagMasterRepository.get(),
                 tagController.statusMap
             ) { masterList, statusMap ->
                 masterList.map { item ->

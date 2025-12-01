@@ -5,7 +5,7 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
-import com.example.sol_denka_stockmanagement.database.entity.leger.LedgerItemEntity
+import com.example.sol_denka_stockmanagement.database.entity.ledger.LedgerItemEntity
 
 @Entity(
     tableName = "TagMaster",
@@ -19,7 +19,7 @@ import com.example.sol_denka_stockmanagement.database.entity.leger.LedgerItemEnt
         )
     ],
     indices = [
-        Index(value = ["ledger_item_id"], unique = true),
+        Index(value = ["ledger_item_id"]),
         Index(value = ["epc"], unique = true)
     ],
 )

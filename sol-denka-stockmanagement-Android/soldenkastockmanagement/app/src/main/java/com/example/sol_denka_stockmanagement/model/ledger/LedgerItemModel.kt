@@ -1,6 +1,6 @@
-package com.example.sol_denka_stockmanagement.model.leger
+package com.example.sol_denka_stockmanagement.model.ledger
 
-import com.example.sol_denka_stockmanagement.database.entity.leger.LedgerItemEntity
+import com.example.sol_denka_stockmanagement.database.entity.ledger.LedgerItemEntity
 
 data class LedgerItemModel(
     val ledgerItemId: Int,
