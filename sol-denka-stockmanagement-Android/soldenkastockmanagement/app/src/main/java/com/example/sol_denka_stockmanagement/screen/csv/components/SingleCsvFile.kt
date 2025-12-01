@@ -3,6 +3,7 @@ package com.example.sol_denka_stockmanagement.screen.csv.components
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -35,21 +36,29 @@ fun SingleCsvFile(
     csvFileName: String,
     csvFileSize: String,
     progress: Float = 0f,
-    index: Int,
     isCompleted: Boolean = false,
     isError: Boolean = false,
-    showProgress: Boolean = false
+    showProgress: Boolean = false,
+    isSelected: Boolean = false,
+    onChoose: () -> Unit = {}
 ) {
     Row(
         modifier = modifier
             .padding(vertical = 0.dp, horizontal = 8.dp)
             .fillMaxWidth()
+            .background(color = if (isSelected) brightGreenPrimary.copy(alpha = 0.1f) else Color.White, shape = RoundedCornerShape(20.dp))
             .border(
                 width = 1.dp,
-                color = Color(0xFFE0E0E0),
+                color = if (isSelected) brightGreenPrimary else Color(0xFFE0E0E0),
                 shape = RoundedCornerShape(20.dp)
             )
-            .padding(10.dp),
+            .padding(10.dp)
+            .clickable(
+                indication = null,
+                interactionSource = null,
+                onClick = { onChoose() }
+            )
+        ,
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(12.dp)
     ) {
@@ -66,7 +75,8 @@ fun SingleCsvFile(
                     1.dp,
                     color = Color(0xFF8AD882),    // bright green
                     shape = RoundedCornerShape(12.dp)
-                ),
+                )
+            ,
             contentAlignment = Alignment.Center
         ) {
             Image(

@@ -222,7 +222,6 @@ fun CsvExportScreen(
                     } else {
                         csvFiles.takeIf { it.isNotEmpty() }?.forEachIndexed { index, file ->
                             SingleCsvFile(
-                                index = index,
                                 csvFileName = file.fileName,
                                 csvFileSize = file.fileSize,
                                 progress = file.progress,

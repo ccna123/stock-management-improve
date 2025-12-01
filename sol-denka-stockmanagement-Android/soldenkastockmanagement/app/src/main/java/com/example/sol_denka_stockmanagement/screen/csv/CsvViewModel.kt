@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.sol_denka_stockmanagement.helper.JsonFileManager
 import com.example.sol_denka_stockmanagement.helper.ProcessResult
 import com.example.sol_denka_stockmanagement.helper.csv.CsvHelper
+import com.example.sol_denka_stockmanagement.intent.CsvIntent
 import com.example.sol_denka_stockmanagement.model.csv.CsvFileInfoModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -59,152 +60,169 @@ class CsvViewModel @Inject constructor(
     private val _importResultStatus = MutableStateFlow<ProcessResult?>(null)
     val importResultStatus = _importResultStatus.asStateFlow()
 
-    // Update UI state in a consistent way
-    fun updateState(updates: CsvState.() -> CsvState) {
-        _csvState.update { it.updates() }
-    }
-    suspend fun fetchCsvFiles(){
-        val result =  helper.listCsvFiles(
-            csvType = _csvState.value.csvType
-        )
-        _csvFiles.value = result
-    }
+    private val _importFileSelectedIndex = MutableStateFlow(-1)
+    val importFileSelectedIndex: StateFlow<Int> = _importFileSelectedIndex.asStateFlow()
 
-    fun toggleProgressVisibility(show: Boolean){
-        _showProgress.value = show
-    }
-
-    fun toggleCsvTypeExpanded() {
-        updateState { copy(csvTypeExpanded = !csvTypeExpanded) }
-    }
-
-    fun resetState() {
-        _csvState.value = CsvState()
-    }
-    fun clearCsvList(){
-        _csvFiles.value = emptyList()
-    }
-
-    fun exportAllFilesIndividually(context: Context, isInventoryResult: Boolean) {
-        viewModelScope.launch(Dispatchers.IO) {
-            val files = _csvFiles.value.toMutableList()
-            helper.exportAllFilesIndividually(
-                context = context,
-                files = files,
-                isInventoryResult = isInventoryResult,
-                onProgressUpdate = { index, progress ->
-                    updateFileProgress(index = index, progress = progress)
-                    _isExporting.value = true
-                },
-                onFileComplete = { index ->
-                    markFileCompleted(index = index)
-                    _isExporting.value = false
-                },
-                onFileError = { index ->
-                    markFileError(index)
-                }
-            )
-            Log.i("TSS", "🎉 All files exported successfully")
-        }
-    }
-
-    suspend fun downloadCsvFromSftp(context: Context): ProcessResult {
-        return withContext(Dispatchers.IO) {
-            val config = JsonFileManager.loadSftpConfig(context)
-            val result = helper.downloadCsvFromSftp(
-                context = context,
-                host = config.host,
-                username = config.userName,
-                csvType = _csvState.value.csvType,
-                onProgress = { progress ->
-                    _isImporting.value = true
-                    _importProgress.value = progress
-                },
-                onComplete = {
-                    viewModelScope.launch {
-                        delay(2000)
-                        _isImporting.value = false
-                        _importProgress.value = 1f
-                    }
-                }
-            )
-            if (result is ProcessResult.Success) {
-                fetchCsvFiles()
-            } else if (result is ProcessResult.Failure) {
-                showProcessResultDialog(result.message)
+    fun onCsvIntent(intent: CsvIntent) {
+        when (intent) {
+            is CsvIntent.ToggleFileSelect -> {
+                _importFileSelectedIndex.value = intent.fileIndex
             }
-            result // ✅ return whatever helper produced
+            is CsvIntent.ResetFileSelect -> {
+                _importFileSelectedIndex.value = -1
+            }
         }
     }
 
-    suspend fun importMaster(){
-        return withContext(Dispatchers.IO) {
-            _isImporting.value = true
-            _importProgress.value = 0f
 
-            val result = helper.import(
-                csvType = _csvState.value.csvType,
-                onProgress = { p ->
-                    _importProgress.value = p
-                }
+        // Update UI state in a consistent way
+        fun updateState(updates: CsvState.() -> CsvState) {
+            _csvState.update { it.updates() }
+        }
+
+        suspend fun fetchCsvFiles() {
+            val result = helper.listCsvFiles(
+                csvType = _csvState.value.csvType
             )
+            _csvFiles.value = result
+        }
 
-            _isImporting.value = false
-            _importResultStatus.value = result
+        fun toggleProgressVisibility(show: Boolean) {
+            _showProgress.value = show
+        }
 
-            when (result) {
-                is ProcessResult.Success -> {
-                    showProcessResultDialog("取り込み成功しました")
-                }
-                is ProcessResult.Failure -> {
+        fun toggleCsvTypeExpanded() {
+            updateState { copy(csvTypeExpanded = !csvTypeExpanded) }
+        }
+
+        fun resetState() {
+            _csvState.value = CsvState()
+        }
+
+        fun clearCsvList() {
+            _csvFiles.value = emptyList()
+        }
+
+        fun exportAllFilesIndividually(context: Context, isInventoryResult: Boolean) {
+            viewModelScope.launch(Dispatchers.IO) {
+                val files = _csvFiles.value.toMutableList()
+                helper.exportAllFilesIndividually(
+                    context = context,
+                    files = files,
+                    isInventoryResult = isInventoryResult,
+                    onProgressUpdate = { index, progress ->
+                        updateFileProgress(index = index, progress = progress)
+                        _isExporting.value = true
+                    },
+                    onFileComplete = { index ->
+                        markFileCompleted(index = index)
+                        _isExporting.value = false
+                    },
+                    onFileError = { index ->
+                        markFileError(index)
+                    }
+                )
+                Log.i("TSS", "🎉 All files exported successfully")
+            }
+        }
+
+        suspend fun downloadCsvFromSftp(context: Context): ProcessResult {
+            return withContext(Dispatchers.IO) {
+                val config = JsonFileManager.loadSftpConfig(context)
+                val result = helper.downloadCsvFromSftp(
+                    context = context,
+                    host = config.host,
+                    username = config.userName,
+                    csvType = _csvState.value.csvType,
+                    onProgress = { progress ->
+                        _isImporting.value = true
+                        _importProgress.value = progress
+                    },
+                    onComplete = {
+                        viewModelScope.launch {
+                            delay(2000)
+                            _isImporting.value = false
+                            _importProgress.value = 1f
+                        }
+                    }
+                )
+                if (result is ProcessResult.Success) {
+                    fetchCsvFiles()
+                } else if (result is ProcessResult.Failure) {
                     showProcessResultDialog(result.message)
                 }
+                result // ✅ return whatever helper produced
             }
         }
-    }
 
+        suspend fun importMaster() {
+            return withContext(Dispatchers.IO) {
+                _isImporting.value = true
+                _importProgress.value = 0f
 
+                val result = helper.import(
+                    csvType = _csvState.value.csvType,
+                    onProgress = { p ->
+                        _importProgress.value = p
+                    }
+                )
 
-    private fun updateFileProgress(index: Int, progress: Float) {
-        _csvFiles.update { current ->
-            current.toMutableList().apply {
-                val file = this[index]
-                this[index] = file.copy(progress = progress)
+                _isImporting.value = false
+                _importResultStatus.value = result
+
+                when (result) {
+                    is ProcessResult.Success -> {
+                        showProcessResultDialog("取り込み成功しました")
+                    }
+
+                    is ProcessResult.Failure -> {
+                        showProcessResultDialog(result.message)
+                    }
+                }
             }
         }
-    }
 
-    private fun markFileCompleted(index: Int) {
-        _csvFiles.update { current ->
-            current.toMutableList().apply {
-                val file = this[index]
-                this[index] = file.copy(progress = 1f, isCompleted = true)
+
+        private fun updateFileProgress(index: Int, progress: Float) {
+            _csvFiles.update { current ->
+                current.toMutableList().apply {
+                    val file = this[index]
+                    this[index] = file.copy(progress = progress)
+                }
             }
         }
-    }
 
-    private fun markFileError(index: Int) {
-        _csvFiles.update { current ->
-            current.toMutableList().apply {
-                val file = this[index]
-                this[index] = file.copy(progress = 0f, isFailed = true)
+        private fun markFileCompleted(index: Int) {
+            _csvFiles.update { current ->
+                current.toMutableList().apply {
+                    val file = this[index]
+                    this[index] = file.copy(progress = 1f, isCompleted = true)
+                }
             }
         }
-    }
 
-    fun showProcessResultDialog(message: String = "") {
-        _processResultMessage.value = message
-        _showProcessResultDialog.value = true
-    }
+        private fun markFileError(index: Int) {
+            _csvFiles.update { current ->
+                current.toMutableList().apply {
+                    val file = this[index]
+                    this[index] = file.copy(progress = 0f, isFailed = true)
+                }
+            }
+        }
 
-    fun dismissProcessResultDialog() {
-        _showProcessResultDialog.value = false
-        _processResultMessage.value = null
-    }
+        fun showProcessResultDialog(message: String = "") {
+            _processResultMessage.value = message
+            _showProcessResultDialog.value = true
+        }
+
+        fun dismissProcessResultDialog() {
+            _showProcessResultDialog.value = false
+            _processResultMessage.value = null
+        }
 
 
-    override fun onCleared() {
-        super.onCleared()
-        Log.e("TSS", "CsvViewModel: is cleared")
+        override fun onCleared() {
+            super.onCleared()
+            Log.e("TSS", "CsvViewModel: is cleared")
+        }
     }
-}

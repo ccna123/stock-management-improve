@@ -42,6 +42,7 @@ import com.example.sol_denka_stockmanagement.R
 import com.example.sol_denka_stockmanagement.constant.CsvType
 import com.example.sol_denka_stockmanagement.constant.SelectTitle
 import com.example.sol_denka_stockmanagement.helper.ProcessResult
+import com.example.sol_denka_stockmanagement.intent.CsvIntent
 import com.example.sol_denka_stockmanagement.intent.ShareIntent
 import com.example.sol_denka_stockmanagement.navigation.Screen
 import com.example.sol_denka_stockmanagement.screen.csv.components.SingleCsvFile
@@ -69,6 +70,7 @@ fun CsvImportScreen(
     val csvState by csvViewModel.csvState.collectAsStateWithLifecycle()
     val scope = rememberCoroutineScope()
     val generalState = appViewModel.generalState.collectAsState().value
+    val importFileSelectedIndex = csvViewModel.importFileSelectedIndex.collectAsState().value
     val csvFiles by csvViewModel.csvFiles.collectAsStateWithLifecycle()
     val isImporting by csvViewModel.isImporting.collectAsStateWithLifecycle()
     val importProgress by csvViewModel.importProgress.collectAsStateWithLifecycle()
@@ -84,8 +86,11 @@ fun CsvImportScreen(
                 CsvType.ItemTypeMaster.displayName,
                 CsvType.TagMaster.displayName,
             ) -> {
-                csvViewModel.fetchCsvFiles()
-                csvViewModel.toggleProgressVisibility(false)
+                csvViewModel.apply {
+                    fetchCsvFiles()
+                    toggleProgressVisibility(false)
+                    onCsvIntent(CsvIntent.ResetFileSelect)
+                }
             }
 
             else -> csvViewModel.clearCsvList()
@@ -133,7 +138,7 @@ fun CsvImportScreen(
                 Text(
                     text = processResultMessage ?: "",
                     textAlign = TextAlign.Center,
-                    color = when(importResultStatus){
+                    color = when (importResultStatus) {
                         is ProcessResult.Failure -> Color.Red
                         is ProcessResult.Success -> brightGreenPrimary
                         null -> Color.Unspecified
@@ -141,7 +146,7 @@ fun CsvImportScreen(
                 )
                 Spacer(Modifier.height(12.dp))
                 ButtonContainer(
-                    containerColor = when(importResultStatus){
+                    containerColor = when (importResultStatus) {
                         is ProcessResult.Failure -> Color.Red
                         is ProcessResult.Success -> brightAzure
                         null -> Color.Unspecified
@@ -289,9 +294,12 @@ fun CsvImportScreen(
                             SingleCsvFile(
                                 csvFileName = file.fileName,
                                 csvFileSize = file.fileSize,
-                                index = index,
+                                isSelected = importFileSelectedIndex == index,
                                 modifier = Modifier
-                                    .padding(10.dp)
+                                    .padding(10.dp),
+                                onChoose = {
+                                    csvViewModel.onCsvIntent(CsvIntent.ToggleFileSelect(index))
+                                }
                             )
                         }
                             ?: Text(
