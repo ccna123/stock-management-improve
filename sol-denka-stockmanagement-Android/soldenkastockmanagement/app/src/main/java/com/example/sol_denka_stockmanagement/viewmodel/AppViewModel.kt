@@ -189,7 +189,7 @@ class AppViewModel @Inject constructor(
             }
 
             is InputIntent.ChangeLocation ->
-                _inputState.update { it.copy(stockArea = intent.value) }
+                _inputState.update { it.copy(location = intent.value) }
 
             is InputIntent.ChangeRemark ->
                 _inputState.update { it.copy(remark = intent.value) }

@@ -16,6 +16,7 @@ class LocationRepository @Inject constructor(
     fun get(): Flow<List<LocationMasterModel>> = dao.get().map { entityList ->
         entityList.map { it.toModel() }
     }
+    suspend fun getLocationIdByName(locationName: String) = dao.getLocationIdByName(locationName)
     suspend fun insert(model: LocationMasterModel) = dao.insert(model.toEntity())
     suspend fun insertAll(model: List<LocationMasterModel>) = dao.insertAll(model.map { it.toEntity() })
     suspend fun update(model: LocationMasterModel) = dao.update(model.toEntity())

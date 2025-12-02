@@ -108,7 +108,7 @@ fun InventoryScreen(
                         modifier = Modifier.size(20.dp)
                     )
                 },
-                canClick = inputState.stockArea.isNotEmpty(),
+                canClick = inputState.location.isNotEmpty(),
                 onClick = {
                     onNavigate(Screen.InventoryScan(Screen.Inventory.routeId))
                 },
@@ -141,7 +141,7 @@ fun InventoryScreen(
                                 enabled = true
                             )
                             .fillMaxWidth(),
-                        value = if (inputState.stockArea == SelectTitle.SelectLocation.displayName) "" else inputState.stockArea,
+                        value = if (inputState.location == SelectTitle.SelectLocation.displayName) "" else inputState.location,
                         hintText = SelectTitle.SelectLocation.displayName,
                         isNumeric = false,
                         onChange = { newValue ->

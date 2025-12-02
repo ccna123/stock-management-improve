@@ -193,7 +193,7 @@ fun InboundScreen(
                     MaterialSelectionItem.MISS_ROLL.displayName -> MissRollInput(
                         thickness = inputState.thickness,
                         rollingMachineInfo = inputState.rollingMachineInfo,
-                        stockArea = inputState.stockArea,
+                        stockArea = inputState.location,
                         length = inputState.length,
                         packingStyle = inputState.packingStyle,
                         packingStyleExpanded = expandState.packingStyleExpanded,
@@ -232,7 +232,7 @@ fun InboundScreen(
                     MaterialSelectionItem.LITER_CAN.displayName -> {
                         LiterInput(
                             thickness = inputState.thickness,
-                            stockArea = inputState.stockArea,
+                            stockArea = inputState.location,
                             lotNo = inputState.lotNo,
                             packingStyle = inputState.packingStyle,
                             packingStyleExpanded = expandState.packingStyleExpanded,

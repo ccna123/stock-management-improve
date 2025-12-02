@@ -29,7 +29,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.sol_denka_stockmanagement.R
-import com.example.sol_denka_stockmanagement.constant.MaterialSelectionItem
 import com.example.sol_denka_stockmanagement.constant.SelectTitle
 import com.example.sol_denka_stockmanagement.intent.ExpandIntent
 import com.example.sol_denka_stockmanagement.intent.InputIntent
@@ -140,7 +139,7 @@ fun LocationChangeScreen(
                                     enabled = true
                                 )
                                 .fillMaxWidth(),
-                            value = if (inputState.stockArea == SelectTitle.SelectLocation.displayName) "" else inputState.stockArea,
+                            value = if (inputState.location == SelectTitle.SelectLocation.displayName) "" else inputState.location,
                             hintText = SelectTitle.SelectLocation.displayName,
                             isNumeric = false,
                             onChange = { newValue ->

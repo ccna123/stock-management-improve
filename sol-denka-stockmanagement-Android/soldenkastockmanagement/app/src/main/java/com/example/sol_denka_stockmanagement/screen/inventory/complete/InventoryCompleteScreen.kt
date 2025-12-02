@@ -22,6 +22,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
@@ -33,6 +34,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.sol_denka_stockmanagement.R
 import com.example.sol_denka_stockmanagement.constant.InventoryScanResult
+import com.example.sol_denka_stockmanagement.constant.TagStatus
 import com.example.sol_denka_stockmanagement.intent.ShareIntent
 import com.example.sol_denka_stockmanagement.model.inventory.InventoryCompleteModel
 import com.example.sol_denka_stockmanagement.navigation.Screen
@@ -51,12 +53,25 @@ import com.example.sol_denka_stockmanagement.viewmodel.ScanViewModel
 fun InventoryCompleteScreen(
     appViewModel: AppViewModel,
     scanViewModel: ScanViewModel,
+    inventoryCompleteViewModel: InventoryCompleteViewModel,
     onGoBack: () -> Unit,
 ) {
 
     val generalState = appViewModel.generalState.collectAsStateWithLifecycle().value
+    val inputState = appViewModel.inputState.collectAsStateWithLifecycle().value
+    val rfidTagList = scanViewModel.rfidTagList.collectAsStateWithLifecycle().value
+    val wrongLocationCount =
+        inventoryCompleteViewModel.wrongLocationCount.collectAsStateWithLifecycle().value
+
     LaunchedEffect(Unit) {
         scanViewModel.setEnableScan(false)
+    }
+
+    LaunchedEffect(rfidTagList) {
+        inventoryCompleteViewModel.computeWrongLocation(
+            rfidTagList = rfidTagList.filter { it.newFields.tagStatus == TagStatus.PROCESSED },
+            locationName = inputState.location
+        )
     }
 
     if (generalState.showNetworkDialog) {
@@ -68,22 +83,22 @@ fun InventoryCompleteScreen(
     }
     val inventoryStatusList = listOf(
         InventoryCompleteModel(
-            status = InventoryScanResult.OK.displayName,
+            status = InventoryScanResult.OK,
             icon = R.drawable.scan_ok,
             color = brightGreenPrimary,
         ),
         InventoryCompleteModel(
-            status = InventoryScanResult.SHORTAGE.displayName,
+            status = InventoryScanResult.SHORTAGE,
             icon = R.drawable.scan_shortage,
             color = brightOrange,
         ),
         InventoryCompleteModel(
-            status = InventoryScanResult.OVERLOAD.displayName,
+            status = InventoryScanResult.OVERLOAD,
             icon = R.drawable.scan_overload,
             color = Color(0xFFF44336),
         ),
         InventoryCompleteModel(
-            status = InventoryScanResult.WRONG_LOCATION.displayName,
+            status = InventoryScanResult.WRONG_LOCATION,
             icon = R.drawable.scan_wrong_location,
             color = deepBlueSky,
         )
@@ -157,6 +172,12 @@ fun InventoryCompleteScreen(
                     verticalArrangement = Arrangement.spacedBy(10.dp)
                 ) {
                     inventoryStatusList.forEach { item ->
+                        val count = when (item.status) {
+                            InventoryScanResult.OK -> 123
+                            InventoryScanResult.SHORTAGE -> 123
+                            InventoryScanResult.OVERLOAD -> 123
+                            InventoryScanResult.WRONG_LOCATION -> wrongLocationCount
+                        }
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth(),
@@ -173,10 +194,10 @@ fun InventoryCompleteScreen(
                                     tint = item.color,
                                     modifier = Modifier.size(23.dp)
                                 )
-                                Text(text = item.status, fontSize = 18.sp)
+                                Text(text = item.status.displayName, fontSize = 18.sp)
                             }
                             Text(
-                                text = "123 件",
+                                text = "$count 件",
                                 fontSize = 18.sp
                             )
                         }

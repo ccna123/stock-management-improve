@@ -27,4 +27,7 @@ interface LocationDao : IDao<LocationMasterEntity> {
 
     @Delete
     override suspend fun delete(e: LocationMasterEntity)
+
+    @Query("SELECT location_id FROM LocationMaster WHERE location_name = :locationName")
+    suspend fun getLocationIdByName(locationName: String): Int?
 }

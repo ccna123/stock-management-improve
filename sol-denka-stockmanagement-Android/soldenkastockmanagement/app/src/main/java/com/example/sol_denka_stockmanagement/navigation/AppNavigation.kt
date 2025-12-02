@@ -19,6 +19,7 @@ import com.example.sol_denka_stockmanagement.screen.inventory.complete.Inventory
 import com.example.sol_denka_stockmanagement.screen.inventory.input.InventoryScreen
 import com.example.sol_denka_stockmanagement.screen.inventory.scan.InventoryScanScreen
 import com.example.sol_denka_stockmanagement.screen.inbound.InboundScreen
+import com.example.sol_denka_stockmanagement.screen.inventory.complete.InventoryCompleteViewModel
 import com.example.sol_denka_stockmanagement.screen.scan.ScanScreen
 import com.example.sol_denka_stockmanagement.screen.outbound.OutboundScreen
 import com.example.sol_denka_stockmanagement.screen.version.VersionInfoScreen
@@ -101,9 +102,11 @@ fun Navigation3(
                 )
             }
             entry<Screen.InventoryComplete> {
+                val inventoryCompleteViewModel = hiltViewModel<InventoryCompleteViewModel>()
                 InventoryCompleteScreen(
                     appViewModel = appViewModel,
                     scanViewModel = scanViewModel,
+                    inventoryCompleteViewModel = inventoryCompleteViewModel,
                     onGoBack = { goBack() }
                 )
             }

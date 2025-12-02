@@ -61,4 +61,12 @@ interface TagMasterDao : IDao<TagMasterEntity> {
                 "    WHERE t.epc IN (:epcList)"
     )
     suspend fun getItemNameByTagId(epcList: List<String>): List<OutboundScanResultDTO> ?
+
+    @Query(
+        "SELECT li.location_id\n" +
+                "FROM tagmaster t\n" +
+                "LEFT JOIN ledgeritem li ON li.ledger_item_id = t.ledger_item_id\n" +
+                "WHERE t.epc = :epc"
+    )
+    suspend fun getLocationIdByTag(epc: String): Int?
 }

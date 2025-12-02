@@ -2,10 +2,9 @@ package com.example.sol_denka_stockmanagement.state
 
 import com.example.sol_denka_stockmanagement.constant.FileTransferMethod
 import com.example.sol_denka_stockmanagement.constant.MaterialSelectionItem
-import com.example.sol_denka_stockmanagement.constant.SelectTitle
 
 data class InputState(
-    val stockArea: String = "",
+    val location: String = "",
     val thickness: String = "",
     val grade: String = "",
     val length: String = "",

@@ -19,11 +19,14 @@ class TagMasterRepository @Inject constructor(
     suspend fun getTagDetailForLocationChange(epcList: List<String>) =
         dao.getTagDetailForLocationChange(epcList)
 
-    suspend fun getItemNameByTagId(epcList: List<String>) =
-        dao.getItemNameByTagId(epcList)
+    suspend fun getItemNameByTagId(epcList: List<String>) = dao.getItemNameByTagId(epcList)
+
+    suspend fun getLocationIdByTag(epc: String) = dao.getLocationIdByTag(epc)
 
     suspend fun insert(model: TagMasterModel) = dao.insert(model.toEntity())
-    suspend fun insertAll(models: List<TagMasterModel>) = dao.insertAll(models.map { it.toEntity() })
+    suspend fun insertAll(models: List<TagMasterModel>) =
+        dao.insertAll(models.map { it.toEntity() })
+
     suspend fun update(model: TagMasterModel) = dao.update(model.toEntity())
     suspend fun delete(model: TagMasterModel) = dao.delete(model.toEntity())
 }
