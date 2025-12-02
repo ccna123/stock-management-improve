@@ -22,7 +22,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
@@ -60,15 +59,17 @@ fun InventoryCompleteScreen(
     val generalState = appViewModel.generalState.collectAsStateWithLifecycle().value
     val inputState = appViewModel.inputState.collectAsStateWithLifecycle().value
     val rfidTagList = scanViewModel.rfidTagList.collectAsStateWithLifecycle().value
-    val wrongLocationCount =
-        inventoryCompleteViewModel.wrongLocationCount.collectAsStateWithLifecycle().value
+    val wrongLocationCount = inventoryCompleteViewModel.wrongLocationCount.collectAsStateWithLifecycle().value
+    val shortageCount = inventoryCompleteViewModel.shortageCount.collectAsStateWithLifecycle().value
+    val overCount = inventoryCompleteViewModel.overCount.collectAsStateWithLifecycle().value
+    val okCount = inventoryCompleteViewModel.okCount.collectAsStateWithLifecycle().value
 
     LaunchedEffect(Unit) {
         scanViewModel.setEnableScan(false)
     }
 
     LaunchedEffect(rfidTagList) {
-        inventoryCompleteViewModel.computeWrongLocation(
+        inventoryCompleteViewModel.computeResult(
             rfidTagList = rfidTagList.filter { it.newFields.tagStatus == TagStatus.PROCESSED },
             locationName = inputState.location
         )
@@ -173,9 +174,9 @@ fun InventoryCompleteScreen(
                 ) {
                     inventoryStatusList.forEach { item ->
                         val count = when (item.status) {
-                            InventoryScanResult.OK -> 123
-                            InventoryScanResult.SHORTAGE -> 123
-                            InventoryScanResult.OVERLOAD -> 123
+                            InventoryScanResult.OK -> okCount
+                            InventoryScanResult.SHORTAGE -> shortageCount
+                            InventoryScanResult.OVERLOAD -> overCount
                             InventoryScanResult.WRONG_LOCATION -> wrongLocationCount
                         }
                         Row(
