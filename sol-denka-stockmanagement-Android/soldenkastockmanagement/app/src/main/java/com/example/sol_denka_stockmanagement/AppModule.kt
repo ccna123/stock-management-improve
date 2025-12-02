@@ -7,10 +7,13 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.room.Room
 import com.example.sol_denka_stockmanagement.database.AppDatabase
+import com.example.sol_denka_stockmanagement.database.dao.csv.CsvTaskTypeDao
+import com.example.sol_denka_stockmanagement.database.dao.inventory.InventoryResultTypeDao
 import com.example.sol_denka_stockmanagement.database.dao.item.ItemTypeDao
 import com.example.sol_denka_stockmanagement.database.dao.item.ItemUnitDao
 import com.example.sol_denka_stockmanagement.database.dao.leger.LedgerItemDao
 import com.example.sol_denka_stockmanagement.database.dao.location.LocationDao
+import com.example.sol_denka_stockmanagement.database.dao.process.ProcessTypeDao
 import com.example.sol_denka_stockmanagement.database.dao.tag.TagMasterDao
 import com.example.sol_denka_stockmanagement.helper.ReaderController
 import com.example.sol_denka_stockmanagement.helper.TagController
@@ -47,7 +50,6 @@ object AppModule {
         return TagController()
     }
 
-
     @Provides
     @Named("ZebraPrefs")
     fun provideZebraSharedPreferences(@ApplicationContext context: Context): SharedPreferences {
@@ -72,6 +74,7 @@ object AppModule {
             .fallbackToDestructiveMigration(false)
             .build()
     }
+
     @Provides
     @Singleton
     fun provideTagDao(database: AppDatabase): TagMasterDao {
@@ -101,12 +104,23 @@ object AppModule {
     fun provideLedgerItemDao(database: AppDatabase): LedgerItemDao {
         return database.ledgerItemDao()
     }
-//    @Provides
-//    @Singleton
-//    fun provideAppSettingStorage(): JsonFileSettingStorage<AppSettingModel> {
-//        return JsonFileSettingStorage(
-//            fileName = "app_setting.json",
-//            clazz = AppSettingModel::class.java
-//        )
-//    }
+
+    @Provides
+    @Singleton
+    fun provideProcessTypeDao(database: AppDatabase): ProcessTypeDao {
+        return database.processTypeDao()
+    }
+
+    @Provides
+    @Singleton
+    fun provideCsvTaskTypeDao(database: AppDatabase): CsvTaskTypeDao {
+        return database.csvTaskTypeDao()
+    }
+
+    @Provides
+    @Singleton
+    fun provideInventoryResultTypeDao(database: AppDatabase): InventoryResultTypeDao {
+        return database.inventoryResultTypeDao()
+    }
+
 }

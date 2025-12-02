@@ -3,7 +3,6 @@ package com.example.sol_denka_stockmanagement.database.dao.tag
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
-import androidx.room.OnConflictStrategy
 import androidx.room.OnConflictStrategy.Companion.REPLACE
 import androidx.room.Query
 import androidx.room.Update
@@ -38,7 +37,7 @@ interface TagMasterDao : IDao<TagMasterEntity> {
                 "LEFT JOIN itemtypemaster i ON i.item_type_id = l.item_type_id\n" +
                 "WHERE t.epc = :epc"
     )
-    suspend fun getTagDetailForInbound(epc: String): InboundScanResult
+    suspend fun getTagDetailForInbound(epc: String): InboundScanResult?
 
     @Query(
         "SELECT t.epc,\n" +
@@ -61,5 +60,5 @@ interface TagMasterDao : IDao<TagMasterEntity> {
                 "    LEFT JOIN itemtypemaster i ON i.item_type_id = li.item_type_id\n" +
                 "    WHERE t.epc IN (:epcList)"
     )
-    suspend fun getTagDetailForOutbound(epcList: List<String>): List<OutboundScanResultDTO>
+    suspend fun getItemNameByTagId(epcList: List<String>): List<OutboundScanResultDTO> ?
 }

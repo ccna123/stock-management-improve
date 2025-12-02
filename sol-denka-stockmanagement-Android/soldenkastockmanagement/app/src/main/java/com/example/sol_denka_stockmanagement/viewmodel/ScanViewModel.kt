@@ -13,11 +13,9 @@ import com.example.sol_denka_stockmanagement.helper.ReaderController
 import com.example.sol_denka_stockmanagement.helper.TagController
 import com.example.sol_denka_stockmanagement.model.inbound.InboundScanResult
 import com.example.sol_denka_stockmanagement.model.tag.TagMasterModel
-import com.example.sol_denka_stockmanagement.navigation.Screen
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
@@ -43,6 +41,9 @@ class ScanViewModel @Inject constructor(
     private val _inboundDetail = MutableStateFlow<InboundScanResult?>(null)
     val inboundDetail = _inboundDetail.asStateFlow()
 
+    private val _epcNameMap = MutableStateFlow<Map<String, String>>(emptyMap())
+    val epcNameMap = _epcNameMap.asStateFlow()
+
     private val _rfidTagList = MutableStateFlow<List<TagMasterModel>>(emptyList())
     val rfidTagList = _rfidTagList.asStateFlow()
 
@@ -50,6 +51,7 @@ class ScanViewModel @Inject constructor(
     val rssiMap = _rssiMap.asStateFlow()
 
     private var inboundJob: Job? = null
+    private var outboundJob: Job? = null
     private var inventoryJob: Job? = null
     private var processJob: Job? = null
     private var searchJob: Job? = null
@@ -61,10 +63,11 @@ class ScanViewModel @Inject constructor(
             _scanMode.collect { mode ->
 
                 // cancel all jobs whenever mode changes
-                inboundJob?.cancelAndJoin()
-                inventoryJob?.cancelAndJoin()
-                processJob?.cancelAndJoin()
-                searchJob?.cancelAndJoin()
+                inboundJob?.cancel()
+                outboundJob?.cancel()
+                inventoryJob?.cancel()
+                processJob?.cancel()
+                searchJob?.cancel()
 
                 when (mode) {
 
@@ -79,6 +82,8 @@ class ScanViewModel @Inject constructor(
                     }
 
                     ScanMode.INVENTORY_SCAN -> {
+                        searchJob?.cancel()
+                        inboundJob?.cancel()
                         inventoryJob = viewModelScope.launch(Dispatchers.IO) {
                             combine(
                                 tagMasterRepository.get(),
@@ -94,8 +99,6 @@ class ScanViewModel @Inject constructor(
                         }
 
                         processJob = viewModelScope.launch(Dispatchers.IO) {
-                            Log.e("TSS", "scannedTags: ${scannedTags.value}: ", )
-                            Log.e("TSS", "statusMap: ${tagController.statusMap.value}: ", )
                             scannedTags.collect { scanned ->
                                 scanned.keys.forEach { epc ->
                                     updateTagStatus(epc, TagStatus.PROCESSED)
@@ -105,7 +108,6 @@ class ScanViewModel @Inject constructor(
                     }
 
                     ScanMode.SEARCH -> {
-                        Log.e("TSS", "SEARCH mode is called: ", )
                         searchJob = viewModelScope.launch(Dispatchers.IO) {
                             scannedTags.collect { map ->
                                 _rssiMap.value = map.mapValues { it.value.rssi }
@@ -113,10 +115,23 @@ class ScanViewModel @Inject constructor(
                         }
                     }
 
-                    ScanMode.NONE,
-                    ScanMode.OUTBOUND,
-                    ScanMode.LOCATION_CHANGE -> {
+                    ScanMode.OUTBOUND, ScanMode.LOCATION_CHANGE -> {
+                        outboundJob = viewModelScope.launch(Dispatchers.IO) {
+                            scannedTags.collect { tags ->
+
+                                val epcList = tags.keys.toList()
+                                if (epcList.isEmpty()) return@collect
+
+                                val detailList =
+                                    tagMasterRepository.getItemNameByTagId(epcList) ?: emptyList()
+
+                                val map = detailList.associate { it.epc to it.itemName }
+
+                                _epcNameMap.value = map
+                            }
+                        }
                     }
+                    ScanMode.NONE -> {}
                 }
             }
         }
@@ -163,7 +178,7 @@ class ScanViewModel @Inject constructor(
     }
 
     override fun updateTagStatus(epc: String, status: TagStatus) {
-        Log.e("TSS", "updateTagStatus: is called", )
+        Log.e("TSS", "updateTagStatus: is called")
         tagController.updateTagStatus(epc, status)
     }
 

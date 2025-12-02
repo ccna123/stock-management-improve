@@ -2,6 +2,7 @@ package com.example.sol_denka_stockmanagement.screen.outbound
 
 import android.os.Build
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -26,7 +27,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.sol_denka_stockmanagement.R
-import com.example.sol_denka_stockmanagement.constant.MaterialSelectionItem
 import com.example.sol_denka_stockmanagement.intent.InputIntent
 import com.example.sol_denka_stockmanagement.intent.ShareIntent
 import com.example.sol_denka_stockmanagement.model.scan.ScanResultRowModel
@@ -92,54 +92,65 @@ fun OutboundScreen(
         onBackArrowClick = {
             onGoBack()
         }) { paddingValues ->
-        LazyColumn(
-            modifier = Modifier
+        Column(
+            Modifier
                 .padding(paddingValues)
                 .padding(16.dp)
-                .imePadding()
         ) {
-            item {
-                Text(text = stringResource(R.string.planned_register_item_number, selectedCount))
-                Spacer(modifier = Modifier.height(18.dp))
-                ScanResultTable(
-                    tableHeight = 250.dp,
-                    tableHeader = listOf(
-                        stringResource(R.string.item_name_title),
-                        stringResource(R.string.item_code_title),
-                        stringResource(R.string.handling_method)
-                    ),
-                    scanResult = outboundList.map { tag ->
-                        ScanResultRowModel(
-                            itemName = tag.itemName,
-                            itemCode = tag.epc,
-                            lastColumn = tag.processType
-                        )
-                    },
+            Text(
+                text = stringResource(
+                    R.string.planned_register_item_number,
+                    selectedCount
                 )
-                Spacer(modifier = Modifier.height(20.dp))
-                InputFieldContainer(
-                    modifier = Modifier.fillMaxWidth().height(200.dp),
-                    value = inputState.remark,
-                    label = "備考",
-                    hintText = stringResource(R.string.remark_hint),
-                    isNumeric = false,
-                    shape = RoundedCornerShape(13.dp),
-                    readOnly = false,
-                    isDropDown = false,
-                    enable = true,
-                    singleLine = false,
-                    onChange = { newValue ->
-                        val filteredValue = newValue.trimStart().filter { char ->
-                            (char.isLetterOrDigit() && char.toString()
-                                .toByteArray().size == 1) || char == '-'
-                        }
-                        appViewModel.onInputIntent(
-                            InputIntent.ChangeRemark(
-                                filteredValue
+            )
+            Spacer(modifier = Modifier.height(18.dp))
+            LazyColumn(
+                modifier = Modifier
+                    .imePadding()
+            ) {
+                item {
+                    ScanResultTable(
+                        tableHeight = 250.dp,
+                        tableHeader = listOf(
+                            stringResource(R.string.item_name_title),
+                            stringResource(R.string.item_code_title),
+                            stringResource(R.string.handling_method)
+                        ),
+                        scanResult = outboundList.map { tag ->
+                            ScanResultRowModel(
+                                itemName = tag.itemName,
+                                itemCode = tag.epc,
+                                lastColumn = tag.processType
                             )
-                        )
-                    }
-                )
+                        },
+                    )
+                    Spacer(modifier = Modifier.height(20.dp))
+                    InputFieldContainer(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(200.dp),
+                        value = inputState.remark,
+                        label = "備考",
+                        hintText = stringResource(R.string.remark_hint),
+                        isNumeric = false,
+                        shape = RoundedCornerShape(13.dp),
+                        readOnly = false,
+                        isDropDown = false,
+                        enable = true,
+                        singleLine = false,
+                        onChange = { newValue ->
+                            val filteredValue = newValue.trimStart().filter { char ->
+                                (char.isLetterOrDigit() && char.toString()
+                                    .toByteArray().size == 1) || char == '-'
+                            }
+                            appViewModel.onInputIntent(
+                                InputIntent.ChangeRemark(
+                                    filteredValue
+                                )
+                            )
+                        }
+                    )
+                }
             }
         }
     }

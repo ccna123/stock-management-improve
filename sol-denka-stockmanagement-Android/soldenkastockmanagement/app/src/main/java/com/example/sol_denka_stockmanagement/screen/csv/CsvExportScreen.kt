@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -19,6 +20,7 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuAnchorType
 import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -30,6 +32,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -37,6 +40,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.sol_denka_stockmanagement.R
 import com.example.sol_denka_stockmanagement.constant.CsvType
 import com.example.sol_denka_stockmanagement.constant.SelectTitle
+import com.example.sol_denka_stockmanagement.helper.ToastManager
+import com.example.sol_denka_stockmanagement.helper.ToastType
 import com.example.sol_denka_stockmanagement.intent.ShareIntent
 import com.example.sol_denka_stockmanagement.navigation.Screen
 import com.example.sol_denka_stockmanagement.screen.csv.components.SingleCsvFile
@@ -56,7 +61,6 @@ fun CsvExportScreen(
     appViewModel: AppViewModel,
     onGoBack: () -> Unit
 ) {
-    val context = LocalContext.current
     val csvState by csvViewModel.csvState.collectAsStateWithLifecycle()
     val generalState = appViewModel.generalState.collectAsState().value
     val csvFiles by csvViewModel.csvFiles.collectAsStateWithLifecycle()
@@ -101,32 +105,43 @@ fun CsvExportScreen(
                     elevation = 13.dp, clip = true, ambientColor = Color.Gray.copy(alpha = 0.5f),
                     spotColor = Color.DarkGray.copy(alpha = 0.7f)
                 ),
-                shape = RoundedCornerShape(10.dp),
                 buttonTextSize = 20,
                 buttonText = stringResource(R.string.export_file),
-                canClick = csvState.csvType.isNotEmpty() && isExporting.not(),
+                canClick = csvState.csvType.isNotEmpty() && isExporting.not() && csvFiles.isNotEmpty(),
+                icon = {
+                    Icon(
+                        painter = painterResource(R.drawable.file_export),
+                        contentDescription = null,
+                        tint = Color.White,
+                        modifier = Modifier.size(25.dp)
+                    )
+                },
                 onClick = {
-                    if (appViewModel.isNetworkConnected.value.not()) {
-                        appViewModel.onGeneralIntent(
-                            ShareIntent.ToggleNetworkDialog(true)
-                        )
-                    } else {
-                        csvViewModel.toggleProgressVisibility(true)
-                        csvViewModel.exportAllFilesIndividually(
-                            context = context,
-                            isInventoryResult = when (csvState.csvType) {
-                                CsvType.InventoryResult.displayName -> {
-                                    true
-                                }
-
-                                CsvType.StockEvent.displayName -> {
-                                    false
-                                }
-
-                                else -> false
-                            }
-                        )
-                    }
+                    ToastManager.showToast(
+                        message = "開発中",
+                        type = ToastType.INFO
+                    )
+//                    if (appViewModel.isNetworkConnected.value.not()) {
+//                        appViewModel.onGeneralIntent(
+//                            ShareIntent.ToggleNetworkDialog(true)
+//                        )
+//                    } else {
+//                        csvViewModel.toggleProgressVisibility(true)
+//                        csvViewModel.exportAllFilesIndividually(
+//                            context = context,
+//                            isInventoryResult = when (csvState.csvType) {
+//                                CsvType.InventoryResult.displayName -> {
+//                                    true
+//                                }
+//
+//                                CsvType.StockEvent.displayName -> {
+//                                    false
+//                                }
+//
+//                                else -> false
+//                            }
+//                        )
+//                    }
                 },
             )
         },
@@ -229,11 +244,12 @@ fun CsvExportScreen(
                                 isError = file.isFailed,
                                 showProgress = showProgress,
                                 modifier = Modifier
-                                    .padding(10.dp)
+                                    .padding(10.dp),
                             )
                         } ?: Text(
                             color = Color.Red,
-                            text = stringResource(R.string.no_csv_file_found))
+                            text = stringResource(R.string.no_csv_file_found)
+                        )
                     }
                 }
             }

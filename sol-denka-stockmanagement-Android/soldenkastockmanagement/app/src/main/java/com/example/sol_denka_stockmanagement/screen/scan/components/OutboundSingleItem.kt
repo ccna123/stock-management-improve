@@ -1,11 +1,18 @@
 package com.example.sol_denka_stockmanagement.screen.scan.components
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.DropdownMenuItem
@@ -16,18 +23,23 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.example.sol_denka_stockmanagement.constant.HandlingMethod
+import com.example.sol_denka_stockmanagement.constant.ProcessMethod
 import com.example.sol_denka_stockmanagement.constant.MaterialSelectionItem
 import com.example.sol_denka_stockmanagement.constant.SelectTitle
 import com.example.sol_denka_stockmanagement.share.InputFieldContainer
 import com.example.sol_denka_stockmanagement.ui.theme.brightAzure
 import com.example.sol_denka_stockmanagement.ui.theme.brightGreenSecondary
+import com.example.sol_denka_stockmanagement.ui.theme.paleSkyBlue
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun OutboundSingleItem(
     tag: String,
+    itemName: String,
     isChecked: Boolean,
     isExpanded: Boolean,
     value: String,
@@ -39,65 +51,74 @@ fun OutboundSingleItem(
     onClickDropDownMenuItem: (String) -> Unit
 ) {
     Row(
-        modifier = Modifier
-            .fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(10.dp)
+            // ✨ Add the shadow first, with clip disabled so the shadow can extend beyond the shape
+            .shadow(
+                elevation = 3.dp,
+                shape = RoundedCornerShape(12.dp),
+                clip = false, // 👈 allow the shadow to bleed outside the box
+            )
+            // 💡 Then draw the background after the shadow
+            .background(
+                color = Color.White,
+                shape = RoundedCornerShape(12.dp)
+            )
+            // Add border for your pale outline
+            .border(1.dp, color = paleSkyBlue, shape = RoundedCornerShape(12.dp))
+            .clickable(onClick = { onSelect() })
     ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.clickable(onClick = { onSelect() })
+        Checkbox(
+            colors = CheckboxDefaults.colors(
+                checkedColor = brightGreenSecondary
+            ),
+            checked = isChecked,
+            onCheckedChange = { onCheckedChange() }
+        )
+        Column(
+            modifier = Modifier.padding(5.dp)
         ) {
-            Checkbox(
-                colors = CheckboxDefaults.colors(
-                    checkedColor = brightGreenSecondary
-                ),
-                checked = isChecked,
-                onCheckedChange = { onCheckedChange() }
-            )
-            Column(
-                modifier = Modifier.padding(5.dp)
-            ) {
-                Text(text = MaterialSelectionItem.MISS_ROLL.displayName)
-                Text(text = tag)
-            }
-        }
-        ExposedDropdownMenuBox(
-            expanded = isExpanded,
-            onExpandedChange = { onExpandedChange() }) {
-            InputFieldContainer(
-                modifier = Modifier
-                    .menuAnchor(
-                        type = ExposedDropdownMenuAnchorType.PrimaryNotEditable,
-                        enabled = true
-                    )
-                    .fillMaxWidth(),
-                value = value,
-                isNumeric = false,
-                hintText = SelectTitle.SelectHandlingMethod.displayName,
-                onChange = { newValue -> onValueChange(newValue) },
-                readOnly = true,
-                isDropDown = true,
-                enable = true,
-                iconColor = brightAzure,
-//                onClick = { onClickInput() },
-            )
-            ExposedDropdownMenu(
+            Text(text = itemName)
+            Text(text = tag)
+            ExposedDropdownMenuBox(
+                modifier = Modifier.wrapContentSize(),
                 expanded = isExpanded,
-                onDismissRequest = { onDismissRequest() }
-            ) {
-                listOf(
-                    SelectTitle.SelectHandlingMethod.displayName,
-                    HandlingMethod.USE.displayName,
-                    HandlingMethod.SALE.displayName,
-                    HandlingMethod.CRUSHING.displayName,
-                ).forEach { method ->
-                    DropdownMenuItem(
-                        text = { Text(text = method) },
-                        onClick = { onClickDropDownMenuItem(method) }
-                    )
+                onExpandedChange = { onExpandedChange() }) {
+                InputFieldContainer(
+                    modifier = Modifier
+                        .menuAnchor(
+                            type = ExposedDropdownMenuAnchorType.PrimaryNotEditable,
+                            enabled = true
+                        ),
+                    value = value,
+                    isNumeric = false,
+                    hintText = SelectTitle.SelectProcessMethod.displayName,
+                    onChange = { newValue -> onValueChange(newValue) },
+                    readOnly = true,
+                    isDropDown = true,
+                    enable = true,
+                    iconColor = brightAzure,
+                )
+                ExposedDropdownMenu(
+                    expanded = isExpanded,
+                    onDismissRequest = { onDismissRequest() }
+                ) {
+                    listOf(
+                        SelectTitle.SelectProcessMethod.displayName,
+                        ProcessMethod.USE.displayName,
+                        ProcessMethod.SALE.displayName,
+                        ProcessMethod.CRUSH.displayName,
+                    ).forEach { method ->
+                        DropdownMenuItem(
+                            text = { Text(text = method) },
+                            onClick = { onClickDropDownMenuItem(method) }
+                        )
+                    }
                 }
             }
+            Spacer(modifier = Modifier.height(10.dp))
         }
     }
 }

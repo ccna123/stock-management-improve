@@ -1,10 +1,11 @@
 package com.example.sol_denka_stockmanagement.model.csv
 
+import com.example.sol_denka_stockmanagement.constant.CsvTaskType
 import com.example.sol_denka_stockmanagement.database.entity.csv.CsvTaskTypeEntity
 
 data class CsvTaskTypeModel(
-    val csvTaskTypeId: Int,
-    val csvTaskCode: String,
+    val csvTaskTypeId: Int = 0,
+    val csvTaskCode: CsvTaskType,
     val csvTaskName: String,
     val createdAt: String,
     val updatedAt: String
@@ -25,5 +26,3 @@ fun CsvTaskTypeModel.toEntity() = CsvTaskTypeEntity(
     createdAt = createdAt,
     updatedAt = updatedAt
 )
-
-

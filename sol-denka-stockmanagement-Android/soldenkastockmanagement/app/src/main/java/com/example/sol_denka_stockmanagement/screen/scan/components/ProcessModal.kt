@@ -21,14 +21,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.sol_denka_stockmanagement.R
-import com.example.sol_denka_stockmanagement.constant.HandlingMethod
+import com.example.sol_denka_stockmanagement.constant.ProcessMethod
 import com.example.sol_denka_stockmanagement.constant.SelectTitle
 import com.example.sol_denka_stockmanagement.share.dialog.AppDialog
 import com.example.sol_denka_stockmanagement.share.ButtonContainer
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ShippingModal(
+fun ProcessModal(
     selectedCount: Int,
     chosenMethod: String,
     onChooseMethod: (String) -> Unit,
@@ -43,15 +43,15 @@ fun ShippingModal(
             Text(
                 fontSize = 19.sp,
                 fontWeight = FontWeight.Bold,
-                text = SelectTitle.SelectHandlingMethod.displayName
+                text = SelectTitle.SelectProcessMethod.displayName
             )
             Spacer(modifier = Modifier.height(10.dp))
             Text(text = stringResource(R.string.bulk_apply_item_number, selectedCount))
             Spacer(modifier = Modifier.height(10.dp))
             listOf(
-                HandlingMethod.USE.displayName,
-                HandlingMethod.SALE.displayName,
-                HandlingMethod.CRUSHING.displayName,
+                ProcessMethod.USE.displayName,
+                ProcessMethod.SALE.displayName,
+                ProcessMethod.CRUSH.displayName,
             ).mapIndexed { index, method ->
                 Column(
                     modifier = Modifier.fillMaxWidth(),
@@ -63,19 +63,19 @@ fun ShippingModal(
                         containerColor = if (method == chosenMethod) Color(0xFF43A047) else Color.LightGray,
                         icon = {
                             when (method) {
-                                HandlingMethod.USE.displayName -> Icon(
+                                ProcessMethod.USE.displayName -> Icon(
                                     painter = painterResource(R.drawable.recycle),
                                     contentDescription = null,
                                     modifier = Modifier.size(20.dp)
                                 )
 
-                                HandlingMethod.SALE.displayName -> Icon(
+                                ProcessMethod.SALE.displayName -> Icon(
                                     painter = painterResource(R.drawable.money),
                                     contentDescription = null,
                                     modifier = Modifier.size(20.dp)
                                 )
 
-                                HandlingMethod.CRUSHING.displayName -> Icon(
+                                ProcessMethod.CRUSH.displayName -> Icon(
                                     painter = painterResource(R.drawable.burn),
                                     contentDescription = null,
                                     modifier = Modifier.size(20.dp)

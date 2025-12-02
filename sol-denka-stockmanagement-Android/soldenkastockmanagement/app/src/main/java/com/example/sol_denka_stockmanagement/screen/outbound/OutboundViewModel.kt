@@ -10,6 +10,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlin.collections.associateBy
+import kotlin.collections.filter
+import kotlin.collections.map
 
 @HiltViewModel
 class OutboundViewModel @Inject constructor(
@@ -34,8 +37,9 @@ class OutboundViewModel @Inject constructor(
                 return@launch
             }
 
-            val detailList = tagMasterRepository.getTagDetailForOutbound(selectedEpcList)
+            val detailList = tagMasterRepository.getItemNameByTagId(selectedEpcList) ?: emptyList()
             val detailMap = detailList.associateBy { it.epc }
+
 
             val result = selectedEpcList.map { epc ->
                 val detail = detailMap[epc]
@@ -51,5 +55,3 @@ class OutboundViewModel @Inject constructor(
         }
     }
 }
-
-

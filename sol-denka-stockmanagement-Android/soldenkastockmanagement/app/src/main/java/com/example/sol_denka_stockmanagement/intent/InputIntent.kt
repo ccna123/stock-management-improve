@@ -1,7 +1,7 @@
 package com.example.sol_denka_stockmanagement.intent
 
 sealed interface InputIntent {
-    data class ChangeHandlingMethod(val value: String) : InputIntent
+    data class ChangeProcessMethod(val value: String) : InputIntent
     data class ChangeMissRoll(val value: String) : InputIntent
     data class ChangeLocation(val value: String) : InputIntent
     data class ChangeRemark(val value: String) : InputIntent
@@ -13,5 +13,5 @@ sealed interface InputIntent {
     data class ChangeLotNo(val value: String) : InputIntent
     data class ChangePackingStyle(val value: String) : InputIntent
     data class ChangeFileTransferMethod(val value: String): InputIntent
-    data object BulkApplyHandlingMethod: InputIntent
+    data object BulkApplyProcessMethod: InputIntent
 }

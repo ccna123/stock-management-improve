@@ -41,9 +41,9 @@ import com.example.sol_denka_stockmanagement.intent.ShareIntent
 import com.example.sol_denka_stockmanagement.navigation.Screen
 import com.example.sol_denka_stockmanagement.screen.layout.Layout
 import com.example.sol_denka_stockmanagement.screen.scan.components.InboundScanTagCard
-import com.example.sol_denka_stockmanagement.screen.scan.components.ShippingModal
-import com.example.sol_denka_stockmanagement.screen.scan.components.OutboundSingleItem
 import com.example.sol_denka_stockmanagement.screen.scan.components.LocationChangeSingleItem
+import com.example.sol_denka_stockmanagement.screen.scan.components.OutboundSingleItem
+import com.example.sol_denka_stockmanagement.screen.scan.components.ProcessModal
 import com.example.sol_denka_stockmanagement.share.ButtonContainer
 import com.example.sol_denka_stockmanagement.share.dialog.ConfirmDialog
 import com.example.sol_denka_stockmanagement.ui.theme.brightAzure
@@ -64,6 +64,7 @@ fun ScanScreen(
 ) {
     val scannedTags by scanViewModel.scannedTags.collectAsStateWithLifecycle()
     val inboundDetail by scanViewModel.inboundDetail.collectAsStateWithLifecycle()
+    val outboundDetailMap by scanViewModel.epcNameMap.collectAsStateWithLifecycle()
     val isPerformingInventory by appViewModel.isPerformingInventory.collectAsStateWithLifecycle()
     val scope = rememberCoroutineScope()
     val expandedMap by appViewModel.perTagExpanded.collectAsStateWithLifecycle()
@@ -72,7 +73,7 @@ fun ScanScreen(
 
     val isAllSelected by appViewModel.isAllSelected.collectAsStateWithLifecycle()
     val selectedCount by appViewModel.selectedCount.collectAsStateWithLifecycle()
-    val showModalHandlingMethod by appViewModel.showModalHandlingMethod.collectAsStateWithLifecycle()
+    val showModalProcessMethod by appViewModel.showModalProcessMethod.collectAsStateWithLifecycle()
     val showClearTagConfirmDialog = appViewModel.showClearTagConfirmDialog.value
 
     LaunchedEffect(Unit) {
@@ -87,12 +88,12 @@ fun ScanScreen(
     }
 
 
-    if (showModalHandlingMethod) {
-        ShippingModal(
+    if (showModalProcessMethod) {
+        ProcessModal(
             selectedCount = selectedCount,
-            chosenMethod = appViewModel.bottomSheetChosenMethod.value,
+            chosenMethod = appViewModel.processMethod.value,
             onChooseMethod = { method ->
-                appViewModel.onInputIntent(InputIntent.ChangeHandlingMethod(method))
+                appViewModel.onInputIntent(InputIntent.ChangeProcessMethod(method))
             },
             onDismissRequest = {
                 appViewModel.onGeneralIntent(
@@ -103,7 +104,7 @@ fun ScanScreen(
             },
             onApplyBulk = {
                 appViewModel.apply {
-                    onInputIntent(InputIntent.BulkApplyHandlingMethod)
+                    onInputIntent(InputIntent.BulkApplyProcessMethod)
                     onGeneralIntent(ShareIntent.ShowModalHandlingMethod(false))
                 }
             }
@@ -118,7 +119,9 @@ fun ScanScreen(
                 ButtonContainer(
                     buttonText = stringResource(R.string.ok),
                     onClick = {
+                        scanViewModel.clearInboundDetail()
                         scanViewModel.clearScannedTag()
+                        scanViewModel.setScanMode(ScanMode.NONE)
                         appViewModel.onGeneralIntent(ShareIntent.ToggleClearTagConfirmDialog)
                         onGoBack()
                     }
@@ -200,7 +203,7 @@ fun ScanScreen(
                             Screen.StorageAreaChange.routeId
                         ) -> checkedMap.values.any { it }
 
-                        Screen.Inbound.routeId -> scannedTags.isNotEmpty()
+                        Screen.Inbound.routeId -> inboundDetail?.epc?.isNotEmpty() == true
                         else -> true
                     },
                     icon = {
@@ -215,13 +218,7 @@ fun ScanScreen(
                         onNavigate(
                             when (prevScreenNameId) {
                                 Screen.Outbound.routeId -> Screen.Outbound
-                                Screen.StorageAreaChange.routeId -> {
-                                    val selectedEpc = scannedTags
-                                        .filter { checkedMap[it.key] == true }
-                                        .map { it.key }
-                                    Screen.StorageAreaChange
-                                }
-
+                                Screen.StorageAreaChange.routeId -> Screen.StorageAreaChange
                                 Screen.Inbound.routeId -> Screen.Inbound
                                 else -> Screen.Home
                             }
@@ -231,9 +228,10 @@ fun ScanScreen(
             }
         },
         onBackArrowClick = {
-            if (scannedTags.isNotEmpty()) {
+            if (scannedTags.isNotEmpty() || inboundDetail?.epc?.isNotEmpty() == true) {
                 appViewModel.onGeneralIntent(ShareIntent.ToggleClearTagConfirmDialog)
             } else {
+                scanViewModel.setScanMode(ScanMode.NONE)
                 onGoBack()
             }
         }) { paddingValues ->
@@ -309,8 +307,10 @@ fun ScanScreen(
                                 val isExpanded = expandedMap[tag.first] ?: false
                                 val isChecked = checkedMap[tag.first] ?: false
                                 val value = handlingMap[tag.first] ?: ""
+                                val itemName = outboundDetailMap[tag.first] ?: ""
                                 OutboundSingleItem(
                                     tag = tag.first,
+                                    itemName = itemName,
                                     isChecked = isChecked,
                                     onSelect = {
                                         appViewModel.onGeneralIntent(
@@ -352,7 +352,7 @@ fun ScanScreen(
                                     },
                                     onClickDropDownMenuItem = { method ->
                                         val finalValue =
-                                            if (method == SelectTitle.SelectHandlingMethod.displayName) ""
+                                            if (method == SelectTitle.SelectProcessMethod.displayName) ""
                                             else method
 
                                         appViewModel.onGeneralIntent(
@@ -371,8 +371,10 @@ fun ScanScreen(
 
                             Screen.StorageAreaChange.routeId -> {
                                 val isChecked = checkedMap[tag.first] ?: false
+                                val itemName = outboundDetailMap[tag.first] ?: ""
                                 LocationChangeSingleItem(
                                     tag = tag.first,
+                                    itemName = itemName,
                                     isChecked = isChecked,
                                     onCheckedChange = {
                                         appViewModel.onGeneralIntent(
@@ -393,9 +395,6 @@ fun ScanScreen(
                                 )
                             }
                         }
-                        Spacer(modifier = Modifier.height(10.dp))
-                        HorizontalDivider(color = brightAzure)
-                        Spacer(modifier = Modifier.height(10.dp))
                     }
                 }
             }

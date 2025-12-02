@@ -1,18 +1,18 @@
 package com.example.sol_denka_stockmanagement.viewmodel
 
-import android.content.Context
 import android.os.Build
-import android.provider.MediaStore
-import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.sol_denka_stockmanagement.constant.ConnectionState
-import com.example.sol_denka_stockmanagement.constant.HandlingMethod
+import com.example.sol_denka_stockmanagement.constant.ProcessMethod
+import com.example.sol_denka_stockmanagement.database.repository.csv.CsvTaskTypeRepository
+import com.example.sol_denka_stockmanagement.database.repository.inventory.InventoryResultTypeRepository
 import com.example.sol_denka_stockmanagement.database.repository.item.ItemUnitRepository
 import com.example.sol_denka_stockmanagement.database.repository.location.LocationRepository
+import com.example.sol_denka_stockmanagement.database.repository.process.ProcessTypeRepository
 import com.example.sol_denka_stockmanagement.helper.NetworkConnectionObserver
 import com.example.sol_denka_stockmanagement.helper.ReaderController
 import com.example.sol_denka_stockmanagement.helper.ToastType
@@ -29,7 +29,6 @@ import com.example.sol_denka_stockmanagement.state.GeneralState
 import com.example.sol_denka_stockmanagement.state.InputState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -45,8 +44,11 @@ import javax.inject.Inject
 class AppViewModel @Inject constructor(
     private val readerController: ReaderController,
     private val connectionObserver: NetworkConnectionObserver,
-    private val locationRepository: LocationRepository,
     private val itemUnitRepository: ItemUnitRepository,
+    private val locationRepository: LocationRepository,
+    private val processTypeRepository: ProcessTypeRepository,
+    private val csvTaskTypeRepository: CsvTaskTypeRepository,
+    private val inventoryResultTypeRepository: InventoryResultTypeRepository,
     private val csvHelper: CsvHelper,
 ) : ViewModel() {
 
@@ -100,10 +102,10 @@ class AppViewModel @Inject constructor(
     private val _selectedCount = MutableStateFlow(0)
     val selectedCount = _selectedCount.asStateFlow()
 
-    private val _showModalHandlingMethod = MutableStateFlow(false)
-    val showModalHandlingMethod = _showModalHandlingMethod.asStateFlow()
+    private val _showModalProcessMethod = MutableStateFlow(false)
+    val showModalProcessMethod = _showModalProcessMethod.asStateFlow()
 
-    var bottomSheetChosenMethod = mutableStateOf(HandlingMethod.USE.displayName)
+    var processMethod = mutableStateOf(ProcessMethod.USE.displayName)
         private set
 
     private val _locationMaster = MutableStateFlow<List<LocationMasterModel>>(emptyList())
@@ -162,85 +164,13 @@ class AppViewModel @Inject constructor(
                 }
             }
         }
-
         viewModelScope.launch(Dispatchers.IO) {
             itemUnitRepository.ensurePresetInserted()
+            processTypeRepository.ensurePresetInserted()
+            csvTaskTypeRepository.ensurePresetInserted()
+            inventoryResultTypeRepository.ensurePresetInserted()
         }
     }
-
-    fun simulateFileLoading(context: Context, isUpload: Boolean) {
-        viewModelScope.launch(Dispatchers.IO) {
-            try {
-                _isFileWorking.value = true
-                _progress.value = 0f
-
-                // 1️⃣ Get all CSV files in both InventoryResultLocalRepository & StockEvent folders
-                val csvFiles = mutableListOf<Pair<String, Long>>()
-                val resolver = context.contentResolver
-                val externalUri = MediaStore.Files.getContentUri("external")
-
-                val projection = arrayOf(
-                    MediaStore.Files.FileColumns.DISPLAY_NAME,
-                    MediaStore.Files.FileColumns.SIZE,
-                    MediaStore.Files.FileColumns.RELATIVE_PATH
-                )
-
-                val selection =
-                    "${MediaStore.Files.FileColumns.RELATIVE_PATH} LIKE ? OR " +
-                            "${MediaStore.Files.FileColumns.RELATIVE_PATH} LIKE ?"
-                val selectionArgs = arrayOf(
-                    "%Documents/StockManagementApp/InventoryResultLocalRepository%",
-                    "%Documents/StockManagementApp/StockEvent%"
-                )
-
-                resolver.query(
-                    externalUri,
-                    projection,
-                    selection,
-                    selectionArgs,
-                    null
-                )?.use { cursor ->
-                    val nameCol =
-                        cursor.getColumnIndexOrThrow(MediaStore.Files.FileColumns.DISPLAY_NAME)
-                    val sizeCol =
-                        cursor.getColumnIndexOrThrow(MediaStore.Files.FileColumns.SIZE)
-                    while (cursor.moveToNext()) {
-                        val name = cursor.getString(nameCol)
-                        val size = cursor.getLong(sizeCol)
-                        csvFiles.add(name to size)
-                    }
-                }
-
-                val totalBytes = csvFiles.sumOf { it.second }.takeIf { it > 0 } ?: 1L
-                Log.i("TSS", "📦 Found ${csvFiles.size} CSV files. Total size: $totalBytes bytes")
-
-                // 2️⃣ Simulate transfer progress based on file sizes
-                var processedBytes = 0L
-                for ((name, size) in csvFiles) {
-                    Log.d("TSS", "Processing $name ($size bytes)")
-                    var chunkProcessed = 0L
-                    while (chunkProcessed < size) {
-                        delay(30) // simulate work
-                        val chunk = (size / 50).coerceAtLeast(1024) // read ~2% each loop
-                        chunkProcessed += chunk
-                        processedBytes += chunk
-                        _progress.value = (processedBytes.toFloat() / totalBytes).coerceIn(0f, 1f)
-                    }
-                }
-
-                // 3️⃣ Complete
-                _progress.value = 1f
-                delay(500)
-                _isFileWorking.value = false
-                Log.i("TSS", "✅ Simulated ${if (isUpload) "upload" else "download"} complete")
-
-            } catch (e: Exception) {
-                Log.e("TSS", "Error simulating file loading: ${e.message}", e)
-                _isFileWorking.value = false
-            }
-        }
-    }
-
 
     fun showProgressDialog() {
         showFileProgressDialog.value = true
@@ -253,9 +183,9 @@ class AppViewModel @Inject constructor(
 
     fun onInputIntent(intent: InputIntent) {
         when (intent) {
-            is InputIntent.ChangeHandlingMethod -> {
+            is InputIntent.ChangeProcessMethod -> {
                 _inputState.update { it.copy(handlingMethod = intent.value) }
-                bottomSheetChosenMethod.value = intent.value
+                processMethod.value = intent.value
             }
 
             is InputIntent.ChangeLocation ->
@@ -291,8 +221,8 @@ class AppViewModel @Inject constructor(
             is InputIntent.ChangeFileTransferMethod ->
                 _inputState.update { it.copy(fileTransferMethod = intent.value) }
 
-            InputIntent.BulkApplyHandlingMethod -> {
-                val chosenMethod = bottomSheetChosenMethod.value
+            InputIntent.BulkApplyProcessMethod -> {
+                val chosenMethod = processMethod.value
                 val checked = _perTagChecked.value
 
                 val updated = perTagHandlingMethod.value.toMutableMap()
@@ -393,7 +323,7 @@ class AppViewModel @Inject constructor(
             }
 
             is ShareIntent.ShowModalHandlingMethod -> {
-                _showModalHandlingMethod.value = intent.showBottomSheet
+                _showModalProcessMethod.value = intent.showBottomSheet
             }
 
             ShareIntent.ResetState -> {
@@ -405,9 +335,9 @@ class AppViewModel @Inject constructor(
                 perTagHandlingMethod.value = emptyMap()
                 _perTagChecked.value = emptyMap()
                 _selectedCount.value = 0
-                _showModalHandlingMethod.value = false
+                _showModalProcessMethod.value = false
                 _isAllSelected.value = false
-                bottomSheetChosenMethod.value = HandlingMethod.USE.displayName
+                processMethod.value = ProcessMethod.USE.displayName
             }
 
             is ShareIntent.ChangeTabInReceivingScreen ->
@@ -431,9 +361,9 @@ class AppViewModel @Inject constructor(
 //
 //                    val result = csvHelper.saveCsv(
 //                        context = ctx,
-//                        csvType = first.toCsvType(),         // model tự biết nó thuộc loại CSV nào
-//                        fileName = first.toCsvName(),       // model tự generate filename
-//                        rows = rows,                        // list → nhiều row
+//                        csvType = first.toCsvType(),
+//                        fileName = first.toCsvName(),
+//                        rows = rows,
 //                        onProgress = { p -> _progress.value = p }
 //                    )
 
