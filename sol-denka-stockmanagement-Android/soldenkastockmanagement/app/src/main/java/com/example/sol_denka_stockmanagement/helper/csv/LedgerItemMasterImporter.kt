@@ -16,6 +16,11 @@ class LedgerItemMasterImporter(
         return v.toFloatOrNull()?.toInt()
     }
 
+    private fun parseBoolean(v: String?): Boolean {
+        if (v == null) return false
+        return v == "1" || v.equals("true", ignoreCase = true)
+    }
+
     override suspend fun import(csvLines: List<String>) {
         if (csvLines.isEmpty()) return
 
@@ -29,7 +34,7 @@ class LedgerItemMasterImporter(
                     ledgerItemId = p[0].toInt(),
                     itemTypeId = p[1].toInt(),
                     locationId = p[2].toInt(),
-                    isInStock = p[3].toBoolean(),
+                    isInStock = parseBoolean(p[3]),
 
                     weight = parseNullableInt(p[4]),
                     grade = p[5].ifBlank { null },
