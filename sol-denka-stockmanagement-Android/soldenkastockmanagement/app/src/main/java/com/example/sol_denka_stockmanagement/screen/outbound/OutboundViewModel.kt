@@ -54,4 +54,10 @@ class OutboundViewModel @Inject constructor(
             _outboundList.value = result
         }
     }
+
+    fun saveScanResultToCsv(){
+        viewModelScope.launch {
+
+        }
+    }
 }

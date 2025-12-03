@@ -1,5 +1,6 @@
 package com.example.sol_denka_stockmanagement.viewmodel
 
+import android.content.Context
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.runtime.State
@@ -14,6 +15,7 @@ import com.example.sol_denka_stockmanagement.database.repository.item.ItemUnitRe
 import com.example.sol_denka_stockmanagement.database.repository.location.LocationRepository
 import com.example.sol_denka_stockmanagement.database.repository.process.ProcessTypeRepository
 import com.example.sol_denka_stockmanagement.helper.NetworkConnectionObserver
+import com.example.sol_denka_stockmanagement.helper.ProcessResult
 import com.example.sol_denka_stockmanagement.helper.ReaderController
 import com.example.sol_denka_stockmanagement.helper.ToastType
 import com.example.sol_denka_stockmanagement.helper.csv.CsvHelper
@@ -27,7 +29,9 @@ import com.example.sol_denka_stockmanagement.state.ErrorState
 import com.example.sol_denka_stockmanagement.state.ExpandState
 import com.example.sol_denka_stockmanagement.state.GeneralState
 import com.example.sol_denka_stockmanagement.state.InputState
+import dagger.hilt.android.internal.Contexts
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -42,6 +46,7 @@ import javax.inject.Inject
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @HiltViewModel
 class AppViewModel @Inject constructor(
+    @ApplicationContext private val context: Context,
     private val readerController: ReaderController,
     private val connectionObserver: NetworkConnectionObserver,
     private val itemUnitRepository: ItemUnitRepository,
@@ -346,34 +351,33 @@ class AppViewModel @Inject constructor(
             is ShareIntent.SaveScanResult<*> -> {
                 viewModelScope.launch(Dispatchers.IO) {
 
-//                    val ctx = intent.context
-//                    val rows = intent.data      // ALWAYS List<ICsvExport>
-//
-//                    if (rows.isEmpty()) {
-//                        _toastFlow.emit("保存するデータがありません" to ToastType.ERROR)
-//                        return@launch
-//                    }
-//
-//                    val first = rows.first()
-//
-//                    _isFileWorking.value = true
-//                    _progress.value = 0f
-//
-//                    val result = csvHelper.saveCsv(
-//                        context = ctx,
-//                        csvType = first.toCsvType(),
-//                        fileName = first.toCsvName(),
-//                        rows = rows,
-//                        onProgress = { p -> _progress.value = p }
-//                    )
+                    val rows = intent.data      // ALWAYS List<ICsvExport>
+
+                    if (rows.isEmpty()) {
+                        _toastFlow.emit("保存するデータがありません" to ToastType.ERROR)
+                        return@launch
+                    }
+
+                    val first = rows.first()
+
+                    _isFileWorking.value = true
+                    _progress.value = 0f
+
+                    val result = csvHelper.saveCsv(
+                        context = context,
+                        csvType = first.toCsvType(),
+                        fileName = first.toCsvName(),
+                        rows = rows,
+                        onProgress = { p -> _progress.value = p }
+                    )
 
                     _isFileWorking.value = false
                     showAppDialog.value = true
-//                    if (result is ProcessResult.Success) {
-//                        _toastFlow.emit("CSV 保存成功" to ToastType.SUCCESS)
-//                    } else {
-//                        _toastFlow.emit("CSV 保存失敗" to ToastType.ERROR)
-//                    }
+                    if (result is ProcessResult.Success) {
+                        _toastFlow.emit("CSV 保存成功" to ToastType.SUCCESS)
+                    } else {
+                        _toastFlow.emit("CSV 保存失敗" to ToastType.ERROR)
+                    }
                 }
             }
 
