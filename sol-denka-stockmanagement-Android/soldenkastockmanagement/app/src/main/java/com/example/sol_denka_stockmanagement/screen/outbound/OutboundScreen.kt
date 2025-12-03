@@ -1,6 +1,7 @@
 package com.example.sol_denka_stockmanagement.screen.outbound
 
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -19,6 +20,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
@@ -36,6 +38,7 @@ import com.example.sol_denka_stockmanagement.share.ButtonContainer
 import com.example.sol_denka_stockmanagement.share.InputFieldContainer
 import com.example.sol_denka_stockmanagement.share.ScanResultTable
 import com.example.sol_denka_stockmanagement.viewmodel.AppViewModel
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
@@ -52,6 +55,7 @@ fun OutboundScreen(
     val processTypeMap by appViewModel.perTagHandlingMethod.collectAsStateWithLifecycle()
     val selectedCount by appViewModel.selectedCount.collectAsStateWithLifecycle()
     val outboundList by outboundViewModel.outboundList.collectAsStateWithLifecycle()
+    val scope = rememberCoroutineScope()
 
     LaunchedEffect(checkedMap, processTypeMap) {
         outboundViewModel.loadOutboundItems(checkedMap, processTypeMap)
@@ -80,7 +84,12 @@ fun OutboundScreen(
                     )
                 },
                 onClick = {
-                    outboundViewModel.saveScanResultToCsv(memo = inputState.value.remark)
+                    scope.launch {
+                        val csvModels =
+                            outboundViewModel.saveScanResultToCsv(memo = inputState.value.remark)
+                        Log.e("TSS", "OutboundScreen: $csvModels")
+                        appViewModel.onGeneralIntent(ShareIntent.SaveScanResult(csvModels))
+                    }
                 },
                 buttonText = stringResource(R.string.register),
             )

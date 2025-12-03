@@ -26,13 +26,13 @@ data class OutboundResultCsvModel(
     )
 
     override fun toRow(): List<String> = listOf(
-//        ledgerItemId,
-//        tagId,
-//        processTypeId,
-//        deviceId,
-//        memo,
-//        occurredAt,
-//        registeredAt
+        ledgerItemId.toString(),
+        tagId.toString(),
+        processTypeId.toString(),
+        deviceId,
+        memo,
+        occurredAt,
+        registeredAt
     )
 
     override fun toCsvType(): String = CsvType.OutboundResult.displayName

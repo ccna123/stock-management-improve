@@ -2,6 +2,7 @@ package com.example.sol_denka_stockmanagement.viewmodel
 
 import android.content.Context
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
@@ -375,12 +376,13 @@ class AppViewModel @Inject constructor(
                         onProgress = { p -> _progress.value = p }
                     )
 
-                    _isFileWorking.value = false
-                    showAppDialog.value = true
+                    Log.e("TSS", "saveCsv: $result", )
                     if (result is ProcessResult.Success) {
-                        _toastFlow.emit("CSV 保存成功" to ToastType.SUCCESS)
+                        _isFileWorking.value = false
+                        showAppDialog.value = true
                     } else {
-                        _toastFlow.emit("CSV 保存失敗" to ToastType.ERROR)
+                        _isFileWorking.value = false
+                        showAppDialog.value = true
                     }
                 }
             }

@@ -16,6 +16,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import kotlin.collections.associateBy
 import kotlin.collections.filter
 import kotlin.collections.map
@@ -64,12 +65,13 @@ class OutboundViewModel @Inject constructor(
         }
     }
 
-    fun saveScanResultToCsv(memo: String){
-        viewModelScope.launch {
+    suspend fun saveScanResultToCsv(memo: String): List<OutboundResultCsvModel> =
+        withContext(Dispatchers.IO) {
+            csvModels.clear()
+
             _outboundList.value.forEach { row ->
                 val processTypeId = processTypeRepository.getIdByName(row.processType)
                 val (tagId, ledgerId) = tagMasterRepository.getTagIdLedgerIdByEpc(row.epc)
-                
                 val model = OutboundResultCsvModel(
                     ledgerItemId = ledgerId ?: 0,
                     tagId = tagId,
@@ -81,7 +83,6 @@ class OutboundViewModel @Inject constructor(
                 )
                 csvModels.add(model)
             }
-            Log.i("TSS", "saveScanResultToCsv: $csvModels")
+            csvModels.toList()
         }
-    }
 }
