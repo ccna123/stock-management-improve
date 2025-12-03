@@ -80,7 +80,7 @@ fun ScanScreen(
         val mode = when (prevScreenNameId) {
             Screen.Inbound.routeId -> ScanMode.INBOUND
             Screen.Outbound.routeId -> ScanMode.OUTBOUND
-            Screen.StorageAreaChange.routeId -> ScanMode.LOCATION_CHANGE
+            Screen.LocationChange.routeId -> ScanMode.LOCATION_CHANGE
             else -> ScanMode.NONE
         }
         scanViewModel.setScanMode(mode)
@@ -182,7 +182,7 @@ fun ScanScreen(
                     buttonText = when (prevScreenNameId) {
                         in listOf(
                             Screen.Outbound.routeId,
-                            Screen.StorageAreaChange.routeId
+                            Screen.LocationChange.routeId
                         ) -> "${stringResource(R.string.register_info)}(${selectedCount}件)"
 
                         Screen.Inbound.routeId -> stringResource(R.string.register_info)
@@ -200,7 +200,7 @@ fun ScanScreen(
                     canClick = when (prevScreenNameId) {
                         in listOf(
                             Screen.Outbound.routeId,
-                            Screen.StorageAreaChange.routeId
+                            Screen.LocationChange.routeId
                         ) -> checkedMap.values.any { it }
 
                         Screen.Inbound.routeId -> inboundDetail?.epc?.isNotEmpty() == true
@@ -218,7 +218,7 @@ fun ScanScreen(
                         onNavigate(
                             when (prevScreenNameId) {
                                 Screen.Outbound.routeId -> Screen.Outbound
-                                Screen.StorageAreaChange.routeId -> Screen.StorageAreaChange
+                                Screen.LocationChange.routeId -> Screen.LocationChange
                                 Screen.Inbound.routeId -> Screen.Inbound
                                 else -> Screen.Home
                             }
@@ -369,7 +369,7 @@ fun ScanScreen(
                                 )
                             }
 
-                            Screen.StorageAreaChange.routeId -> {
+                            Screen.LocationChange.routeId -> {
                                 val isChecked = checkedMap[tag.first] ?: false
                                 val itemName = outboundDetailMap[tag.first] ?: "-"
                                 LocationChangeSingleItem(

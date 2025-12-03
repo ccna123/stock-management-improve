@@ -23,7 +23,7 @@ sealed class Screen(
     data object CsvExport : Screen("csv_export", "CSVファイル出力")
     data object CsvImport : Screen("csv_import", "CSVファイル取り込み")
     data object InventoryComplete : Screen("inventory_complete", "棚卸 (完了)")
-    data object StorageAreaChange : Screen("storage_area_change", "保管場所変更")
+    data object LocationChange : Screen("storage_area_change", "保管場所変更")
     data object Detail : Screen("detail", "詳細情報")
     data class Scan(val preScreen: String) : Screen("scan", "")
 
@@ -42,7 +42,7 @@ sealed class Screen(
             CsvImport.routeId -> CsvImport
             InventoryComplete.routeId -> InventoryComplete
             Detail.routeId -> Detail
-            StorageAreaChange.routeId -> StorageAreaChange
+            LocationChange.routeId -> LocationChange
             else -> null
         }
     }

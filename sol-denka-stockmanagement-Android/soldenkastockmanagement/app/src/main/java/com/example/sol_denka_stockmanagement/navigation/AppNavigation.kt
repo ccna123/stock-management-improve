@@ -116,7 +116,7 @@ fun AppNavigation(
                     onGoBack = { goBack() }
                 )
             }
-            entry<Screen.StorageAreaChange> { destinationScan ->
+            entry<Screen.LocationChange> { destinationScan ->
                 val locationChangeViewModel = hiltViewModel<LocationChangeViewModel>()
                 LocationChangeScreen(
                     appViewModel = appViewModel,

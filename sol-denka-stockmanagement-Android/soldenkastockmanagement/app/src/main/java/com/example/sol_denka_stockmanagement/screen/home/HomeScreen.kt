@@ -68,7 +68,7 @@ fun HomeScreen(
     val menuItems = listOf(
         MenuModel(screen = Screen.Inbound, icon = R.drawable.receiving),
         MenuModel(screen = Screen.Outbound, icon = R.drawable.shipping),
-        MenuModel(screen = Screen.StorageAreaChange, icon = R.drawable.warehouse),
+        MenuModel(screen = Screen.LocationChange, icon = R.drawable.warehouse),
         MenuModel(screen = Screen.Inventory, icon = R.drawable.inventory),
     )
 
@@ -139,7 +139,7 @@ fun HomeScreen(
                                 when (menu.screen) {
                                     Screen.Inbound -> onNavigate(Screen.Scan(Screen.Inbound.routeId))
                                     Screen.Outbound -> onNavigate(Screen.Scan(Screen.Outbound.routeId))
-                                    Screen.StorageAreaChange -> onNavigate(Screen.Scan(Screen.StorageAreaChange.routeId))
+                                    Screen.LocationChange -> onNavigate(Screen.Scan(Screen.LocationChange.routeId))
                                     Screen.Inventory -> onNavigate(Screen.Inventory)
                                     else -> error("No route")
                                 }
