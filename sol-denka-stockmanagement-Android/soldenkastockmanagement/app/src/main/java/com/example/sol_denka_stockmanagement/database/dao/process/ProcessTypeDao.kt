@@ -15,6 +15,9 @@ interface ProcessTypeDao: IDao<ProcessTypeEntity> {
     @Query("SELECT * FROM ProcessType")
     override fun get(): Flow<List<ProcessTypeEntity>>
 
+    @Query("SELECT process_type_id FROM ProcessType WHERE process_name LIKE '%' || :processTypeName || '%'")
+    suspend fun getIdByName(processTypeName: String): Int
+
     @Insert
     override suspend fun insert(e: ProcessTypeEntity)
 

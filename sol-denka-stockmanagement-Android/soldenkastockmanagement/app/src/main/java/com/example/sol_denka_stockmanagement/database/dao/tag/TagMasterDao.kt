@@ -79,4 +79,7 @@ interface TagMasterDao : IDao<TagMasterEntity> {
     )
     suspend fun getTagsByLocationAndStock(locationId: Int, isInStock: Boolean): List<TagMasterEntity>
 
+    @Query("SELECT * FROM tagmaster WHERE epc = :epc")
+    suspend fun getTagIdLedgerIdByEpc(epc: String): TagMasterEntity
+
 }

@@ -6,9 +6,9 @@ import com.example.sol_denka_stockmanagement.constant.OutboundResultCsvHeader
 import com.example.sol_denka_stockmanagement.constant.generateTimeStamp
 
 data class OutboundResultCsvModel(
-    val ledgerItemId: String,
-    val tagId: String,
-    val processTypeId: String,
+    val ledgerItemId: Int,
+    val tagId: Int,
+    val processTypeId: Int,
     val deviceId: String,
     val memo: String,
     val occurredAt: String,
@@ -26,13 +26,13 @@ data class OutboundResultCsvModel(
     )
 
     override fun toRow(): List<String> = listOf(
-        ledgerItemId,
-        tagId,
-        processTypeId,
-        deviceId,
-        memo,
-        occurredAt,
-        registeredAt
+//        ledgerItemId,
+//        tagId,
+//        processTypeId,
+//        deviceId,
+//        memo,
+//        occurredAt,
+//        registeredAt
     )
 
     override fun toCsvType(): String = CsvType.OutboundResult.displayName

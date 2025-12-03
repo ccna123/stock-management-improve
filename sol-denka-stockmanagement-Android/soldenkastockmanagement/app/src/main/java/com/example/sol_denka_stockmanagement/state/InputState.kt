@@ -14,6 +14,7 @@ data class InputState(
     val rollingMachineInfo: String = "",
     val weight: String = "",
     val lotNo: String = "",
+    val occurredAt: String = "",
     val packingStyle: String = "",
     var fileTransferMethod: String = FileTransferMethod.WIFI.displayName
 )

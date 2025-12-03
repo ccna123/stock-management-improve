@@ -239,6 +239,10 @@ class AppViewModel @Inject constructor(
                 }
                 perTagHandlingMethod.value = updated
             }
+
+            is InputIntent.ChangeOccurredAt -> {
+                _inputState.update { it.copy(occurredAt = intent.value) }
+            }
         }
     }
 

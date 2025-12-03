@@ -47,7 +47,7 @@ fun OutboundScreen(
     onGoBack: () -> Unit,
 ) {
 
-    val inputState = appViewModel.inputState.collectAsStateWithLifecycle().value
+    val inputState = appViewModel.inputState.collectAsStateWithLifecycle()
     val checkedMap by appViewModel.perTagChecked.collectAsStateWithLifecycle()
     val processTypeMap by appViewModel.perTagHandlingMethod.collectAsStateWithLifecycle()
     val selectedCount by appViewModel.selectedCount.collectAsStateWithLifecycle()
@@ -80,11 +80,7 @@ fun OutboundScreen(
                     )
                 },
                 onClick = {
-                    appViewModel.onGeneralIntent(
-                        ShareIntent.SaveScanResult(
-                            data = listOf()
-                        )
-                    )
+                    outboundViewModel.saveScanResultToCsv(memo = inputState.value.remark)
                 },
                 buttonText = stringResource(R.string.register),
             )
@@ -129,7 +125,7 @@ fun OutboundScreen(
                     InputFieldContainer(
                         modifier = Modifier
                             .fillMaxWidth(),
-                        value = inputState.remark,
+                        value = inputState.value.occurredAt,
                         label = stringResource(R.string.occurred_at),
                         hintText = stringResource(R.string.occurred_at_hint),
                         isNumeric = false,
@@ -143,7 +139,7 @@ fun OutboundScreen(
                                     .toByteArray().size == 1) || char == '-'
                             }
                             appViewModel.onInputIntent(
-                                InputIntent.ChangeRemark(
+                                InputIntent.ChangeOccurredAt(
                                     filteredValue
                                 )
                             )
@@ -154,7 +150,7 @@ fun OutboundScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(200.dp),
-                        value = inputState.remark,
+                        value = inputState.value.remark,
                         label = "${stringResource(R.string.remark)} (オプション)",
                         hintText = stringResource(R.string.remark_hint),
                         isNumeric = false,
@@ -164,13 +160,9 @@ fun OutboundScreen(
                         enable = true,
                         singleLine = false,
                         onChange = { newValue ->
-                            val filteredValue = newValue.trimStart().filter { char ->
-                                (char.isLetterOrDigit() && char.toString()
-                                    .toByteArray().size == 1) || char == '-'
-                            }
                             appViewModel.onInputIntent(
                                 InputIntent.ChangeRemark(
-                                    filteredValue
+                                    newValue
                                 )
                             )
                         }

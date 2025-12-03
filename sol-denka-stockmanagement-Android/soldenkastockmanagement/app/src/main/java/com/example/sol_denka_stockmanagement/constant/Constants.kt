@@ -1,6 +1,7 @@
 package com.example.sol_denka_stockmanagement.constant
 
 import java.time.LocalDateTime
+import java.time.OffsetDateTime
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
@@ -223,3 +224,9 @@ fun generateTimeStamp(): String {
     val formatter = DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss_SSS")
     return LocalDateTime.now(ZoneId.of("Asia/Tokyo")).format(formatter)
 }
+
+fun generateIso8601JstTimestamp(): String {
+    val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssXXX")
+    return OffsetDateTime.now(ZoneId.of("Asia/Tokyo")).format(formatter)
+}
+

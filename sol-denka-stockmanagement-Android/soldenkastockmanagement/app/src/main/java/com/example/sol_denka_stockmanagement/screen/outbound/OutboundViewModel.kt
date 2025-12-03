@@ -1,8 +1,14 @@
 package com.example.sol_denka_stockmanagement.screen.outbound
 
+import android.os.Build
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.sol_denka_stockmanagement.constant.generateIso8601JstTimestamp
+import com.example.sol_denka_stockmanagement.constant.generateTimeStamp
+import com.example.sol_denka_stockmanagement.database.repository.process.ProcessTypeRepository
 import com.example.sol_denka_stockmanagement.database.repository.tag.TagMasterRepository
+import com.example.sol_denka_stockmanagement.model.csv.OutboundResultCsvModel
 import com.example.sol_denka_stockmanagement.model.outbound.OutboundScanDataTable
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
@@ -16,11 +22,14 @@ import kotlin.collections.map
 
 @HiltViewModel
 class OutboundViewModel @Inject constructor(
-    private val tagMasterRepository: TagMasterRepository
+    private val tagMasterRepository: TagMasterRepository,
+    private val processTypeRepository: ProcessTypeRepository
 ) : ViewModel() {
 
     private val _outboundList = MutableStateFlow<List<OutboundScanDataTable>>(emptyList())
     val outboundList = _outboundList.asStateFlow()
+
+    private val csvModels = mutableListOf<OutboundResultCsvModel>()
 
     fun loadOutboundItems(
         checkedMap: Map<String, Boolean>,
@@ -55,9 +64,24 @@ class OutboundViewModel @Inject constructor(
         }
     }
 
-    fun saveScanResultToCsv(){
+    fun saveScanResultToCsv(memo: String){
         viewModelScope.launch {
-
+            _outboundList.value.forEach { row ->
+                val processTypeId = processTypeRepository.getIdByName(row.processType)
+                val (tagId, ledgerId) = tagMasterRepository.getTagIdLedgerIdByEpc(row.epc)
+                
+                val model = OutboundResultCsvModel(
+                    ledgerItemId = ledgerId ?: 0,
+                    tagId = tagId,
+                    processTypeId = processTypeId,
+                    deviceId = Build.ID,
+                    memo = memo,
+                    occurredAt = generateIso8601JstTimestamp(),
+                    registeredAt = generateIso8601JstTimestamp()
+                )
+                csvModels.add(model)
+            }
+            Log.i("TSS", "saveScanResultToCsv: $csvModels")
         }
     }
 }
