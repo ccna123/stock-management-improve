@@ -380,6 +380,10 @@ class AppViewModel @Inject constructor(
             ShareIntent.ToggleDialog -> showAppDialog.value = !showAppDialog.value
             ShareIntent.ToggleClearTagConfirmDialog -> showClearTagConfirmDialog.value = !showClearTagConfirmDialog.value
             ShareIntent.ToggleRadioPowerChangeDialog -> showRadioPowerChangeDialog.value = !showRadioPowerChangeDialog.value
+            is ShareIntent.UpdateSelectionStatus -> {
+                _selectedCount.value = intent.selectedCount
+                _isAllSelected.value = intent.allSelected
+            }
         }
     }
 

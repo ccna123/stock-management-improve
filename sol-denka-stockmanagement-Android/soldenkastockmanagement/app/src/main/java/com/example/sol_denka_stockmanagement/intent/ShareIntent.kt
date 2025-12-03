@@ -26,4 +26,5 @@ sealed interface ShareIntent {
     data class ChangeTabInReceivingScreen(val tab: String): ShareIntent
 
     data class SaveScanResult<T: ICsvExport>(val data: List<T>): ShareIntent
+    data class UpdateSelectionStatus(val selectedCount: Int, val allSelected: Boolean) : ShareIntent
 }

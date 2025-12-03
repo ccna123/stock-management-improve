@@ -87,6 +87,23 @@ fun ScanScreen(
         scanViewModel.setEnableScan(true)
     }
 
+    LaunchedEffect(scannedTags) {
+        val checkedMap = appViewModel.perTagChecked.value
+        val selectedCount = checkedMap.count { (key, checked) ->
+            scannedTags.keys.contains(key) && checked
+        }
+
+        val allSelected = scannedTags.isNotEmpty() && scannedTags.keys.all { key ->
+            checkedMap[key] == true
+        }
+        appViewModel.onGeneralIntent(
+            ShareIntent.UpdateSelectionStatus(
+                selectedCount = selectedCount,
+                allSelected = allSelected
+            )
+        )
+    }
+
 
     if (showModalProcessMethod) {
         ProcessModal(
