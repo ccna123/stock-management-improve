@@ -139,14 +139,24 @@ fun Layout(
 
     ConfirmDialog(
         showDialog = showAppDialog,
-        dialogTitle = stringResource(R.string.csv_save_message),
+        textColor = if (appViewModel?.csvDialogIsError?.value == true)
+            Color.Red
+        else
+            Color.Black,
+        dialogTitle =
+            if (appViewModel?.csvDialogIsError?.value == true)
+                appViewModel.csvDialogMessage.value ?: ""
+            else
+                stringResource(R.string.csv_save_message),
         buttons = listOf(
             {
                 ButtonContainer(
                     buttonText = stringResource(R.string.return_home),
                     onClick = {
-                        appViewModel?.onGeneralIntent(ShareIntent.ToggleDialog)
-                        onNavigate?.invoke(Screen.Home)
+                        if (appViewModel?.csvDialogIsError?.value == true)
+                            appViewModel.onGeneralIntent(ShareIntent.ToggleDialog)
+                        else
+                            onNavigate?.invoke(Screen.Home)
                     }
                 )
             }

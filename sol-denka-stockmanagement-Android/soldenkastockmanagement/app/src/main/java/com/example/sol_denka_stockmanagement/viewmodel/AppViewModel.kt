@@ -117,6 +117,12 @@ class AppViewModel @Inject constructor(
     private val _locationMaster = MutableStateFlow<List<LocationMasterModel>>(emptyList())
     val locationMaster = _locationMaster.asStateFlow()
 
+    var csvDialogMessage = mutableStateOf<String?>(null)
+        private set
+
+    var csvDialogIsError = mutableStateOf(false)
+        private set
+
     val readerInfo = readerController.readerInfo.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5000),
@@ -379,9 +385,14 @@ class AppViewModel @Inject constructor(
                     Log.e("TSS", "saveCsv: $result", )
                     if (result is ProcessResult.Success) {
                         _isFileWorking.value = false
+                        csvDialogIsError.value = false
+                        csvDialogMessage.value = null // success → dùng stringResource
                         showAppDialog.value = true
-                    } else {
+
+                    } else if (result is ProcessResult.Failure) {
                         _isFileWorking.value = false
+                        csvDialogIsError.value = true
+                        csvDialogMessage.value = result.message
                         showAppDialog.value = true
                     }
                 }

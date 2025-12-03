@@ -17,6 +17,7 @@ import androidx.compose.ui.unit.dp
 fun ConfirmDialog(
     showDialog: Boolean,
     dialogTitle: String,
+    textColor: Color = Color.Black,
     buttons: List<@Composable () -> Unit>,
 ) {
     if (showDialog.not()) return
@@ -24,7 +25,7 @@ fun ConfirmDialog(
         Text(
             text = dialogTitle,
             textAlign = TextAlign.Center,
-            color = Color.Black
+            color = textColor
         )
         Spacer(Modifier.height(12.dp))
         Row(
