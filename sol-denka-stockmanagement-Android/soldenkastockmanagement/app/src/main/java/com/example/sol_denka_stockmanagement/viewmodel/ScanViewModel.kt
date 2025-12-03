@@ -41,7 +41,7 @@ class ScanViewModel @Inject constructor(
     private val _inboundDetail = MutableStateFlow<InboundScanResult?>(null)
     val inboundDetail = _inboundDetail.asStateFlow()
 
-    private val _epcNameMap = MutableStateFlow<Map<String, String>>(emptyMap())
+    private val _epcNameMap = MutableStateFlow<Map<String, String?>>(emptyMap())
     val epcNameMap = _epcNameMap.asStateFlow()
 
     private val _rfidTagList = MutableStateFlow<List<TagMasterModel>>(emptyList())

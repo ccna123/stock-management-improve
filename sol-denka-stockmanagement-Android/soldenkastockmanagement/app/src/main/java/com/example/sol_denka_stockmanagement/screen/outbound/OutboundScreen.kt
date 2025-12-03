@@ -111,6 +111,7 @@ fun OutboundScreen(
                 item {
                     ScanResultTable(
                         tableHeight = 250.dp,
+                        column3Weight = .5f,
                         tableHeader = listOf(
                             stringResource(R.string.item_name_title),
                             stringResource(R.string.item_code_title),

@@ -307,7 +307,7 @@ fun ScanScreen(
                                 val isExpanded = expandedMap[tag.first] ?: false
                                 val isChecked = checkedMap[tag.first] ?: false
                                 val value = handlingMap[tag.first] ?: ""
-                                val itemName = outboundDetailMap[tag.first] ?: ""
+                                val itemName = outboundDetailMap[tag.first] ?: "-"
                                 OutboundSingleItem(
                                     tag = tag.first,
                                     itemName = itemName,
@@ -371,7 +371,7 @@ fun ScanScreen(
 
                             Screen.StorageAreaChange.routeId -> {
                                 val isChecked = checkedMap[tag.first] ?: false
-                                val itemName = outboundDetailMap[tag.first] ?: ""
+                                val itemName = outboundDetailMap[tag.first] ?: "-"
                                 LocationChangeSingleItem(
                                     tag = tag.first,
                                     itemName = itemName,
