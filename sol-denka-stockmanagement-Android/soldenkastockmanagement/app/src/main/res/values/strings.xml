@@ -42,6 +42,8 @@
     <string name="handling_method">処理方法</string>
     <string name="remark_hint">備考入力</string>
     <string name="remark">備考</string>
+    <string name="occurred_at_hint">発生日時入力</string>
+    <string name="occurred_at">発生日時</string>
     <string name="finish_search">探索完了</string>
     <string name="no_items_found">発見数</string>
     <string name="found">発見</string>
@@ -83,6 +85,7 @@
     <string name="no_tag_read">まだタグが読み取られていません</string>
     <string name="tariff_code">品目コード</string>
     <string name="scanned_tag">読み取りタグ</string>
+    <string name="unknown">未知</string>
     <string name="no_csv_file_found">CSVファイルが見つかりません。</string>
 
     <!-- 入力-->

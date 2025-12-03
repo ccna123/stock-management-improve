@@ -118,19 +118,43 @@ fun OutboundScreen(
                         ),
                         scanResult = outboundList.map { tag ->
                             ScanResultRowModel(
-                                itemName = tag.itemName,
+                                itemName = tag.itemName ?: "-",
                                 itemCode = tag.epc,
-                                lastColumn = tag.processType
+                                lastColumn = tag.processType ?: "-"
                             )
                         },
                     )
                     Spacer(modifier = Modifier.height(20.dp))
                     InputFieldContainer(
                         modifier = Modifier
+                            .fillMaxWidth(),
+                        value = inputState.remark,
+                        label = stringResource(R.string.occurred_at),
+                        hintText = stringResource(R.string.occurred_at_hint),
+                        isNumeric = false,
+                        shape = RoundedCornerShape(13.dp),
+                        readOnly = false,
+                        isDropDown = false,
+                        enable = true,
+                        onChange = { newValue ->
+                            val filteredValue = newValue.trimStart().filter { char ->
+                                (char.isLetterOrDigit() && char.toString()
+                                    .toByteArray().size == 1) || char == '-'
+                            }
+                            appViewModel.onInputIntent(
+                                InputIntent.ChangeRemark(
+                                    filteredValue
+                                )
+                            )
+                        }
+                    )
+                    Spacer(modifier = Modifier.height(10.dp))
+                    InputFieldContainer(
+                        modifier = Modifier
                             .fillMaxWidth()
                             .height(200.dp),
                         value = inputState.remark,
-                        label = "備考",
+                        label = "${stringResource(R.string.remark)} (オプション)",
                         hintText = stringResource(R.string.remark_hint),
                         isNumeric = false,
                         shape = RoundedCornerShape(13.dp),

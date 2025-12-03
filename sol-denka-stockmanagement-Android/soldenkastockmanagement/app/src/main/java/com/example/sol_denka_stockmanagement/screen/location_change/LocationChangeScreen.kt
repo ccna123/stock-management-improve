@@ -122,16 +122,16 @@ fun LocationChangeScreen(
                         ),
                         scanResult = locationChangePreview.map { tag ->
                             ScanResultRowModel(
-                                itemName = tag.itemName,
+                                itemName = tag.itemName ?: "-",
                                 itemCode = tag.epc,
-                                lastColumn = tag.location
+                                lastColumn = tag.location ?: "-"
                             )
                         },
                     )
                     Spacer(modifier = Modifier.height(20.dp))
                     ExposedDropdownMenuBox(
-                        expanded = expandState.stockAreaExpanded,
-                        onExpandedChange = { appViewModel.onExpandIntent(ExpandIntent.ToggleStockAreaExpanded) }) {
+                        expanded = expandState.locationExpanded,
+                        onExpandedChange = { appViewModel.onExpandIntent(ExpandIntent.ToggleLocationExpanded) }) {
                         InputFieldContainer(
                             modifier = Modifier
                                 .menuAnchor(
@@ -155,15 +155,15 @@ fun LocationChangeScreen(
                             onEnterPressed = {}
                         )
                         ExposedDropdownMenu(
-                            expanded = expandState.stockAreaExpanded,
-                            onDismissRequest = { appViewModel.onExpandIntent(ExpandIntent.ToggleStockAreaExpanded) }
+                            expanded = expandState.locationExpanded,
+                            onDismissRequest = { appViewModel.onExpandIntent(ExpandIntent.ToggleLocationExpanded) }
                         ) {
                             DropdownMenuItem(
                                 text = { Text(text = SelectTitle.SelectLocation.displayName) },
                                 onClick = {
                                     appViewModel.apply {
                                         onInputIntent(InputIntent.ChangeLocation(""))
-                                        onExpandIntent(ExpandIntent.ToggleStockAreaExpanded)
+                                        onExpandIntent(ExpandIntent.ToggleLocationExpanded)
                                     }
                                 }
                             )
@@ -178,7 +178,7 @@ fun LocationChangeScreen(
                                                         ?: ""
                                                 )
                                             )
-                                            onExpandIntent(ExpandIntent.ToggleStockAreaExpanded)
+                                            onExpandIntent(ExpandIntent.ToggleLocationExpanded)
                                         }
                                     }
                                 )
@@ -191,7 +191,7 @@ fun LocationChangeScreen(
                             .fillMaxWidth()
                             .height(200.dp),
                         value = inputState.remark,
-                        label = stringResource(R.string.remark) + "（オプション）",
+                        label = "${stringResource(R.string.remark)} (オプション)",
                         hintText = stringResource(R.string.remark_hint),
                         isNumeric = false,
                         readOnly = false,

@@ -390,8 +390,8 @@ class AppViewModel @Inject constructor(
 
                 _expandState.update { it.copy(materialSelection = !_expandState.value.materialSelection) }
 
-            ExpandIntent.ToggleStockAreaExpanded ->
-                _expandState.update { it.copy(stockAreaExpanded = !_expandState.value.stockAreaExpanded) }
+            ExpandIntent.ToggleLocationExpanded ->
+                _expandState.update { it.copy(locationExpanded = !_expandState.value.locationExpanded) }
 
             ExpandIntent.TogglePackingStyleExpanded ->
                 _expandState.update { it.copy(packingStyleExpanded = !_expandState.value.packingStyleExpanded) }

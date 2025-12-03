@@ -132,8 +132,8 @@ fun InventoryScreen(
                 Text(text = "棚卸を行う保管場所を選択")
                 Spacer(modifier = Modifier.height(10.dp))
                 ExposedDropdownMenuBox(
-                    expanded = expandState.stockAreaExpanded,
-                    onExpandedChange = { appViewModel.onExpandIntent(ExpandIntent.ToggleStockAreaExpanded) }) {
+                    expanded = expandState.locationExpanded,
+                    onExpandedChange = { appViewModel.onExpandIntent(ExpandIntent.ToggleLocationExpanded) }) {
                     InputFieldContainer(
                         modifier = Modifier
                             .menuAnchor(
@@ -157,15 +157,15 @@ fun InventoryScreen(
                         onEnterPressed = {}
                     )
                     ExposedDropdownMenu(
-                        expanded = expandState.stockAreaExpanded,
-                        onDismissRequest = { appViewModel.onExpandIntent(ExpandIntent.ToggleStockAreaExpanded) }
+                        expanded = expandState.locationExpanded,
+                        onDismissRequest = { appViewModel.onExpandIntent(ExpandIntent.ToggleLocationExpanded) }
                     ) {
                         DropdownMenuItem(
                             text = { Text(text = SelectTitle.SelectLocation.displayName) },
                             onClick = {
                                 appViewModel.apply {
                                     onInputIntent(InputIntent.ChangeLocation(""))
-                                    onExpandIntent(ExpandIntent.ToggleStockAreaExpanded)
+                                    onExpandIntent(ExpandIntent.ToggleLocationExpanded)
                                 }
                             }
                         )
@@ -175,7 +175,7 @@ fun InventoryScreen(
                                 onClick = {
                                     appViewModel.apply {
                                         onInputIntent(InputIntent.ChangeLocation(if (location.locationName == SelectTitle.SelectLocation.displayName) "" else location.locationName ?: ""))
-                                        onExpandIntent(ExpandIntent.ToggleStockAreaExpanded)
+                                        onExpandIntent(ExpandIntent.ToggleLocationExpanded)
                                     }
                                 }
                             )
