@@ -153,7 +153,6 @@ class ScanViewModel @Inject constructor(
 
     fun clearScannedTag() {
         readerController.clearScannedTag()
-//        tagController.clearAll()
     }
 
     fun clearInboundDetail() {
@@ -186,7 +185,8 @@ class ScanViewModel @Inject constructor(
         tagController.updateRssi(epc, rssi)
     }
 
-    override fun clearAll() {
-        tagController.clearAll()
+    override fun clearTagStatusAndRssi() {
+        readerController.clearScannedTag()
+        tagController.clearTagStatusAndRssi()
     }
 }

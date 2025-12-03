@@ -12,9 +12,8 @@ import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import androidx.core.net.toUri
-import com.example.sol_denka_stockmanagement.navigation.Navigation3
+import com.example.sol_denka_stockmanagement.navigation.AppNavigation
 import com.example.sol_denka_stockmanagement.screen.setting.SettingViewModel
-import com.example.sol_denka_stockmanagement.search.SearchTagsViewModel
 import com.example.sol_denka_stockmanagement.ui.theme.SoldenkastockmanagementTheme
 import com.example.sol_denka_stockmanagement.viewmodel.AppViewModel
 import com.example.sol_denka_stockmanagement.viewmodel.ScanViewModel
@@ -26,7 +25,6 @@ class MainActivity : ComponentActivity() {
 
     private val appViewModel: AppViewModel by viewModels()
     private val scanViewModel: ScanViewModel by viewModels()
-    private val searchTagsViewModel: SearchTagsViewModel by viewModels()
     private val settingViewModel: SettingViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -45,10 +43,9 @@ class MainActivity : ComponentActivity() {
     private fun launchAppUI() {
         setContent {
             SoldenkastockmanagementTheme {
-                Navigation3(
+                AppNavigation(
                     appViewModel = appViewModel,
                     scanViewModel = scanViewModel,
-                    searchTagsViewModel = searchTagsViewModel,
                     settingViewModel = settingViewModel
                 )
             }

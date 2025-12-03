@@ -48,7 +48,6 @@ import com.example.sol_denka_stockmanagement.intent.ShareIntent
 import com.example.sol_denka_stockmanagement.navigation.Screen
 import com.example.sol_denka_stockmanagement.screen.layout.Layout
 import com.example.sol_denka_stockmanagement.screen.setting.SettingViewModel
-import com.example.sol_denka_stockmanagement.screen.setting.sub_screen.reader_setting.ReaderSettingViewModel
 import com.example.sol_denka_stockmanagement.search.components.SingleRfidRow
 import com.example.sol_denka_stockmanagement.share.ButtonContainer
 import com.example.sol_denka_stockmanagement.share.dialog.RadioPowerDialog
@@ -64,7 +63,6 @@ import kotlinx.coroutines.launch
 @Composable
 fun SearchTagsScreen(
     appViewModel: AppViewModel,
-    searchTagsViewModel: SearchTagsViewModel,
     settingViewModel: SettingViewModel,
     scanViewModel: ScanViewModel,
     prevScreenNameId: String,
@@ -76,7 +74,7 @@ fun SearchTagsScreen(
     val isPerformingInventory by appViewModel.isPerformingInventory.collectAsStateWithLifecycle()
     val scope = rememberCoroutineScope()
     val tagsToDisplay = generalState.selectedTags
-    val rssiMap = searchTagsViewModel.rssiMap.collectAsStateWithLifecycle().value
+    val rssiMap = scanViewModel.rssiMap.collectAsStateWithLifecycle().value
 
     LaunchedEffect(Unit) {
         scanViewModel.setEnableScan(enabled = true)
@@ -111,10 +109,10 @@ fun SearchTagsScreen(
             settingViewModel.apply {
                 onReaderSettingIntent(
                     ReaderSettingIntent.ChangeRadioPowerSliderPosition(
-                        newValue.toInt()
+                        newValue
                     )
                 )
-                onReaderSettingIntent(ReaderSettingIntent.ChangeRadioPower(newValue.toInt()))
+                onReaderSettingIntent(ReaderSettingIntent.ChangeRadioPower(newValue))
             }
         },
         onOk = {
@@ -159,11 +157,12 @@ fun SearchTagsScreen(
                     buttonText = stringResource(R.string.finish_search),
                     onClick = {
                         generalState.foundTags.forEach { foundTag ->
-                            searchTagsViewModel.updateTagStatus(
+                            scanViewModel.updateTagStatus(
                                 epc = foundTag,
                                 status = TagStatus.PROCESSED
                             )
                         }
+                        scanViewModel.clearScannedTag()
                         onGoBack()
                     },
                 )

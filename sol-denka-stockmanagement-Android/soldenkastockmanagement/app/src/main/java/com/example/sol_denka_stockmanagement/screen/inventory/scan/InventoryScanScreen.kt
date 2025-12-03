@@ -158,7 +158,7 @@ fun InventoryScanScreen(
                             onGeneralIntent(ShareIntent.ChangeTab(Tab.Left))
                             onGeneralIntent(ShareIntent.ToggleClearTagConfirmDialog)
                         }
-                        scanViewModel.clearAll()
+                        scanViewModel.clearTagStatusAndRssi()
                     }
                 )
             },

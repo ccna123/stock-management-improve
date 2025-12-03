@@ -81,7 +81,7 @@ fun HomeScreen(
             onGeneralIntent(ShareIntent.ResetState)
         }
         scanViewModel.apply {
-            clearScannedTag()
+            clearTagStatusAndRssi()
         }
     }
 

@@ -6,5 +6,5 @@ interface ITagOperation {
 
     fun updateTagStatus(epc: String, status: TagStatus)
     fun updateRssi(epc: String, rssi: Float)
-    fun clearAll()
+    fun clearTagStatusAndRssi()
 }

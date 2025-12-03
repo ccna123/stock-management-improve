@@ -32,14 +32,12 @@ import com.example.sol_denka_stockmanagement.screen.location_change.LocationChan
 import com.example.sol_denka_stockmanagement.screen.location_change.LocationChangeViewModel
 import com.example.sol_denka_stockmanagement.screen.outbound.OutboundViewModel
 import com.example.sol_denka_stockmanagement.search.SearchTagsScreen
-import com.example.sol_denka_stockmanagement.search.SearchTagsViewModel
 import kotlin.collections.listOf
 
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @Composable
-fun Navigation3(
+fun AppNavigation(
     appViewModel: AppViewModel,
-    searchTagsViewModel: SearchTagsViewModel,
     scanViewModel: ScanViewModel,
     settingViewModel: SettingViewModel
 ) {
@@ -142,7 +140,6 @@ fun Navigation3(
                     prevScreenNameId = destinationScan.preScreen,
                     settingViewModel = settingViewModel,
                     scanViewModel = scanViewModel,
-                    searchTagsViewModel = searchTagsViewModel,
                     onGoBack = { goBack() }
                 )
             }

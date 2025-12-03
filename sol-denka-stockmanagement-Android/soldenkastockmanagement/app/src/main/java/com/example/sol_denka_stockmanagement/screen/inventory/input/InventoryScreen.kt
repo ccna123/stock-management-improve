@@ -69,7 +69,7 @@ fun InventoryScreen(
                 ButtonContainer(
                     buttonText = stringResource(R.string.ok),
                     onClick = {
-                        scanViewModel.clearAll()
+                        scanViewModel.clearTagStatusAndRssi()
                         appViewModel.onGeneralIntent(ShareIntent.ToggleClearTagConfirmDialog)
                         onGoBack()
                     }

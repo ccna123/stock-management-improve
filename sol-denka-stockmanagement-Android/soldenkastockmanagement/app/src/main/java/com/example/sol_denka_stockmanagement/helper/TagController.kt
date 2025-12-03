@@ -24,7 +24,7 @@ class TagController: ITagOperation {
         _rssiMap.update { it + (epc to rssi) }
     }
 
-    override fun clearAll() {
+    override fun clearTagStatusAndRssi() {
         _statusMap.value = emptyMap()
         _rssiMap.value = emptyMap()
     }
