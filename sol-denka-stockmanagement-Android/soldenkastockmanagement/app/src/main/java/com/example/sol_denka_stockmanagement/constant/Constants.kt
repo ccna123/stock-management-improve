@@ -203,7 +203,7 @@ enum class InboundResultCsvHeader {
 enum class OutboundResultCsvHeader {
     ledger_item_id,
     tag_id,
-    process_id,
+    process_type_id,
     device_id,
     memo,
     occurred_at,

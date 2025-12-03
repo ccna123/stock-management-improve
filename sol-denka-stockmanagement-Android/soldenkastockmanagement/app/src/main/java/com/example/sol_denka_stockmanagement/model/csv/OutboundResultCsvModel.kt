@@ -18,7 +18,7 @@ data class OutboundResultCsvModel(
     override fun toHeader(): List<String> = listOf(
         OutboundResultCsvHeader.ledger_item_id.name,
         OutboundResultCsvHeader.tag_id.name,
-        OutboundResultCsvHeader.process_id.name,
+        OutboundResultCsvHeader.process_type_id.name,
         OutboundResultCsvHeader.device_id.name,
         OutboundResultCsvHeader.memo.name,
         OutboundResultCsvHeader.occurred_at.name,

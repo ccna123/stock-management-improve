@@ -3,7 +3,7 @@ package com.example.sol_denka_stockmanagement.screen.outbound
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.sol_denka_stockmanagement.database.repository.tag.TagMasterRepository
-import com.example.sol_denka_stockmanagement.model.outbound.OutboundScanResult
+import com.example.sol_denka_stockmanagement.model.outbound.OutboundScanDataTable
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
 import kotlinx.coroutines.Dispatchers
@@ -19,7 +19,7 @@ class OutboundViewModel @Inject constructor(
     private val tagMasterRepository: TagMasterRepository
 ) : ViewModel() {
 
-    private val _outboundList = MutableStateFlow<List<OutboundScanResult>>(emptyList())
+    private val _outboundList = MutableStateFlow<List<OutboundScanDataTable>>(emptyList())
     val outboundList = _outboundList.asStateFlow()
 
     fun loadOutboundItems(
@@ -44,7 +44,7 @@ class OutboundViewModel @Inject constructor(
             val result = selectedEpcList.map { epc ->
                 val detail = detailMap[epc]
 
-                OutboundScanResult(
+                OutboundScanDataTable(
                     epc = epc,
                     itemName = detail?.itemName ?: "",
                     processType = processTypeMap[epc] ?: "不明"
