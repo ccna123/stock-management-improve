@@ -50,12 +50,6 @@ enum class CsvType(val displayName: String) {
     TagMaster("タグマスタCSV"),
 }
 
-enum class InventoryResultTypeCode(val displayName: String) {
-    FOUND_OK("FOUND_OK"),
-    FOUND_WRONG_LOCATION("FOUND_WRONG_LOCATION"),
-    NOT_FOUND("NOT_FOUND"),
-}
-
 enum class CsvTaskType(val displayName: String) {
     IN_OUT("入庫"),
     INVENTORY("棚卸"),
@@ -140,6 +134,7 @@ enum class CsvHistoryResult(val displayName: String) {
 }
 
 enum class InventoryResultType(val displayName: String) {
+    UNKNOWN("未知"),
     FOUND_OK("正常"),
     FOUND_WRONG_LOCATION("保管場所不一致"),
     NOT_FOUND("不足"),

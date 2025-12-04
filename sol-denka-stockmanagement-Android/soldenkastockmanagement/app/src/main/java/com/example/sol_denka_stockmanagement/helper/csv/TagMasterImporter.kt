@@ -1,6 +1,7 @@
 package com.example.sol_denka_stockmanagement.helper.csv
 
 import com.example.sol_denka_stockmanagement.app_interface.ICsvImport
+import com.example.sol_denka_stockmanagement.constant.InventoryResultType
 import com.example.sol_denka_stockmanagement.constant.TagStatus
 import com.example.sol_denka_stockmanagement.constant.generateTimeStamp
 import com.example.sol_denka_stockmanagement.database.repository.tag.TagMasterRepository
@@ -26,8 +27,9 @@ class TagMasterImporter(
                     createdAt = generateTimeStamp(),
                     updatedAt = generateTimeStamp(),
                     newFields = AdditionalFieldsModel(
-                        tagStatus = TagStatus.UNPROCESSED,   // default when import
-                        rssi = -100f                          // default signal
+                        tagStatus = TagStatus.UNPROCESSED,
+                        inventoryResultType = InventoryResultType.UNKNOWN,
+                        rssi = -100f
                     )
                 )
             }

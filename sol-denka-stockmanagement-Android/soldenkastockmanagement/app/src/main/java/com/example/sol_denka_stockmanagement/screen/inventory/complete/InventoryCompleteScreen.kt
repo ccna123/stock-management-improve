@@ -1,6 +1,7 @@
 package com.example.sol_denka_stockmanagement.screen.inventory.complete
 
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -59,10 +60,13 @@ fun InventoryCompleteScreen(
     val generalState = appViewModel.generalState.collectAsStateWithLifecycle().value
     val inputState = appViewModel.inputState.collectAsStateWithLifecycle().value
     val rfidTagList = scanViewModel.rfidTagList.collectAsStateWithLifecycle().value
-    val wrongLocationCount = inventoryCompleteViewModel.wrongLocationCount.collectAsStateWithLifecycle().value
-    val shortageCount = inventoryCompleteViewModel.shortageCount.collectAsStateWithLifecycle().value
-    val overCount = inventoryCompleteViewModel.overCount.collectAsStateWithLifecycle().value
-    val okCount = inventoryCompleteViewModel.okCount.collectAsStateWithLifecycle().value
+    val wrongLocationCount = inventoryCompleteViewModel.wrongLocationCount.collectAsStateWithLifecycle()
+    val shortageCount = inventoryCompleteViewModel.shortageCount.collectAsStateWithLifecycle()
+    val overCount = inventoryCompleteViewModel.overCount.collectAsStateWithLifecycle()
+    val okCount = inventoryCompleteViewModel.okCount.collectAsStateWithLifecycle()
+
+    Log.e("TSS", "PROCESSED tag: ${rfidTagList.count{it.newFields.tagStatus == TagStatus.PROCESSED}}")
+
 
     LaunchedEffect(Unit) {
         scanViewModel.setEnableScan(false)
@@ -174,10 +178,10 @@ fun InventoryCompleteScreen(
                 ) {
                     inventoryStatusList.forEach { item ->
                         val count = when (item.status) {
-                            InventoryScanResult.OK -> okCount
-                            InventoryScanResult.SHORTAGE -> shortageCount
-                            InventoryScanResult.OVERLOAD -> overCount
-                            InventoryScanResult.WRONG_LOCATION -> wrongLocationCount
+                            InventoryScanResult.OK -> okCount.value
+                            InventoryScanResult.SHORTAGE -> shortageCount.value
+                            InventoryScanResult.OVERLOAD -> overCount.value
+                            InventoryScanResult.WRONG_LOCATION -> wrongLocationCount.value
                         }
                         Row(
                             modifier = Modifier

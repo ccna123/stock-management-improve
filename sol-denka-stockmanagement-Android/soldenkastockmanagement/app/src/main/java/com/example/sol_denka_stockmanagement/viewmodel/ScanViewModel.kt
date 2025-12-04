@@ -185,7 +185,6 @@ class ScanViewModel @Inject constructor(
     }
 
     override fun updateTagStatus(epc: String, status: TagStatus) {
-        Log.e("TSS", "updateTagStatus: is called")
         tagController.updateTagStatus(epc, status)
     }
 
