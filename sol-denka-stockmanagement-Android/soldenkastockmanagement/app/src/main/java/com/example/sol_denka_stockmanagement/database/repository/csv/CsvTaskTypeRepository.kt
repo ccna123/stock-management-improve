@@ -22,8 +22,8 @@ class CsvTaskTypeRepository @Inject constructor(
     val presetUnits = listOf(
         CsvTaskTypeModel(
             csvTaskTypeId = 1,
-            csvTaskCode = CsvTaskType.IN_OUT,
-            csvTaskName = CsvTaskType.IN_OUT.displayName,
+            csvTaskCode = CsvTaskType.IN,
+            csvTaskName = CsvTaskType.IN.displayName,
             createdAt = generateTimeStamp(),
             updatedAt = generateTimeStamp()
         ),

@@ -51,7 +51,8 @@ enum class CsvType(val displayName: String) {
 }
 
 enum class CsvTaskType(val displayName: String) {
-    IN_OUT("入庫"),
+    IN("入庫"),
+    OUT("出庫"),
     INVENTORY("棚卸"),
     LOCATION_CHANGE("保管場所変更"),
     UPPER_SYSTEM("上位システム"),
@@ -110,12 +111,13 @@ enum class InventoryScanResult(val displayName: String) {
     WRONG_LOCATION("保管場所不一致")
 }
 
-enum class EventTypeCode(val displayName: String) {
+enum class CsvTaskCode(val displayName: String) {
     IN("IN"),
     OUT("OUT"),
-    MOVE("MOVE"),
-    ADJUST("ADJUST"),
     INVENTORY("INVENTORY"),
+    LOCATION_CHANGE("LOCATION_CHANGE"),
+    UPPER_SYSTEM("UPPER_SYSTEM"),
+    OTHER("OTHER"),
 }
 
 enum class CsvHistoryDirection(val displayName: String) {
