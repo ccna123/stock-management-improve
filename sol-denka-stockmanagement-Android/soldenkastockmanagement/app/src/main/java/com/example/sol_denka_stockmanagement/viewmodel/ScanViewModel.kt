@@ -95,6 +95,14 @@ class ScanViewModel @Inject constructor(
                                 }
                             }.collect { merged ->
                                 _rfidTagList.value = merged
+
+
+                                val detailList =
+                                    tagMasterRepository.getItemNameByTagId(merged.map { it.epc }) ?: emptyList()
+
+                                val map = detailList.associate { it.epc to it.itemName }
+
+                                _epcNameMap.value = map
                             }
                         }
 

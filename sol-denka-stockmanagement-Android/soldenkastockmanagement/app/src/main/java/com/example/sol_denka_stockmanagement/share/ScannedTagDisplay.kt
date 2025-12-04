@@ -28,6 +28,7 @@ import com.example.sol_denka_stockmanagement.ui.theme.brightGreenSecondary
 fun ScannedTagDisplay(
     rfidTagList: List<TagMasterModel>,
     selectedTags: List<String>,
+    epcNameMap: Map<String, String?>,
     isSelectionMode: Boolean,
     onClick: (String) -> Unit,
     onLongClick: (String) -> Unit,
@@ -70,7 +71,7 @@ fun ScannedTagDisplay(
                     )
                 }
                 Column {
-                    Text(text = "一斗缶", fontSize = 17.sp)
+                    Text(text = epcNameMap[item.epc] ?: "-", fontSize = 17.sp)
                     Text(
                         modifier = Modifier
                             .padding(vertical = 10.dp),

@@ -6,7 +6,7 @@ data class OutboundScanDataTable(
     val processType: String
 )
 
-data class OutboundScanResultDTO(
+data class EpcNameMapperResult(
     val epc: String,
     val itemName: String?,
 )
