@@ -7,7 +7,7 @@ data class InventoryResultLocalModel(
     val inventorySessionId: Int,
     val inventoryResultTypeId: Int,
     val ledgerItemId: Int,
-    val tagId: Int,
+    val tagId: Long,
     val memo: String?,
     val scannedAt: String?,
 )

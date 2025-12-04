@@ -16,7 +16,7 @@ import com.example.sol_denka_stockmanagement.database.entity.location.LocationMa
     )
 ])
 data class InventorySessionEntity(
-    @PrimaryKey @ColumnInfo(name = "inventory_session_id") val inventorySessionId: Int,
+    @PrimaryKey(autoGenerate = true) @ColumnInfo(name = "inventory_session_id") val inventorySessionId: Int,
     @ColumnInfo(name = "location_id") val locationId: Int,
     @ColumnInfo(name = "device_id") val deviceId: String,
     @ColumnInfo(name = "executed_at") val executedAt: String,

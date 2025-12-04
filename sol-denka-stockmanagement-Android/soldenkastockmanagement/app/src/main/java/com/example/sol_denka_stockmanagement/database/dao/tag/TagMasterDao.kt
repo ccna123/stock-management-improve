@@ -20,7 +20,7 @@ interface TagMasterDao : IDao<TagMasterEntity> {
     override fun get(): Flow<List<TagMasterEntity>>
 
     @Insert(onConflict = REPLACE)
-    override suspend fun insert(e: TagMasterEntity)
+    override suspend fun insert(e: TagMasterEntity): Long
 
     @Insert(onConflict = REPLACE)
     suspend fun insertAll(e: List<TagMasterEntity>)

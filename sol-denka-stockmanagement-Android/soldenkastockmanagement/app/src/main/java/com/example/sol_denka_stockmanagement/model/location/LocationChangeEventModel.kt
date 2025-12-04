@@ -3,7 +3,7 @@ package com.example.sol_denka_stockmanagement.model.location
 import com.example.sol_denka_stockmanagement.database.entity.location.LocationChangeEventEntity
 
 data class LocationChangeEventModel(
-    val locationChangeEventId: Int,
+    val locationChangeEventId: Int = 0,
     val locationChangeSessionId: Int,
     val ledgerItemId: Int,
     val locationId: Int,
@@ -12,19 +12,19 @@ data class LocationChangeEventModel(
 )
 
 fun LocationChangeEventEntity.toModel() = LocationChangeEventModel(
-    locationChangeEventId,
-    locationChangeSessionId,
-    ledgerItemId,
-    locationId,
-    memo,
-    scannedAt
+    locationChangeEventId = locationChangeEventId,
+    locationChangeSessionId = locationChangeSessionId,
+    ledgerItemId = ledgerItemId,
+    locationId = locationId,
+    memo = memo,
+    scannedAt = scannedAt
 )
 
 fun LocationChangeEventModel.toEntity() = LocationChangeEventEntity(
-    locationChangeEventId,
-    locationChangeSessionId,
-    ledgerItemId,
-    locationId,
-    memo,
-    scannedAt
+    locationChangeEventId = locationChangeEventId,
+    locationChangeSessionId = locationChangeSessionId,
+    ledgerItemId = ledgerItemId,
+    locationId = locationId,
+    memo = memo,
+    scannedAt = scannedAt
 )

@@ -16,7 +16,7 @@ interface CsvHistoryDao: IDao<CsvHistoryEntity> {
     override fun get(): Flow<List<CsvHistoryEntity>>
 
     @Insert
-    override suspend fun insert(e: CsvHistoryEntity)
+    override suspend fun insert(e: CsvHistoryEntity): Long
 
     @Update
     override suspend fun update(e: CsvHistoryEntity)

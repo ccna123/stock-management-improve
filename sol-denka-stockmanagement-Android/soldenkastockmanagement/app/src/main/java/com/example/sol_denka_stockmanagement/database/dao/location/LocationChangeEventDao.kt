@@ -16,7 +16,7 @@ interface LocationChangeEventDao: IDao<LocationChangeEventEntity> {
     override fun get(): Flow<List<LocationChangeEventEntity>>
 
     @Insert
-    override suspend fun insert(e: LocationChangeEventEntity)
+    override suspend fun insert(e: LocationChangeEventEntity): Long
 
     @Update
     override suspend fun update(e: LocationChangeEventEntity)

@@ -49,7 +49,7 @@ import com.example.sol_denka_stockmanagement.database.entity.tag.TagMasterEntity
     ]
 )
 data class InboundEventEntity(
-    @PrimaryKey @ColumnInfo(name = "inbound_event_id") val inboundEventId: Int,
+    @PrimaryKey(autoGenerate = true) @ColumnInfo(name = "inbound_event_id") val inboundEventId: Int,
     @ColumnInfo(name = "inbound_session_id") val inboundSessionId: Int,
     @ColumnInfo(name = "item_type_id") val itemTypeId: Int,
     @ColumnInfo(name = "location_id") val locationId: Int,
@@ -62,7 +62,7 @@ data class InboundEventEntity(
     @ColumnInfo(name = "length") val length: Int?,
     @ColumnInfo(name = "quantity") val quantity: Int?,
     @ColumnInfo(name = "winder_info") val winderInfo: String?,
-    @ColumnInfo(name = "misroll_reason") val misrollReason: String?,
+    @ColumnInfo(name = "missRoll_reason") val missRollReason: String?,
     @ColumnInfo(name = "memo") val memo: String?,
     @ColumnInfo(name = "occurred_at") val occurredAt: String,
     @ColumnInfo(name = "registered_at") val registeredAt: String,

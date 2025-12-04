@@ -17,7 +17,7 @@ interface ItemUnitDao: IDao<ItemUnitMasterEntity> {
     override fun get(): Flow<List<ItemUnitMasterEntity>>
 
     @Insert(onConflict = REPLACE)
-    override suspend fun insert(e: ItemUnitMasterEntity)
+    override suspend fun insert(e: ItemUnitMasterEntity): Long
 
     @Update
     override suspend fun update(e: ItemUnitMasterEntity)

@@ -4,7 +4,7 @@ import kotlinx.coroutines.flow.Flow
 
 interface IDao<E> {
     fun get(): Flow<List<E>>
-    suspend fun insert(e: E)
+    suspend fun insert(e: E): Long
     suspend fun update(e: E)
     suspend fun delete(e: E)
 }

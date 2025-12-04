@@ -1,6 +1,5 @@
 package com.example.sol_denka_stockmanagement.helper.csv
 
-import android.util.Log
 import com.example.sol_denka_stockmanagement.app_interface.ICsvImport
 import com.example.sol_denka_stockmanagement.constant.generateTimeStamp
 import com.example.sol_denka_stockmanagement.database.repository.location.LocationRepository

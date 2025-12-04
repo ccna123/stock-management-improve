@@ -11,17 +11,17 @@ data class LocationMasterModel(
 )
 
 fun LocationMasterEntity.toModel() = LocationMasterModel(
-    locationId,
-    locationCode,
-    locationName,
-    createdAt,
-    updatedAt
+    locationId = locationId,
+    locationCode = locationCode,
+    locationName = locationName,
+    createdAt = createdAt,
+    updatedAt = updatedAt
 )
 
 fun LocationMasterModel.toEntity() = LocationMasterEntity(
-    locationId,
-    locationCode,
-    locationName,
-    createdAt,
-    updatedAt
+    locationId = locationId,
+    locationCode = locationCode,
+    locationName = locationName,
+    createdAt = createdAt,
+    updatedAt = updatedAt
 )

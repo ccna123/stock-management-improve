@@ -16,20 +16,48 @@ data class InboundEventModel(
     val length: Int?,
     val quantity: Int?,
     val winderInfo: String?,
-    val misrollReason: String?,
+    val missRollReason: String?,
     val memo: String?,
     val occurredAt: String,
     val registeredAt: String,
 )
 
 fun InboundEventEntity.toModel() = InboundEventModel(
-    inboundEventId, inboundSessionId, itemTypeId, locationId, tagId,
-    weight, grade, specificGravity, thickness, width, length,
-    quantity, winderInfo, misrollReason, memo, occurredAt, registeredAt
+    inboundEventId = inboundEventId,
+    inboundSessionId = inboundSessionId,
+    itemTypeId = itemTypeId,
+    locationId = locationId,
+    tagId = tagId,
+    weight = weight,
+    grade = grade,
+    specificGravity = specificGravity,
+    thickness = thickness,
+    width = width,
+    length = length,
+    quantity = quantity,
+    winderInfo = winderInfo,
+    missRollReason = missRollReason,
+    memo = memo,
+    occurredAt = occurredAt,
+    registeredAt = registeredAt
 )
 
 fun InboundEventModel.toEntity() = InboundEventEntity(
-    inboundEventId, inboundSessionId, itemTypeId, locationId, tagId,
-    weight, grade, specificGravity, thickness, width, length,
-    quantity, winderInfo, misrollReason, memo, occurredAt, registeredAt
+    inboundEventId = inboundEventId,
+    inboundSessionId = inboundSessionId,
+    itemTypeId = itemTypeId,
+    locationId = locationId,
+    tagId = tagId,
+    weight = weight,
+    grade = grade,
+    specificGravity = specificGravity,
+    thickness = thickness,
+    width = width,
+    length = length,
+    quantity = quantity,
+    winderInfo = winderInfo,
+    missRollReason = missRollReason,
+    memo = memo,
+    occurredAt = occurredAt,
+    registeredAt = registeredAt
 )

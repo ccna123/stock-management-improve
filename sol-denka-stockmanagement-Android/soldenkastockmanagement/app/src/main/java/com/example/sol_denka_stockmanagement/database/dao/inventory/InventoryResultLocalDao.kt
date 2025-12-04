@@ -16,7 +16,7 @@ interface InventoryResultLocalDao: IDao<InventoryResultLocalEntity> {
     override fun get(): Flow<List<InventoryResultLocalEntity>>
 
     @Insert
-    override suspend fun insert(e: InventoryResultLocalEntity)
+    override suspend fun insert(e: InventoryResultLocalEntity): Long
 
     @Update
     override suspend fun update(e: InventoryResultLocalEntity)

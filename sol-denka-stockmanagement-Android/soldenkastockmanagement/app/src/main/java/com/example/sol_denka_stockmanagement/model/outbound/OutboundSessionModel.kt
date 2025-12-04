@@ -9,13 +9,13 @@ data class OutboundSessionModel(
 )
 
 fun OutboundSessionEntity.toModel() = OutboundSessionModel(
-    outboundSessionId,
-    deviceId,
-    executedAt
+    outboundSessionId = outboundSessionId,
+    deviceId = deviceId,
+    executedAt = executedAt
 )
 
 fun OutboundSessionModel.toEntity() = OutboundSessionEntity(
-    outboundSessionId,
-    deviceId,
-    executedAt
+    outboundSessionId = outboundSessionId,
+    deviceId = deviceId,
+    executedAt = executedAt
 )

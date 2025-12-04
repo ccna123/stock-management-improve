@@ -7,7 +7,7 @@ import com.example.sol_denka_stockmanagement.constant.ProcessMethod
 
 @Entity(tableName = "ProcessType")
 data class ProcessTypeEntity(
-    @PrimaryKey(autoGenerate = true) @ColumnInfo(name = "process_type_id") val processTypeId: Int = 0,
+    @PrimaryKey @ColumnInfo(name = "process_type_id") val processTypeId: Int = 0,
     @ColumnInfo(name = "process_code") val processCode: ProcessMethod,
     @ColumnInfo(name = "process_name") val processName: String,
     @ColumnInfo(name = "created_at") val createdAt: String,

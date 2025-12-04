@@ -17,7 +17,7 @@ interface CsvTaskTypeDao: IDao<CsvTaskTypeEntity> {
     override fun get(): Flow<List<CsvTaskTypeEntity>>
 
     @Insert
-    override suspend fun insert(e: CsvTaskTypeEntity)
+    override suspend fun insert(e: CsvTaskTypeEntity): Long
 
     @Update
     override suspend fun update(e: CsvTaskTypeEntity)

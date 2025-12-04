@@ -45,7 +45,7 @@ class LedgerItemMasterImporter(
                     quantity = parseNullableInt(p[10]),
 
                     winderInfo = p[11].ifBlank { null },
-                    misrollReason = p[12].ifBlank { null },
+                    missRollReason = p[12].ifBlank { null },
 
                     createdAt = generateTimeStamp(),
                     updatedAt = generateTimeStamp()

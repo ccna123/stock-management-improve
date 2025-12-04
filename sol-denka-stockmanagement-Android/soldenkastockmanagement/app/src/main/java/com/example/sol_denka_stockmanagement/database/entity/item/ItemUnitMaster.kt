@@ -6,7 +6,7 @@ import androidx.room.PrimaryKey
 
 @Entity(tableName = "ItemUnitMaster")
 data class ItemUnitMasterEntity(
-    @PrimaryKey @ColumnInfo(name = "item_unit_id") val itemUnitId: Int,
+    @PrimaryKey @ColumnInfo(name = "item_unit_id") val itemUnitId: Long,
     @ColumnInfo(name = "item_unit_code") val itemUnitCode: String,
     @ColumnInfo(name = "created_at") val createdAt: String,
     @ColumnInfo(name = "updated_at") val updatedAt: String,

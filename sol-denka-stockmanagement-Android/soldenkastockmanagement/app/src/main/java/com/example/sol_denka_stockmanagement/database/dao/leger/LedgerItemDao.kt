@@ -17,7 +17,7 @@ interface LedgerItemDao: IDao<LedgerItemEntity> {
     override fun get(): Flow<List<LedgerItemEntity>>
 
     @Insert(onConflict = REPLACE)
-    override suspend fun insert(e: LedgerItemEntity)
+    override suspend fun insert(e: LedgerItemEntity): Long
 
     @Insert(onConflict = REPLACE)
     suspend fun insertAll(e: List<LedgerItemEntity>)

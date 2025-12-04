@@ -3,20 +3,28 @@ package com.example.sol_denka_stockmanagement.model.item
 import com.example.sol_denka_stockmanagement.database.entity.item.ItemTypeMasterEntity
 
 data class ItemTypeMasterModel(
-    val itemTypeId: Int,
+    val itemTypeId: Long,
+    val itemUnitId: Long,
     val itemTypeCode: String,
     val itemTypeName: String,
-    val itemUnitId: Int,
     val createdAt: String,
     val updatedAt: String,
 )
 
 fun ItemTypeMasterEntity.toModel() = ItemTypeMasterModel(
-    itemTypeId, itemTypeCode, itemTypeName,
-    itemUnitId, createdAt, updatedAt
+    itemTypeId = itemTypeId,
+    itemUnitId = itemUnitId,
+    itemTypeCode = itemTypeCode,
+    itemTypeName = itemTypeName,
+    createdAt = createdAt,
+    updatedAt = updatedAt
 )
 
 fun ItemTypeMasterModel.toEntity() = ItemTypeMasterEntity(
-    itemTypeId, itemTypeCode, itemTypeName,
-    itemUnitId, createdAt, updatedAt
+    itemTypeId = itemTypeId,
+    itemUnitId = itemUnitId,
+    itemTypeCode = itemTypeCode,
+    itemTypeName = itemTypeName,
+    createdAt = createdAt,
+    updatedAt = updatedAt
 )

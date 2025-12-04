@@ -16,11 +16,23 @@ data class CsvHistoryModel(
 )
 
 fun CsvHistoryEntity.toModel() = CsvHistoryModel(
-    csvHistoryId, csvTaskTypeId, fileName, direction, result,
-    recordNum, errorMessage, executedAt
+    csvHistoryId = csvHistoryId,
+    csvTaskTypeId = csvTaskTypeId,
+    fileName = fileName,
+    direction = direction,
+    result = result,
+    recordNum = recordNum,
+    errorMessage = errorMessage,
+    executedAt = executedAt
 )
 
 fun CsvHistoryModel.toEntity() = CsvHistoryEntity(
-    csvHistoryId, csvTaskTypeId, fileName, direction, result,
-    recordNum, errorMessage, executedAt
+    csvHistoryId = csvHistoryId,
+    csvTaskTypeId = csvTaskTypeId,
+    fileName = fileName,
+    direction = direction,
+    result = result,
+    recordNum = recordNum,
+    errorMessage = errorMessage,
+    executedAt = executedAt
 )

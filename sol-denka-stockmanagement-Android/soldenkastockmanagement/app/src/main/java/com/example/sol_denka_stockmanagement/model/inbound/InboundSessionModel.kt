@@ -3,15 +3,19 @@ package com.example.sol_denka_stockmanagement.model.inbound
 import com.example.sol_denka_stockmanagement.database.entity.inbound.InboundSessionEntity
 
 data class InboundSessionModel(
-    val inboundSessionId: Int,
+    val inboundSessionId: Long,
     val deviceId: String,
     val executedAt: String,
 )
 
 fun InboundSessionEntity.toModel() = InboundSessionModel(
-    inboundSessionId, deviceId, executedAt
+    inboundSessionId = inboundSessionId,
+    deviceId = deviceId,
+    executedAt = executedAt
 )
 
 fun InboundSessionModel.toEntity() = InboundSessionEntity(
-    inboundSessionId, deviceId, executedAt
+    inboundSessionId = inboundSessionId,
+    deviceId = deviceId,
+    executedAt = executedAt
 )

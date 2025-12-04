@@ -38,7 +38,7 @@ import com.example.sol_denka_stockmanagement.database.entity.ledger.LedgerItemEn
     ]
 )
 data class LocationChangeEventEntity(
-    @PrimaryKey @ColumnInfo(name = "location_change_event_id") val locationChangeEventId: Int,
+    @PrimaryKey(autoGenerate = true) @ColumnInfo(name = "location_change_event_id") val locationChangeEventId: Int = 0,
     @ColumnInfo(name = "location_change_session_id") val locationChangeSessionId: Int,
     @ColumnInfo(name = "ledger_item_id") val ledgerItemId: Int,
     @ColumnInfo(name = "location_id") val locationId: Int,

@@ -19,7 +19,7 @@ interface InventoryResultTypeDao: IDao<InventoryResultTypeEntity> {
     suspend fun getInventoryResultTypeIdByCode(inventoryResultCode: String): Int
 
     @Insert
-    override suspend fun insert(e: InventoryResultTypeEntity)
+    override suspend fun insert(e: InventoryResultTypeEntity): Long
 
     @Update
     override suspend fun update(e: InventoryResultTypeEntity)

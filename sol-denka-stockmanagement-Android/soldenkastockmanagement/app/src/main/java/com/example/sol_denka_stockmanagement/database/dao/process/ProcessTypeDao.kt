@@ -3,6 +3,7 @@ package com.example.sol_denka_stockmanagement.database.dao.process
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
+import androidx.room.OnConflictStrategy.Companion.REPLACE
 import androidx.room.Query
 import androidx.room.Update
 import com.example.sol_denka_stockmanagement.app_interface.IDao
@@ -18,8 +19,8 @@ interface ProcessTypeDao: IDao<ProcessTypeEntity> {
     @Query("SELECT process_type_id FROM ProcessType WHERE process_name LIKE '%' || :processTypeName || '%'")
     suspend fun getIdByName(processTypeName: String): Int
 
-    @Insert
-    override suspend fun insert(e: ProcessTypeEntity)
+    @Insert(onConflict = REPLACE)
+    override suspend fun insert(e: ProcessTypeEntity): Long
 
     @Update
     override suspend fun update(e: ProcessTypeEntity)

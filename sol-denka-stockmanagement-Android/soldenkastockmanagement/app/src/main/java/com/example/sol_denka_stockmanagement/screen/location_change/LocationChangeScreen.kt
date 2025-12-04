@@ -94,6 +94,7 @@ fun LocationChangeScreen(
                 },
                 onClick = {
                     scope.launch {
+                        locationChangeViewModel.saveLocationChangeToDb(memo = inputState.value.memo, newLocation = inputState.value.location)
                         val csvModels =
                             locationChangeViewModel.generateCsvData(memo = inputState.value.memo, newLocation = inputState.value.location)
                         appViewModel.onGeneralIntent(ShareIntent.SaveScanResult(csvModels))

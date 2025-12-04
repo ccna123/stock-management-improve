@@ -16,7 +16,7 @@ interface InboundSessionDao: IDao<InboundSessionEntity> {
     override fun get(): Flow<List<InboundSessionEntity>>
 
     @Insert
-    override suspend fun insert(e: InboundSessionEntity)
+    override suspend fun insert(e: InboundSessionEntity): Long
 
     @Update
     override suspend fun update(e: InboundSessionEntity)

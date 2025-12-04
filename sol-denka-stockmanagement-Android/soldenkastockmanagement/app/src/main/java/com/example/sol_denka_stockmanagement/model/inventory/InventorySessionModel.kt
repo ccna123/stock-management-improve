@@ -10,9 +10,15 @@ data class InventorySessionModel(
 )
 
 fun InventorySessionEntity.toModel() = InventorySessionModel(
-    inventorySessionId, locationId, deviceId, executedAt
+    inventorySessionId = inventorySessionId,
+    locationId = locationId,
+    deviceId = deviceId,
+    executedAt = executedAt
 )
 
 fun InventorySessionModel.toEntity() = InventorySessionEntity(
-    inventorySessionId, locationId, deviceId, executedAt
+    inventorySessionId = inventorySessionId,
+    locationId = locationId,
+    deviceId = deviceId,
+    executedAt = executedAt
 )

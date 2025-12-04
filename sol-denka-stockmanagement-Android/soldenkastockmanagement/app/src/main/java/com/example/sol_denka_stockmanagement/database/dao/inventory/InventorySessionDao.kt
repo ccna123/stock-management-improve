@@ -16,7 +16,7 @@ interface InventorySessionDao: IDao<InventorySessionEntity> {
     override fun get(): Flow<List<InventorySessionEntity>>
 
     @Insert
-    override suspend fun insert(e: InventorySessionEntity)
+    override suspend fun insert(e: InventorySessionEntity): Long
 
     @Update
     override suspend fun update(e: InventorySessionEntity)

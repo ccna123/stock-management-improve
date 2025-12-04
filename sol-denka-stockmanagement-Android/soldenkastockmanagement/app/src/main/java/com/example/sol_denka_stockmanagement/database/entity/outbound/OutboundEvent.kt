@@ -40,8 +40,8 @@ import com.example.sol_denka_stockmanagement.database.entity.process.ProcessType
     ]
 )
 data class OutBoundEventEntity(
-    @PrimaryKey @ColumnInfo(name = "outbound_event_id") val outBoundEventId: Int,
-    @ColumnInfo(name = "outbound_session_id") val outBoundSessionId: Int,
+    @PrimaryKey @ColumnInfo(name = "outbound_event_id") val outboundEventId: Int,
+    @ColumnInfo(name = "outbound_session_id") val outboundSessionId: Int,
     @ColumnInfo(name = "ledger_item_id") val ledgerItemId: Int,
     @ColumnInfo(name = "process_type_id") val processTypeId: Int,
     @ColumnInfo(name = "memo") val memo: String?,

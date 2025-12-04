@@ -4,7 +4,7 @@ import com.example.sol_denka_stockmanagement.constant.ProcessMethod
 import com.example.sol_denka_stockmanagement.database.entity.process.ProcessTypeEntity
 
 data class ProcessTypeModel(
-    val processTypeId: Int = 0,
+    val processTypeId: Int,
     val processCode: ProcessMethod,
     val processName: String,
     val createdAt: String,
@@ -12,17 +12,17 @@ data class ProcessTypeModel(
 )
 
 fun ProcessTypeEntity.toModel() = ProcessTypeModel(
-    processTypeId,
-    processCode,
-    processName,
-    createdAt,
-    updatedAt
+    processTypeId = processTypeId,
+    processCode = processCode,
+    processName = processName,
+    createdAt = createdAt,
+    updatedAt = updatedAt
 )
 
 fun ProcessTypeModel.toEntity() = ProcessTypeEntity(
-    processTypeId,
-    processCode,
-    processName,
-    createdAt,
-    updatedAt
+    processTypeId = processTypeId,
+    processCode = processCode,
+    processName = processName,
+    createdAt = createdAt,
+    updatedAt = updatedAt
 )

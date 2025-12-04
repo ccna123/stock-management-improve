@@ -16,7 +16,7 @@ interface InboundEventDao: IDao<InboundEventEntity> {
     override fun get(): Flow<List<InboundEventEntity>>
 
     @Insert
-    override suspend fun insert(e: InboundEventEntity)
+    override suspend fun insert(e: InboundEventEntity): Long
 
     @Update
     override suspend fun update(e: InboundEventEntity)

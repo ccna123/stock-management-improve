@@ -18,7 +18,7 @@ interface ItemTypeDao: IDao<ItemTypeMasterEntity> {
     override fun get(): Flow<List<ItemTypeMasterEntity>>
 
     @Insert(onConflict = REPLACE)
-    override suspend fun insert(e: ItemTypeMasterEntity)
+    override suspend fun insert(e: ItemTypeMasterEntity): Long
 
     @Insert(onConflict = REPLACE)
     suspend fun insertAll(e: List<ItemTypeMasterEntity>)

@@ -46,7 +46,8 @@ class InventoryCompleteViewModel @Inject constructor(
 
     fun computeResult(rfidTagList: List<TagMasterModel>, locationName: String) {
         viewModelScope.launch {
-            val currentLocationId = locationRepository.getLocationIdByName(locationName = locationName) ?: 0
+            val currentLocationId = locationRepository.getLocationIdByName(locationName = locationName)
+                ?: 0
             val scannedTags = rfidTagList.map { it.epc }.toSet()
 
             val tagsInStock = tagMasterRepository.getTagsByLocationAndStock(

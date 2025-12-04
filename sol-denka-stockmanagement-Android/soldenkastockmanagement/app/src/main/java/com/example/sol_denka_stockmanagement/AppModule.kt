@@ -12,6 +12,8 @@ import com.example.sol_denka_stockmanagement.database.dao.inventory.InventoryRes
 import com.example.sol_denka_stockmanagement.database.dao.item.ItemTypeDao
 import com.example.sol_denka_stockmanagement.database.dao.item.ItemUnitDao
 import com.example.sol_denka_stockmanagement.database.dao.leger.LedgerItemDao
+import com.example.sol_denka_stockmanagement.database.dao.location.LocationChangeEventDao
+import com.example.sol_denka_stockmanagement.database.dao.location.LocationChangeSessionDao
 import com.example.sol_denka_stockmanagement.database.dao.location.LocationDao
 import com.example.sol_denka_stockmanagement.database.dao.process.ProcessTypeDao
 import com.example.sol_denka_stockmanagement.database.dao.tag.TagMasterDao
@@ -121,6 +123,18 @@ object AppModule {
     @Singleton
     fun provideInventoryResultTypeDao(database: AppDatabase): InventoryResultTypeDao {
         return database.inventoryResultTypeDao()
+    }
+
+    @Provides
+    @Singleton
+    fun provideLocationChangeSessionDao(database: AppDatabase): LocationChangeSessionDao {
+        return database.locationChangeSessionDao()
+    }
+
+    @Provides
+    @Singleton
+    fun provideLocationChangeEventDao(database: AppDatabase): LocationChangeEventDao {
+        return database.locationChangeEventDao()
     }
 
 }

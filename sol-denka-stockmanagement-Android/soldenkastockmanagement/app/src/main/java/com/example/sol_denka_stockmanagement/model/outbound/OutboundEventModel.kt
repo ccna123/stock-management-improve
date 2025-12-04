@@ -13,21 +13,21 @@ data class OutBoundEventModel(
 )
 
 fun OutBoundEventEntity.toModel() = OutBoundEventModel(
-    outBoundEventId,
-    outBoundSessionId,
-    ledgerItemId,
-    processTypeId,
-    memo,
-    occurredAt,
-    registeredAt
+    outboundEventId = outboundEventId,
+    outboundSessionId = outboundSessionId,
+    ledgerItemId = ledgerItemId,
+    processTypeId = processTypeId,
+    memo = memo,
+    occurredAt = occurredAt,
+    registeredAt = registeredAt
 )
 
 fun OutBoundEventModel.toEntity() = OutBoundEventEntity(
-    outboundEventId,
-    outboundSessionId,
-    ledgerItemId,
-    processTypeId,
-    memo,
-    occurredAt,
-    registeredAt
+    outboundEventId = outboundEventId,
+    outboundSessionId = outboundSessionId,
+    ledgerItemId = ledgerItemId,
+    processTypeId = processTypeId,
+    memo = memo,
+    occurredAt = occurredAt,
+    registeredAt = registeredAt
 )

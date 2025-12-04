@@ -21,10 +21,10 @@ import androidx.room.PrimaryKey
     ]
 )
 data class ItemTypeMasterEntity(
-    @PrimaryKey @ColumnInfo(name = "item_type_id") val itemTypeId: Int,
+    @PrimaryKey @ColumnInfo(name = "item_type_id") val itemTypeId: Long,
+    @ColumnInfo(name = "item_unit_id") val itemUnitId: Long,
     @ColumnInfo(name = "item_type_code") val itemTypeCode: String,
     @ColumnInfo(name = "item_type_name") val itemTypeName: String,
-    @ColumnInfo(name = "item_unit_id") val itemUnitId: Int,
     @ColumnInfo(name = "created_at") val createdAt: String,
     @ColumnInfo(name = "updated_at") val updatedAt: String,
 )

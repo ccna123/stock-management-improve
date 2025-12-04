@@ -15,21 +15,43 @@ data class LedgerItemModel(
     val length: Int?,
     val quantity: Int?,
     val winderInfo: String?,
-    val misrollReason: String?,
+    val missRollReason: String?,
     val createdAt: String,
     val updatedAt: String,
 )
 
 fun LedgerItemEntity.toModel() = LedgerItemModel(
-    ledgerItemId, itemTypeId, locationId, isInStock,
-    weight, grade, specificGravity, thickness, width,
-    length, quantity, winderInfo, misrollReason,
-    createdAt, updatedAt
+    ledgerItemId = ledgerItemId,
+    itemTypeId = itemTypeId,
+    locationId = locationId,
+    isInStock = isInStock,
+    weight = weight,
+    grade = grade,
+    specificGravity = specificGravity,
+    thickness = thickness,
+    width = width,
+    length = length,
+    quantity = quantity,
+    winderInfo = winderInfo,
+    missRollReason = missRollReason,
+    createdAt = createdAt,
+    updatedAt = updatedAt
 )
 
 fun LedgerItemModel.toEntity() = LedgerItemEntity(
-    ledgerItemId, itemTypeId, locationId, isInStock,
-    weight, grade, specificGravity, thickness, width,
-    length, quantity, winderInfo, misrollReason,
-    createdAt, updatedAt
+    ledgerItemId = ledgerItemId,
+    itemTypeId = itemTypeId,
+    locationId = locationId,
+    isInStock = isInStock,
+    weight = weight,
+    grade = grade,
+    specificGravity = specificGravity,
+    thickness = thickness,
+    width = width,
+    length = length,
+    quantity = quantity,
+    winderInfo = winderInfo,
+    missRollReason = missRollReason,
+    createdAt = createdAt,
+    updatedAt = updatedAt
 )

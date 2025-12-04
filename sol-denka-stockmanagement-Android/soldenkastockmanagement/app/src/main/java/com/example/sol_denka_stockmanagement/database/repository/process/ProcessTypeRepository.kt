@@ -20,18 +20,21 @@ class ProcessTypeRepository @Inject constructor(
 
     val presetUnits = listOf(
         ProcessTypeModel(
+            processTypeId = 1,
             processCode = ProcessMethod.USE,
             processName = ProcessMethod.USE.displayName,
             createdAt = generateTimeStamp(),
             updatedAt = generateTimeStamp()
         ),
         ProcessTypeModel(
+            processTypeId = 2,
             processCode = ProcessMethod.SALE,
             processName = ProcessMethod.SALE.displayName,
             createdAt = generateTimeStamp(),
             updatedAt = generateTimeStamp()
         ),
         ProcessTypeModel(
+            processTypeId = 3,
             processCode = ProcessMethod.CRUSH,
             processName = ProcessMethod.CRUSH.displayName,
             createdAt = generateTimeStamp(),

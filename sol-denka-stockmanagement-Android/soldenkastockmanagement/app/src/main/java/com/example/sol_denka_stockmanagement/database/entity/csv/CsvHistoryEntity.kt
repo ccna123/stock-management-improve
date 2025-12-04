@@ -23,7 +23,7 @@ import com.example.sol_denka_stockmanagement.constant.CsvHistoryResult
     ]
 )
 data class CsvHistoryEntity(
-    @PrimaryKey @ColumnInfo(name = "csv_history_id") val csvHistoryId: Int,
+    @PrimaryKey(autoGenerate = true) @ColumnInfo(name = "csv_history_id") val csvHistoryId: Int = 0,
     @ColumnInfo(name = "csv_task_type_id") val csvTaskTypeId: Int,
     @ColumnInfo(name = "file_name") val fileName: String,
     @ColumnInfo(name = "direction") val direction: CsvHistoryDirection,

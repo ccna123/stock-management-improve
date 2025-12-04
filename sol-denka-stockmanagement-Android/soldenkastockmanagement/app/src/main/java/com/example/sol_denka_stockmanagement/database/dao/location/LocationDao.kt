@@ -17,7 +17,7 @@ interface LocationDao : IDao<LocationMasterEntity> {
     override fun get(): Flow<List<LocationMasterEntity>>
 
     @Insert(onConflict = REPLACE)
-    override suspend fun insert(e: LocationMasterEntity)
+    override suspend fun insert(e: LocationMasterEntity): Long
 
     @Insert(onConflict = REPLACE)
     suspend fun insertAll(e: List<LocationMasterEntity>)
