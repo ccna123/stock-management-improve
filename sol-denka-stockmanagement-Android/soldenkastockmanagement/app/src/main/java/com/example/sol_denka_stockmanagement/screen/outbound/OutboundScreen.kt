@@ -1,7 +1,10 @@
 package com.example.sol_denka_stockmanagement.screen.outbound
 
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -16,6 +19,10 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.TimePicker
+import androidx.compose.material3.TimePickerDialog
+import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -38,6 +45,8 @@ import com.example.sol_denka_stockmanagement.share.InputFieldContainer
 import com.example.sol_denka_stockmanagement.share.ScanResultTable
 import com.example.sol_denka_stockmanagement.viewmodel.AppViewModel
 import kotlinx.coroutines.launch
+import java.util.Calendar
+import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
@@ -50,11 +59,47 @@ fun OutboundScreen(
 ) {
 
     val inputState = appViewModel.inputState.collectAsStateWithLifecycle()
+    val generalState = appViewModel.generalState.collectAsStateWithLifecycle()
     val checkedMap by appViewModel.perTagChecked.collectAsStateWithLifecycle()
     val processTypeMap by appViewModel.perTagHandlingMethod.collectAsStateWithLifecycle()
     val selectedCount by appViewModel.selectedCount.collectAsStateWithLifecycle()
     val outboundList by outboundViewModel.outboundList.collectAsStateWithLifecycle()
     val scope = rememberCoroutineScope()
+
+    if (generalState.value.showTimePicker) {
+        val current = Calendar.getInstance()
+        val state = rememberTimePickerState(
+            initialHour = current.get(Calendar.HOUR_OF_DAY),
+            initialMinute = current.get(Calendar.MINUTE),
+            is24Hour = true
+        )
+
+        TimePickerDialog(
+            title = { Text("時刻を選択") },
+            onDismissRequest = {
+                appViewModel.onGeneralIntent(ShareIntent.ToggleTimePicker(false))
+            },
+            confirmButton = {
+                TextButton(onClick = {
+                    val timeStr = String.format(Locale.US, "%02d:%02d", state.hour, state.minute)
+                    appViewModel.onInputIntent(InputIntent.ChangeOccurredAt(timeStr))
+                    appViewModel.onGeneralIntent(ShareIntent.ToggleTimePicker(false))
+                }) {
+                    Text("OK")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = {
+                    appViewModel.onGeneralIntent(ShareIntent.ToggleTimePicker(false))
+                }) {
+                    Text("キャンセル")
+                }
+            }
+        ) {
+            TimePicker(state = state)
+        }
+    }
+
 
     LaunchedEffect(checkedMap, processTypeMap) {
         outboundViewModel.loadOutboundItems(checkedMap, processTypeMap)
@@ -129,29 +174,25 @@ fun OutboundScreen(
                         },
                     )
                     Spacer(modifier = Modifier.height(20.dp))
-                    InputFieldContainer(
+                    Box(
                         modifier = Modifier
-                            .fillMaxWidth(),
-                        value = inputState.value.occurredAt,
-                        label = stringResource(R.string.occurred_at),
-                        hintText = stringResource(R.string.occurred_at_hint),
-                        isNumeric = false,
-                        shape = RoundedCornerShape(13.dp),
-                        readOnly = false,
-                        isDropDown = false,
-                        enable = true,
-                        onChange = { newValue ->
-                            val filteredValue = newValue.trimStart().filter { char ->
-                                (char.isLetterOrDigit() && char.toString()
-                                    .toByteArray().size == 1) || char == '-'
+                            .fillMaxWidth()
+                            .clickable {
+                                appViewModel.onGeneralIntent(ShareIntent.ToggleTimePicker(true))
                             }
-                            appViewModel.onInputIntent(
-                                InputIntent.ChangeOccurredAt(
-                                    filteredValue
-                                )
-                            )
-                        }
-                    )
+                    ) {
+                        InputFieldContainer(
+                            modifier = Modifier.fillMaxWidth(),
+                            value = inputState.value.occurredAt,
+                            label = stringResource(R.string.occurred_at),
+                            isNumeric = false,
+                            shape = RoundedCornerShape(13.dp),
+                            readOnly = true,
+                            isDropDown = false,
+                            enable = false,
+                        )
+                    }
+
                     Spacer(modifier = Modifier.height(10.dp))
                     InputFieldContainer(
                         modifier = Modifier

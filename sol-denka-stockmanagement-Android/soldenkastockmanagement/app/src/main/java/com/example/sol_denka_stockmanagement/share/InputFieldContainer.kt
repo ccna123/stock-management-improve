@@ -64,8 +64,8 @@ fun InputFieldContainer(
             unfocusedBorderColor = if (error == true) Color.Red else brightAzure,
             focusedContainerColor = Color.Transparent,
             unfocusedContainerColor = Color.Transparent,
-            disabledContainerColor = Color.LightGray.copy(alpha = 0.4f),
-            disabledBorderColor = Color.LightGray.copy(alpha = 0.4f),
+            disabledContainerColor = Color.Transparent,
+            disabledBorderColor = brightAzure,
             disabledTextColor = Color.Black
         ),
         singleLine = singleLine,

@@ -403,6 +403,8 @@ class AppViewModel @Inject constructor(
                 _selectedCount.value = intent.selectedCount
                 _isAllSelected.value = intent.allSelected
             }
+
+            is ShareIntent.ToggleTimePicker -> _generalState.update { it.copy(showTimePicker = intent.showTimePicker) }
         }
     }
 

@@ -15,5 +15,6 @@ data class GeneralState(
     val targetScreenId: Screen? = null,
     var showDropDown: Boolean = false,
     var showNetworkDialog: Boolean = false,
+    var showTimePicker: Boolean = false,
     var isAllSelected: Boolean = false
 )

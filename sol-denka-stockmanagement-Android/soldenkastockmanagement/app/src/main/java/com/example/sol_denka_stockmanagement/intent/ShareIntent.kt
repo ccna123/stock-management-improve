@@ -20,6 +20,7 @@ sealed interface ShareIntent {
     data object Next: ShareIntent
     data class ToggleSelectionAll(val tagList: Set<String>): ShareIntent
     data class ToggleNetworkDialog(val doesOpenDialog: Boolean): ShareIntent
+    data class ToggleTimePicker(val showTimePicker: Boolean): ShareIntent
     data class ChangePerTagHandlingMethod(val tag: String, val method: String): ShareIntent
     data class ShowModalHandlingMethod(val showBottomSheet: Boolean): ShareIntent
     data object ResetState: ShareIntent
