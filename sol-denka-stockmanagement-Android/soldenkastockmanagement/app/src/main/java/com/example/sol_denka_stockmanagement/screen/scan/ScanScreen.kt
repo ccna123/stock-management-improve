@@ -246,11 +246,13 @@ fun ScanScreen(
             }
         },
         onBackArrowClick = {
-            if (scannedTags.isNotEmpty() || inboundDetail?.epc?.isNotEmpty() == true) {
-                appViewModel.onGeneralIntent(ShareIntent.ToggleClearTagConfirmDialog)
-            } else {
-                scanViewModel.setScanMode(ScanMode.NONE)
-                onGoBack()
+            if (isPerformingInventory.not()) {
+                if (scannedTags.isNotEmpty() || inboundDetail?.epc?.isNotEmpty() == true) {
+                    appViewModel.onGeneralIntent(ShareIntent.ToggleClearTagConfirmDialog)
+                } else {
+                    scanViewModel.setScanMode(ScanMode.NONE)
+                    onGoBack()
+                }
             }
         }) { paddingValues ->
         Column(
@@ -332,29 +334,35 @@ fun ScanScreen(
                                     itemName = itemName,
                                     isChecked = isChecked,
                                     onSelect = {
-                                        appViewModel.onGeneralIntent(
-                                            ShareIntent.ToggleTagSelection1(
-                                                tag = tag.first,
-                                                totalTag = scannedTags.size
+                                        if (isPerformingInventory.not()) {
+                                            appViewModel.onGeneralIntent(
+                                                ShareIntent.ToggleTagSelection1(
+                                                    tag = tag.first,
+                                                    totalTag = scannedTags.size
+                                                )
                                             )
-                                        )
+                                        }
                                     },
                                     onCheckedChange = {
-                                        appViewModel.onGeneralIntent(
-                                            ShareIntent.ToggleTagSelection1(
-                                                tag = tag.first,
-                                                totalTag = scannedTags.size
+                                        if (isPerformingInventory.not()) {
+                                            appViewModel.onGeneralIntent(
+                                                ShareIntent.ToggleTagSelection1(
+                                                    tag = tag.first,
+                                                    totalTag = scannedTags.size
+                                                )
                                             )
-                                        )
+                                        }
                                     },
                                     isExpanded = isExpanded,
                                     value = value,
                                     onExpandedChange = {
-                                        appViewModel.onExpandIntent(
-                                            ExpandIntent.TogglePerTagHandlingExpanded(
-                                                tag.first
+                                        if (isPerformingInventory.not()) {
+                                            appViewModel.onExpandIntent(
+                                                ExpandIntent.TogglePerTagHandlingExpanded(
+                                                    tag.first
+                                                )
                                             )
-                                        )
+                                        }
                                     },
                                     onDismissRequest = {
                                         appViewModel.onExpandIntent(
@@ -396,20 +404,24 @@ fun ScanScreen(
                                     itemName = itemName,
                                     isChecked = isChecked,
                                     onCheckedChange = {
-                                        appViewModel.onGeneralIntent(
-                                            ShareIntent.ToggleTagSelection1(
-                                                tag = tag.first,
-                                                totalTag = scannedTags.size
+                                        if (isPerformingInventory.not()){
+                                            appViewModel.onGeneralIntent(
+                                                ShareIntent.ToggleTagSelection1(
+                                                    tag = tag.first,
+                                                    totalTag = scannedTags.size
+                                                )
                                             )
-                                        )
+                                        }
                                     },
                                     onClick = {
-                                        appViewModel.onGeneralIntent(
-                                            ShareIntent.ToggleTagSelection1(
-                                                tag = tag.first,
-                                                totalTag = scannedTags.size
+                                        if (isPerformingInventory.not()){
+                                            appViewModel.onGeneralIntent(
+                                                ShareIntent.ToggleTagSelection1(
+                                                    tag = tag.first,
+                                                    totalTag = scannedTags.size
+                                                )
                                             )
-                                        )
+                                        }
                                     }
                                 )
                             }

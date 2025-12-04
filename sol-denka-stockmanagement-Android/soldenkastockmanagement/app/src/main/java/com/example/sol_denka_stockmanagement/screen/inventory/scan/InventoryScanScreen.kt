@@ -247,7 +247,8 @@ fun InventoryScanScreen(
                                 appViewModel.apply {
                                     onGeneralIntent(ShareIntent.ToggleClearTagConfirmDialog)
                                     onGeneralIntent(
-                                        ShareIntent.ToggleDropDown(false))
+                                        ShareIntent.ToggleDropDown(false)
+                                    )
                                 }
                             }
                         )
@@ -346,7 +347,9 @@ fun InventoryScanScreen(
             }
         },
         onBackArrowClick = {
-            onGoBack()
+            if (isPerformingInventory.not()) {
+                onGoBack()
+            }
         }) { paddingValues ->
         Column(
             modifier = Modifier
@@ -419,9 +422,11 @@ fun InventoryScanScreen(
                                 }
                             },
                             onLongClick = { item ->
-                                appViewModel.apply {
-                                    onGeneralIntent(ShareIntent.ToggleSelectionMode(true))
-                                    onGeneralIntent(ShareIntent.ToggleTagSelection(item))
+                                if (isPerformingInventory.not()){
+                                    appViewModel.apply {
+                                        onGeneralIntent(ShareIntent.ToggleSelectionMode(true))
+                                        onGeneralIntent(ShareIntent.ToggleTagSelection(item))
+                                    }
                                 }
                             },
                             onCheckedChange = { item ->
