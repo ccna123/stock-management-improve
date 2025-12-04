@@ -4,9 +4,10 @@ import android.content.Context
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.sol_denka_stockmanagement.helper.JsonFileManager
+import com.example.sol_denka_stockmanagement.helper.json.JsonFileManager
 import com.example.sol_denka_stockmanagement.helper.ProcessResult
 import com.example.sol_denka_stockmanagement.helper.csv.CsvHelper
+import com.example.sol_denka_stockmanagement.helper.message_mapper.MessageMapper
 import com.example.sol_denka_stockmanagement.intent.CsvIntent
 import com.example.sol_denka_stockmanagement.model.csv.CsvFileInfoModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -154,7 +155,9 @@ class CsvViewModel @Inject constructor(
             if (result is ProcessResult.Success) {
                 fetchCsvFiles()
             } else if (result is ProcessResult.Failure) {
-                showProcessResultDialog(result.message)
+                val msg = result.rawMessage
+                        ?: MessageMapper.toMessage(result.statusCode)
+                showProcessResultDialog(msg)
             }
             result // ✅ return whatever helper produced
         }
@@ -178,11 +181,14 @@ class CsvViewModel @Inject constructor(
 
             when (result) {
                 is ProcessResult.Success -> {
-                    showProcessResultDialog("取り込み成功しました")
+                    val msg = MessageMapper.toMessage(result.statusCode)
+                    showProcessResultDialog(msg)
                 }
 
                 is ProcessResult.Failure -> {
-                    showProcessResultDialog(result.message)
+                    val msg = result.rawMessage
+                            ?: MessageMapper.toMessage(result.statusCode)
+                    showProcessResultDialog(msg)
                 }
             }
         }
@@ -229,6 +235,6 @@ class CsvViewModel @Inject constructor(
 
     override fun onCleared() {
         super.onCleared()
-        Log.e("TSS", "CsvViewModel: is cleared")
+        Log.i("TSS", "CsvViewModel: is cleared")
     }
 }

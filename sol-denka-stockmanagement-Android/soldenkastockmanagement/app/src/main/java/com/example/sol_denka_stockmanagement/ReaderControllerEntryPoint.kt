@@ -1,6 +1,6 @@
 package com.example.sol_denka_stockmanagement
 
-import com.example.sol_denka_stockmanagement.helper.ReaderController
+import com.example.sol_denka_stockmanagement.helper.controller.ReaderController
 import dagger.hilt.EntryPoint
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent

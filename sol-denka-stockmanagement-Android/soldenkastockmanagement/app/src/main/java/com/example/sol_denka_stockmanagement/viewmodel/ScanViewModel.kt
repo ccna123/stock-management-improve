@@ -9,8 +9,8 @@ import com.example.sol_denka_stockmanagement.app_interface.ITagOperation
 import com.example.sol_denka_stockmanagement.constant.ScanMode
 import com.example.sol_denka_stockmanagement.constant.TagStatus
 import com.example.sol_denka_stockmanagement.database.repository.tag.TagMasterRepository
-import com.example.sol_denka_stockmanagement.helper.ReaderController
-import com.example.sol_denka_stockmanagement.helper.TagController
+import com.example.sol_denka_stockmanagement.helper.controller.ReaderController
+import com.example.sol_denka_stockmanagement.helper.controller.TagController
 import com.example.sol_denka_stockmanagement.model.inbound.InboundScanResult
 import com.example.sol_denka_stockmanagement.model.tag.TagMasterModel
 import dagger.hilt.android.lifecycle.HiltViewModel

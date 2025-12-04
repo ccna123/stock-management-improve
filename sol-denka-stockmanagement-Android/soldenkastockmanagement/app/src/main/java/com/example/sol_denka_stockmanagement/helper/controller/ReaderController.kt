@@ -1,4 +1,4 @@
-package com.example.sol_denka_stockmanagement.helper
+package com.example.sol_denka_stockmanagement.helper.controller
 
 import android.app.Application
 import android.os.Build

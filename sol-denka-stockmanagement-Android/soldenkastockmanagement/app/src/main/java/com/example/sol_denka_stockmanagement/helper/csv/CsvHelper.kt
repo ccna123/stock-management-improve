@@ -26,6 +26,7 @@ import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.supervisorScope
 import kotlinx.coroutines.withContext
 import java.io.File
+import java.util.Locale
 import java.util.Vector
 import javax.inject.Inject
 
@@ -131,9 +132,21 @@ class CsvHelper @Inject constructor(
                 "$EXPORT/$INVENTORY_RESULT"
             )
 
-            CsvType.LocationChange.displayName -> Pair("Export/LocationChange", "$EXPORT/$LOCATION_CHANGE_EVENT")
-            CsvType.OutboundResult.displayName -> Pair("Export/OutboundEvent", "$EXPORT/$OUTBOUND_EVENT")
-            CsvType.InboundResult.displayName -> Pair("Export/InboundEvent", "$EXPORT/$INBOUND_EVENT")
+            CsvType.LocationChange.displayName -> Pair(
+                "Export/LocationChange",
+                "$EXPORT/$LOCATION_CHANGE_EVENT"
+            )
+
+            CsvType.OutboundResult.displayName -> Pair(
+                "Export/OutboundEvent",
+                "$EXPORT/$OUTBOUND_EVENT"
+            )
+
+            CsvType.InboundResult.displayName -> Pair(
+                "Export/InboundEvent",
+                "$EXPORT/$INBOUND_EVENT"
+            )
+
             else -> null
         }
     }
@@ -199,8 +212,8 @@ class CsvHelper @Inject constructor(
     private fun formatSize(sizeBytes: Long): String {
         val size = sizeBytes.toDouble()
         return when {
-            size >= 1024 * 1024 -> String.format("%.1f MB", size / (1024 * 1024))
-            size >= 1024 -> String.format("%.1f KB", size / 1024)
+            size >= 1024 * 1024 -> String.format(Locale.US, "%.1f MB", size / (1024 * 1024))
+            size >= 1024 -> String.format(Locale.US, "%.1f KB", size / 1024)
             else -> "$sizeBytes B"
         }
     }
@@ -214,7 +227,6 @@ class CsvHelper @Inject constructor(
         onFileError: (Int) -> Unit,
     ) = withContext(Dispatchers.IO) {
         if (files.isEmpty()) return@withContext
-
         supervisorScope {
             files.mapIndexed { index, file ->
                 async {
@@ -284,8 +296,7 @@ class CsvHelper @Inject constructor(
         try {
             val (remoteFolder, localFolder) = mapCsvTypeToFolders(csvType)
                 ?: return@withContext ProcessResult.Failure(
-                    statusCode = StatusCode.FAILED,
-                    message = "フォルダーが見つかりません"
+                    statusCode = StatusCode.FOLDER_NOT_FOUND,
                 )
 
             // Copy from assets to internal storage so JSch can read it
@@ -298,7 +309,7 @@ class CsvHelper @Inject constructor(
                 setKnownHosts(knownHosts.absolutePath)
             }
 
-            val session: Session = jsch.getSession(username, host)
+            val session: Session = jsch.getSession(username, host, port)
             session.connect()
 
             val channel = session.openChannel("sftp") as ChannelSftp
@@ -353,12 +364,11 @@ class CsvHelper @Inject constructor(
             channel.disconnect()
             session.disconnect()
             onComplete()
-            ProcessResult.Success(statusCode = StatusCode.OK)
+            ProcessResult.Success(statusCode = StatusCode.DOWNLOAD_SFTP_OK)
         } catch (e: Exception) {
             Log.e("TSS", "downloadCsvFromSftp: $e")
             ProcessResult.Failure(
                 statusCode = StatusCode.FAILED,
-                message = e.message ?: "Unknown error"
             )
         }
     }
@@ -394,33 +404,32 @@ class CsvHelper @Inject constructor(
             val files = listCsvFiles(csvType)
             if (files.isEmpty()) {
                 return@withContext ProcessResult.Failure(
-                    statusCode = StatusCode.FAILED,
-                    message = "該当するCSVファイルが見つかりません"
+                    statusCode = StatusCode.FILE_NOT_FOUND,
                 )
             }
 
-            // 👉 Temporary choose the 1st file
-            val fileObj = File(files.first().filePath, files.first().fileName)
-            Log.e("TSS", "fileName: ${files.first().fileName}")
+            val fileInfo = files.find { it.fileName == fileName }
+                ?: return@withContext ProcessResult.Failure(
+                    statusCode = StatusCode.FILE_NOT_FOUND,
+                )
+
+            val fileObj = File(fileInfo.filePath, fileInfo.fileName)
             if (!fileObj.exists()) {
                 return@withContext ProcessResult.Failure(
-                    statusCode = StatusCode.FAILED,
-                    message = "CSVファイルが見つかりません"
+                    statusCode = StatusCode.FILE_NOT_FOUND,
                 )
             }
 
             val lines = fileObj.readLines(Charsets.UTF_8)
             if (lines.isEmpty()) {
                 return@withContext ProcessResult.Failure(
-                    statusCode = StatusCode.FAILED,
-                    message = "CSV内容が空です"
+                    statusCode = StatusCode.FILE_EMPTY,
                 )
             }
 
             val importer = getImporter(csvType)
                 ?: return@withContext ProcessResult.Failure(
-                    statusCode = StatusCode.FAILED,
-                    message = "$csvType のImporterが見つかりません"
+                    statusCode = StatusCode.CSV_IMPORTER_NOT_FOUND,
                 )
 
             val total = maxOf(1, lines.size)
@@ -435,12 +444,12 @@ class CsvHelper @Inject constructor(
             }
 
             onProgress(1f)
-            ProcessResult.Success()
+            ProcessResult.Success(statusCode = StatusCode.IMPORT_OK)
 
         } catch (e: Exception) {
             ProcessResult.Failure(
                 statusCode = StatusCode.FAILED,
-                message = e.message ?: "Unknown error"
+                rawMessage = e.message ?: "Unknown error"
             )
         }
     }
@@ -467,8 +476,7 @@ class CsvHelper @Inject constructor(
         try {
             if (rows.isEmpty()) {
                 return@withContext ProcessResult.Failure(
-                    statusCode = StatusCode.FAILED,
-                    message = "保存するデータがありません"
+                    statusCode = StatusCode.EMPTY_DATA,
                 )
             }
 
@@ -478,8 +486,7 @@ class CsvHelper @Inject constructor(
             // map csvType -> local folder (Export/InventoryResult, Export/StockEvent, ...)
             val (_, localFolder) = mapCsvTypeToFolders(csvType)
                 ?: return@withContext ProcessResult.Failure(
-                    statusCode = StatusCode.FAILED,
-                    message = "保存先フォルダーが見つかりません"
+                    statusCode = StatusCode.FOLDER_NOT_FOUND,
                 )
 
             val relativePath =
@@ -514,8 +521,7 @@ class CsvHelper @Inject constructor(
 
             val uri = resolver.insert(externalUri, values)
                 ?: return@withContext ProcessResult.Failure(
-                    statusCode = StatusCode.FAILED,
-                    message = "CSVファイルの作成に失敗しました"
+                    statusCode = StatusCode.FILE_CREATED_FAILED,
                 )
 
             val bytes = fullContent.toByteArray()
@@ -537,8 +543,7 @@ class CsvHelper @Inject constructor(
                 }
                 output.flush()
             } ?: return@withContext ProcessResult.Failure(
-                statusCode = StatusCode.FAILED,
-                message = "CSVファイルの書き込みに失敗しました"
+                statusCode = StatusCode.WRITE_ERROR,
             )
 
             Log.i("TSS", "✅ CSV saved: $relativePath$fileName")
@@ -550,7 +555,7 @@ class CsvHelper @Inject constructor(
             Log.e("TSS", "❌ saveCsv error: ${e.message}", e)
             ProcessResult.Failure(
                 statusCode = StatusCode.FAILED,
-                message = e.message ?: "Unknown"
+                rawMessage = e.message ?: "Unknown"
             )
         }
     }

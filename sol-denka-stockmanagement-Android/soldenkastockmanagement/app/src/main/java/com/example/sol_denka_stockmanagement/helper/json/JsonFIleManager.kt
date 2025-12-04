@@ -1,4 +1,4 @@
-package com.example.sol_denka_stockmanagement.helper
+package com.example.sol_denka_stockmanagement.helper.json
 
 import android.content.Context
 import com.example.sol_denka_stockmanagement.model.sftp.SftpConfigModel

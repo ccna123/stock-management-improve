@@ -67,8 +67,8 @@ import androidx.compose.ui.zIndex
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.sol_denka_stockmanagement.R
 import com.example.sol_denka_stockmanagement.constant.ConnectionState
-import com.example.sol_denka_stockmanagement.helper.ToastManager
-import com.example.sol_denka_stockmanagement.helper.ToastMessage
+import com.example.sol_denka_stockmanagement.helper.toast.ToastManager
+import com.example.sol_denka_stockmanagement.helper.toast.ToastMessage
 import com.example.sol_denka_stockmanagement.intent.ShareIntent
 import com.example.sol_denka_stockmanagement.model.reader.ReaderInfoModel
 import com.example.sol_denka_stockmanagement.navigation.Screen
@@ -151,12 +151,19 @@ fun Layout(
         buttons = listOf(
             {
                 ButtonContainer(
-                    buttonText = stringResource(R.string.return_home),
+                    buttonText = if (appViewModel?.csvDialogIsError?.value == true)
+                        stringResource(R.string.close)
+                    else {
+                        stringResource(R.string.return_home)
+                    },
                     onClick = {
                         if (appViewModel?.csvDialogIsError?.value == true)
                             appViewModel.onGeneralIntent(ShareIntent.ToggleDialog)
-                        else
+                        else {
+                            appViewModel?.onGeneralIntent(ShareIntent.ToggleDialog)
                             onNavigate?.invoke(Screen.Home)
+
+                        }
                     }
                 )
             }

@@ -173,9 +173,20 @@ enum class ConnectionState {
     CONNECTED
 }
 
-enum class StatusCode {
-    OK,
-    FAILED
+enum class StatusCode(val code: Int) {
+    OK(200),
+    DOWNLOAD_SFTP_OK(201),
+    IMPORT_OK(202),
+    EXPORT_OK(203),
+    FILE_NOT_FOUND(404),
+    FILE_EMPTY(405),
+    FOLDER_NOT_FOUND(406),
+    WRITE_ERROR(407),
+    EMPTY_DATA(408),
+    PERMISSION_DENIED(409),
+    FAILED(500),
+    CSV_IMPORTER_NOT_FOUND(501),
+    FILE_CREATED_FAILED(502),
 }
 
 enum class TagStatus {

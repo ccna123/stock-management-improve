@@ -1,4 +1,4 @@
-package com.example.sol_denka_stockmanagement.helper
+package com.example.sol_denka_stockmanagement.helper.toast
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box

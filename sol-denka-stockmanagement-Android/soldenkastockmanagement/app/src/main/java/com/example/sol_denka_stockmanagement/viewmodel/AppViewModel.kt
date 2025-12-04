@@ -2,7 +2,6 @@ package com.example.sol_denka_stockmanagement.viewmodel
 
 import android.content.Context
 import android.os.Build
-import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
@@ -17,9 +16,10 @@ import com.example.sol_denka_stockmanagement.database.repository.location.Locati
 import com.example.sol_denka_stockmanagement.database.repository.process.ProcessTypeRepository
 import com.example.sol_denka_stockmanagement.helper.NetworkConnectionObserver
 import com.example.sol_denka_stockmanagement.helper.ProcessResult
-import com.example.sol_denka_stockmanagement.helper.ReaderController
-import com.example.sol_denka_stockmanagement.helper.ToastType
+import com.example.sol_denka_stockmanagement.helper.controller.ReaderController
+import com.example.sol_denka_stockmanagement.helper.toast.ToastType
 import com.example.sol_denka_stockmanagement.helper.csv.CsvHelper
+import com.example.sol_denka_stockmanagement.helper.message_mapper.MessageMapper
 import com.example.sol_denka_stockmanagement.intent.ExpandIntent
 import com.example.sol_denka_stockmanagement.intent.InputIntent
 import com.example.sol_denka_stockmanagement.intent.ShareIntent
@@ -30,7 +30,6 @@ import com.example.sol_denka_stockmanagement.state.ErrorState
 import com.example.sol_denka_stockmanagement.state.ExpandState
 import com.example.sol_denka_stockmanagement.state.GeneralState
 import com.example.sol_denka_stockmanagement.state.InputState
-import dagger.hilt.android.internal.Contexts
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
@@ -382,17 +381,16 @@ class AppViewModel @Inject constructor(
                         onProgress = { p -> _progress.value = p }
                     )
 
-                    Log.e("TSS", "saveCsv: $result", )
                     if (result is ProcessResult.Success) {
                         _isFileWorking.value = false
                         csvDialogIsError.value = false
-                        csvDialogMessage.value = null // success → dùng stringResource
+                        csvDialogMessage.value = MessageMapper.toMessage(result.statusCode)
                         showAppDialog.value = true
 
                     } else if (result is ProcessResult.Failure) {
                         _isFileWorking.value = false
                         csvDialogIsError.value = true
-                        csvDialogMessage.value = result.message
+                        csvDialogMessage.value = MessageMapper.toMessage(result.statusCode)
                         showAppDialog.value = true
                     }
                 }

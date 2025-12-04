@@ -1,4 +1,4 @@
-package com.example.sol_denka_stockmanagement.helper
+package com.example.sol_denka_stockmanagement.helper.toast
 
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
