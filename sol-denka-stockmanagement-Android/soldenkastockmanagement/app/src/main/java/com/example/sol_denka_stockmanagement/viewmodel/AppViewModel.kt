@@ -203,7 +203,7 @@ class AppViewModel @Inject constructor(
                 _inputState.update { it.copy(location = intent.value) }
 
             is InputIntent.ChangeRemark ->
-                _inputState.update { it.copy(remark = intent.value) }
+                _inputState.update { it.copy(memo = intent.value) }
 
             is InputIntent.ChangeMissRoll ->
                 _inputState.update { it.copy(materialSelectedItem = intent.value) }

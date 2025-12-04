@@ -74,7 +74,12 @@ fun CsvExportScreen(
 
     LaunchedEffect(csvState.csvType) {
         when (csvState.csvType) {
-            in listOf(CsvType.InventoryResult.displayName, CsvType.StockEvent.displayName) -> {
+            in listOf(
+                CsvType.InboundResult.displayName,
+                CsvType.OutboundResult.displayName,
+                CsvType.LocationChangeResult.displayName,
+                CsvType.InventoryResult.displayName,
+            ) -> {
                 csvViewModel.fetchCsvFiles()
                 csvViewModel.toggleProgressVisibility(false)
             }
@@ -198,7 +203,9 @@ fun CsvExportScreen(
                                 ) {
                                     listOf(
                                         SelectTitle.SelectCsvType.displayName,
-                                        CsvType.StockEvent.displayName,
+                                        CsvType.InboundResult.displayName,
+                                        CsvType.OutboundResult.displayName,
+                                        CsvType.LocationChangeResult.displayName,
                                         CsvType.InventoryResult.displayName
                                     ).forEach { csvType ->
                                         DropdownMenuItem(

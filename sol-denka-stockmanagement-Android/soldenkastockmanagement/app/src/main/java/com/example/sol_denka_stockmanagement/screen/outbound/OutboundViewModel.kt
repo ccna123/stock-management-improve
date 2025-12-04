@@ -1,11 +1,9 @@
 package com.example.sol_denka_stockmanagement.screen.outbound
 
 import android.os.Build
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.sol_denka_stockmanagement.constant.generateIso8601JstTimestamp
-import com.example.sol_denka_stockmanagement.constant.generateTimeStamp
 import com.example.sol_denka_stockmanagement.database.repository.process.ProcessTypeRepository
 import com.example.sol_denka_stockmanagement.database.repository.tag.TagMasterRepository
 import com.example.sol_denka_stockmanagement.model.csv.OutboundResultCsvModel
@@ -65,7 +63,7 @@ class OutboundViewModel @Inject constructor(
         }
     }
 
-    suspend fun saveScanResultToCsv(memo: String): List<OutboundResultCsvModel> =
+    suspend fun generateCsvData(memo: String): List<OutboundResultCsvModel> =
         withContext(Dispatchers.IO) {
             csvModels.clear()
 

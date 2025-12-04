@@ -43,10 +43,9 @@ enum class CsvType(val displayName: String) {
     LocationMaster("保管場所マスタCSV"),
     LedgerMaster("台帳アイテムマスタCSV"),
     InventoryResult("棚卸結果データCSV"),
-    StockEvent("入出庫イベントデータCSV"),
     InboundResult("入庫結果CSV"),
     OutboundResult("出庫結果CSV"),
-    LocationChange("保管場所変更CSV"),
+    LocationChangeResult("保管場所変更CSV"),
     ItemTypeMaster("品目マスタCSV"),
     TagMaster("タグマスタCSV"),
 }
@@ -220,6 +219,15 @@ enum class OutboundResultCsvHeader {
     memo,
     occurred_at,
     registerd_at
+}
+
+enum class LocationChangeResultCsvHeader {
+    ledger_item_id,
+    location_id,
+    device_id,
+    memo,
+    scanned_at,
+    executed_at
 }
 
 enum class ScanMode {

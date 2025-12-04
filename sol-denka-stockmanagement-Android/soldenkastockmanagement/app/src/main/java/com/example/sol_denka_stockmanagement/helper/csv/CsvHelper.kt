@@ -132,7 +132,7 @@ class CsvHelper @Inject constructor(
                 "$EXPORT/$INVENTORY_RESULT"
             )
 
-            CsvType.LocationChange.displayName -> Pair(
+            CsvType.LocationChangeResult.displayName -> Pair(
                 "Export/LocationChange",
                 "$EXPORT/$LOCATION_CHANGE_EVENT"
             )

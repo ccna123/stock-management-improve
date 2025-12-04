@@ -21,6 +21,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
@@ -40,6 +41,7 @@ import com.example.sol_denka_stockmanagement.share.ButtonContainer
 import com.example.sol_denka_stockmanagement.share.InputFieldContainer
 import com.example.sol_denka_stockmanagement.share.ScanResultTable
 import com.example.sol_denka_stockmanagement.viewmodel.AppViewModel
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
@@ -51,12 +53,13 @@ fun LocationChangeScreen(
     onGoBack: () -> Unit
 ) {
 
-    val expandState = appViewModel.expandState.collectAsStateWithLifecycle().value
-    val inputState = appViewModel.inputState.collectAsStateWithLifecycle().value
+    val expandState = appViewModel.expandState.collectAsStateWithLifecycle()
+    val inputState = appViewModel.inputState.collectAsStateWithLifecycle()
     val selectedCount by appViewModel.selectedCount.collectAsStateWithLifecycle()
     val checkedMap by appViewModel.perTagChecked.collectAsStateWithLifecycle()
     val locationMaster by appViewModel.locationMaster.collectAsStateWithLifecycle()
-    val locationChangePreview by locationChangeViewModel.locationChangePreview.collectAsStateWithLifecycle()
+    val locationChangePreview by locationChangeViewModel.locationChangeList.collectAsStateWithLifecycle()
+    val scope = rememberCoroutineScope()
 
     LaunchedEffect(Unit) {
         val selectedEpc = checkedMap.filter { it.value }.map { it.key }
@@ -90,11 +93,11 @@ fun LocationChangeScreen(
                     )
                 },
                 onClick = {
-                    appViewModel.onGeneralIntent(
-                        ShareIntent.SaveScanResult(
-                            data = listOf()
-                        )
-                    )
+                    scope.launch {
+                        val csvModels =
+                            locationChangeViewModel.generateCsvData(memo = inputState.value.memo, newLocation = inputState.value.location)
+                        appViewModel.onGeneralIntent(ShareIntent.SaveScanResult(csvModels))
+                    }
                 },
                 buttonText = stringResource(R.string.storage_area_change),
             )
@@ -130,7 +133,7 @@ fun LocationChangeScreen(
                     )
                     Spacer(modifier = Modifier.height(20.dp))
                     ExposedDropdownMenuBox(
-                        expanded = expandState.locationExpanded,
+                        expanded = expandState.value.locationExpanded,
                         onExpandedChange = { appViewModel.onExpandIntent(ExpandIntent.ToggleLocationExpanded) }) {
                         InputFieldContainer(
                             modifier = Modifier
@@ -139,7 +142,7 @@ fun LocationChangeScreen(
                                     enabled = true
                                 )
                                 .fillMaxWidth(),
-                            value = if (inputState.location == SelectTitle.SelectLocation.displayName) "" else inputState.location,
+                            value = if (inputState.value.location == SelectTitle.SelectLocation.displayName) "" else inputState.value.location,
                             hintText = SelectTitle.SelectLocation.displayName,
                             isNumeric = false,
                             onChange = { newValue ->
@@ -155,7 +158,7 @@ fun LocationChangeScreen(
                             onEnterPressed = {}
                         )
                         ExposedDropdownMenu(
-                            expanded = expandState.locationExpanded,
+                            expanded = expandState.value.locationExpanded,
                             onDismissRequest = { appViewModel.onExpandIntent(ExpandIntent.ToggleLocationExpanded) }
                         ) {
                             DropdownMenuItem(
@@ -190,9 +193,9 @@ fun LocationChangeScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(200.dp),
-                        value = inputState.remark,
-                        label = "${stringResource(R.string.remark)} (オプション)",
-                        hintText = stringResource(R.string.remark_hint),
+                        value = inputState.value.memo,
+                        label = "${stringResource(R.string.memo)} (オプション)",
+                        hintText = stringResource(R.string.memo_hint),
                         isNumeric = false,
                         readOnly = false,
                         isDropDown = false,

@@ -1,7 +1,6 @@
 package com.example.sol_denka_stockmanagement.screen.outbound
 
 import android.os.Build
-import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -86,8 +85,7 @@ fun OutboundScreen(
                 onClick = {
                     scope.launch {
                         val csvModels =
-                            outboundViewModel.saveScanResultToCsv(memo = inputState.value.remark)
-                        Log.e("TSS", "OutboundScreen: $csvModels")
+                            outboundViewModel.generateCsvData(memo = inputState.value.memo)
                         appViewModel.onGeneralIntent(ShareIntent.SaveScanResult(csvModels))
                     }
                 },
@@ -159,9 +157,9 @@ fun OutboundScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(200.dp),
-                        value = inputState.value.remark,
-                        label = "${stringResource(R.string.remark)} (オプション)",
-                        hintText = stringResource(R.string.remark_hint),
+                        value = inputState.value.memo,
+                        label = "${stringResource(R.string.memo)} (オプション)",
+                        hintText = stringResource(R.string.memo_hint),
                         isNumeric = false,
                         shape = RoundedCornerShape(13.dp),
                         readOnly = false,

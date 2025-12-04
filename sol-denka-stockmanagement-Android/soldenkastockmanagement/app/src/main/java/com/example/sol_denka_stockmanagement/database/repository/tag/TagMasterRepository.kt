@@ -30,6 +30,10 @@ class TagMasterRepository @Inject constructor(
         return Pair(t.tagId, t.ledgerItemId)
     }
 
+    suspend fun getLedgerIdByEpc(epc: String): Int?{
+        return dao.getLedgerIdByEpc(epc)
+    }
+
 
     suspend fun insert(model: TagMasterModel) = dao.insert(model.toEntity())
     suspend fun insertAll(models: List<TagMasterModel>) =
