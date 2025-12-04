@@ -3,7 +3,7 @@ package com.example.sol_denka_stockmanagement.model.outbound
 import com.example.sol_denka_stockmanagement.database.entity.outbound.OutBoundEventEntity
 
 data class OutBoundEventModel(
-    val outboundEventId: Int,
+    val outboundEventId: Int = 0,
     val outboundSessionId: Int,
     val ledgerItemId: Int,
     val processTypeId: Int,

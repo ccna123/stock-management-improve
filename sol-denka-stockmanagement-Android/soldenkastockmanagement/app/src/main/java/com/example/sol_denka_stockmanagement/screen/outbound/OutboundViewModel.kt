@@ -1,13 +1,20 @@
 package com.example.sol_denka_stockmanagement.screen.outbound
 
 import android.os.Build
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.sol_denka_stockmanagement.constant.generateIso8601JstTimestamp
+import com.example.sol_denka_stockmanagement.database.repository.outbound.OutboundEventRepository
+import com.example.sol_denka_stockmanagement.database.repository.outbound.OutboundSessionRepository
 import com.example.sol_denka_stockmanagement.database.repository.process.ProcessTypeRepository
 import com.example.sol_denka_stockmanagement.database.repository.tag.TagMasterRepository
 import com.example.sol_denka_stockmanagement.model.csv.OutboundResultCsvModel
+import com.example.sol_denka_stockmanagement.model.location.LocationChangeEventModel
+import com.example.sol_denka_stockmanagement.model.location.LocationChangeSessionModel
+import com.example.sol_denka_stockmanagement.model.outbound.OutBoundEventModel
 import com.example.sol_denka_stockmanagement.model.outbound.OutboundScanDataTable
+import com.example.sol_denka_stockmanagement.model.outbound.OutboundSessionModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
 import kotlinx.coroutines.Dispatchers
@@ -22,7 +29,9 @@ import kotlin.collections.map
 @HiltViewModel
 class OutboundViewModel @Inject constructor(
     private val tagMasterRepository: TagMasterRepository,
-    private val processTypeRepository: ProcessTypeRepository
+    private val processTypeRepository: ProcessTypeRepository,
+    private val outboundSessionRepository: OutboundSessionRepository,
+    private val outboundEventRepository: OutboundEventRepository
 ) : ViewModel() {
 
     private val _outboundList = MutableStateFlow<List<OutboundScanDataTable>>(emptyList())
@@ -83,4 +92,34 @@ class OutboundViewModel @Inject constructor(
             }
             csvModels.toList()
         }
+
+    suspend fun saveOutboundToDb(memo: String, occurredAt: String) {
+        withContext(Dispatchers.IO) {
+            try {
+                val sessionId = outboundSessionRepository.insert(
+                    OutboundSessionModel(
+                        deviceId = Build.ID,
+                        executedAt = generateIso8601JstTimestamp(),
+                    )
+                )
+                sessionId.let {
+                    _outboundList.value.forEach { row ->
+                        val ledgerId = tagMasterRepository.getLedgerIdByEpc(row.epc)
+                        val processTypeId = processTypeRepository.getIdByName(row.processType)
+                        val model = OutBoundEventModel(
+                            outboundSessionId = sessionId.toInt(),
+                            ledgerItemId = ledgerId ?: 0,
+                            processTypeId = processTypeId,
+                            memo = memo,
+                            occurredAt = occurredAt,
+                            registeredAt = generateIso8601JstTimestamp()
+                        )
+                        outboundEventRepository.insert(model)
+                    }
+                }
+            } catch (e: Exception) {
+                Log.e("TSS", "saveOutboundToDb: ${e.message}")
+            }
+        }
+    }
 }

@@ -129,6 +129,10 @@ fun OutboundScreen(
                 },
                 onClick = {
                     scope.launch {
+                        outboundViewModel.saveOutboundToDb(
+                            memo = inputState.value.memo,
+                            occurredAt = inputState.value.occurredAt
+                        )
                         val csvModels =
                             outboundViewModel.generateCsvData(memo = inputState.value.memo)
                         appViewModel.onGeneralIntent(ShareIntent.SaveScanResult(csvModels))
