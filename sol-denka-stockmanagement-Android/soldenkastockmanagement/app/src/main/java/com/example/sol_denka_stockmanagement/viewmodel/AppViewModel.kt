@@ -2,6 +2,7 @@ package com.example.sol_denka_stockmanagement.viewmodel
 
 import android.content.Context
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
@@ -362,13 +363,7 @@ class AppViewModel @Inject constructor(
                 viewModelScope.launch(Dispatchers.IO) {
 
                     val rows = intent.data      // ALWAYS List<ICsvExport>
-
-                    if (rows.isEmpty()) {
-                        _toastFlow.emit("保存するデータがありません" to ToastType.ERROR)
-                        return@launch
-                    }
-
-                    val first = rows.first()
+                    val first = rows.first()   // fetch 1st row to present other row for csvType and file name
 
                     _isFileWorking.value = true
                     _progress.value = 0f
@@ -378,7 +373,8 @@ class AppViewModel @Inject constructor(
                         csvType = first.toCsvType(),
                         fileName = first.toCsvName(),
                         rows = rows,
-                        onProgress = { p -> _progress.value = p }
+                        onProgress = { p -> _progress.value = p },
+                        onCountRecordNum = { Log.e("TSS", "onCountRecordNum: $it", )}
                     )
 
                     if (result is ProcessResult.Success) {
