@@ -87,6 +87,7 @@
     <string name="scanned_tag">読み取りタグ</string>
     <string name="unknown">未知</string>
     <string name="no_csv_file_found">CSVファイルが見つかりません。</string>
+    <string name="csv_export_title">以下の内容でCSVファイルを出力します</string>
 
     <!-- 入力-->
     <string name="grade_hint">グレード入力</string>

@@ -105,6 +105,7 @@ fun AppNavigation(
                     appViewModel = appViewModel,
                     scanViewModel = scanViewModel,
                     inventoryCompleteViewModel = inventoryCompleteViewModel,
+                    onNavigate = {dest -> navigate(dest)},
                     onGoBack = { goBack() }
                 )
             }

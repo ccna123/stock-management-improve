@@ -63,6 +63,10 @@ class InventoryResultTypeRepository @Inject constructor(
     fun get(): Flow<List<InventoryResultTypeModel>> = dao.get().map { entityList ->
         entityList.map { it.toModel() }
     }
+
+    suspend fun getInventoryResultTypeIdByCode(inventoryResultCode: String) =
+        dao.getInventoryResultTypeIdByCode(inventoryResultCode)
+
     suspend fun insert(model: InventoryResultTypeModel) = dao.insert(model.toEntity())
     suspend fun update(model: InventoryResultTypeModel) = dao.update(model.toEntity())
     suspend fun delete(model: InventoryResultTypeModel) = dao.delete(model.toEntity())

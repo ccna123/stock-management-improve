@@ -1,7 +1,6 @@
 package com.example.sol_denka_stockmanagement.screen.inventory.complete
 
 import android.os.Build
-import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -23,6 +22,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
@@ -47,6 +47,7 @@ import com.example.sol_denka_stockmanagement.ui.theme.deepBlueSky
 import com.example.sol_denka_stockmanagement.ui.theme.paleSkyBlue
 import com.example.sol_denka_stockmanagement.viewmodel.AppViewModel
 import com.example.sol_denka_stockmanagement.viewmodel.ScanViewModel
+import kotlinx.coroutines.launch
 
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @Composable
@@ -54,19 +55,19 @@ fun InventoryCompleteScreen(
     appViewModel: AppViewModel,
     scanViewModel: ScanViewModel,
     inventoryCompleteViewModel: InventoryCompleteViewModel,
+    onNavigate: (Screen) -> Unit,
     onGoBack: () -> Unit,
 ) {
 
     val generalState = appViewModel.generalState.collectAsStateWithLifecycle().value
     val inputState = appViewModel.inputState.collectAsStateWithLifecycle().value
     val rfidTagList = scanViewModel.rfidTagList.collectAsStateWithLifecycle().value
-    val wrongLocationCount = inventoryCompleteViewModel.wrongLocationCount.collectAsStateWithLifecycle()
+    val wrongLocationCount =
+        inventoryCompleteViewModel.wrongLocationCount.collectAsStateWithLifecycle()
     val shortageCount = inventoryCompleteViewModel.shortageCount.collectAsStateWithLifecycle()
     val overCount = inventoryCompleteViewModel.overCount.collectAsStateWithLifecycle()
     val okCount = inventoryCompleteViewModel.okCount.collectAsStateWithLifecycle()
-
-    Log.e("TSS", "PROCESSED tag: ${rfidTagList.count{it.newFields.tagStatus == TagStatus.PROCESSED}}")
-
+    val scope = rememberCoroutineScope()
 
     LaunchedEffect(Unit) {
         scanViewModel.setEnableScan(false)
@@ -113,6 +114,7 @@ fun InventoryCompleteScreen(
         topBarText = Screen.InventoryComplete.displayName,
         topBarIcon = Icons.AutoMirrored.Filled.ArrowBack,
         appViewModel = appViewModel,
+        onNavigate = onNavigate,
         currentScreenNameId = Screen.InventoryComplete.routeId,
         prevScreenNameId = Screen.InventoryComplete.routeId, // for scan screen to navigate back,
         hasBottomBar = true,
@@ -131,15 +133,13 @@ fun InventoryCompleteScreen(
                     )
                 },
                 onClick = {
-                    appViewModel.onGeneralIntent(
-                        ShareIntent.SaveScanResult(
-                            data = listOf()
-                        )
-                    )
-                    if (appViewModel.isNetworkConnected.value.not()) {
-                        appViewModel.onGeneralIntent(
-                            ShareIntent.ToggleNetworkDialog(true)
-                        )
+                    scope.launch {
+                        val csvModels =
+                            inventoryCompleteViewModel.generateCsvData(
+                                memo = inputState.memo,
+                                locationName = inputState.location,
+                            )
+                        appViewModel.onGeneralIntent(ShareIntent.SaveScanResult(csvModels))
                     }
                 },
                 buttonText = stringResource(R.string.finish_inventory),
@@ -155,7 +155,7 @@ fun InventoryCompleteScreen(
                 .fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text(text = "以下の内容でCSVファイルを出力します")
+            Text(text = stringResource(R.string.csv_export_title))
             Spacer(modifier = Modifier.height(30.dp))
             Box(
                 modifier = Modifier

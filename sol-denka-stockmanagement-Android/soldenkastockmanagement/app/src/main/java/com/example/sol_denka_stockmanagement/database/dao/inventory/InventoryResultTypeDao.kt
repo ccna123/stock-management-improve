@@ -15,6 +15,9 @@ interface InventoryResultTypeDao: IDao<InventoryResultTypeEntity> {
     @Query("SELECT * FROM InventoryResultType")
     override fun get(): Flow<List<InventoryResultTypeEntity>>
 
+    @Query("SELECT inventory_result_type_id FROM InventoryResultType WHERE inventory_result_code = :inventoryResultCode")
+    suspend fun getInventoryResultTypeIdByCode(inventoryResultCode: String): Int
+
     @Insert
     override suspend fun insert(e: InventoryResultTypeEntity)
 

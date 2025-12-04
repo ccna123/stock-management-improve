@@ -1,24 +1,30 @@
 package com.example.sol_denka_stockmanagement.screen.inventory.complete
 
-import android.util.Log
+import android.os.Build
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.sol_denka_stockmanagement.constant.InventoryResultType
+import com.example.sol_denka_stockmanagement.constant.generateIso8601JstTimestamp
+import com.example.sol_denka_stockmanagement.database.repository.inventory.InventoryResultTypeRepository
 import com.example.sol_denka_stockmanagement.database.repository.location.LocationRepository
 import com.example.sol_denka_stockmanagement.database.repository.tag.TagMasterRepository
+import com.example.sol_denka_stockmanagement.model.csv.InventoryResultCsvModel
 import com.example.sol_denka_stockmanagement.model.tag.TagMasterModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 
 @HiltViewModel
 class InventoryCompleteViewModel @Inject constructor(
     private val tagMasterRepository: TagMasterRepository,
-    private val locationRepository: LocationRepository
+    private val locationRepository: LocationRepository,
+    private val inventoryResultTypeRepository: InventoryResultTypeRepository
 ) : ViewModel() {
 
     private val _wrongLocationCount = MutableStateFlow(0)
@@ -33,9 +39,14 @@ class InventoryCompleteViewModel @Inject constructor(
     private val _overCount = MutableStateFlow(0)
     val overCount = _overCount.asStateFlow()
 
+    private val csvModels = mutableListOf<InventoryResultCsvModel>()
+
+    private val _finalTagList = MutableStateFlow<List<TagMasterModel>>(emptyList())
+
+
     fun computeResult(rfidTagList: List<TagMasterModel>, locationName: String) {
         viewModelScope.launch {
-            val currentLocationId = getLocationIdByName(locationName)
+            val currentLocationId = locationRepository.getLocationIdByName(locationName = locationName) ?: 0
             val scannedTags = rfidTagList.map { it.epc }.toSet()
 
             val tagsInStock = tagMasterRepository.getTagsByLocationAndStock(
@@ -59,13 +70,47 @@ class InventoryCompleteViewModel @Inject constructor(
                 }
                 tag.copy(newFields = tag.newFields.copy(inventoryResultType = resultType))
             }
-            Log.e("TSS", "computeResult: ${newList.map { it.newFields.inventoryResultType }}", )
-            _wrongLocationCount.value = newList.count { it.newFields.inventoryResultType == InventoryResultType.FOUND_WRONG_LOCATION }
-            _shortageCount.value = newList.count { it.newFields.inventoryResultType == InventoryResultType.NOT_FOUND }
-            _overCount.value = newList.count { it.newFields.inventoryResultType == InventoryResultType.FOUND_OVER_STOCK }
-            _okCount.value = newList.count { it.newFields.inventoryResultType == InventoryResultType.FOUND_OK }
+            _wrongLocationCount.value =
+                newList.count { it.newFields.inventoryResultType == InventoryResultType.FOUND_WRONG_LOCATION }
+            _shortageCount.value =
+                newList.count { it.newFields.inventoryResultType == InventoryResultType.NOT_FOUND }
+            _overCount.value =
+                newList.count { it.newFields.inventoryResultType == InventoryResultType.FOUND_OVER_STOCK }
+            _okCount.value =
+                newList.count { it.newFields.inventoryResultType == InventoryResultType.FOUND_OK }
+
+            _finalTagList.value = newList
         }
     }
+
+    suspend fun generateCsvData(
+        memo: String,
+        locationName: String
+    ): List<InventoryResultCsvModel> =
+        withContext(Dispatchers.IO) {
+            csvModels.clear()
+
+            _finalTagList.value.forEach { tag ->
+                val locationId = locationRepository.getLocationIdByName(locationName)
+                val ledgerId = tag.ledgerItemId
+                val inventoryResultTypeId =
+                    inventoryResultTypeRepository.getInventoryResultTypeIdByCode(
+                        tag.newFields.inventoryResultType.name
+                    )
+                val model = InventoryResultCsvModel(
+                    locationId = locationId ?: 0,
+                    inventoryResultTypeId = inventoryResultTypeId,
+                    ledgerItemId = ledgerId ?: 0,
+                    tagId = tag.tagId,
+                    deviceId = Build.ID,
+                    memo = memo,
+                    scannedAt = generateIso8601JstTimestamp(),
+                    executedAt = generateIso8601JstTimestamp()
+                )
+                csvModels.add(model)
+            }
+            csvModels.toList()
+        }
 
 
     private suspend fun isWrongLocation(epc: String, selectedLocationId: Int): Boolean {
@@ -73,55 +118,4 @@ class InventoryCompleteViewModel @Inject constructor(
         return tagLocationId == null || selectedLocationId != tagLocationId
     }
 
-    private suspend fun computeWrongLocationCount(
-        rfidTagList: List<TagMasterModel>,
-        selectedLocationId: Int
-    ): Int {
-        return rfidTagList.count { tag ->
-            isWrongLocation(tag.epc, selectedLocationId)
-        }
-    }
-
-
-    private suspend fun computeShortage(
-        currentLocationId: Int,
-        scannedTags: Set<String>
-    ): Int {
-        val tagsInStock = tagMasterRepository.getTagsByLocationAndStock(
-            locationId = currentLocationId,
-            isInStock = true
-        )
-
-        return tagsInStock.count { it.epc !in scannedTags }
-    }
-
-    private suspend fun computeOverload(
-        currentLocationId: Int,
-        scannedTags: Set<String>
-    ): Int {
-        val tagsNotInStock = tagMasterRepository.getTagsByLocationAndStock(
-            locationId = currentLocationId,
-            isInStock = false
-        )
-
-        return tagsNotInStock.count { it.epc in scannedTags }
-    }
-
-    private suspend fun computeOk(
-        currentLocationId: Int,
-        scannedTags: Set<String>
-    ): Int {
-        val tagsInStock = tagMasterRepository.getTagsByLocationAndStock(
-            locationId = currentLocationId,
-            isInStock = true
-        )
-        return tagsInStock.count { it.epc in scannedTags }
-    }
-
-
-
-
-    private suspend fun getLocationIdByName(locationName: String): Int {
-        return locationRepository.getLocationIdByName(locationName = locationName) ?: 0
-    }
 }

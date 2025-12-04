@@ -6,10 +6,10 @@ import com.example.sol_denka_stockmanagement.constant.InventoryResultCsvHeader
 import com.example.sol_denka_stockmanagement.constant.generateTimeStamp
 
 data class InventoryResultCsvModel(
-    val locationId: String,
-    val inventoryResultTypeId: String,
-    val ledgerItemId: String,
-    val tagId: String,
+    val locationId: Int,
+    val inventoryResultTypeId: Int,
+    val ledgerItemId: Int,
+    val tagId: Int,
     val deviceId: String,
     val memo: String,
     val scannedAt: String,
@@ -28,10 +28,10 @@ data class InventoryResultCsvModel(
     )
 
     override fun toRow(): List<String> = listOf(
-        locationId,
-        inventoryResultTypeId,
-        ledgerItemId,
-        tagId,
+        locationId.toString(),
+        inventoryResultTypeId.toString(),
+        ledgerItemId.toString(),
+        tagId.toString(),
         deviceId,
         memo,
         scannedAt,

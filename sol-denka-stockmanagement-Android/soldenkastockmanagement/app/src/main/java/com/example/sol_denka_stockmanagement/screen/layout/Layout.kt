@@ -162,7 +162,6 @@ fun Layout(
                         else {
                             appViewModel?.onGeneralIntent(ShareIntent.ToggleDialog)
                             onNavigate?.invoke(Screen.Home)
-
                         }
                     }
                 )
