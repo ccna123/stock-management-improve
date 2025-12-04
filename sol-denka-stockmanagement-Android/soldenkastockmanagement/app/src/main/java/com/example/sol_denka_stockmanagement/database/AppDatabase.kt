@@ -66,7 +66,7 @@ import com.example.sol_denka_stockmanagement.database.entity.process.ProcessType
 
         ProcessTypeEntity::class
     ],
-    version = 6
+    version = 7
 )
 abstract class AppDatabase : RoomDatabase() {
 

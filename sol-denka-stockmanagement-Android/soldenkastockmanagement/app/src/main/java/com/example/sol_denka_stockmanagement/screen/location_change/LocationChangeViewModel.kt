@@ -48,12 +48,12 @@ class LocationChangeViewModel @Inject constructor(
         withContext(Dispatchers.IO) {
             try {
                 csvModels.clear()
+                val newLocationId = locationRepository.getLocationIdByName(newLocation)
                 _locationChangeList.value.forEach { row ->
-                    val locationId = locationRepository.getLocationIdByName(newLocation)
                     val ledgerId = tagMasterRepository.getLedgerIdByEpc(row.epc)
                     val model = LocationChangeResultCsvModel(
                         ledgerItemId = ledgerId ?: 0,
-                        locationId = locationId ?: 0,
+                        locationId = newLocationId ?: 0,
                         deviceId = Build.ID,
                         memo = memo,
                         scannedAt = generateIso8601JstTimestamp(),
@@ -77,14 +77,14 @@ class LocationChangeViewModel @Inject constructor(
                         executedAt = generateIso8601JstTimestamp()
                     )
                 )
+                val newLocationId = locationRepository.getLocationIdByName(newLocation)
                 sessionId.let {
                     _locationChangeList.value.forEach { row ->
-                        val locationId = locationRepository.getLocationIdByName(newLocation)
                         val ledgerId = tagMasterRepository.getLedgerIdByEpc(row.epc)
                         val model = LocationChangeEventModel(
                             locationChangeSessionId = sessionId.toInt(),
                             ledgerItemId = ledgerId ?: 0,
-                            locationId = locationId ?: 0,
+                            locationId = newLocationId ?: 0,
                             memo = memo,
                             scannedAt = generateIso8601JstTimestamp(),
                         )

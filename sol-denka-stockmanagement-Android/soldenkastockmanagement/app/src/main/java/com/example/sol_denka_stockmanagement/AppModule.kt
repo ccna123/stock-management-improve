@@ -8,7 +8,9 @@ import androidx.annotation.RequiresApi
 import androidx.room.Room
 import com.example.sol_denka_stockmanagement.database.AppDatabase
 import com.example.sol_denka_stockmanagement.database.dao.csv.CsvTaskTypeDao
+import com.example.sol_denka_stockmanagement.database.dao.inventory.InventoryResultLocalDao
 import com.example.sol_denka_stockmanagement.database.dao.inventory.InventoryResultTypeDao
+import com.example.sol_denka_stockmanagement.database.dao.inventory.InventorySessionDao
 import com.example.sol_denka_stockmanagement.database.dao.item.ItemTypeDao
 import com.example.sol_denka_stockmanagement.database.dao.item.ItemUnitDao
 import com.example.sol_denka_stockmanagement.database.dao.leger.LedgerItemDao
@@ -149,6 +151,18 @@ object AppModule {
     @Singleton
     fun provideOutboundEventDao(database: AppDatabase): OutboundEventDao {
         return database.outboundEventDao()
+    }
+
+    @Provides
+    @Singleton
+    fun provideInventorySessionDao(database: AppDatabase): InventorySessionDao {
+        return database.inventorySessionDao()
+    }
+
+    @Provides
+    @Singleton
+    fun provideInventoryResultLocalDao(database: AppDatabase): InventoryResultLocalDao {
+        return database.inventoryResultLocalDao()
     }
 
 }

@@ -54,7 +54,7 @@ data class InventoryResultLocalEntity(
     @ColumnInfo(name = "inventory_session_id") val inventorySessionId: Int,
     @ColumnInfo(name = "inventory_result_type_id") val inventoryResultTypeId: Int,
     @ColumnInfo(name = "ledger_item_id") val ledgerItemId: Int,
-    @ColumnInfo(name = "tag_id") val tagId: Long,
+    @ColumnInfo(name = "tag_id") val tagId: Int,
     @ColumnInfo(name = "memo") val memo: String?,
     @ColumnInfo(name = "scanned_at") val scannedAt: String?,
 )

@@ -3,11 +3,11 @@ package com.example.sol_denka_stockmanagement.model.inventory
 import com.example.sol_denka_stockmanagement.database.entity.inventory.InventoryResultLocalEntity
 
 data class InventoryResultLocalModel(
-    val inventoryResultId: Int,
+    val inventoryResultId: Int = 0,
     val inventorySessionId: Int,
     val inventoryResultTypeId: Int,
     val ledgerItemId: Int,
-    val tagId: Long,
+    val tagId: Int,
     val memo: String?,
     val scannedAt: String?,
 )

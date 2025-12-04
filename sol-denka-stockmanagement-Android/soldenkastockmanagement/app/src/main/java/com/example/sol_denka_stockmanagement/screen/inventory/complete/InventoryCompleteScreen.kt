@@ -135,6 +135,10 @@ fun InventoryCompleteScreen(
                 },
                 onClick = {
                     scope.launch {
+                        inventoryCompleteViewModel.saveInventoryResultToDb(
+                            memo = inputState.memo,
+                            locationName = inputState.location,
+                        )
                         val csvModels =
                             inventoryCompleteViewModel.generateCsvData(
                                 memo = inputState.memo,
