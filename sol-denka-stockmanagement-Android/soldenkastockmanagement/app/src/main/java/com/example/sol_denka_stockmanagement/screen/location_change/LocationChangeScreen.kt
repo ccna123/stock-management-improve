@@ -84,6 +84,8 @@ fun LocationChangeScreen(
                         ambientColor = Color.Gray.copy(alpha = 0.5f),
                         spotColor = Color.DarkGray.copy(alpha = 0.7f)
                     ),
+                buttonText = stringResource(R.string.storage_area_change),
+                canClick = inputState.value.location.isNotEmpty(),
                 icon = {
                     Icon(
                         painter = painterResource(R.drawable.register),
@@ -100,7 +102,6 @@ fun LocationChangeScreen(
                         appViewModel.onGeneralIntent(ShareIntent.SaveScanResult(csvModels))
                     }
                 },
-                buttonText = stringResource(R.string.storage_area_change),
             )
         },
         onBackArrowClick = {

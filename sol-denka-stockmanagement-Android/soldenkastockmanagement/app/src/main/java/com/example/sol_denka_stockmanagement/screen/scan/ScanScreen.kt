@@ -47,6 +47,7 @@ import com.example.sol_denka_stockmanagement.screen.scan.components.ProcessModal
 import com.example.sol_denka_stockmanagement.share.ButtonContainer
 import com.example.sol_denka_stockmanagement.share.dialog.ConfirmDialog
 import com.example.sol_denka_stockmanagement.ui.theme.brightAzure
+import com.example.sol_denka_stockmanagement.ui.theme.brightGreenSecondary
 import com.example.sol_denka_stockmanagement.ui.theme.orange
 import com.example.sol_denka_stockmanagement.ui.theme.tealGreen
 import com.example.sol_denka_stockmanagement.viewmodel.AppViewModel
@@ -279,7 +280,7 @@ fun ScanScreen(
                             R.string.select_all
                         ),
                         containerColor = if (isAllSelected) Color.Red else brightAzure,
-                        canClick = scannedTags.isNotEmpty(),
+                        canClick = scannedTags.isNotEmpty() && isPerformingInventory.not(),
                         onClick = {
                             appViewModel.onGeneralIntent(
                                 ShareIntent.ToggleSelectionAll(
@@ -301,6 +302,7 @@ fun ScanScreen(
                         ButtonContainer(
                             modifier = Modifier
                                 .fillMaxWidth(),
+                            containerColor = brightGreenSecondary,
                             buttonText = stringResource(
                                 R.string.bulk_register,
                                 selectedCount.toString()

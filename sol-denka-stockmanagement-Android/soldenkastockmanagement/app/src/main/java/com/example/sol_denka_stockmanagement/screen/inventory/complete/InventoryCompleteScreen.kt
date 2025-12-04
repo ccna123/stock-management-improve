@@ -45,6 +45,7 @@ import com.example.sol_denka_stockmanagement.ui.theme.brightGreenPrimary
 import com.example.sol_denka_stockmanagement.ui.theme.brightOrange
 import com.example.sol_denka_stockmanagement.ui.theme.deepBlueSky
 import com.example.sol_denka_stockmanagement.ui.theme.paleSkyBlue
+import com.example.sol_denka_stockmanagement.ui.theme.primaryRed
 import com.example.sol_denka_stockmanagement.viewmodel.AppViewModel
 import com.example.sol_denka_stockmanagement.viewmodel.ScanViewModel
 import kotlinx.coroutines.launch
@@ -101,7 +102,7 @@ fun InventoryCompleteScreen(
         InventoryCompleteModel(
             status = InventoryScanResult.OVERLOAD,
             icon = R.drawable.scan_overload,
-            color = Color(0xFFF44336),
+            color = primaryRed,
         ),
         InventoryCompleteModel(
             status = InventoryScanResult.WRONG_LOCATION,
@@ -203,7 +204,8 @@ fun InventoryCompleteScreen(
                             }
                             Text(
                                 text = "$count 件",
-                                fontSize = 18.sp
+                                fontSize = 18.sp,
+                                color = item.color
                             )
                         }
                     }
