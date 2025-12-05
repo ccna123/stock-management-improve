@@ -1,8 +1,5 @@
 <resources>
     <string name="app_name">StockManagement</string>
-    <string name="title_dialog_inventory">Import master file.</string>
-    <string name="title_dialog_doing">Unfinished data exists.\nDo you resume?</string>
-    <string name="google_play_services_api_key">unused</string>
 
     <!--    ボタン名-->
     <string name="scan_start">スキャン開始</string>
@@ -81,7 +78,7 @@
     <string name="csv_type_select_request">CSVファイルの種類を選択してください</string>
     <string name="csv_type_selection">CSVファイルの種類選択</string>
     <string name="csv_save_message">CSVファイルの出力、\nWindowsアプリへの送信に成功しました。</string>
-    <string name="read_timestamp">読み取り日時</string>
+    <string name="read_timestamp">最終読み取り日時</string>
     <string name="no_tag_read">まだタグが読み取られていません</string>
     <string name="tariff_code">品目コード</string>
     <string name="scanned_tag">読み取りタグ</string>

@@ -62,7 +62,7 @@ fun InboundScreen(
 
     val inputState = appViewModel.inputState.collectAsStateWithLifecycle().value
     val expandState = appViewModel.expandState.collectAsStateWithLifecycle().value
-    val scannedTags by scanViewModel.scannedTags.collectAsStateWithLifecycle()
+    val inboundDetail by scanViewModel.inboundDetail.collectAsStateWithLifecycle()
 
     LaunchedEffect(Unit) {
         scanViewModel.setEnableScan(false)
@@ -133,8 +133,7 @@ fun InboundScreen(
                     ) {
                         Text(
                             text = stringResource(
-                                R.string.item_code,
-                                scannedTags.values.lastOrNull()?.rfidNo.takeIf { it?.isNotEmpty() == true }?: "")
+                                R.string.item_code,inboundDetail?.epc ?: "")
                         )
                         Spacer(modifier = Modifier.height(20.dp))
                         ExposedDropdownMenuBox(
