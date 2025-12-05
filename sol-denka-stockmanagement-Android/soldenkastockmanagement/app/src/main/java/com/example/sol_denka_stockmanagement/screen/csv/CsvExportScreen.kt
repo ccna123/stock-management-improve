@@ -62,32 +62,28 @@ fun CsvExportScreen(
     appViewModel: AppViewModel,
     onGoBack: () -> Unit
 ) {
-    val csvState by csvViewModel.csvState.collectAsStateWithLifecycle()
+    val csvType by csvViewModel.csvType.collectAsStateWithLifecycle()
     val expandState = appViewModel.expandState.collectAsStateWithLifecycle()
     val generalState = appViewModel.generalState.collectAsState().value
     val csvFiles by csvViewModel.csvFiles.collectAsStateWithLifecycle()
     val showProgress by csvViewModel.showProgress.collectAsStateWithLifecycle()
     val isExporting by csvViewModel.isExporting.collectAsStateWithLifecycle()
 
-    DisposableEffect(Unit) {
-        onDispose {
-            csvViewModel.resetState()
-        }
-    }
-
-    LaunchedEffect(csvState.csvType) {
-        when (csvState.csvType) {
+    LaunchedEffect(csvType) {
+        when (csvType) {
             in listOf(
                 CsvType.InboundResult.displayName,
                 CsvType.OutboundResult.displayName,
                 CsvType.LocationChangeResult.displayName,
                 CsvType.InventoryResult.displayName,
             ) -> {
-                csvViewModel.fetchCsvFiles()
-                csvViewModel.toggleProgressVisibility(false)
+                csvViewModel.apply {
+                    onCsvIntent(CsvIntent.FetchCsvFiles)
+                    onCsvIntent(CsvIntent.ToggleProgressVisibility(false))
+                }
             }
 
-            else -> csvViewModel.clearCsvList()
+            else -> csvViewModel.onCsvIntent(CsvIntent.ClearCsvFileList)
         }
     }
 
@@ -97,6 +93,12 @@ fun CsvExportScreen(
                 ShareIntent.ToggleNetworkDialog(false)
             )
         })
+    }
+
+    DisposableEffect(Unit) {
+        onDispose {
+            csvViewModel.onCsvIntent(CsvIntent.ResetCsvType)
+        }
     }
 
     Layout(
@@ -114,7 +116,7 @@ fun CsvExportScreen(
                 ),
                 buttonTextSize = 20,
                 buttonText = stringResource(R.string.export_file),
-                canClick = csvState.csvType.isNotEmpty() && isExporting.not() && csvFiles.isNotEmpty(),
+                canClick = csvType.isNotEmpty() && isExporting.not() && csvFiles.isNotEmpty(),
                 icon = {
                     Icon(
                         painter = painterResource(R.drawable.file_export),
@@ -136,7 +138,7 @@ fun CsvExportScreen(
 //                        csvViewModel.toggleProgressVisibility(true)
 //                        csvViewModel.exportAllFilesIndividually(
 //                            context = context,
-//                            isInventoryResult = when (csvState.csvType) {
+//                            isInventoryResult = when (csvType) {
 //                                CsvType.InventoryResult.displayName -> {
 //                                    true
 //                                }
@@ -191,11 +193,17 @@ fun CsvExportScreen(
                                             enabled = true
                                         )
                                         .fillMaxWidth(),
-                                    value = if (csvState.csvType == SelectTitle.SelectCsvType.displayName) "" else csvState.csvType,
+                                    value = if (csvType == SelectTitle.SelectCsvType.displayName) "" else csvType,
                                     hintText = SelectTitle.SelectCsvType.displayName,
                                     isNumeric = false,
                                     shape = RoundedCornerShape(13.dp),
-                                    onChange = { csvViewModel.updateState { copy(csvType = it) } },
+                                    onChange = {
+                                        csvViewModel.onCsvIntent(
+                                            CsvIntent.SelectCsvType(
+                                                csvType = it
+                                            )
+                                        )
+                                    },
                                     readOnly = true,
                                     isDropDown = true,
                                     enable = true,
@@ -214,7 +222,11 @@ fun CsvExportScreen(
                                         DropdownMenuItem(
                                             text = { Text(text = csvType) },
                                             onClick = {
-                                                csvViewModel.onCsvIntent(CsvIntent.SelectCsvType(csvType = if (csvType == SelectTitle.SelectCsvType.displayName) "" else csvType))
+                                                csvViewModel.onCsvIntent(
+                                                    CsvIntent.SelectCsvType(
+                                                        csvType = if (csvType == SelectTitle.SelectCsvType.displayName) "" else csvType
+                                                    )
+                                                )
                                                 appViewModel.onExpandIntent(ExpandIntent.ToggleCsvTypeExpanded)
                                             }
                                         )
@@ -231,7 +243,7 @@ fun CsvExportScreen(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 item {
-                    if (csvState.csvType == "") {
+                    if (csvType == "") {
                         if (csvFiles.isEmpty()) {
                             Text(
                                 color = Color.Red,

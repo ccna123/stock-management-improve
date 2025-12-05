@@ -42,14 +42,31 @@ fun SingleCsvFile(
     isSelected: Boolean = false,
     onChoose: () -> Unit = {}
 ) {
+
+    // determine background color
+    val bgColor = when {
+        isError -> Color(0xFFFFE5E5)
+        isCompleted -> brightGreenPrimary.copy(alpha = 0.1f)
+        isSelected -> brightGreenPrimary.copy(alpha = 0.1f)
+        else -> Color.White
+    }
+
+// determine border color
+    val borderColor = when {
+        isError -> Color.Red
+        isCompleted -> brightGreenPrimary
+        isSelected -> brightGreenPrimary
+        else -> Color(0xFFE0E0E0)
+    }
+
     Row(
         modifier = modifier
             .padding(vertical = 0.dp, horizontal = 8.dp)
             .fillMaxWidth()
-            .background(color = if (isSelected) brightGreenPrimary.copy(alpha = 0.1f) else Color.White, shape = RoundedCornerShape(20.dp))
+            .background(color = bgColor, shape = RoundedCornerShape(20.dp))
             .border(
                 width = 1.dp,
-                color = if (isSelected) brightGreenPrimary else Color(0xFFE0E0E0),
+                color = borderColor,
                 shape = RoundedCornerShape(20.dp)
             )
             .padding(10.dp)

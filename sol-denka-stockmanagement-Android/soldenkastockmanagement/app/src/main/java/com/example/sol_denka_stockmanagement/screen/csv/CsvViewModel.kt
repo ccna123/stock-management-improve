@@ -37,9 +37,6 @@ class CsvViewModel @Inject constructor(
         }
     }
 
-    private val _csvState = MutableStateFlow(CsvState())
-    val csvState: StateFlow<CsvState> = _csvState.asStateFlow()
-
     private val _showProgress = MutableStateFlow(false)
     val showProgress = _showProgress.asStateFlow()
 
@@ -67,44 +64,43 @@ class CsvViewModel @Inject constructor(
     private val _importFileSelectedName = MutableStateFlow("")
     val importFileSelectedName: StateFlow<String> = _importFileSelectedName.asStateFlow()
 
+    private val _csvType = MutableStateFlow("")
+    val csvType: StateFlow<String> = _csvType.asStateFlow()
+
     fun onCsvIntent(intent: CsvIntent) {
         when (intent) {
             is CsvIntent.ToggleFileSelect -> {
                 _importFileSelectedIndex.value = intent.fileIndex
                 _importFileSelectedName.value = intent.fileName
             }
+
             is CsvIntent.ResetFileSelect -> {
                 _importFileSelectedIndex.value = -1
                 _importFileSelectedName.value = ""
             }
 
-            is CsvIntent.SelectCsvType -> _csvState.update { it.copy(csvType = intent.csvType) }
+            is CsvIntent.SelectCsvType -> _csvType.value = intent.csvType
+            CsvIntent.ResetImportStatus -> {
+                _importResultStatus.value = null
+                _importFileSelectedName.value = ""
+                _importFileSelectedIndex.value = -1
+            }
+
+            is CsvIntent.ToggleProgressVisibility -> _showProgress.value = intent.show
+            CsvIntent.ClearCsvFileList -> _csvFiles.value = emptyList()
+            CsvIntent.FetchCsvFiles -> fetchCsvFiles()
+
+            CsvIntent.ResetCsvType -> _csvType.value = ""
         }
     }
 
-
-    // Update UI state in a consistent way
-    fun updateState(updates: CsvState.() -> CsvState) {
-        _csvState.update { it.updates() }
-    }
-
-    suspend fun fetchCsvFiles() {
-        val result = helper.listCsvFiles(
-            csvType = _csvState.value.csvType
-        )
-        _csvFiles.value = result
-    }
-
-    fun toggleProgressVisibility(show: Boolean) {
-        _showProgress.value = show
-    }
-
-    fun resetState() {
-        _csvState.value = CsvState()
-    }
-
-    fun clearCsvList() {
-        _csvFiles.value = emptyList()
+    private fun fetchCsvFiles() {
+        viewModelScope.launch {
+            val result = helper.listCsvFiles(
+                csvType = _csvType.value
+            )
+            _csvFiles.value = result
+        }
     }
 
     fun exportAllFilesIndividually(context: Context, isInventoryResult: Boolean) {
@@ -137,7 +133,7 @@ class CsvViewModel @Inject constructor(
                 context = context,
                 host = config.host,
                 username = config.userName,
-                csvType = _csvState.value.csvType,
+                csvType = _csvType.value,
                 onProgress = { progress ->
                     _isImporting.value = true
                     _importProgress.value = progress
@@ -154,7 +150,7 @@ class CsvViewModel @Inject constructor(
                 fetchCsvFiles()
             } else if (result is ProcessResult.Failure) {
                 val msg = result.rawMessage
-                        ?: MessageMapper.toMessage(result.statusCode)
+                    ?: MessageMapper.toMessage(result.statusCode)
                 showProcessResultDialog(msg)
             }
             result // ✅ return whatever helper produced
@@ -167,7 +163,7 @@ class CsvViewModel @Inject constructor(
             _importProgress.value = 0f
 
             val result = helper.import(
-                csvType = _csvState.value.csvType,
+                csvType = _csvType.value,
                 fileName = importFileSelectedName.value,
                 onProgress = { p ->
                     _importProgress.value = p
@@ -177,17 +173,10 @@ class CsvViewModel @Inject constructor(
             _isImporting.value = false
             _importResultStatus.value = result
 
-            when (result) {
-                is ProcessResult.Success -> {
-                    val msg = MessageMapper.toMessage(result.statusCode)
-                    showProcessResultDialog(msg)
-                }
-
-                is ProcessResult.Failure -> {
-                    val msg = result.rawMessage
-                            ?: MessageMapper.toMessage(result.statusCode)
-                    showProcessResultDialog(msg)
-                }
+            if (result is ProcessResult.Failure) {
+                val msg = result.rawMessage
+                    ?: MessageMapper.toMessage(result.statusCode)
+                showProcessResultDialog(msg)
             }
         }
     }
