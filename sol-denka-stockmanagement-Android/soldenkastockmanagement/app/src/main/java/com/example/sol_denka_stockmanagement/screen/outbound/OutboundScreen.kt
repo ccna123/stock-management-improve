@@ -1,7 +1,6 @@
 package com.example.sol_denka_stockmanagement.screen.outbound
 
 import android.os.Build
-import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -35,6 +34,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.sol_denka_stockmanagement.R
+import com.example.sol_denka_stockmanagement.constant.CsvHistoryDirection
+import com.example.sol_denka_stockmanagement.constant.CsvTaskType
 import com.example.sol_denka_stockmanagement.intent.InputIntent
 import com.example.sol_denka_stockmanagement.intent.ShareIntent
 import com.example.sol_denka_stockmanagement.model.scan.ScanResultRowModel
@@ -135,7 +136,13 @@ fun OutboundScreen(
                         )
                         val csvModels =
                             outboundViewModel.generateCsvData(memo = inputState.value.memo)
-                        appViewModel.onGeneralIntent(ShareIntent.SaveScanResult(csvModels))
+                        appViewModel.onGeneralIntent(
+                            ShareIntent.SaveScanResult(
+                                data = csvModels,
+                                direction = CsvHistoryDirection.EXPORT,
+                                taskCode = CsvTaskType.OUT
+                            )
+                        )
                     }
                 },
                 buttonText = stringResource(R.string.register),

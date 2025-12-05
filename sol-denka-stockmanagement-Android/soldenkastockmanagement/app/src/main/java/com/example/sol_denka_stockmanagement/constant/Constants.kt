@@ -50,13 +50,13 @@ enum class CsvType(val displayName: String) {
     TagMaster("タグマスタCSV"),
 }
 
-enum class CsvTaskType(val displayName: String) {
-    IN("入庫"),
-    OUT("出庫"),
-    INVENTORY("棚卸"),
-    LOCATION_CHANGE("保管場所変更"),
-    UPPER_SYSTEM("上位システム"),
-    OTHER("その他"),
+enum class CsvTaskType(val displayNameJp: String, val displayNameEng: String) {
+    IN("入庫", "IN"),
+    OUT("出庫", "OUT"),
+    INVENTORY("棚卸", "INVENTORY"),
+    LOCATION_CHANGE("保管場所変更", "LOCATION_CHANGE"),
+    UPPER_SYSTEM("上位システム", "UPPER_SYSTEM"),
+    OTHER("その他", "OTHER"),
 }
 
 enum class InventoryResultCsvHeader {
@@ -111,14 +111,6 @@ enum class InventoryScanResult(val displayName: String) {
     WRONG_LOCATION("保管場所不一致")
 }
 
-enum class CsvTaskCode(val displayName: String) {
-    IN("IN"),
-    OUT("OUT"),
-    INVENTORY("INVENTORY"),
-    LOCATION_CHANGE("LOCATION_CHANGE"),
-    UPPER_SYSTEM("UPPER_SYSTEM"),
-    OTHER("OTHER"),
-}
 
 enum class CsvHistoryDirection(val displayName: String) {
     EXPORT("EXPORT"),

@@ -97,11 +97,11 @@ fun InboundScreen(
                 ),
                 canClick = inputState.materialSelectedItem != SelectTitle.SelectMaterial.displayName,
                 onClick = {
-                    appViewModel.onGeneralIntent(
-                        ShareIntent.SaveScanResult(
-                            data = listOf()
-                        )
-                    )
+//                    appViewModel.onGeneralIntent(
+//                        ShareIntent.SaveScanResult(
+//                            data = listOf()
+//                        )
+//                    )
                 },
                 buttonText = stringResource(R.string.register),
             )

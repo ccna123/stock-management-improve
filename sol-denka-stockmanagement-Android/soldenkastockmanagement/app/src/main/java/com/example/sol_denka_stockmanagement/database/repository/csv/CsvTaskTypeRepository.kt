@@ -22,42 +22,42 @@ class CsvTaskTypeRepository @Inject constructor(
         CsvTaskTypeModel(
             csvTaskTypeId = 1,
             csvTaskCode = CsvTaskType.IN,
-            csvTaskName = CsvTaskType.IN.displayName,
+            csvTaskName = CsvTaskType.IN.displayNameJp,
             createdAt = generateTimeStamp(),
             updatedAt = generateTimeStamp()
         ),
         CsvTaskTypeModel(
             csvTaskTypeId = 2,
             csvTaskCode = CsvTaskType.OUT,
-            csvTaskName = CsvTaskType.OUT.displayName,
+            csvTaskName = CsvTaskType.OUT.displayNameJp,
             createdAt = generateTimeStamp(),
             updatedAt = generateTimeStamp()
         ),
         CsvTaskTypeModel(
             csvTaskTypeId = 3,
             csvTaskCode = CsvTaskType.INVENTORY,
-            csvTaskName = CsvTaskType.INVENTORY.displayName,
+            csvTaskName = CsvTaskType.INVENTORY.displayNameJp,
             createdAt = generateTimeStamp(),
             updatedAt = generateTimeStamp()
         ),
         CsvTaskTypeModel(
             csvTaskTypeId = 4,
             csvTaskCode = CsvTaskType.LOCATION_CHANGE,
-            csvTaskName = CsvTaskType.LOCATION_CHANGE.displayName,
+            csvTaskName = CsvTaskType.LOCATION_CHANGE.displayNameJp,
             createdAt = generateTimeStamp(),
             updatedAt = generateTimeStamp()
         ),
         CsvTaskTypeModel(
             csvTaskTypeId = 5,
             csvTaskCode = CsvTaskType.UPPER_SYSTEM,
-            csvTaskName = CsvTaskType.UPPER_SYSTEM.displayName,
+            csvTaskName = CsvTaskType.UPPER_SYSTEM.displayNameJp,
             createdAt = generateTimeStamp(),
             updatedAt = generateTimeStamp()
         ),
         CsvTaskTypeModel(
             csvTaskTypeId = 6,
             csvTaskCode = CsvTaskType.OTHER,
-            csvTaskName = CsvTaskType.OTHER.displayName,
+            csvTaskName = CsvTaskType.OTHER.displayNameJp,
             createdAt = generateTimeStamp(),
             updatedAt = generateTimeStamp()
         ),

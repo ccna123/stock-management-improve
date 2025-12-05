@@ -33,6 +33,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.sol_denka_stockmanagement.R
+import com.example.sol_denka_stockmanagement.constant.CsvHistoryDirection
+import com.example.sol_denka_stockmanagement.constant.CsvTaskType
 import com.example.sol_denka_stockmanagement.constant.InventoryScanResult
 import com.example.sol_denka_stockmanagement.constant.TagStatus
 import com.example.sol_denka_stockmanagement.intent.ShareIntent
@@ -144,7 +146,13 @@ fun InventoryCompleteScreen(
                                 memo = inputState.memo,
                                 locationName = inputState.location,
                             )
-                        appViewModel.onGeneralIntent(ShareIntent.SaveScanResult(csvModels))
+                        appViewModel.onGeneralIntent(
+                            ShareIntent.SaveScanResult(
+                                data = csvModels,
+                                direction = CsvHistoryDirection.EXPORT,
+                                taskCode = CsvTaskType.INVENTORY,
+                            )
+                        )
                     }
                 },
                 buttonText = stringResource(R.string.finish_inventory),

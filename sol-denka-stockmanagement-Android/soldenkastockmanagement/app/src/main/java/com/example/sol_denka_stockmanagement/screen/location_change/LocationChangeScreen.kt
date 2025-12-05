@@ -30,6 +30,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.sol_denka_stockmanagement.R
+import com.example.sol_denka_stockmanagement.constant.CsvHistoryDirection
+import com.example.sol_denka_stockmanagement.constant.CsvTaskType
 import com.example.sol_denka_stockmanagement.constant.SelectTitle
 import com.example.sol_denka_stockmanagement.intent.ExpandIntent
 import com.example.sol_denka_stockmanagement.intent.InputIntent
@@ -96,10 +98,22 @@ fun LocationChangeScreen(
                 },
                 onClick = {
                     scope.launch {
-                        locationChangeViewModel.saveLocationChangeToDb(memo = inputState.value.memo, newLocation = inputState.value.location)
+                        locationChangeViewModel.saveLocationChangeToDb(
+                            memo = inputState.value.memo,
+                            newLocation = inputState.value.location
+                        )
                         val csvModels =
-                            locationChangeViewModel.generateCsvData(memo = inputState.value.memo, newLocation = inputState.value.location)
-                        appViewModel.onGeneralIntent(ShareIntent.SaveScanResult(csvModels))
+                            locationChangeViewModel.generateCsvData(
+                                memo = inputState.value.memo,
+                                newLocation = inputState.value.location
+                            )
+                        appViewModel.onGeneralIntent(
+                            ShareIntent.SaveScanResult(
+                                data = csvModels,
+                                direction = CsvHistoryDirection.EXPORT,
+                                taskCode = CsvTaskType.LOCATION_CHANGE
+                            )
+                        )
                     }
                 },
             )
