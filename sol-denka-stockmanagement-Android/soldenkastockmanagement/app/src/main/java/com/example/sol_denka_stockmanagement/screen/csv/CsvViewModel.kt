@@ -77,6 +77,8 @@ class CsvViewModel @Inject constructor(
                 _importFileSelectedIndex.value = -1
                 _importFileSelectedName.value = ""
             }
+
+            is CsvIntent.SelectCsvType -> _csvState.update { it.copy(csvType = intent.csvType) }
         }
     }
 
@@ -95,10 +97,6 @@ class CsvViewModel @Inject constructor(
 
     fun toggleProgressVisibility(show: Boolean) {
         _showProgress.value = show
-    }
-
-    fun toggleCsvTypeExpanded() {
-        updateState { copy(csvTypeExpanded = !csvTypeExpanded) }
     }
 
     fun resetState() {

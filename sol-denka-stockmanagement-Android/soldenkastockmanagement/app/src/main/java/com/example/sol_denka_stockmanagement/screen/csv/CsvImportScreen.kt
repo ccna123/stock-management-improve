@@ -45,6 +45,7 @@ import com.example.sol_denka_stockmanagement.constant.CsvType
 import com.example.sol_denka_stockmanagement.constant.SelectTitle
 import com.example.sol_denka_stockmanagement.helper.ProcessResult
 import com.example.sol_denka_stockmanagement.intent.CsvIntent
+import com.example.sol_denka_stockmanagement.intent.ExpandIntent
 import com.example.sol_denka_stockmanagement.intent.ShareIntent
 import com.example.sol_denka_stockmanagement.navigation.Screen
 import com.example.sol_denka_stockmanagement.screen.csv.components.SingleCsvFile
@@ -69,10 +70,10 @@ fun CsvImportScreen(
     onGoBack: () -> Unit
 ) {
     val csvState by csvViewModel.csvState.collectAsStateWithLifecycle()
+    val expandState = appViewModel.expandState.collectAsStateWithLifecycle()
     val scope = rememberCoroutineScope()
     val generalState = appViewModel.generalState.collectAsState().value
     val importFileSelectedIndex = csvViewModel.importFileSelectedIndex.collectAsState().value
-    val importFileSelectedName = csvViewModel.importFileSelectedName.collectAsState().value
     val csvFiles by csvViewModel.csvFiles.collectAsStateWithLifecycle()
     val isImporting by csvViewModel.isImporting.collectAsStateWithLifecycle()
     val importProgress by csvViewModel.importProgress.collectAsStateWithLifecycle()
@@ -238,8 +239,8 @@ fun CsvImportScreen(
                         isRequired = true,
                         children = {
                             ExposedDropdownMenuBox(
-                                expanded = csvState.csvTypeExpanded,
-                                onExpandedChange = { csvViewModel.toggleCsvTypeExpanded() }) {
+                                expanded = expandState.value.csvTypeExpanded,
+                                onExpandedChange = { appViewModel.onExpandIntent(ExpandIntent.ToggleCsvTypeExpanded) }) {
                                 InputFieldContainer(
                                     modifier = Modifier
                                         .menuAnchor(
@@ -257,8 +258,8 @@ fun CsvImportScreen(
                                     enable = true,
                                 )
                                 ExposedDropdownMenu(
-                                    expanded = csvState.csvTypeExpanded,
-                                    onDismissRequest = { csvViewModel.toggleCsvTypeExpanded() }
+                                    expanded = expandState.value.csvTypeExpanded,
+                                    onDismissRequest = { appViewModel.onExpandIntent(ExpandIntent.ToggleCsvTypeExpanded) }
                                 ) {
                                     listOf(
                                         SelectTitle.SelectCsvType.displayName,
@@ -270,12 +271,8 @@ fun CsvImportScreen(
                                         DropdownMenuItem(
                                             text = { Text(text = csvType) },
                                             onClick = {
-                                                csvViewModel.updateState {
-                                                    copy(
-                                                        csvType = if (csvType == SelectTitle.SelectCsvType.displayName) "" else csvType
-                                                    )
-                                                }
-                                                csvViewModel.toggleCsvTypeExpanded()
+                                                csvViewModel.onCsvIntent(CsvIntent.SelectCsvType(csvType = if (csvType == SelectTitle.SelectCsvType.displayName) "" else csvType))
+                                                appViewModel.onExpandIntent(ExpandIntent.ToggleCsvTypeExpanded)
                                             }
                                         )
                                     }

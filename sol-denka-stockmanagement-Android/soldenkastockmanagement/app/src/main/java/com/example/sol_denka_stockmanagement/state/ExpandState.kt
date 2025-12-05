@@ -7,4 +7,5 @@ data class ExpandState(
     val packingStyleExpanded: Boolean = false,
     val handlingMethodExpanded: Boolean = false,
     val fileTransferMethodExpanded: Boolean = false,
+    val csvTypeExpanded: Boolean = false,
 )

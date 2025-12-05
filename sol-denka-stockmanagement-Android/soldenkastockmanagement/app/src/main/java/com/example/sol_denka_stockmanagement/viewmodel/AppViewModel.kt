@@ -473,6 +473,8 @@ class AppViewModel @Inject constructor(
                 perTagExpanded.value =
                     perTagExpanded.value.toMutableMap().apply { put(intent.tag, false) }
             }
+
+            ExpandIntent.ToggleCsvTypeExpanded -> _expandState.update { it.copy(csvTypeExpanded = !_expandState.value.csvTypeExpanded) }
         }
     }
 }
