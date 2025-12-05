@@ -10,8 +10,6 @@ import com.example.sol_denka_stockmanagement.database.repository.outbound.Outbou
 import com.example.sol_denka_stockmanagement.database.repository.process.ProcessTypeRepository
 import com.example.sol_denka_stockmanagement.database.repository.tag.TagMasterRepository
 import com.example.sol_denka_stockmanagement.model.csv.OutboundResultCsvModel
-import com.example.sol_denka_stockmanagement.model.location.LocationChangeEventModel
-import com.example.sol_denka_stockmanagement.model.location.LocationChangeSessionModel
 import com.example.sol_denka_stockmanagement.model.outbound.OutBoundEventModel
 import com.example.sol_denka_stockmanagement.model.outbound.OutboundScanDataTable
 import com.example.sol_denka_stockmanagement.model.outbound.OutboundSessionModel
@@ -22,9 +20,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import kotlin.collections.associateBy
-import kotlin.collections.filter
-import kotlin.collections.map
 
 @HiltViewModel
 class OutboundViewModel @Inject constructor(

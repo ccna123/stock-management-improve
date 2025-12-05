@@ -10,6 +10,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.sol_denka_stockmanagement.constant.ConnectionState
 import com.example.sol_denka_stockmanagement.constant.CsvHistoryResult
 import com.example.sol_denka_stockmanagement.constant.ProcessMethod
+import com.example.sol_denka_stockmanagement.constant.StatusCode
 import com.example.sol_denka_stockmanagement.constant.generateIso8601JstTimestamp
 import com.example.sol_denka_stockmanagement.database.repository.csv.CsvHistoryRepository
 import com.example.sol_denka_stockmanagement.database.repository.csv.CsvTaskTypeRepository
@@ -367,7 +368,15 @@ class AppViewModel @Inject constructor(
                 viewModelScope.launch(Dispatchers.IO) {
 
                     val rows = intent.data      // ALWAYS List<ICsvExport>
-                    val first = rows.first()   // fetch 1st row to present other row for csvType and file name
+                    if (rows.isEmpty()) {
+                        _isFileWorking.value = false
+                        csvDialogIsError.value = true
+                        csvDialogMessage.value = MessageMapper.toMessage(StatusCode.EMPTY_DATA)
+                        showAppDialog.value = true
+                        return@launch
+                    }
+                    val first =
+                        rows.first()   // fetch 1st row to present other row for csvType and file name
 
                     _isFileWorking.value = true
                     _progress.value = 0f
@@ -420,8 +429,12 @@ class AppViewModel @Inject constructor(
             }
 
             ShareIntent.ToggleDialog -> showAppDialog.value = !showAppDialog.value
-            ShareIntent.ToggleClearTagConfirmDialog -> showClearTagConfirmDialog.value = !showClearTagConfirmDialog.value
-            ShareIntent.ToggleRadioPowerChangeDialog -> showRadioPowerChangeDialog.value = !showRadioPowerChangeDialog.value
+            ShareIntent.ToggleClearTagConfirmDialog -> showClearTagConfirmDialog.value =
+                !showClearTagConfirmDialog.value
+
+            ShareIntent.ToggleRadioPowerChangeDialog -> showRadioPowerChangeDialog.value =
+                !showRadioPowerChangeDialog.value
+
             is ShareIntent.UpdateSelectionStatus -> {
                 _selectedCount.value = intent.selectedCount
                 _isAllSelected.value = intent.allSelected
