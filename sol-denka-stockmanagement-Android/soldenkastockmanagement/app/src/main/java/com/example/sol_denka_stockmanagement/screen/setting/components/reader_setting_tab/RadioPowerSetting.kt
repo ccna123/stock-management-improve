@@ -20,13 +20,10 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.sol_denka_stockmanagement.R
-import com.example.sol_denka_stockmanagement.intent.ReaderSettingIntent
 import com.example.sol_denka_stockmanagement.ui.theme.brightAzure
 import com.example.sol_denka_stockmanagement.ui.theme.paleSkyBlue
-import kotlinx.serialization.descriptors.PrimitiveKind
 import java.text.NumberFormat
 import java.util.Locale
-import kotlin.math.roundToInt
 
 @Composable
 fun RadioPowerSetting(

@@ -23,10 +23,6 @@ import androidx.compose.material.icons.filled.AppSettingsAlt
 import androidx.compose.material.icons.filled.QrCodeScanner
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
@@ -36,7 +32,7 @@ import com.example.sol_denka_stockmanagement.R
 import com.example.sol_denka_stockmanagement.constant.Tab
 import com.example.sol_denka_stockmanagement.helper.toast.ToastManager
 import com.example.sol_denka_stockmanagement.helper.toast.ToastType
-import com.example.sol_denka_stockmanagement.intent.ReaderSettingIntent
+import com.example.sol_denka_stockmanagement.intent.SettingIntent
 import com.example.sol_denka_stockmanagement.intent.ShareIntent
 import com.example.sol_denka_stockmanagement.navigation.Screen
 import com.example.sol_denka_stockmanagement.screen.layout.Layout
@@ -56,20 +52,20 @@ fun SettingScreen(
 ) {
     val generalState = appViewModel.generalState.collectAsStateWithLifecycle().value
     val readerSettingState = settingViewModel.readerSettingState.collectAsStateWithLifecycle().value
+    val showUnsaveConfirmDialog = settingViewModel.showUnsaveConfirmDialog.collectAsStateWithLifecycle()
+    val showApplySettingConfirmDialog = settingViewModel.showApplySettingConfirmDialog.collectAsStateWithLifecycle()
 //    val appSettingState by appSettingViewModel.appSettingState.collectAsStateWithLifecycle()
-    var showApplyConfirmDialog by remember { mutableStateOf(false) }
-    var showUnsavedConfirmDialog by remember { mutableStateOf(false) }
 
     ConfirmDialog(
-        showDialog = showUnsavedConfirmDialog,
+        showDialog = showUnsaveConfirmDialog.value,
         dialogTitle = stringResource(R.string.setting_interrupt_confirm),
         buttons = listOf(
             {
                 ButtonContainer(
                     buttonText = stringResource(R.string.ok),
                     onClick = {
-                        showUnsavedConfirmDialog = false
-                        settingViewModel.resetToInitialSetting()
+                        settingViewModel.onSettingIntent(SettingIntent.ToggleUnsaveConfirmDialog(false))
+                        settingViewModel.onSettingIntent(SettingIntent.ResetToInitialSetting)
                         onGoBack()
                     })
             }, {
@@ -77,14 +73,14 @@ fun SettingScreen(
                     containerColor = Color.Red,
                     buttonText = stringResource(R.string.close),
                     onClick = {
-                        showUnsavedConfirmDialog = false
+                        settingViewModel.onSettingIntent(SettingIntent.ToggleUnsaveConfirmDialog(false))
                     })
             }
         )
     )
 
     ConfirmDialog(
-        showDialog = showApplyConfirmDialog,
+        showDialog = showApplySettingConfirmDialog.value,
         dialogTitle = stringResource(R.string.setting_apply_confirm),
         buttons = listOf(
             {
@@ -96,7 +92,7 @@ fun SettingScreen(
                             true -> ToastManager.showToast("設定に成功しました", ToastType.SUCCESS)
                             false -> ToastManager.showToast("設定に失敗しました", ToastType.ERROR)
                         }
-                        showApplyConfirmDialog = false
+                        settingViewModel.onSettingIntent(SettingIntent.ToggleApplySettingConfirmDialog(false))
                     }
                 )
             }, {
@@ -104,7 +100,7 @@ fun SettingScreen(
                     containerColor = Color.Red,
                     buttonText = stringResource(R.string.close),
                     onClick = {
-                        showApplyConfirmDialog = false
+                        settingViewModel.onSettingIntent(SettingIntent.ToggleApplySettingConfirmDialog(false))
                     }
                 )
             }
@@ -119,16 +115,16 @@ fun SettingScreen(
             ButtonContainer(
                 modifier = Modifier.fillMaxWidth(.5f),
                 onClick = {
-                    showApplyConfirmDialog = true
+                    settingViewModel.onSettingIntent(SettingIntent.ToggleApplySettingConfirmDialog(true))
                 },
                 buttonText = stringResource(R.string.apply_setting),
             )
         },
         onBackArrowClick = {
             if (settingViewModel.isSettingChangedWithoutApply()) {
-                showUnsavedConfirmDialog = true
+                settingViewModel.onSettingIntent(SettingIntent.ToggleUnsaveConfirmDialog(true))
             } else {
-                settingViewModel.resetToInitialSetting()
+                settingViewModel.onSettingIntent(SettingIntent.ResetToInitialSetting)
                 onGoBack()
             }
         }) { paddingValues ->
@@ -193,8 +189,8 @@ fun SettingScreen(
                                 enabledChannels = readerSettingState.enabledRfidChannel,
                                 supportedChannels = readerSettingState.supportedChannels,
                                 onChangeVolume = { volume ->
-                                    settingViewModel.onReaderSettingIntent(
-                                        ReaderSettingIntent.ChangeVolume(
+                                    settingViewModel.onSettingIntent(
+                                        SettingIntent.ChangeVolume(
                                             volume
                                         )
                                     )
@@ -202,23 +198,23 @@ fun SettingScreen(
                                 onChangePower = {},
                                 onChangeMinPower = {
                                     settingViewModel.apply {
-                                        onReaderSettingIntent(
-                                            ReaderSettingIntent.ChangeRadioPowerSliderPosition(
+                                        onSettingIntent(
+                                            SettingIntent.ChangeRadioPowerSliderPosition(
                                                 0
                                             )
                                         )
-                                        onReaderSettingIntent(ReaderSettingIntent.ChangeRadioPower(0))
+                                        onSettingIntent(SettingIntent.ChangeRadioPower(0))
                                     }
                                 },
                                 onChangeMaxPower = {
                                     settingViewModel.apply {
-                                        onReaderSettingIntent(
-                                            ReaderSettingIntent.ChangeRadioPowerSliderPosition(
+                                        onSettingIntent(
+                                            SettingIntent.ChangeRadioPowerSliderPosition(
                                                 30
                                             )
                                         )
-                                        onReaderSettingIntent(
-                                            ReaderSettingIntent.ChangeRadioPower(
+                                        onSettingIntent(
+                                            SettingIntent.ChangeRadioPower(
                                                 30
                                             )
                                         )
@@ -227,28 +223,28 @@ fun SettingScreen(
                                 onChangeSlider = {
                                     val intValue = it.coerceIn(0, 30)
                                     settingViewModel.apply {
-                                        onReaderSettingIntent(
-                                            ReaderSettingIntent.ChangeRadioPowerSliderPosition(
+                                        onSettingIntent(
+                                            SettingIntent.ChangeRadioPowerSliderPosition(
                                                 intValue
                                             )
                                         )
-                                        onReaderSettingIntent(
-                                            ReaderSettingIntent.ChangeRadioPower(
+                                        onSettingIntent(
+                                            SettingIntent.ChangeRadioPower(
                                                 intValue
                                             )
                                         )
                                     }
                                 },
                                 onChangeSession = {
-                                    settingViewModel.onReaderSettingIntent(
-                                        ReaderSettingIntent.ChangeSession(
+                                    settingViewModel.onSettingIntent(
+                                        SettingIntent.ChangeSession(
                                             it
                                         )
                                     )
                                 },
                                 onChangeTagAccessFlag = {
-                                    settingViewModel.onReaderSettingIntent(
-                                        ReaderSettingIntent.ChangeTagAccessFlag(
+                                    settingViewModel.onSettingIntent(
+                                        SettingIntent.ChangeTagAccessFlag(
                                             it
                                         )
                                     )
@@ -261,15 +257,15 @@ fun SettingScreen(
                                             readerSettingState.enabledRfidChannel + channel
                                         }
 
-                                    settingViewModel.onReaderSettingIntent(
-                                        ReaderSettingIntent.ChangeUsedChannel(updated)
+                                    settingViewModel.onSettingIntent(
+                                        SettingIntent.ChangeUsedChannel(updated)
                                     )
                                 },
                                 onChangeTagPopulation = {
                                     val filteredValue =
                                         it.filter { char -> char.isDigit() || char == '.' }
-                                    settingViewModel.onReaderSettingIntent(
-                                        ReaderSettingIntent.ChangeTagPopulation(
+                                    settingViewModel.onSettingIntent(
+                                        SettingIntent.ChangeTagPopulation(
                                             filteredValue
                                         )
                                     )

@@ -54,7 +54,7 @@ import com.example.sol_denka_stockmanagement.R
 import com.example.sol_denka_stockmanagement.constant.ScanMode
 import com.example.sol_denka_stockmanagement.constant.Tab
 import com.example.sol_denka_stockmanagement.constant.TagStatus
-import com.example.sol_denka_stockmanagement.intent.ReaderSettingIntent
+import com.example.sol_denka_stockmanagement.intent.SettingIntent
 import com.example.sol_denka_stockmanagement.intent.ShareIntent
 import com.example.sol_denka_stockmanagement.navigation.Screen
 import com.example.sol_denka_stockmanagement.screen.layout.Layout
@@ -108,37 +108,37 @@ fun InventoryScanScreen(
         readerSettingState = readerSettingState,
         onChangeMinPower = {
             settingViewModel.apply {
-                onReaderSettingIntent(
-                    ReaderSettingIntent.ChangeRadioPowerSliderPosition(
+                onSettingIntent(
+                    SettingIntent.ChangeRadioPowerSliderPosition(
                         0
                     )
                 )
-                onReaderSettingIntent(ReaderSettingIntent.ChangeRadioPower(0))
+                onSettingIntent(SettingIntent.ChangeRadioPower(0))
             }
         },
         onChangeMaxPower = {
             settingViewModel.apply {
-                onReaderSettingIntent(
-                    ReaderSettingIntent.ChangeRadioPowerSliderPosition(
+                onSettingIntent(
+                    SettingIntent.ChangeRadioPowerSliderPosition(
                         30
                     )
                 )
-                onReaderSettingIntent(ReaderSettingIntent.ChangeRadioPower(30))
+                onSettingIntent(SettingIntent.ChangeRadioPower(30))
             }
         },
         onChangeSlider = { newValue ->
             settingViewModel.apply {
-                onReaderSettingIntent(
-                    ReaderSettingIntent.ChangeRadioPowerSliderPosition(
+                onSettingIntent(
+                    SettingIntent.ChangeRadioPowerSliderPosition(
                         newValue
                     )
                 )
-                onReaderSettingIntent(ReaderSettingIntent.ChangeRadioPower(newValue))
+                onSettingIntent(SettingIntent.ChangeRadioPower(newValue))
             }
         },
         onOk = {
             settingViewModel.apply {
-                onReaderSettingIntent(ReaderSettingIntent.ChangeRadioPower(readerSettingState.radioPower))
+                onSettingIntent(SettingIntent.ChangeRadioPower(readerSettingState.radioPower))
                 setRadioPower(readerSettingState.radioPower)
             }
             appViewModel.onGeneralIntent(ShareIntent.ToggleRadioPowerChangeDialog)

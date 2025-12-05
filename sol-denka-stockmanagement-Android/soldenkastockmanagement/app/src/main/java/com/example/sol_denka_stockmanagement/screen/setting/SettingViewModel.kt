@@ -6,7 +6,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.sol_denka_stockmanagement.helper.controller.ReaderController
-import com.example.sol_denka_stockmanagement.intent.ReaderSettingIntent
+import com.example.sol_denka_stockmanagement.intent.SettingIntent
 import com.example.sol_denka_stockmanagement.reader.FakeBeeperVolume
 import com.example.sol_denka_stockmanagement.state.ReaderSettingState
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -26,6 +26,13 @@ class SettingViewModel @Inject constructor(
     val readerSettingState: StateFlow<ReaderSettingState> = _readerSettingState.asStateFlow()
 
     val initialReaderSettingsState = mutableStateOf(ReaderSettingState())
+
+    private val _showUnsaveConfirmDialog = MutableStateFlow(false)
+    val showUnsaveConfirmDialog = _showUnsaveConfirmDialog.asStateFlow()
+
+    private val _showApplySettingConfirmDialog = MutableStateFlow(false)
+    val showApplySettingConfirmDialog = _showApplySettingConfirmDialog.asStateFlow()
+
 
     init {
         viewModelScope.launch {
@@ -72,9 +79,9 @@ class SettingViewModel @Inject constructor(
     }
 
 
-    fun onReaderSettingIntent(intent: ReaderSettingIntent) {
+    fun onSettingIntent(intent: SettingIntent) {
         when (intent) {
-            is ReaderSettingIntent.ChangeRadioPower -> {
+            is SettingIntent.ChangeRadioPower -> {
                 _readerSettingState.update {
                     it.copy(
                         radioPower = intent.newValue,
@@ -83,29 +90,33 @@ class SettingViewModel @Inject constructor(
                 }
             }
 
-            is ReaderSettingIntent.ChangeSession -> {
+            is SettingIntent.ChangeSession -> {
                 _readerSettingState.update { it.copy(rfidSession = intent.newValue) }
             }
 
-            is ReaderSettingIntent.ChangeTagAccessFlag -> {
+            is SettingIntent.ChangeTagAccessFlag -> {
                 _readerSettingState.update { it.copy(tagAccessFlag = intent.newValue) }
             }
 
-            is ReaderSettingIntent.ChangeTagPopulation -> {
+            is SettingIntent.ChangeTagPopulation -> {
                 _readerSettingState.update { it.copy(tagPopulation = intent.newValue) }
             }
 
-            is ReaderSettingIntent.ChangeUsedChannel -> {
+            is SettingIntent.ChangeUsedChannel -> {
                 _readerSettingState.update { it.copy(enabledRfidChannel = intent.newValue) }
             }
 
-            is ReaderSettingIntent.ChangeVolume -> {
+            is SettingIntent.ChangeVolume -> {
                 _readerSettingState.update { it.copy(buzzerVolume = intent.newValue) }
             }
 
-            is ReaderSettingIntent.ChangeRadioPowerSliderPosition -> {
+            is SettingIntent.ChangeRadioPowerSliderPosition -> {
                 _readerSettingState.update { it.copy(radioPowerSliderPosition = intent.newValue) }
             }
+
+            is SettingIntent.ToggleUnsaveConfirmDialog -> _showUnsaveConfirmDialog.value = intent.showUnsaveConfirmDialog
+            is SettingIntent.ToggleApplySettingConfirmDialog -> _showApplySettingConfirmDialog.value = intent.showApplySettingConfirmDialog
+            SettingIntent.ResetToInitialSetting -> resetToInitialSetting()
         }
     }
 
@@ -113,7 +124,7 @@ class SettingViewModel @Inject constructor(
         return initialReaderSettingsState.value != _readerSettingState.value
     }
 
-    fun resetToInitialSetting() {
+    private fun resetToInitialSetting() {
         _readerSettingState.value = initialReaderSettingsState.value
     }
 
