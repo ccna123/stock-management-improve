@@ -5,7 +5,7 @@ import com.example.sol_denka_stockmanagement.constant.CsvHistoryResult
 import com.example.sol_denka_stockmanagement.database.entity.csv.CsvHistoryEntity
 
 data class CsvHistoryModel(
-    val csvHistoryId: Int,
+    val csvHistoryId: Int = 0,
     val csvTaskTypeId: Int,
     val fileName: String,
     val direction: CsvHistoryDirection,

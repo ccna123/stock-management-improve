@@ -9,7 +9,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.sol_denka_stockmanagement.constant.ConnectionState
+import com.example.sol_denka_stockmanagement.constant.CsvHistoryResult
 import com.example.sol_denka_stockmanagement.constant.ProcessMethod
+import com.example.sol_denka_stockmanagement.constant.generateIso8601JstTimestamp
+import com.example.sol_denka_stockmanagement.database.repository.csv.CsvHistoryRepository
 import com.example.sol_denka_stockmanagement.database.repository.csv.CsvTaskTypeRepository
 import com.example.sol_denka_stockmanagement.database.repository.inventory.InventoryResultTypeRepository
 import com.example.sol_denka_stockmanagement.database.repository.item.ItemUnitRepository
@@ -24,6 +27,7 @@ import com.example.sol_denka_stockmanagement.helper.message_mapper.MessageMapper
 import com.example.sol_denka_stockmanagement.intent.ExpandIntent
 import com.example.sol_denka_stockmanagement.intent.InputIntent
 import com.example.sol_denka_stockmanagement.intent.ShareIntent
+import com.example.sol_denka_stockmanagement.model.csv.CsvHistoryModel
 import com.example.sol_denka_stockmanagement.model.location.LocationMasterModel
 import com.example.sol_denka_stockmanagement.model.reader.ReaderInfoModel
 import com.example.sol_denka_stockmanagement.screen.setting.sub_screen.app_setting.AppSettingState
@@ -55,6 +59,7 @@ class AppViewModel @Inject constructor(
     private val processTypeRepository: ProcessTypeRepository,
     private val csvTaskTypeRepository: CsvTaskTypeRepository,
     private val inventoryResultTypeRepository: InventoryResultTypeRepository,
+    private val csvHistoryRepository: CsvHistoryRepository,
     private val csvHelper: CsvHelper,
 ) : ViewModel() {
 
@@ -368,25 +373,48 @@ class AppViewModel @Inject constructor(
                     _isFileWorking.value = true
                     _progress.value = 0f
 
-                    val result = csvHelper.saveCsv(
+                    val saveCsvResult = csvHelper.saveCsv(
                         context = context,
                         csvType = first.toCsvType(),
                         fileName = first.toCsvName(),
                         rows = rows,
                         onProgress = { p -> _progress.value = p },
-                        onCountRecordNum = { Log.e("TSS", "onCountRecordNum: $it", )}
                     )
 
-                    if (result is ProcessResult.Success) {
+                    val csvTaskTypeId = csvTaskTypeRepository.getIdByTaskCode(intent.taskCode.name)
+                    val csvHistorySaveResult = csvTaskTypeId.let {
+                        csvHistoryRepository.insert(
+                            CsvHistoryModel(
+                                csvTaskTypeId = csvTaskTypeId,
+                                fileName = first.toCsvName(),
+                                direction = intent.direction,
+                                result = when (saveCsvResult) {
+                                    is ProcessResult.Success -> CsvHistoryResult.SUCCESS
+                                    is ProcessResult.Failure -> CsvHistoryResult.FAILURE
+                                },
+                                recordNum = rows.size,
+                                errorMessage = when (saveCsvResult) {
+                                    is ProcessResult.Failure -> MessageMapper.toMessage(
+                                        saveCsvResult.statusCode
+                                    )
+
+                                    is ProcessResult.Success -> ""
+                                },
+                                executedAt = generateIso8601JstTimestamp()
+                            )
+                        )
+                    }
+
+                    if (saveCsvResult is ProcessResult.Success && csvHistorySaveResult > 0) {
                         _isFileWorking.value = false
                         csvDialogIsError.value = false
-                        csvDialogMessage.value = MessageMapper.toMessage(result.statusCode)
+                        csvDialogMessage.value = MessageMapper.toMessage(saveCsvResult.statusCode)
                         showAppDialog.value = true
 
-                    } else if (result is ProcessResult.Failure) {
+                    } else if (saveCsvResult is ProcessResult.Failure) {
                         _isFileWorking.value = false
                         csvDialogIsError.value = true
-                        csvDialogMessage.value = MessageMapper.toMessage(result.statusCode)
+                        csvDialogMessage.value = MessageMapper.toMessage(saveCsvResult.statusCode)
                         showAppDialog.value = true
                     }
                 }

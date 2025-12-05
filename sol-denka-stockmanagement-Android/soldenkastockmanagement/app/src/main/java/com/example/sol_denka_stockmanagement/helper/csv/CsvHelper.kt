@@ -472,7 +472,6 @@ class CsvHelper @Inject constructor(
         fileName: String,
         rows: List<T>,
         onProgress: (Float) -> Unit,
-        onCountRecordNum: (Int) -> Unit
     ): ProcessResult = withContext(Dispatchers.IO) {
         try {
             if (rows.isEmpty()) {
@@ -549,7 +548,6 @@ class CsvHelper @Inject constructor(
 
             Log.i("TSS", "✅ CSV saved: $relativePath$fileName")
             onProgress(1f)
-            onCountRecordNum(rows.size)
 
             ProcessResult.Success(statusCode = StatusCode.OK)
 

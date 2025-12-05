@@ -1,6 +1,8 @@
 package com.example.sol_denka_stockmanagement.intent
 
 import com.example.sol_denka_stockmanagement.app_interface.ICsvExport
+import com.example.sol_denka_stockmanagement.constant.CsvHistoryDirection
+import com.example.sol_denka_stockmanagement.constant.CsvTaskCode
 import com.example.sol_denka_stockmanagement.constant.Tab
 
 
@@ -27,8 +29,8 @@ sealed interface ShareIntent {
     data class ChangeTabInReceivingScreen(val tab: String) : ShareIntent
 
     data class SaveScanResult<T : ICsvExport>(
-        val taskCode: String,
-        val direction: String,
+        val taskCode: CsvTaskCode,
+        val direction: CsvHistoryDirection,
         val data: List<T>
     ) : ShareIntent
 

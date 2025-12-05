@@ -16,6 +16,9 @@ interface CsvTaskTypeDao: IDao<CsvTaskTypeEntity> {
     @Query("SELECT * FROM CsvTaskType")
     override fun get(): Flow<List<CsvTaskTypeEntity>>
 
+    @Query("SELECT csv_task_type_id FROM CsvTaskType WHERE csv_task_code = :taskCode")
+    suspend fun getIdByTaskCode(taskCode: String): Int
+
     @Insert
     override suspend fun insert(e: CsvTaskTypeEntity): Long
 

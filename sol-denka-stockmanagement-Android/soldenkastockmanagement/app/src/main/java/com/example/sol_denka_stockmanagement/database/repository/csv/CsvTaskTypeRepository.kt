@@ -2,7 +2,6 @@ package com.example.sol_denka_stockmanagement.database.repository.csv
 
 import android.util.Log
 import com.example.sol_denka_stockmanagement.constant.CsvTaskType
-import com.example.sol_denka_stockmanagement.constant.ProcessMethod
 import com.example.sol_denka_stockmanagement.constant.generateTimeStamp
 import com.example.sol_denka_stockmanagement.database.dao.csv.CsvTaskTypeDao
 import com.example.sol_denka_stockmanagement.model.csv.CsvTaskTypeModel
@@ -29,27 +28,34 @@ class CsvTaskTypeRepository @Inject constructor(
         ),
         CsvTaskTypeModel(
             csvTaskTypeId = 2,
+            csvTaskCode = CsvTaskType.OUT,
+            csvTaskName = CsvTaskType.OUT.displayName,
+            createdAt = generateTimeStamp(),
+            updatedAt = generateTimeStamp()
+        ),
+        CsvTaskTypeModel(
+            csvTaskTypeId = 3,
             csvTaskCode = CsvTaskType.INVENTORY,
             csvTaskName = CsvTaskType.INVENTORY.displayName,
             createdAt = generateTimeStamp(),
             updatedAt = generateTimeStamp()
         ),
         CsvTaskTypeModel(
-            csvTaskTypeId = 3,
+            csvTaskTypeId = 4,
             csvTaskCode = CsvTaskType.LOCATION_CHANGE,
             csvTaskName = CsvTaskType.LOCATION_CHANGE.displayName,
             createdAt = generateTimeStamp(),
             updatedAt = generateTimeStamp()
         ),
         CsvTaskTypeModel(
-            csvTaskTypeId = 4,
+            csvTaskTypeId = 5,
             csvTaskCode = CsvTaskType.UPPER_SYSTEM,
             csvTaskName = CsvTaskType.UPPER_SYSTEM.displayName,
             createdAt = generateTimeStamp(),
             updatedAt = generateTimeStamp()
         ),
         CsvTaskTypeModel(
-            csvTaskTypeId = 5,
+            csvTaskTypeId = 6,
             csvTaskCode = CsvTaskType.OTHER,
             csvTaskName = CsvTaskType.OTHER.displayName,
             createdAt = generateTimeStamp(),
@@ -70,6 +76,7 @@ class CsvTaskTypeRepository @Inject constructor(
     fun get(): Flow<List<CsvTaskTypeModel>> = dao.get().map { entityList ->
         entityList.map { it.toModel() }
     }
+    suspend fun getIdByTaskCode(taskCode: String) = dao.getIdByTaskCode(taskCode)
     suspend fun insert(model: CsvTaskTypeModel) = dao.insert(model.toEntity())
     suspend fun update(model: CsvTaskTypeModel) = dao.update(model.toEntity())
     suspend fun delete(model: CsvTaskTypeModel) = dao.delete(model.toEntity())
