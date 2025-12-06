@@ -62,7 +62,7 @@ fun InboundScreen(
 
     val inputState = appViewModel.inputState.collectAsStateWithLifecycle().value
     val expandState = appViewModel.expandState.collectAsStateWithLifecycle().value
-    val inboundDetail by scanViewModel.inboundDetail.collectAsStateWithLifecycle()
+    val lastInboundEpc by scanViewModel.lastInboundEpc.collectAsStateWithLifecycle()
 
     LaunchedEffect(Unit) {
         scanViewModel.setEnableScan(false)
@@ -133,7 +133,7 @@ fun InboundScreen(
                     ) {
                         Text(
                             text = stringResource(
-                                R.string.item_code,inboundDetail?.epc ?: "")
+                                R.string.item_code,lastInboundEpc ?: "")
                         )
                         Spacer(modifier = Modifier.height(20.dp))
                         ExposedDropdownMenuBox(

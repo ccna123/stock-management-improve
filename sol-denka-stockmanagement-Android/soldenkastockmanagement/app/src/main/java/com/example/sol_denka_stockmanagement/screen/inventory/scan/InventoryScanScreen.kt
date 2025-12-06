@@ -83,7 +83,6 @@ fun InventoryScanScreen(
 ) {
     val generalState = appViewModel.generalState.collectAsStateWithLifecycle().value
     val rfidTagList = scanViewModel.rfidTagList.collectAsStateWithLifecycle().value
-    val epcNameMap = scanViewModel.epcNameMap.collectAsStateWithLifecycle().value
     val readerSettingState by settingViewModel.readerSettingState.collectAsStateWithLifecycle()
     val showClearTagConfirmDialog = appViewModel.showClearTagConfirmDialog.value
     val showRadioPowerChangeDialog = appViewModel.showRadioPowerChangeDialog.value
@@ -413,7 +412,6 @@ fun InventoryScanScreen(
 
                         ScannedTagDisplay(
                             rfidTagList = displayList,
-                            epcNameMap = epcNameMap,
                             selectedTags = generalState.selectedTags,
                             isSelectionMode = if (generalState.selectedTags.isNotEmpty()) generalState.isSelectionMode else false,
                             onClick = { item ->
