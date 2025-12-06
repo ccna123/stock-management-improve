@@ -2,6 +2,7 @@ package com.example.sol_denka_stockmanagement.state
 
 import com.example.sol_denka_stockmanagement.constant.FileTransferMethod
 import com.example.sol_denka_stockmanagement.constant.MaterialSelectionItem
+import com.example.sol_denka_stockmanagement.constant.ProcessMethod
 
 data class InputState(
     val location: String = "",
@@ -10,7 +11,7 @@ data class InputState(
     val length: String = "",
     val memo: String = "",
     val materialSelectedItem: String = MaterialSelectionItem.MISS_ROLL.displayName,
-    val handlingMethod: String = "",
+    val processMethod: String = ProcessMethod.USE.displayName,
     val rollingMachineInfo: String = "",
     val weight: String = "",
     val lotNo: String = "",

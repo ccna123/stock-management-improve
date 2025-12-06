@@ -74,6 +74,7 @@ fun ScanScreen(
     val expandedMap by appViewModel.perTagExpanded.collectAsStateWithLifecycle()
     val processMap by appViewModel.perTagProcessMethod.collectAsStateWithLifecycle()
     val checkedMap by appViewModel.perTagChecked.collectAsStateWithLifecycle()
+    val inputState by appViewModel.inputState.collectAsStateWithLifecycle()
 
     val isAllSelected by appViewModel.isAllSelected.collectAsStateWithLifecycle()
     val selectedCount by appViewModel.selectedCount.collectAsStateWithLifecycle()
@@ -112,7 +113,7 @@ fun ScanScreen(
     if (showModalProcessMethod) {
         ProcessModal(
             selectedCount = selectedCount,
-            chosenMethod = appViewModel.processMethod.value,
+            chosenMethod = inputState.processMethod,
             onChooseMethod = { method ->
                 appViewModel.onInputIntent(InputIntent.ChangeProcessMethod(method))
             },

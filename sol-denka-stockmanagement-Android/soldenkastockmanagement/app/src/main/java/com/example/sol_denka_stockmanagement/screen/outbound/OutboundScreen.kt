@@ -230,7 +230,7 @@ fun OutboundScreen(
                         singleLine = false,
                         onChange = { newValue ->
                             appViewModel.onInputIntent(
-                                InputIntent.ChangeRemark(
+                                InputIntent.ChangeMemo(
                                     newValue
                                 )
                             )

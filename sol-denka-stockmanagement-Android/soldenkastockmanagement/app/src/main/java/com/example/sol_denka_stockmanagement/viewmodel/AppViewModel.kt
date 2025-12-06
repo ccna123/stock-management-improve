@@ -74,12 +74,6 @@ class AppViewModel @Inject constructor(
     private val _inputState = MutableStateFlow(InputState())
     val inputState: StateFlow<InputState> = _inputState.asStateFlow()
 
-    private val _errorState = mutableStateOf(ErrorState())
-    val errorState: State<ErrorState> = _errorState
-
-    private val _appSettingState = mutableStateOf(AppSettingState())
-    val appSettingState: State<AppSettingState> = _appSettingState
-
     var showFileProgressDialog = mutableStateOf(false)
 
     private val _progress = MutableStateFlow(0f)
@@ -115,9 +109,6 @@ class AppViewModel @Inject constructor(
 
     private val _showModalProcessMethod = MutableStateFlow(false)
     val showModalProcessMethod = _showModalProcessMethod.asStateFlow()
-
-    var processMethod = mutableStateOf(ProcessMethod.USE.displayName)
-        private set
 
     private val _locationMaster = MutableStateFlow<List<LocationMasterModel>>(emptyList())
     val locationMaster = _locationMaster.asStateFlow()
@@ -201,14 +192,14 @@ class AppViewModel @Inject constructor(
     fun onInputIntent(intent: InputIntent) {
         when (intent) {
             is InputIntent.ChangeProcessMethod -> {
-                _inputState.update { it.copy(handlingMethod = intent.value) }
-                processMethod.value = intent.value
+                _inputState.update { it.copy(processMethod = intent.value) }
+//                processMethod.value = intent.value
             }
 
             is InputIntent.ChangeLocation ->
                 _inputState.update { it.copy(location = intent.value) }
 
-            is InputIntent.ChangeRemark ->
+            is InputIntent.ChangeMemo ->
                 _inputState.update { it.copy(memo = intent.value) }
 
             is InputIntent.ChangeMissRoll ->
@@ -239,7 +230,7 @@ class AppViewModel @Inject constructor(
                 _inputState.update { it.copy(fileTransferMethod = intent.value) }
 
             InputIntent.BulkApplyProcessMethod -> {
-                val chosenMethod = processMethod.value
+                val chosenMethod = _inputState.value.processMethod
                 val checked = _perTagChecked.value
 
                 val updated = perTagProcessMethod.value.toMutableMap()
@@ -350,7 +341,6 @@ class AppViewModel @Inject constructor(
             ShareIntent.ResetState -> {
                 _inputState.value = InputState()
                 _expandState.value = ExpandState()
-                _errorState.value = ErrorState()
                 _generalState.value = GeneralState()
                 perTagExpanded.value = emptyMap()
                 perTagProcessMethod.value = emptyMap()
@@ -358,7 +348,6 @@ class AppViewModel @Inject constructor(
                 _selectedCount.value = 0
                 _showModalProcessMethod.value = false
                 _isAllSelected.value = false
-                processMethod.value = ProcessMethod.USE.displayName
             }
 
             is ShareIntent.ChangeTabInReceivingScreen ->

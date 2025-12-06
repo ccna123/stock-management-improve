@@ -225,7 +225,7 @@ fun LocationChangeScreen(
                                     .toByteArray().size == 1) || char == '-'
                             }
                             appViewModel.onInputIntent(
-                                InputIntent.ChangeRemark(
+                                InputIntent.ChangeMemo(
                                     filteredValue
                                 )
                             )
