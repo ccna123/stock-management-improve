@@ -53,6 +53,9 @@ import com.example.sol_denka_stockmanagement.ui.theme.tealGreen
 import com.example.sol_denka_stockmanagement.viewmodel.AppViewModel
 import com.example.sol_denka_stockmanagement.viewmodel.ScanViewModel
 import kotlinx.coroutines.launch
+import java.time.LocalDateTime
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @Composable
@@ -64,12 +67,12 @@ fun ScanScreen(
     onGoBack: () -> Unit,
 ) {
     val scannedTags by scanViewModel.scannedTags.collectAsStateWithLifecycle()
-    val inboundDetail by scanViewModel.inboundDetail.collectAsStateWithLifecycle()
-    val outboundDetailMap by scanViewModel.epcNameMap.collectAsStateWithLifecycle()
+    val lastInboundEpc by scanViewModel.lastInboundEpc.collectAsStateWithLifecycle()
+    val rfidTagList by scanViewModel.rfidTagList.collectAsStateWithLifecycle()
     val isPerformingInventory by appViewModel.isPerformingInventory.collectAsStateWithLifecycle()
     val scope = rememberCoroutineScope()
     val expandedMap by appViewModel.perTagExpanded.collectAsStateWithLifecycle()
-    val handlingMap by appViewModel.perTagHandlingMethod.collectAsStateWithLifecycle()
+    val processMap by appViewModel.perTagHandlingMethod.collectAsStateWithLifecycle()
     val checkedMap by appViewModel.perTagChecked.collectAsStateWithLifecycle()
 
     val isAllSelected by appViewModel.isAllSelected.collectAsStateWithLifecycle()
@@ -221,7 +224,7 @@ fun ScanScreen(
                             Screen.LocationChange.routeId
                         ) -> checkedMap.values.any { it }
 
-                        Screen.Inbound.routeId -> inboundDetail?.epc?.isNotEmpty() == true
+                        Screen.Inbound.routeId -> lastInboundEpc?.isNotEmpty() == true
                         else -> true
                     },
                     icon = {
@@ -247,7 +250,7 @@ fun ScanScreen(
         },
         onBackArrowClick = {
             if (isPerformingInventory.not()) {
-                if (scannedTags.isNotEmpty() || inboundDetail?.epc?.isNotEmpty() == true) {
+                if (scannedTags.isNotEmpty() || lastInboundEpc?.isNotEmpty() == true) {
                     appViewModel.onGeneralIntent(ShareIntent.ToggleClearTagConfirmDialog)
                 } else {
                     scanViewModel.setScanMode(ScanMode.NONE)
@@ -262,11 +265,13 @@ fun ScanScreen(
                 .fillMaxSize()
         ) {
             if (prevScreenNameId == Screen.Inbound.routeId) {
+                val tag = rfidTagList.find { it.epc == lastInboundEpc }
                 InboundScanTagCard(
-                    epc = inboundDetail?.epc ?: "-",
-                    itemName = inboundDetail?.itemName ?: "-",
-                    itemCode = inboundDetail?.itemCode ?: "-",
-                    timeStamp = inboundDetail?.timeStamp ?: "-"
+                    epc = tag?.epc ?: "-",
+                    itemName = tag?.newFields?.itemName ?: "-",
+                    itemCode = tag?.newFields?.itemCode ?: "-",
+                    timeStamp = if (tag == null) "-" else LocalDateTime.now(ZoneId.of("Asia/Tokyo"))
+                        .format(DateTimeFormatter.ofPattern("HH:mm"))
                 )
             } else {
 
@@ -327,11 +332,10 @@ fun ScanScreen(
                             Screen.Outbound.routeId -> {
                                 val isExpanded = expandedMap[tag.first] ?: false
                                 val isChecked = checkedMap[tag.first] ?: false
-                                val value = handlingMap[tag.first] ?: ""
-                                val itemName = outboundDetailMap[tag.first] ?: "-"
+                                val value = processMap[tag.first] ?: ""
                                 OutboundSingleItem(
-                                    tag = tag.first,
-                                    itemName = itemName,
+                                    tag = rfidTagList.find { it.epc == tag.first }?.epc ?: "",
+                                    itemName = rfidTagList.find { it.epc == tag.first }?.newFields?.itemName ?: "",
                                     isChecked = isChecked,
                                     onSelect = {
                                         if (isPerformingInventory.not()) {
@@ -398,10 +402,9 @@ fun ScanScreen(
 
                             Screen.LocationChange.routeId -> {
                                 val isChecked = checkedMap[tag.first] ?: false
-                                val itemName = outboundDetailMap[tag.first] ?: "-"
                                 LocationChangeSingleItem(
-                                    tag = tag.first,
-                                    itemName = itemName,
+                                    tag = rfidTagList.find { it.epc == tag.first }?.epc ?: "",
+                                    itemName = rfidTagList.find { it.epc == tag.first }?.newFields?.itemName ?: "",
                                     isChecked = isChecked,
                                     onCheckedChange = {
                                         if (isPerformingInventory.not()){

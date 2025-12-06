@@ -29,7 +29,10 @@ class TagMasterImporter(
                     newFields = AdditionalFieldsModel(
                         tagStatus = TagStatus.UNPROCESSED,
                         inventoryResultType = InventoryResultType.UNKNOWN,
-                        rssi = -100f
+                        rssi = -100f,
+                        itemName = "",
+                        itemCode = "",
+                        location = "",
                     )
                 )
             }

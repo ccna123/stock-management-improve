@@ -45,6 +45,7 @@ import com.example.sol_denka_stockmanagement.share.ButtonContainer
 import com.example.sol_denka_stockmanagement.share.InputFieldContainer
 import com.example.sol_denka_stockmanagement.share.ScanResultTable
 import com.example.sol_denka_stockmanagement.viewmodel.AppViewModel
+import com.example.sol_denka_stockmanagement.viewmodel.ScanViewModel
 import kotlinx.coroutines.launch
 import java.util.Calendar
 import java.util.Locale
@@ -55,6 +56,7 @@ import java.util.Locale
 fun OutboundScreen(
     appViewModel: AppViewModel,
     outboundViewModel: OutboundViewModel,
+    scanViewModel: ScanViewModel,
     onNavigate: (Screen) -> Unit,
     onGoBack: () -> Unit,
 ) {
@@ -62,9 +64,9 @@ fun OutboundScreen(
     val inputState = appViewModel.inputState.collectAsStateWithLifecycle()
     val generalState = appViewModel.generalState.collectAsStateWithLifecycle()
     val checkedMap by appViewModel.perTagChecked.collectAsStateWithLifecycle()
+    val rfidTagList = scanViewModel.rfidTagList.collectAsStateWithLifecycle().value
     val processTypeMap by appViewModel.perTagHandlingMethod.collectAsStateWithLifecycle()
     val selectedCount by appViewModel.selectedCount.collectAsStateWithLifecycle()
-    val outboundList by outboundViewModel.outboundList.collectAsStateWithLifecycle()
     val scope = rememberCoroutineScope()
 
     if (generalState.value.showTimePicker) {
@@ -100,12 +102,6 @@ fun OutboundScreen(
             TimePicker(state = state)
         }
     }
-
-
-    LaunchedEffect(checkedMap, processTypeMap) {
-        outboundViewModel.loadOutboundItems(checkedMap, processTypeMap)
-    }
-
     Layout(
         topBarText = stringResource(R.string.shipping),
         topBarIcon = Icons.AutoMirrored.Filled.ArrowBack,
@@ -176,11 +172,11 @@ fun OutboundScreen(
                             stringResource(R.string.item_code_title),
                             stringResource(R.string.handling_method)
                         ),
-                        scanResult = outboundList.map { tag ->
+                        scanResult = checkedMap.filter { it.value }.map { it.key }.map { tag ->
                             ScanResultRowModel(
-                                itemName = tag.itemName ?: "-",
-                                itemCode = tag.epc,
-                                lastColumn = tag.processType ?: "-"
+                                itemName = rfidTagList.find { it.epc == tag }?.epc ?: "-",
+                                itemCode = rfidTagList.find { it.epc == tag }?.newFields?.itemCode ?: "-",
+                                lastColumn = processTypeMap[tag] ?: "-"
                             )
                         },
                     )

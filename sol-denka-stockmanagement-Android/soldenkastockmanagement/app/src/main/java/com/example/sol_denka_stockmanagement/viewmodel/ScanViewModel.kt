@@ -1,7 +1,6 @@
 package com.example.sol_denka_stockmanagement.viewmodel
 
 import android.os.Build
-import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -11,7 +10,6 @@ import com.example.sol_denka_stockmanagement.constant.TagStatus
 import com.example.sol_denka_stockmanagement.database.repository.tag.TagMasterRepository
 import com.example.sol_denka_stockmanagement.helper.controller.ReaderController
 import com.example.sol_denka_stockmanagement.helper.controller.TagController
-import com.example.sol_denka_stockmanagement.model.inbound.InboundScanResult
 import com.example.sol_denka_stockmanagement.model.tag.TagMasterModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -20,9 +18,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
-import java.time.LocalDateTime
-import java.time.ZoneId
-import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
@@ -37,18 +32,15 @@ class ScanViewModel @Inject constructor(
 
     private val _scanMode = MutableStateFlow(ScanMode.INBOUND)
 
-    // Tag detail for inbound scan
-    private val _inboundDetail = MutableStateFlow<InboundScanResult?>(null)
-    val inboundDetail = _inboundDetail.asStateFlow()
-
-    private val _epcNameMap = MutableStateFlow<Map<String, String?>>(emptyMap())
-    val epcNameMap = _epcNameMap.asStateFlow()
-
     private val _rfidTagList = MutableStateFlow<List<TagMasterModel>>(emptyList())
     val rfidTagList = _rfidTagList.asStateFlow()
 
     private val _rssiMap = MutableStateFlow<Map<String, Float>>(emptyMap())
     val rssiMap = _rssiMap.asStateFlow()
+
+    private val _lastInboundEpc = MutableStateFlow<String?>(null)
+    val lastInboundEpc = _lastInboundEpc.asStateFlow()
+
 
     private var inboundJob: Job? = null
     private var outboundJob: Job? = null
@@ -58,6 +50,25 @@ class ScanViewModel @Inject constructor(
 
     init {
 
+        viewModelScope.launch {
+            val fullInfoList = tagMasterRepository.getFullInfo()
+            val infoMap = fullInfoList.associateBy { it.epc }
+
+            tagMasterRepository.get().collect { tagList ->
+                val enriched = tagList.map { tag ->
+                    val info = infoMap[tag.epc]
+
+                    tag.copy(
+                        newFields = tag.newFields.copy(
+                            itemName = info?.itemName ?: "",
+                            itemCode = info?.itemCode ?: "",
+                            location = info?.location ?: "",
+                        )
+                    )
+                }
+                _rfidTagList.value = enriched
+            }
+        }
         // 1) always collect scanMode
         viewModelScope.launch(Dispatchers.IO) {
             _scanMode.collect { mode ->
@@ -74,8 +85,8 @@ class ScanViewModel @Inject constructor(
                     ScanMode.INBOUND -> {
                         inboundJob = viewModelScope.launch(Dispatchers.IO) {
                             scannedTags.collect { tags ->
-                                val latest = tags.values.lastOrNull() ?: return@collect
-                                getTagDetailForInbound(latest.rfidNo)
+                                val latest = tags.values.lastOrNull()?.rfidNo ?: return@collect
+                                _lastInboundEpc.value = latest
                                 readerController.clearScannedTag()
                             }
                         }
@@ -95,14 +106,6 @@ class ScanViewModel @Inject constructor(
                                 }
                             }.collect { merged ->
                                 _rfidTagList.value = merged
-
-
-                                val detailList =
-                                    tagMasterRepository.getItemNameByTagId(merged.map { it.epc }) ?: emptyList()
-
-                                val map = detailList.associate { it.epc to it.itemName }
-
-                                _epcNameMap.value = map
                             }
                         }
 
@@ -125,20 +128,10 @@ class ScanViewModel @Inject constructor(
 
                     ScanMode.OUTBOUND, ScanMode.LOCATION_CHANGE -> {
                         outboundJob = viewModelScope.launch(Dispatchers.IO) {
-                            scannedTags.collect { tags ->
-
-                                val epcList = tags.keys.toList()
-                                if (epcList.isEmpty()) return@collect
-
-                                val detailList =
-                                    tagMasterRepository.getItemNameByTagId(epcList) ?: emptyList()
-
-                                val map = detailList.associate { it.epc to it.itemName }
-
-                                _epcNameMap.value = map
-                            }
+                            scannedTags.collect {}
                         }
                     }
+
                     ScanMode.NONE -> {}
                 }
             }
@@ -164,25 +157,10 @@ class ScanViewModel @Inject constructor(
     }
 
     fun clearInboundDetail() {
-        _inboundDetail.value = null
+        _lastInboundEpc.value = ""
     }
 
     fun setEnableScan(enabled: Boolean) = readerController.setScanEnabled(enabled)
-
-    private fun getTagDetailForInbound(epc: String) {
-        viewModelScope.launch(Dispatchers.IO) {
-            val detail = tagMasterRepository.getTagDetailForInbound(epc)
-            if (detail != null) {
-                _inboundDetail.value = InboundScanResult(
-                    epc = detail.epc,
-                    itemName = detail.itemName,
-                    itemCode = detail.itemCode,
-                    timeStamp = LocalDateTime.now(ZoneId.of("Asia/Tokyo"))
-                        .format(DateTimeFormatter.ofPattern("HH:mm"))
-                )
-            }
-        }
-    }
 
     override fun updateTagStatus(epc: String, status: TagStatus) {
         tagController.updateTagStatus(epc, status)

@@ -19,7 +19,6 @@ import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
@@ -43,6 +42,7 @@ import com.example.sol_denka_stockmanagement.share.ButtonContainer
 import com.example.sol_denka_stockmanagement.share.InputFieldContainer
 import com.example.sol_denka_stockmanagement.share.ScanResultTable
 import com.example.sol_denka_stockmanagement.viewmodel.AppViewModel
+import com.example.sol_denka_stockmanagement.viewmodel.ScanViewModel
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -50,23 +50,19 @@ import kotlinx.coroutines.launch
 @Composable
 fun LocationChangeScreen(
     appViewModel: AppViewModel,
+    scanViewModel: ScanViewModel,
     locationChangeViewModel: LocationChangeViewModel,
     onNavigate: (Screen) -> Unit,
     onGoBack: () -> Unit
 ) {
 
     val expandState = appViewModel.expandState.collectAsStateWithLifecycle()
-    val inputState = appViewModel.inputState.collectAsStateWithLifecycle()
+    val rfidTagList = scanViewModel.rfidTagList.collectAsStateWithLifecycle().value
+    val inputState = appViewModel.inputState.collectAsStateWithLifecycle().value
     val selectedCount by appViewModel.selectedCount.collectAsStateWithLifecycle()
     val checkedMap by appViewModel.perTagChecked.collectAsStateWithLifecycle()
     val locationMaster by appViewModel.locationMaster.collectAsStateWithLifecycle()
-    val locationChangePreview by locationChangeViewModel.locationChangeList.collectAsStateWithLifecycle()
     val scope = rememberCoroutineScope()
-
-    LaunchedEffect(Unit) {
-        val selectedEpc = checkedMap.filter { it.value }.map { it.key }
-        locationChangeViewModel.getTagDetailForLocationChange(selectedEpc)
-    }
 
     Layout(
         topBarText = stringResource(R.string.storage_area_change),
@@ -87,7 +83,7 @@ fun LocationChangeScreen(
                         spotColor = Color.DarkGray.copy(alpha = 0.7f)
                     ),
                 buttonText = stringResource(R.string.storage_area_change),
-                canClick = inputState.value.location.isNotEmpty(),
+                canClick = inputState.location.isNotEmpty(),
                 icon = {
                     Icon(
                         painter = painterResource(R.drawable.register),
@@ -99,13 +95,19 @@ fun LocationChangeScreen(
                 onClick = {
                     scope.launch {
                         locationChangeViewModel.saveLocationChangeToDb(
-                            memo = inputState.value.memo,
-                            newLocation = inputState.value.location
+                            memo = inputState.memo,
+                            newLocation = inputState.location,
+                            rfidTagList = rfidTagList.filter { tag ->
+                                tag.epc in checkedMap.filter { it.value }.keys
+                            }
                         )
                         val csvModels =
                             locationChangeViewModel.generateCsvData(
-                                memo = inputState.value.memo,
-                                newLocation = inputState.value.location
+                                memo = inputState.memo,
+                                newLocation = inputState.location,
+                                rfidTagList = rfidTagList.filter { tag ->
+                                    tag.epc in checkedMap.filter { it.value }.keys
+                                }
                             )
                         appViewModel.onGeneralIntent(
                             ShareIntent.SaveScanResult(
@@ -139,11 +141,11 @@ fun LocationChangeScreen(
                             stringResource(R.string.item_code_title),
                             stringResource(R.string.storage_area)
                         ),
-                        scanResult = locationChangePreview.map { tag ->
+                        scanResult = checkedMap.filter { it.value }.map { it.key }.map { tag ->
                             ScanResultRowModel(
-                                itemName = tag.itemName ?: "-",
-                                itemCode = tag.epc,
-                                lastColumn = tag.location ?: "-"
+                                itemName = rfidTagList.find { it.epc == tag }?.epc ?: "-",
+                                itemCode = rfidTagList.find { it.epc == tag }?.newFields?.itemCode ?: "-",
+                                lastColumn = rfidTagList.find { it.epc == tag }?.newFields?.location ?: "-",
                             )
                         },
                     )
@@ -158,7 +160,7 @@ fun LocationChangeScreen(
                                     enabled = true
                                 )
                                 .fillMaxWidth(),
-                            value = if (inputState.value.location == SelectTitle.SelectLocation.displayName) "" else inputState.value.location,
+                            value = if (inputState.location == SelectTitle.SelectLocation.displayName) "" else inputState.location,
                             hintText = SelectTitle.SelectLocation.displayName,
                             isNumeric = false,
                             onChange = { newValue ->
@@ -209,7 +211,7 @@ fun LocationChangeScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(200.dp),
-                        value = inputState.value.memo,
+                        value = inputState.memo,
                         label = "${stringResource(R.string.memo)} (オプション)",
                         hintText = stringResource(R.string.memo_hint),
                         isNumeric = false,

@@ -77,6 +77,7 @@ fun AppNavigation(
                 OutboundScreen(
                     appViewModel = appViewModel,
                     outboundViewModel = outboundViewModel,
+                    scanViewModel = scanViewModel,
                     onNavigate = {dest -> navigate(dest)},
                     onGoBack = { goBack() }
                 )
@@ -121,6 +122,7 @@ fun AppNavigation(
                 val locationChangeViewModel = hiltViewModel<LocationChangeViewModel>()
                 LocationChangeScreen(
                     appViewModel = appViewModel,
+                    scanViewModel = scanViewModel,
                     locationChangeViewModel = locationChangeViewModel,
                     onNavigate = {dest -> navigate(dest)},
                     onGoBack = { goBack() }
