@@ -19,6 +19,7 @@ import com.example.sol_denka_stockmanagement.screen.inventory.complete.Inventory
 import com.example.sol_denka_stockmanagement.screen.inventory.input.InventoryScreen
 import com.example.sol_denka_stockmanagement.screen.inventory.scan.InventoryScanScreen
 import com.example.sol_denka_stockmanagement.screen.inbound.InboundScreen
+import com.example.sol_denka_stockmanagement.screen.inbound.InboundViewModel
 import com.example.sol_denka_stockmanagement.screen.inventory.complete.InventoryCompleteViewModel
 import com.example.sol_denka_stockmanagement.screen.scan.ScanScreen
 import com.example.sol_denka_stockmanagement.screen.outbound.OutboundScreen
@@ -111,9 +112,11 @@ fun AppNavigation(
                 )
             }
             entry<Screen.Inbound> {
+                val inboundViewModel = hiltViewModel<InboundViewModel>()
                 InboundScreen(
                     appViewModel = appViewModel,
                     scanViewModel = scanViewModel,
+                    inboundViewModel = inboundViewModel,
                     onNavigate = {dest -> navigate(dest)},
                     onGoBack = { goBack() }
                 )

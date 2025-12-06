@@ -26,6 +26,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
@@ -49,6 +50,7 @@ import com.example.sol_denka_stockmanagement.share.InputFieldContainer
 import com.example.sol_denka_stockmanagement.ui.theme.paleSkyBlue
 import com.example.sol_denka_stockmanagement.viewmodel.AppViewModel
 import com.example.sol_denka_stockmanagement.viewmodel.ScanViewModel
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
@@ -56,6 +58,7 @@ import com.example.sol_denka_stockmanagement.viewmodel.ScanViewModel
 fun InboundScreen(
     appViewModel: AppViewModel,
     scanViewModel: ScanViewModel,
+    inboundViewModel: InboundViewModel,
     onNavigate: (Screen) -> Unit,
     onGoBack: () -> Unit,
 ) {
@@ -63,6 +66,8 @@ fun InboundScreen(
     val inputState = appViewModel.inputState.collectAsStateWithLifecycle().value
     val expandState = appViewModel.expandState.collectAsStateWithLifecycle().value
     val lastInboundEpc by scanViewModel.lastInboundEpc.collectAsStateWithLifecycle()
+    val rfidTagList by scanViewModel.rfidTagList.collectAsStateWithLifecycle()
+    val scope = rememberCoroutineScope()
 
     LaunchedEffect(Unit) {
         scanViewModel.setEnableScan(false)
@@ -97,11 +102,21 @@ fun InboundScreen(
                 ),
                 canClick = inputState.materialSelectedItem != SelectTitle.SelectMaterial.displayName,
                 onClick = {
-//                    appViewModel.onGeneralIntent(
-//                        ShareIntent.SaveScanResult(
-//                            data = listOf()
-//                        )
-//                    )
+                    scope.launch {
+                        val csvModels =
+                            inboundViewModel.generateCsvData(
+                                weight = inputState.weight,
+                                grade = inputState.grade,
+                                specificGravity = "",
+                                thickness = inputState.thickness,
+                                width = "",
+                                length = inputState.length,
+                                quantity = "",
+                                winderInfo = "",
+                                misrollReason = "",
+                                rfidTag = rfidTagList.find { it.epc == lastInboundEpc },
+                            )
+                    }
                 },
                 buttonText = stringResource(R.string.register),
             )

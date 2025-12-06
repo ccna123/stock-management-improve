@@ -14,8 +14,6 @@ import com.example.sol_denka_stockmanagement.database.repository.tag.TagMasterRe
 import com.example.sol_denka_stockmanagement.model.csv.InventoryResultCsvModel
 import com.example.sol_denka_stockmanagement.model.inventory.InventoryResultLocalModel
 import com.example.sol_denka_stockmanagement.model.inventory.InventorySessionModel
-import com.example.sol_denka_stockmanagement.model.outbound.OutBoundEventModel
-import com.example.sol_denka_stockmanagement.model.outbound.OutboundSessionModel
 import com.example.sol_denka_stockmanagement.model.tag.TagMasterModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers

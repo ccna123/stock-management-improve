@@ -7,10 +7,7 @@ import androidx.room.OnConflictStrategy.Companion.REPLACE
 import androidx.room.Query
 import androidx.room.Update
 import com.example.sol_denka_stockmanagement.app_interface.IDao
-import com.example.sol_denka_stockmanagement.database.dao.location.LocationChangeScanDataTable
 import com.example.sol_denka_stockmanagement.database.entity.tag.TagMasterEntity
-import com.example.sol_denka_stockmanagement.model.inbound.InboundScanResult
-import com.example.sol_denka_stockmanagement.model.outbound.EpcNameMapperResult
 import com.example.sol_denka_stockmanagement.model.tag.SingleTagInfoModel
 import kotlinx.coroutines.flow.Flow
 
@@ -63,5 +60,13 @@ interface TagMasterDao : IDao<TagMasterEntity> {
 
     @Query("SELECT ledger_item_id FROM tagmaster WHERE epc = :epc")
     suspend fun getLedgerIdByEpc(epc: String): Int
+
+    @Query("""
+        SELECT t.tag_id, le.item_type_id, le.location_id
+            FROM tagmaster t
+            LEFT JOIN ledgeritem le ON le.ledger_item_id = t.ledger_item_id
+            WHERE t.tag_id = :tagId
+    """)
+    suspend fun getItemTypeIdLocationIdByTagId(tagId: Int): Pair<Int, Int>
 
 }
