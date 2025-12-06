@@ -9,7 +9,8 @@ data class AdditionalFieldsModel(
     val rssi: Float,
     val itemName: String,
     val itemCode: String,
-    val location: String
+    val location: String,
+    val processType: String
 
 
 ){
@@ -21,6 +22,7 @@ data class AdditionalFieldsModel(
             itemName = "",
             itemCode = "",
             location = "",
+            processType = ""
         )
     }
 }

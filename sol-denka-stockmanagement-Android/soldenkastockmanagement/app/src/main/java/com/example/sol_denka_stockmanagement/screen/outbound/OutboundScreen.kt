@@ -65,9 +65,13 @@ fun OutboundScreen(
     val generalState = appViewModel.generalState.collectAsStateWithLifecycle()
     val checkedMap by appViewModel.perTagChecked.collectAsStateWithLifecycle()
     val rfidTagList = scanViewModel.rfidTagList.collectAsStateWithLifecycle().value
-    val processTypeMap by appViewModel.perTagHandlingMethod.collectAsStateWithLifecycle()
+    val processTypeMap by appViewModel.perTagProcessMethod.collectAsStateWithLifecycle()
     val selectedCount by appViewModel.selectedCount.collectAsStateWithLifecycle()
     val scope = rememberCoroutineScope()
+
+    LaunchedEffect(Unit) {
+        scanViewModel.applyProcessType(processTypeMap)
+    }
 
     if (generalState.value.showTimePicker) {
         val current = Calendar.getInstance()
@@ -128,10 +132,18 @@ fun OutboundScreen(
                     scope.launch {
                         outboundViewModel.saveOutboundToDb(
                             memo = inputState.value.memo,
-                            occurredAt = inputState.value.occurredAt
+                            occurredAt = inputState.value.occurredAt,
+                            rfidTagList = rfidTagList.filter { tag ->
+                                tag.epc in checkedMap.filter { it.value }.keys
+                            }
                         )
                         val csvModels =
-                            outboundViewModel.generateCsvData(memo = inputState.value.memo)
+                            outboundViewModel.generateCsvData(
+                                memo = inputState.value.memo,
+                                rfidTagList = rfidTagList.filter { tag ->
+                                    tag.epc in checkedMap.filter { it.value }.keys
+                                }
+                            )
                         appViewModel.onGeneralIntent(
                             ShareIntent.SaveScanResult(
                                 data = csvModels,
@@ -170,13 +182,15 @@ fun OutboundScreen(
                         tableHeader = listOf(
                             stringResource(R.string.item_name_title),
                             stringResource(R.string.item_code_title),
-                            stringResource(R.string.handling_method)
+                            stringResource(R.string.process_method)
                         ),
                         scanResult = checkedMap.filter { it.value }.map { it.key }.map { tag ->
                             ScanResultRowModel(
                                 itemName = rfidTagList.find { it.epc == tag }?.epc ?: "-",
-                                itemCode = rfidTagList.find { it.epc == tag }?.newFields?.itemCode ?: "-",
-                                lastColumn = processTypeMap[tag] ?: "-"
+                                itemCode = rfidTagList.find { it.epc == tag }?.newFields?.itemCode
+                                    ?: "-",
+                                lastColumn = rfidTagList.find { it.epc == tag }?.newFields?.processType
+                                    ?: "-",
                             )
                         },
                     )

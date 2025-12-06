@@ -33,29 +33,6 @@ interface TagMasterDao : IDao<TagMasterEntity> {
     override suspend fun delete(e: TagMasterEntity)
 
     @Query(
-        "SELECT t.epc,\n" +
-                "           i.item_type_name AS itemName,\n" +
-                "           i.item_type_code AS itemCode,\n" +
-                "           l.location_name AS location\n" +
-                "    FROM tagmaster t\n" +
-                "    LEFT JOIN ledgeritem li ON li.ledger_item_id = t.ledger_item_id\n" +
-                "    LEFT JOIN itemtypemaster i ON i.item_type_id = li.item_type_id\n" +
-                "    LEFT JOIN locationmaster l ON l.location_id = li.location_id\n" +
-                "    WHERE t.epc IN (:epcList)"
-    )
-    suspend fun getTagDetailForLocationChange(epcList: List<String>): List<LocationChangeScanDataTable>
-
-    @Query(
-        "SELECT t.epc,\n" +
-                "           i.item_type_name AS itemName\n" +
-                "    FROM tagmaster t\n" +
-                "    LEFT JOIN ledgeritem li ON li.ledger_item_id = t.ledger_item_id\n" +
-                "    LEFT JOIN itemtypemaster i ON i.item_type_id = li.item_type_id\n" +
-                "    WHERE t.epc IN (:epcList)"
-    )
-    suspend fun getItemNameByTagId(epcList: List<String>): List<EpcNameMapperResult>?
-
-    @Query(
         "SELECT li.location_id\n" +
                 "FROM tagmaster t\n" +
                 "LEFT JOIN ledgeritem li ON li.ledger_item_id = t.ledger_item_id\n" +

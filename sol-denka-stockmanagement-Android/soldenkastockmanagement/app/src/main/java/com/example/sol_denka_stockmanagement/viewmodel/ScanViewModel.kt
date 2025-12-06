@@ -174,4 +174,14 @@ class ScanViewModel @Inject constructor(
         readerController.clearScannedTag()
         tagController.clearTagStatusAndRssi()
     }
+
+    fun applyProcessType(processTypeMap: Map<String, String>){
+        val currentList = _rfidTagList.value
+
+        val updated = currentList.map { tag ->
+            val newProcessType = processTypeMap[tag.epc] ?: tag.newFields.processType
+            tag.copy(newFields = tag.newFields.copy(processType = newProcessType))
+        }
+        _rfidTagList.value = updated
+    }
 }

@@ -72,7 +72,7 @@ fun ScanScreen(
     val isPerformingInventory by appViewModel.isPerformingInventory.collectAsStateWithLifecycle()
     val scope = rememberCoroutineScope()
     val expandedMap by appViewModel.perTagExpanded.collectAsStateWithLifecycle()
-    val processMap by appViewModel.perTagHandlingMethod.collectAsStateWithLifecycle()
+    val processMap by appViewModel.perTagProcessMethod.collectAsStateWithLifecycle()
     val checkedMap by appViewModel.perTagChecked.collectAsStateWithLifecycle()
 
     val isAllSelected by appViewModel.isAllSelected.collectAsStateWithLifecycle()
@@ -118,7 +118,7 @@ fun ScanScreen(
             },
             onDismissRequest = {
                 appViewModel.onGeneralIntent(
-                    ShareIntent.ShowModalHandlingMethod(
+                    ShareIntent.ShowModalProcessMethod(
                         false
                     )
                 )
@@ -126,7 +126,7 @@ fun ScanScreen(
             onApplyBulk = {
                 appViewModel.apply {
                     onInputIntent(InputIntent.BulkApplyProcessMethod)
-                    onGeneralIntent(ShareIntent.ShowModalHandlingMethod(false))
+                    onGeneralIntent(ShareIntent.ShowModalProcessMethod(false))
                 }
             }
         )
@@ -317,7 +317,7 @@ fun ScanScreen(
                             canClick = checkedMap.values.any { it },
                             onClick = {
                                 appViewModel.onGeneralIntent(
-                                    ShareIntent.ShowModalHandlingMethod(
+                                    ShareIntent.ShowModalProcessMethod(
                                         true
                                     )
                                 )
@@ -362,7 +362,7 @@ fun ScanScreen(
                                     onExpandedChange = {
                                         if (isPerformingInventory.not()) {
                                             appViewModel.onExpandIntent(
-                                                ExpandIntent.TogglePerTagHandlingExpanded(
+                                                ExpandIntent.TogglePerTagProcessExpanded(
                                                     tag.first
                                                 )
                                             )
@@ -370,12 +370,12 @@ fun ScanScreen(
                                     },
                                     onDismissRequest = {
                                         appViewModel.onExpandIntent(
-                                            ExpandIntent.CloseHandlingExpanded(tag.first)
+                                            ExpandIntent.CloseProcessExpanded(tag.first)
                                         )
                                     },
                                     onValueChange = { newValue ->
                                         appViewModel.onGeneralIntent(
-                                            ShareIntent.ChangePerTagHandlingMethod(
+                                            ShareIntent.ChangePerTagProcessMethod(
                                                 tag = tag.first,
                                                 method = newValue
                                             )
@@ -387,14 +387,14 @@ fun ScanScreen(
                                             else method
 
                                         appViewModel.onGeneralIntent(
-                                            ShareIntent.ChangePerTagHandlingMethod(
+                                            ShareIntent.ChangePerTagProcessMethod(
                                                 tag.first,
                                                 finalValue
                                             )
                                         )
 
                                         appViewModel.onExpandIntent(
-                                            ExpandIntent.CloseHandlingExpanded(tag.first)
+                                            ExpandIntent.CloseProcessExpanded(tag.first)
                                         )
                                     }
                                 )

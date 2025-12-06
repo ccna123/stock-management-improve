@@ -90,7 +90,7 @@ class AppViewModel @Inject constructor(
     private val _toastFlow = MutableSharedFlow<Pair<String, ToastType>>()
     val toastFlow = _toastFlow
 
-    val perTagHandlingMethod = MutableStateFlow<Map<String, String>>(emptyMap())
+    val perTagProcessMethod = MutableStateFlow<Map<String, String>>(emptyMap())
     val perTagExpanded = MutableStateFlow<Map<String, Boolean>>(emptyMap())
 
     val showConnectingDialog = MutableStateFlow(false)
@@ -242,14 +242,14 @@ class AppViewModel @Inject constructor(
                 val chosenMethod = processMethod.value
                 val checked = _perTagChecked.value
 
-                val updated = perTagHandlingMethod.value.toMutableMap()
+                val updated = perTagProcessMethod.value.toMutableMap()
 
                 checked.forEach { (tag, isChecked) ->
                     if (isChecked) {
                         updated[tag] = chosenMethod
                     }
                 }
-                perTagHandlingMethod.value = updated
+                perTagProcessMethod.value = updated
             }
 
             is InputIntent.ChangeOccurredAt -> {
@@ -338,12 +338,12 @@ class AppViewModel @Inject constructor(
             is ShareIntent.ToggleNetworkDialog ->
                 _generalState.update { it.copy(showNetworkDialog = intent.doesOpenDialog) }
 
-            is ShareIntent.ChangePerTagHandlingMethod -> {
-                perTagHandlingMethod.value = perTagHandlingMethod.value.toMutableMap()
+            is ShareIntent.ChangePerTagProcessMethod -> {
+                perTagProcessMethod.value = perTagProcessMethod.value.toMutableMap()
                     .apply { put(intent.tag, intent.method) }
             }
 
-            is ShareIntent.ShowModalHandlingMethod -> {
+            is ShareIntent.ShowModalProcessMethod -> {
                 _showModalProcessMethod.value = intent.showBottomSheet
             }
 
@@ -353,7 +353,7 @@ class AppViewModel @Inject constructor(
                 _errorState.value = ErrorState()
                 _generalState.value = GeneralState()
                 perTagExpanded.value = emptyMap()
-                perTagHandlingMethod.value = emptyMap()
+                perTagProcessMethod.value = emptyMap()
                 _perTagChecked.value = emptyMap()
                 _selectedCount.value = 0
                 _showModalProcessMethod.value = false
@@ -463,13 +463,13 @@ class AppViewModel @Inject constructor(
             ExpandIntent.ToggleFileTransferMethodExpanded ->
                 _expandState.update { it.copy(fileTransferMethodExpanded = !_expandState.value.fileTransferMethodExpanded) }
 
-            is ExpandIntent.TogglePerTagHandlingExpanded -> {
+            is ExpandIntent.TogglePerTagProcessExpanded -> {
                 val current = perTagExpanded.value[intent.tag] ?: false
                 perTagExpanded.value =
                     perTagExpanded.value.toMutableMap().apply { put(intent.tag, !current) }
             }
 
-            is ExpandIntent.CloseHandlingExpanded -> {
+            is ExpandIntent.CloseProcessExpanded -> {
                 perTagExpanded.value =
                     perTagExpanded.value.toMutableMap().apply { put(intent.tag, false) }
             }

@@ -15,10 +15,7 @@ class TagMasterRepository @Inject constructor(
 ) {
 
     fun get(): Flow<List<TagMasterModel>> = dao.get().map { list -> list.map { it.toModel() } }
-    suspend fun getTagDetailForLocationChange(epcList: List<String>) =
-        dao.getTagDetailForLocationChange(epcList)
 
-    suspend fun getItemNameByTagId(epcList: List<String>) = dao.getItemNameByTagId(epcList)
     suspend fun getFullInfo() = dao.getFullInfo()
 
     suspend fun getLocationIdByTag(epc: String) = dao.getLocationIdByTag(epc)

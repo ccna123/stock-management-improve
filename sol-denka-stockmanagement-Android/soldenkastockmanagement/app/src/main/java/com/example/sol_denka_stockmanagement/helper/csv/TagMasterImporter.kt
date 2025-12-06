@@ -33,6 +33,7 @@ class TagMasterImporter(
                         itemName = "",
                         itemCode = "",
                         location = "",
+                        processType = ""
                     )
                 )
             }

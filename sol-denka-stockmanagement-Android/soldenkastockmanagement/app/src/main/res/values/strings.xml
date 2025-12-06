@@ -36,7 +36,7 @@
     <string name="shipping">出庫</string>
     <string name="inventory_start">棚卸開始</string>
     <string name="handling_method_hint">処理方法入力</string>
-    <string name="handling_method">処理方法</string>
+    <string name="process_method">処理方法</string>
     <string name="memo_hint">備考入力</string>
     <string name="memo">備考</string>
     <string name="occurred_at_hint">発生日時入力</string>
