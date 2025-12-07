@@ -19,7 +19,7 @@ sealed interface ShareIntent {
     data class ToggleFoundTag(val tag: String) : ShareIntent
     data object ClearFoundTag : ShareIntent
     data object Prev : ShareIntent
-    data object Next : ShareIntent
+    data class Next(val lastItemIndex: Int) : ShareIntent
     data class ToggleSelectionAll(val tagList: Set<String>) : ShareIntent
     data class ToggleNetworkDialog(val doesOpenDialog: Boolean) : ShareIntent
     data class ToggleTimePicker(val showTimePicker: Boolean) : ShareIntent
@@ -27,6 +27,7 @@ sealed interface ShareIntent {
     data class ShowModalProcessMethod(val showBottomSheet: Boolean) : ShareIntent
     data object ResetState : ShareIntent
     data class ChangeTabInReceivingScreen(val tab: String) : ShareIntent
+    data object ResetDetailIndex: ShareIntent
 
     data class SaveScanResult<T : ICsvExport>(
         val taskCode: CsvTaskType,

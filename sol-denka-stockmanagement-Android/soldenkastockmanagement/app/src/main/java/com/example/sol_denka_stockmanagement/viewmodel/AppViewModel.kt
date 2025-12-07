@@ -279,9 +279,9 @@ class AppViewModel @Inject constructor(
 
             ShareIntent.ClearFoundTag -> _generalState.update { it.copy(foundTags = emptyList()) }
 
-            ShareIntent.Next -> {
+            is ShareIntent.Next -> {
                 val current = _generalState.value.currentIndex
-                val last = _generalState.value.selectedTags.lastIndex
+                val last = intent.lastItemIndex
                 _generalState.update { it.copy(currentIndex = minOf(current + 1, last)) }
             }
 
@@ -424,6 +424,7 @@ class AppViewModel @Inject constructor(
             }
 
             is ShareIntent.ToggleTimePicker -> _generalState.update { it.copy(showTimePicker = intent.showTimePicker) }
+            ShareIntent.ResetDetailIndex -> _generalState.update { it.copy(currentIndex = 0) }
         }
     }
 

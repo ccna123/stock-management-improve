@@ -32,14 +32,16 @@ fun DetailScreen(
     onGoBack: () -> Unit,
 ) {
 
-    val generalState = appViewModel.generalState.collectAsState().value
+    val generalState by appViewModel.generalState.collectAsState()
+    val rfidTagList by scanViewModel.rfidTagList.collectAsState()
 
     LaunchedEffect(Unit) {
         scanViewModel.setEnableScan(false)
+        appViewModel.onGeneralIntent(ShareIntent.ResetDetailIndex)
     }
 
-    val currentItem = generalState.selectedTags.getOrNull(generalState.currentIndex)
-    val totalCount = generalState.selectedTags.size
+    val currentItem = rfidTagList.filter { it.newFields.isChecked }.getOrNull(generalState.currentIndex)
+    val totalCount = rfidTagList.filter { it.newFields.isChecked }.size
 
     Layout(
         topBarText = Screen.Detail.displayName,
@@ -61,7 +63,7 @@ fun DetailScreen(
         ) {
             item {
                 if (currentItem != null) {
-                    Text(text = "スキャンタグ: $currentItem")
+                    Text(text = "スキャンタグ: ${currentItem.epc}")
                 } else {
                     Text(text = "No Data")
                 }
@@ -103,7 +105,7 @@ fun DetailScreen(
                             .size(50.dp)
                             .clickable(enabled = generalState.currentIndex < totalCount - 1) {
                                 appViewModel.onGeneralIntent(
-                                    ShareIntent.Next
+                                    ShareIntent.Next(lastItemIndex = rfidTagList.filter { it.newFields.isChecked }.lastIndex)
                                 )
                             },
                         imageVector = Icons.AutoMirrored.Filled.ArrowForwardIos,
