@@ -99,7 +99,7 @@ class ScanViewModel @Inject constructor(
                         inventoryJob = viewModelScope.launch(Dispatchers.IO) {
                             tagController.statusMap.collect { status ->
                                 val updated = _rfidTagList.value.map { item ->
-                                    val s = status[item.epc] ?: item.newFields.tagStatus
+                                    val s = status[item.epc] ?: TagStatus.UNPROCESSED
                                     item.copy(
                                         newFields = item.newFields.copy(
                                             tagStatus = s

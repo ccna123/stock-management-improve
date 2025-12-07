@@ -90,17 +90,15 @@ fun InventoryScanScreen(
     val isPerformingInventory by appViewModel.isPerformingInventory.collectAsStateWithLifecycle()
     val scope = rememberCoroutineScope()
 
-    Log.e("TSS", "InventoryScanScreen: ${rfidTagList.map { it.newFields.itemName }}", )
-
     LaunchedEffect(Unit) {
-        scanViewModel.setEnableScan(enabled = true)
-        scanViewModel.setScanMode(ScanMode.INVENTORY_SCAN)
+        scanViewModel.apply {
+            setEnableScan(enabled = true)
+            setScanMode(ScanMode.INVENTORY_SCAN)
+            resetIsCheckedField()
+        }
         appViewModel.apply {
             onGeneralIntent(
                 ShareIntent.ToggleSelectionMode(false),
-            )
-            onGeneralIntent(
-                ShareIntent.ClearTagSelectionList
             )
         }
     }
@@ -304,9 +302,7 @@ fun InventoryScanScreen(
                                 onGeneralIntent(
                                     ShareIntent.ToggleSelectionMode(false),
                                 )
-                                onGeneralIntent(
-                                    ShareIntent.ClearTagSelectionList
-                                )
+                                scanViewModel.resetIsCheckedField()
                             }
                         },
                     ) {
@@ -419,20 +415,17 @@ fun InventoryScanScreen(
                             onClick = { item ->
                                 if (generalState.isSelectionMode) {
                                     scanViewModel.toggleCheck(item)
-//                                    appViewModel.onGeneralIntent(ShareIntent.ToggleTagSelection(item))
                                 }
                             },
                             onLongClick = { item ->
                                 if (isPerformingInventory.not()){
                                     appViewModel.apply {
                                         onGeneralIntent(ShareIntent.ToggleSelectionMode(true))
-//                                        onGeneralIntent(ShareIntent.ToggleTagSelection(item))
                                         scanViewModel.toggleCheck(item)
                                     }
                                 }
                             },
                             onCheckedChange = { item ->
-//                                appViewModel.onGeneralIntent(ShareIntent.ToggleTagSelection(item))
                                 scanViewModel.toggleCheck(item)
                             }
                         )
