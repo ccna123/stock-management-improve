@@ -27,7 +27,6 @@ import com.example.sol_denka_stockmanagement.ui.theme.brightGreenSecondary
 @Composable
 fun ScannedTagDisplay(
     rfidTagList: List<TagMasterModel>,
-    selectedTags: List<String>,
     isSelectionMode: Boolean,
     onClick: (String) -> Unit,
     onLongClick: (String) -> Unit,
@@ -63,7 +62,7 @@ fun ScannedTagDisplay(
                         colors = CheckboxDefaults.colors(
                             checkedColor = brightGreenSecondary
                         ),
-                        checked = item.epc in selectedTags,
+                        checked = item.newFields.isChecked,
                         onCheckedChange = {
                             onCheckedChange(item.epc)
                         }

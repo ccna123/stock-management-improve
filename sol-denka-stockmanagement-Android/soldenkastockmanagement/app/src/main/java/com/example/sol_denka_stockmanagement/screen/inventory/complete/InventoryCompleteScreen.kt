@@ -36,7 +36,6 @@ import com.example.sol_denka_stockmanagement.R
 import com.example.sol_denka_stockmanagement.constant.CsvHistoryDirection
 import com.example.sol_denka_stockmanagement.constant.CsvTaskType
 import com.example.sol_denka_stockmanagement.constant.InventoryScanResult
-import com.example.sol_denka_stockmanagement.constant.TagStatus
 import com.example.sol_denka_stockmanagement.intent.ShareIntent
 import com.example.sol_denka_stockmanagement.model.inventory.InventoryCompleteModel
 import com.example.sol_denka_stockmanagement.navigation.Screen
@@ -78,7 +77,7 @@ fun InventoryCompleteScreen(
 
     LaunchedEffect(rfidTagList) {
         inventoryCompleteViewModel.computeResult(
-            rfidTagList = rfidTagList.filter { it.newFields.tagStatus == TagStatus.PROCESSED },
+            rfidTagList = rfidTagList,
             locationName = inputState.location
         )
     }

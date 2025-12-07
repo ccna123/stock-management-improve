@@ -68,13 +68,14 @@ fun SearchTagsScreen(
     prevScreenNameId: String,
     onGoBack: () -> Unit,
 ) {
-    val generalState = appViewModel.generalState.collectAsStateWithLifecycle().value
+    val generalState by appViewModel.generalState.collectAsStateWithLifecycle()
+    val rfidTagList by scanViewModel.rfidTagList.collectAsStateWithLifecycle()
     val readerSettingState by settingViewModel.readerSettingState.collectAsStateWithLifecycle()
-    val showRadioPowerChangeDialog = appViewModel.showRadioPowerChangeDialog.value
+    val showRadioPowerChangeDialog by appViewModel.showRadioPowerChangeDialog
     val isPerformingInventory by appViewModel.isPerformingInventory.collectAsStateWithLifecycle()
     val scope = rememberCoroutineScope()
-    val tagsToDisplay = generalState.selectedTags
-    val rssiMap = scanViewModel.rssiMap.collectAsStateWithLifecycle().value
+    val tagsToDisplay = rfidTagList.filter { it.newFields.isChecked }
+    val rssiMap by scanViewModel.rssiMap.collectAsStateWithLifecycle()
 
     LaunchedEffect(Unit) {
         scanViewModel.setEnableScan(enabled = true)
@@ -300,13 +301,13 @@ fun SearchTagsScreen(
             LazyColumn {
                 item {
                     tagsToDisplay.forEach { item ->
-                        val rssi = rssiMap[item] ?: -100f
+                        val rssi = rssiMap[item.epc] ?: -100f
                         SingleRfidRow(
                             boxWidth = TagDistanceCalculate.calculateBoxWidth(rssi),
-                            rfidNo = item,
-                            isPressed = item in generalState.foundTags,
+                            rfidNo = item.epc,
+                            isPressed = item.epc in generalState.foundTags,
                             onChange = {
-                                appViewModel.onGeneralIntent(ShareIntent.ToggleFoundTag(item))
+                                appViewModel.onGeneralIntent(ShareIntent.ToggleFoundTag(item.epc))
                             }
                         )
                     }

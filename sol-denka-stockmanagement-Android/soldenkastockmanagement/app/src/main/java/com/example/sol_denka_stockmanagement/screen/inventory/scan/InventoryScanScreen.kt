@@ -1,6 +1,7 @@
 package com.example.sol_denka_stockmanagement.screen.inventory.scan
 
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.fadeIn
@@ -81,13 +82,15 @@ fun InventoryScanScreen(
     onNavigate: (Screen) -> Unit,
     onGoBack: () -> Unit,
 ) {
-    val generalState = appViewModel.generalState.collectAsStateWithLifecycle().value
-    val rfidTagList = scanViewModel.rfidTagList.collectAsStateWithLifecycle().value
+    val generalState by appViewModel.generalState.collectAsStateWithLifecycle()
+    val rfidTagList by scanViewModel.rfidTagList.collectAsStateWithLifecycle()
     val readerSettingState by settingViewModel.readerSettingState.collectAsStateWithLifecycle()
     val showClearTagConfirmDialog = appViewModel.showClearTagConfirmDialog.value
     val showRadioPowerChangeDialog = appViewModel.showRadioPowerChangeDialog.value
     val isPerformingInventory by appViewModel.isPerformingInventory.collectAsStateWithLifecycle()
     val scope = rememberCoroutineScope()
+
+    Log.e("TSS", "InventoryScanScreen: ${rfidTagList.map { it.newFields.itemName }}", )
 
     LaunchedEffect(Unit) {
         scanViewModel.setEnableScan(enabled = true)
@@ -412,23 +415,25 @@ fun InventoryScanScreen(
 
                         ScannedTagDisplay(
                             rfidTagList = displayList,
-                            selectedTags = generalState.selectedTags,
-                            isSelectionMode = if (generalState.selectedTags.isNotEmpty()) generalState.isSelectionMode else false,
+                            isSelectionMode = if (rfidTagList.any { it.newFields.isChecked }) generalState.isSelectionMode else false,
                             onClick = { item ->
                                 if (generalState.isSelectionMode) {
-                                    appViewModel.onGeneralIntent(ShareIntent.ToggleTagSelection(item))
+                                    scanViewModel.toggleCheck(item)
+//                                    appViewModel.onGeneralIntent(ShareIntent.ToggleTagSelection(item))
                                 }
                             },
                             onLongClick = { item ->
                                 if (isPerformingInventory.not()){
                                     appViewModel.apply {
                                         onGeneralIntent(ShareIntent.ToggleSelectionMode(true))
-                                        onGeneralIntent(ShareIntent.ToggleTagSelection(item))
+//                                        onGeneralIntent(ShareIntent.ToggleTagSelection(item))
+                                        scanViewModel.toggleCheck(item)
                                     }
                                 }
                             },
                             onCheckedChange = { item ->
-                                appViewModel.onGeneralIntent(ShareIntent.ToggleTagSelection(item))
+//                                appViewModel.onGeneralIntent(ShareIntent.ToggleTagSelection(item))
+                                scanViewModel.toggleCheck(item)
                             }
                         )
                     }

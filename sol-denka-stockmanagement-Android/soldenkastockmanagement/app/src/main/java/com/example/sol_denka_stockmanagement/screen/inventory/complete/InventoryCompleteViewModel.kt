@@ -5,6 +5,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.sol_denka_stockmanagement.constant.InventoryResultType
+import com.example.sol_denka_stockmanagement.constant.TagStatus
 import com.example.sol_denka_stockmanagement.constant.generateIso8601JstTimestamp
 import com.example.sol_denka_stockmanagement.database.repository.inventory.InventoryResultLocalRepository
 import com.example.sol_denka_stockmanagement.database.repository.inventory.InventoryResultTypeRepository
@@ -56,7 +57,7 @@ class InventoryCompleteViewModel @Inject constructor(
             val currentLocationId =
                 locationRepository.getLocationIdByName(locationName = locationName)
                     ?: 0
-            val scannedTags = rfidTagList.map { it.epc }.toSet()
+            val scannedTags = rfidTagList.filter { it.newFields.tagStatus == TagStatus.PROCESSED }.map { it.epc }.toSet()
 
             val tagsInStock = tagMasterRepository.getTagsByLocationAndStock(
                 locationId = currentLocationId,
@@ -145,7 +146,7 @@ class InventoryCompleteViewModel @Inject constructor(
                             ledgerItemId = ledgerId ?: 0,
                             tagId = tag.tagId,
                             memo = memo,
-                            scannedAt = generateIso8601JstTimestamp()
+                            scannedAt = if (inventoryResultTypeId == 3) "" else generateIso8601JstTimestamp()
                         )
                         inventoryResultLocalRepository.insert(model)
                     }

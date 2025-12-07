@@ -62,6 +62,8 @@ class ScanViewModel @Inject constructor(
                             itemName = info?.itemName ?: "",
                             itemCode = info?.itemCode ?: "",
                             location = info?.location ?: "",
+                            tagStatus = TagStatus.UNPROCESSED,
+                            rssi = -100f
                         )
                     )
                 }
@@ -95,18 +97,19 @@ class ScanViewModel @Inject constructor(
                         searchJob?.cancel()
                         inboundJob?.cancel()
                         inventoryJob = viewModelScope.launch(Dispatchers.IO) {
-                            combine(
-                                tagMasterRepository.get(),
-                                tagController.statusMap
-                            ) { master, status ->
-                                master.map { item ->
+                            tagController.statusMap.collect { status ->
+                                val updated = _rfidTagList.value.map { item ->
                                     val s = status[item.epc] ?: item.newFields.tagStatus
-                                    item.copy(newFields = item.newFields.copy(tagStatus = s))
+                                    item.copy(
+                                        newFields = item.newFields.copy(
+                                            tagStatus = s
+                                        )
+                                    )
                                 }
-                            }.collect { merged ->
-                                _rfidTagList.value = merged
+                                _rfidTagList.value = updated
                             }
                         }
+
 
                         processJob = viewModelScope.launch(Dispatchers.IO) {
                             scannedTags.collect { scanned ->
