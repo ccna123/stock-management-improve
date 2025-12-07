@@ -2,9 +2,11 @@ package com.example.sol_denka_stockmanagement.screen.detail
 
 import android.os.Build
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.ArrowForwardIos
@@ -23,6 +25,7 @@ import com.example.sol_denka_stockmanagement.ui.theme.brightAzure
 import com.example.sol_denka_stockmanagement.viewmodel.AppViewModel
 import com.example.sol_denka_stockmanagement.viewmodel.ScanViewModel
 import androidx.compose.runtime.collectAsState
+import com.example.sol_denka_stockmanagement.ui.theme.brightGreenSecondary
 
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @Composable
@@ -40,7 +43,8 @@ fun DetailScreen(
         appViewModel.onGeneralIntent(ShareIntent.ResetDetailIndex)
     }
 
-    val currentItem = rfidTagList.filter { it.newFields.isChecked }.getOrNull(generalState.currentIndex)
+    val currentItem =
+        rfidTagList.filter { it.newFields.isChecked }.getOrNull(generalState.currentIndex)
     val totalCount = rfidTagList.filter { it.newFields.isChecked }.size
 
     Layout(
@@ -77,19 +81,27 @@ fun DetailScreen(
                     horizontalArrangement = Arrangement.SpaceEvenly,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Icon(
-                        tint = if (generalState.currentIndex > 0) brightAzure else Color.LightGray,
+                    Box(
                         modifier = Modifier
-                            .size(50.dp)
                             .clickable(enabled = generalState.currentIndex > 0) {
                                 appViewModel.onGeneralIntent(
                                     ShareIntent.Prev
                                 )
-                            },
-                        imageVector = Icons.Filled.ArrowBackIosNew,
-                        contentDescription = null
-                    )
-
+                            }
+                            .background(
+                                color = if (generalState.currentIndex > 0) brightGreenSecondary else Color.LightGray,
+                                shape = RoundedCornerShape(12.dp)
+                            )
+                    ) {
+                        Icon(
+                            tint = if (generalState.currentIndex > 0) Color.White else Color.Black.copy(alpha = .2f),
+                            modifier = Modifier
+                                .size(50.dp)
+                                .padding(10.dp),
+                            imageVector = Icons.Filled.ArrowBackIosNew,
+                            contentDescription = null
+                        )
+                    }
                     Row {
                         Text(
                             fontSize = 26.sp,
@@ -98,19 +110,27 @@ fun DetailScreen(
                         Text(fontSize = 20.sp, text = "/")
                         Text(fontSize = 18.sp, text = totalCount.toString())
                     }
-
-                    Icon(
-                        tint = if (generalState.currentIndex < totalCount - 1) brightAzure else Color.LightGray,
+                    Box(
                         modifier = Modifier
-                            .size(50.dp)
                             .clickable(enabled = generalState.currentIndex < totalCount - 1) {
                                 appViewModel.onGeneralIntent(
                                     ShareIntent.Next(lastItemIndex = rfidTagList.filter { it.newFields.isChecked }.lastIndex)
                                 )
-                            },
-                        imageVector = Icons.AutoMirrored.Filled.ArrowForwardIos,
-                        contentDescription = null
-                    )
+                            }
+                            .background(
+                                color = if (generalState.currentIndex < totalCount - 1) brightGreenSecondary else Color.LightGray,
+                                shape = RoundedCornerShape(12.dp)
+                            )
+                    ){
+                        Icon(
+                            tint = if (generalState.currentIndex < totalCount - 1) Color.White else Color.Black.copy(alpha = .2f),
+                            modifier = Modifier
+                                .size(50.dp)
+                                .padding(10.dp),
+                            imageVector = Icons.AutoMirrored.Filled.ArrowForwardIos,
+                            contentDescription = null
+                        )
+                    }
                 }
             }
         }
