@@ -133,16 +133,12 @@ fun OutboundScreen(
                         outboundViewModel.saveOutboundToDb(
                             memo = inputState.value.memo,
                             occurredAt = inputState.value.occurredAt,
-                            rfidTagList = rfidTagList.filter { tag ->
-                                tag.epc in checkedMap.filter { it.value }.keys
-                            }
+                            rfidTagList = rfidTagList.filter { it.newFields.isChecked }
                         )
                         val csvModels =
                             outboundViewModel.generateCsvData(
                                 memo = inputState.value.memo,
-                                rfidTagList = rfidTagList.filter { tag ->
-                                    tag.epc in checkedMap.filter { it.value }.keys
-                                }
+                                rfidTagList = rfidTagList.filter { it.newFields.isChecked }
                             )
                         appViewModel.onGeneralIntent(
                             ShareIntent.SaveScanResult(
@@ -167,7 +163,7 @@ fun OutboundScreen(
             Text(
                 text = stringResource(
                     R.string.planned_register_item_number,
-                    selectedCount
+                    rfidTagList.count { it.newFields.isChecked }
                 )
             )
             Spacer(modifier = Modifier.height(18.dp))
@@ -184,12 +180,12 @@ fun OutboundScreen(
                             stringResource(R.string.item_code_title),
                             stringResource(R.string.process_method)
                         ),
-                        scanResult = checkedMap.filter { it.value }.map { it.key }.map { tag ->
+                        scanResult = rfidTagList.filter { it.newFields.isChecked }.map { tag ->
                             ScanResultRowModel(
-                                itemName = rfidTagList.find { it.epc == tag }?.epc ?: "-",
-                                itemCode = rfidTagList.find { it.epc == tag }?.newFields?.itemCode
+                                itemName = rfidTagList.find { it.epc == tag.epc }?.epc ?: "-",
+                                itemCode = rfidTagList.find { it.epc == tag.epc }?.newFields?.itemCode
                                     ?: "-",
-                                lastColumn = rfidTagList.find { it.epc == tag }?.newFields?.processType
+                                lastColumn = rfidTagList.find { it.epc == tag.epc }?.newFields?.processType
                                     ?: "-",
                             )
                         },

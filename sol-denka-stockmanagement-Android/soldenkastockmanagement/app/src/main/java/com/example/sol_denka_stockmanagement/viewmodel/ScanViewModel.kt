@@ -4,7 +4,6 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.sol_denka_stockmanagement.app_interface.ITagOperation
 import com.example.sol_denka_stockmanagement.constant.ScanMode
 import com.example.sol_denka_stockmanagement.constant.TagStatus
 import com.example.sol_denka_stockmanagement.database.repository.tag.TagMasterRepository
@@ -26,7 +25,7 @@ class ScanViewModel @Inject constructor(
     private val readerController: ReaderController,
     private val tagController: TagController,
     private val tagMasterRepository: TagMasterRepository
-) : ViewModel(), ITagOperation {
+) : ViewModel() {
 
     val scannedTags = readerController.scannedTags
 
@@ -162,25 +161,48 @@ class ScanViewModel @Inject constructor(
 
     fun setEnableScan(enabled: Boolean) = readerController.setScanEnabled(enabled)
 
-    override fun updateTagStatus(epc: String, status: TagStatus) {
+    fun updateTagStatus(epc: String, status: TagStatus) {
         tagController.updateTagStatus(epc, status)
     }
 
-    override fun updateRssi(epc: String, rssi: Float) {
-        tagController.updateRssi(epc, rssi)
-    }
-
-    override fun clearTagStatusAndRssi() {
+    fun clearTagStatusAndRssi() {
         readerController.clearScannedTag()
         tagController.clearTagStatusAndRssi()
     }
 
-    fun applyProcessType(processTypeMap: Map<String, String>){
+    fun applyProcessType(processTypeMap: Map<String, String>) {
         val currentList = _rfidTagList.value
 
         val updated = currentList.map { tag ->
             val newProcessType = processTypeMap[tag.epc] ?: tag.newFields.processType
             tag.copy(newFields = tag.newFields.copy(processType = newProcessType))
+        }
+        _rfidTagList.value = updated
+    }
+
+    fun toggleCheck(epc: String) {
+        val updated = _rfidTagList.value.map { tag ->
+            if (tag.epc == epc) {
+                tag.copy(newFields = tag.newFields.copy(isChecked = !tag.newFields.isChecked))
+            } else tag
+        }
+        _rfidTagList.value = updated
+    }
+
+    fun toggleCheckAll(value: Boolean, targetEpcs: Set<String> = emptySet()) {
+        val updated = _rfidTagList.value.map { tag ->
+            if (tag.epc in targetEpcs) {
+                tag.copy(newFields = tag.newFields.copy(isChecked = value))
+            } else {
+                tag
+            }
+        }
+        _rfidTagList.value = updated
+    }
+
+    fun resetIsCheckedField() {
+        val updated = _rfidTagList.value.map { tag ->
+            tag.copy(newFields = tag.newFields.copy(isChecked = false))
         }
         _rfidTagList.value = updated
     }

@@ -9,6 +9,8 @@ import androidx.room.Room
 import com.example.sol_denka_stockmanagement.database.AppDatabase
 import com.example.sol_denka_stockmanagement.database.dao.csv.CsvHistoryDao
 import com.example.sol_denka_stockmanagement.database.dao.csv.CsvTaskTypeDao
+import com.example.sol_denka_stockmanagement.database.dao.inbound.InboundEventDao
+import com.example.sol_denka_stockmanagement.database.dao.inbound.InboundSessionDao
 import com.example.sol_denka_stockmanagement.database.dao.inventory.InventoryResultLocalDao
 import com.example.sol_denka_stockmanagement.database.dao.inventory.InventoryResultTypeDao
 import com.example.sol_denka_stockmanagement.database.dao.inventory.InventorySessionDao
@@ -170,6 +172,18 @@ object AppModule {
     @Singleton
     fun provideCsvHistoryDao(database: AppDatabase): CsvHistoryDao {
         return database.csvHistoryDao()
+    }
+
+    @Provides
+    @Singleton
+    fun provideInboundSessionDao(database: AppDatabase): InboundSessionDao {
+        return database.inboundSessionDao()
+    }
+
+    @Provides
+    @Singleton
+    fun provideInboundEventDao(database: AppDatabase): InboundEventDao {
+        return database.inboundEventDao()
     }
 
 }

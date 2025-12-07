@@ -10,7 +10,8 @@ data class AdditionalFieldsModel(
     val itemName: String,
     val itemCode: String,
     val location: String,
-    val processType: String
+    val processType: String,
+    val isChecked: Boolean
 
 
 ){
@@ -22,7 +23,8 @@ data class AdditionalFieldsModel(
             itemName = "",
             itemCode = "",
             location = "",
-            processType = ""
+            processType = "",
+            isChecked = false
         )
     }
 }

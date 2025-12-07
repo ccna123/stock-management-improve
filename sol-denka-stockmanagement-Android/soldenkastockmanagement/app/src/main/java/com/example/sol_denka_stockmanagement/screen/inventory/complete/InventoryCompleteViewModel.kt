@@ -65,7 +65,7 @@ class InventoryCompleteViewModel @Inject constructor(
 
 
             val newList = rfidTagList.map { tag ->
-                val wrongLocation = isWrongLocation(tag.epc, currentLocationId)
+                val wrongLocation = isWrongLocation(tag.tagId, currentLocationId)
                 val shortage = tag.epc in tagsInStock && tag.epc !in scannedTags
                 val over = tag.epc !in tagsInStock && tag.epc in scannedTags
                 val ok = !wrongLocation && !shortage && !over
@@ -157,9 +157,9 @@ class InventoryCompleteViewModel @Inject constructor(
     }
 
 
-    private suspend fun isWrongLocation(epc: String, selectedLocationId: Int): Boolean {
-        val tagLocationId = tagMasterRepository.getLocationIdByTag(epc)
-        return tagLocationId == null || selectedLocationId != tagLocationId
+    private suspend fun isWrongLocation(tagId: Int, selectedLocationId: Int): Boolean {
+        val tagLocationId = tagMasterRepository.getLocationIdByTagId(tagId)
+        return selectedLocationId != tagLocationId
     }
 
 }

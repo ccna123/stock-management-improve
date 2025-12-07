@@ -30,14 +30,6 @@ interface TagMasterDao : IDao<TagMasterEntity> {
     override suspend fun delete(e: TagMasterEntity)
 
     @Query(
-        "SELECT li.location_id\n" +
-                "FROM tagmaster t\n" +
-                "LEFT JOIN ledgeritem li ON li.ledger_item_id = t.ledger_item_id\n" +
-                "WHERE t.epc = :epc"
-    )
-    suspend fun getLocationIdByTag(epc: String): Int?
-
-    @Query(
         """
     SELECT * FROM tagmaster t
     LEFT JOIN ledgeritem le ON le.ledger_item_id = t.ledger_item_id
@@ -62,11 +54,19 @@ interface TagMasterDao : IDao<TagMasterEntity> {
     suspend fun getLedgerIdByEpc(epc: String): Int
 
     @Query("""
-        SELECT t.tag_id, le.item_type_id, le.location_id
+        SELECT le.item_type_id
             FROM tagmaster t
             LEFT JOIN ledgeritem le ON le.ledger_item_id = t.ledger_item_id
             WHERE t.tag_id = :tagId
     """)
-    suspend fun getItemTypeIdLocationIdByTagId(tagId: Int): Pair<Int, Int>
+    suspend fun getItemTypeIdByTagId(tagId: Int): Long
+
+    @Query("""
+        SELECT le.location_id
+            FROM tagmaster t
+            LEFT JOIN ledgeritem le ON le.ledger_item_id = t.ledger_item_id
+            WHERE t.tag_id = :tagId
+    """)
+    suspend fun getLocationIdByTagId(tagId: Int): Long
 
 }

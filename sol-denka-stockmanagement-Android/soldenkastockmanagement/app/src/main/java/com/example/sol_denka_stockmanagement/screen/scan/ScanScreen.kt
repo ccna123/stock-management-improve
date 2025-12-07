@@ -76,8 +76,8 @@ fun ScanScreen(
     val checkedMap by appViewModel.perTagChecked.collectAsStateWithLifecycle()
     val inputState by appViewModel.inputState.collectAsStateWithLifecycle()
 
-    val isAllSelected by appViewModel.isAllSelected.collectAsStateWithLifecycle()
-    val selectedCount by appViewModel.selectedCount.collectAsStateWithLifecycle()
+    val displayTags = rfidTagList.filter { it.epc in scannedTags }
+
     val showModalProcessMethod by appViewModel.showModalProcessMethod.collectAsStateWithLifecycle()
     val showClearTagConfirmDialog = appViewModel.showClearTagConfirmDialog.value
 
@@ -92,27 +92,22 @@ fun ScanScreen(
         scanViewModel.setEnableScan(true)
     }
 
-    LaunchedEffect(scannedTags) {
-        val checkedMap = appViewModel.perTagChecked.value
-        val selectedCount = checkedMap.count { (key, checked) ->
-            scannedTags.keys.contains(key) && checked
-        }
-
-        val allSelected = scannedTags.isNotEmpty() && scannedTags.keys.all { key ->
-            checkedMap[key] == true
-        }
-        appViewModel.onGeneralIntent(
-            ShareIntent.UpdateSelectionStatus(
-                selectedCount = selectedCount,
-                allSelected = allSelected
-            )
-        )
-    }
+//    LaunchedEffect(scannedTags) {
+//        val selectedCount = rfidTagList.count { it.newFields.isChecked }
+//
+//        val allSelected = scannedTags.isNotEmpty() && rfidTagList.all { it.newFields.isChecked }
+//        appViewModel.onGeneralIntent(
+//            ShareIntent.UpdateSelectionStatus(
+//                selectedCount = selectedCount,
+//                allSelected = allSelected
+//            )
+//        )
+//    }
 
 
     if (showModalProcessMethod) {
         ProcessModal(
-            selectedCount = selectedCount,
+            selectedCount = rfidTagList.count { it.newFields.isChecked },
             chosenMethod = inputState.processMethod,
             onChooseMethod = { method ->
                 appViewModel.onInputIntent(InputIntent.ChangeProcessMethod(method))
@@ -205,7 +200,7 @@ fun ScanScreen(
                         in listOf(
                             Screen.Outbound.routeId,
                             Screen.LocationChange.routeId
-                        ) -> "${stringResource(R.string.register_info)}(${selectedCount}件)"
+                        ) -> "${stringResource(R.string.register_info)}(${rfidTagList.count { it.newFields.isChecked }}件)"
 
                         Screen.Inbound.routeId -> stringResource(R.string.register_info)
                         else -> ""
@@ -223,7 +218,7 @@ fun ScanScreen(
                         in listOf(
                             Screen.Outbound.routeId,
                             Screen.LocationChange.routeId
-                        ) -> checkedMap.values.any { it }
+                        ) -> rfidTagList.any { it.newFields.isChecked }
 
                         Screen.Inbound.routeId -> lastInboundEpc?.isNotEmpty() == true
                         else -> true
@@ -284,17 +279,20 @@ fun ScanScreen(
                     Text(text = stringResource(R.string.scan_tag_list_item))
                     ButtonContainer(
                         modifier = Modifier.width(120.dp),
-                        buttonText = if (isAllSelected) stringResource(R.string.select_all_remove) else stringResource(
+                        buttonText = if (displayTags.all { it.newFields.isChecked }) stringResource(R.string.select_all_remove) else stringResource(
                             R.string.select_all
                         ),
-                        containerColor = if (isAllSelected) Color.Red else brightAzure,
+                        containerColor = if (displayTags.all { it.newFields.isChecked }) Color.Red else brightAzure,
                         canClick = scannedTags.isNotEmpty() && isPerformingInventory.not(),
                         onClick = {
-                            appViewModel.onGeneralIntent(
-                                ShareIntent.ToggleSelectionAll(
-                                    tagList = scannedTags.keys
-                                )
-                            )
+                            scanViewModel.toggleCheckAll(
+                                targetEpcs = scannedTags.keys,
+                                value = !displayTags.all { it.newFields.isChecked })
+//                            appViewModel.onGeneralIntent(
+//                                ShareIntent.ToggleSelectionAll(
+//                                    tagList = scannedTags.keys
+//                                )
+//                            )
                         }
                     )
                 }
@@ -313,9 +311,9 @@ fun ScanScreen(
                             containerColor = brightGreenSecondary,
                             buttonText = stringResource(
                                 R.string.bulk_register,
-                                selectedCount.toString()
+                                rfidTagList.count { it.newFields.isChecked }.toString()
                             ),
-                            canClick = checkedMap.values.any { it },
+                            canClick = rfidTagList.any { it.newFields.isChecked },
                             onClick = {
                                 appViewModel.onGeneralIntent(
                                     ShareIntent.ShowModalProcessMethod(
@@ -336,26 +334,30 @@ fun ScanScreen(
                                 val value = processMap[tag.first] ?: ""
                                 OutboundSingleItem(
                                     tag = rfidTagList.find { it.epc == tag.first }?.epc ?: "",
-                                    itemName = rfidTagList.find { it.epc == tag.first }?.newFields?.itemName ?: "",
-                                    isChecked = isChecked,
+                                    itemName = rfidTagList.find { it.epc == tag.first }?.newFields?.itemName
+                                        ?: "",
+                                    isChecked = rfidTagList.find { it.epc == tag.first }?.newFields?.isChecked
+                                        ?: false,
                                     onSelect = {
                                         if (isPerformingInventory.not()) {
-                                            appViewModel.onGeneralIntent(
-                                                ShareIntent.ToggleTagSelection1(
-                                                    tag = tag.first,
-                                                    totalTag = scannedTags.size
-                                                )
-                                            )
+                                            scanViewModel.toggleCheck(tag.first)
+//                                            appViewModel.onGeneralIntent(
+//                                                ShareIntent.ToggleTagSelection1(
+//                                                    tag = tag.first,
+//                                                    totalTag = scannedTags.size
+//                                                )
+//                                            )
                                         }
                                     },
                                     onCheckedChange = {
                                         if (isPerformingInventory.not()) {
-                                            appViewModel.onGeneralIntent(
-                                                ShareIntent.ToggleTagSelection1(
-                                                    tag = tag.first,
-                                                    totalTag = scannedTags.size
-                                                )
-                                            )
+                                            scanViewModel.toggleCheck(tag.first)
+//                                            appViewModel.onGeneralIntent(
+//                                                ShareIntent.ToggleTagSelection1(
+//                                                    tag = tag.first,
+//                                                    totalTag = scannedTags.size
+//                                                )
+//                                            )
                                         }
                                     },
                                     isExpanded = isExpanded,
@@ -405,26 +407,30 @@ fun ScanScreen(
                                 val isChecked = checkedMap[tag.first] ?: false
                                 LocationChangeSingleItem(
                                     tag = rfidTagList.find { it.epc == tag.first }?.epc ?: "",
-                                    itemName = rfidTagList.find { it.epc == tag.first }?.newFields?.itemName ?: "",
-                                    isChecked = isChecked,
+                                    itemName = rfidTagList.find { it.epc == tag.first }?.newFields?.itemName
+                                        ?: "",
+                                    isChecked = rfidTagList.find { it.epc == tag.first }?.newFields?.isChecked
+                                        ?: false,
                                     onCheckedChange = {
-                                        if (isPerformingInventory.not()){
-                                            appViewModel.onGeneralIntent(
-                                                ShareIntent.ToggleTagSelection1(
-                                                    tag = tag.first,
-                                                    totalTag = scannedTags.size
-                                                )
-                                            )
+                                        if (isPerformingInventory.not()) {
+                                            scanViewModel.toggleCheck(tag.first)
+//                                            appViewModel.onGeneralIntent(
+//                                                ShareIntent.ToggleTagSelection1(
+//                                                    tag = tag.first,
+//                                                    totalTag = scannedTags.size
+//                                                )
+//                                            )
                                         }
                                     },
                                     onClick = {
-                                        if (isPerformingInventory.not()){
-                                            appViewModel.onGeneralIntent(
-                                                ShareIntent.ToggleTagSelection1(
-                                                    tag = tag.first,
-                                                    totalTag = scannedTags.size
-                                                )
-                                            )
+                                        if (isPerformingInventory.not()) {
+                                            scanViewModel.toggleCheck(tag.first)
+//                                            appViewModel.onGeneralIntent(
+//                                                ShareIntent.ToggleTagSelection1(
+//                                                    tag = tag.first,
+//                                                    totalTag = scannedTags.size
+//                                                )
+//                                            )
                                         }
                                     }
                                 )

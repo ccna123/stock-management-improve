@@ -81,6 +81,7 @@ fun HomeScreen(
             onGeneralIntent(ShareIntent.ResetState)
         }
         scanViewModel.apply {
+            resetIsCheckedField()
             clearTagStatusAndRssi()
         }
     }

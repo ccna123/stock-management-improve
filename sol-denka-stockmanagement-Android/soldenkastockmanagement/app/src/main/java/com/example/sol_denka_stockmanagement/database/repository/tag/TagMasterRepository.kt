@@ -18,8 +18,12 @@ class TagMasterRepository @Inject constructor(
 
     suspend fun getFullInfo() = dao.getFullInfo()
 
-    suspend fun getLocationIdByTag(epc: String) = dao.getLocationIdByTag(epc)
-    suspend fun getItemTypeIdLocationIdByTagId(tagId: Int) = dao.getItemTypeIdLocationIdByTagId(tagId)
+    suspend fun getLocationIdByTagId(tagId: Int) = dao.getLocationIdByTagId(tagId).toInt()
+    suspend fun getItemTypeIdLocationIdByTagId(tagId: Int): Pair<Int, Int>{
+        val itemTypeId = dao.getItemTypeIdByTagId(tagId).toInt()
+        val locationId = dao.getLocationIdByTagId(tagId).toInt()
+        return Pair(itemTypeId, locationId)
+    }
     suspend fun getTagsByLocationAndStock(locationId: Int, isInStock: Boolean) =
         dao.getTagsByLocationAndStock(locationId, isInStock).map { it.toModel() }
 
