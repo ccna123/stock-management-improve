@@ -60,7 +60,6 @@ fun LocationChangeScreen(
     val rfidTagList = scanViewModel.rfidTagList.collectAsStateWithLifecycle().value
     val inputState = appViewModel.inputState.collectAsStateWithLifecycle().value
     val selectedCount by appViewModel.selectedCount.collectAsStateWithLifecycle()
-    val checkedMap by appViewModel.perTagChecked.collectAsStateWithLifecycle()
     val locationMaster by appViewModel.locationMaster.collectAsStateWithLifecycle()
     val scope = rememberCoroutineScope()
 
@@ -97,17 +96,13 @@ fun LocationChangeScreen(
                         locationChangeViewModel.saveLocationChangeToDb(
                             memo = inputState.memo,
                             newLocation = inputState.location,
-                            rfidTagList = rfidTagList.filter { tag ->
-                                tag.epc in checkedMap.filter { it.value }.keys
-                            }
+                            rfidTagList = rfidTagList.filter { it.newFields.isChecked }
                         )
                         val csvModels =
                             locationChangeViewModel.generateCsvData(
                                 memo = inputState.memo,
                                 newLocation = inputState.location,
-                                rfidTagList = rfidTagList.filter { tag ->
-                                    tag.epc in checkedMap.filter { it.value }.keys
-                                }
+                                rfidTagList = rfidTagList.filter { it.newFields.isChecked }
                             )
                         appViewModel.onGeneralIntent(
                             ShareIntent.SaveScanResult(
@@ -141,11 +136,11 @@ fun LocationChangeScreen(
                             stringResource(R.string.item_code_title),
                             stringResource(R.string.storage_area)
                         ),
-                        scanResult = checkedMap.filter { it.value }.map { it.key }.map { tag ->
+                        scanResult = rfidTagList.filter { it.newFields.isChecked }.map { tag ->
                             ScanResultRowModel(
-                                itemName = rfidTagList.find { it.epc == tag }?.epc ?: "-",
-                                itemCode = rfidTagList.find { it.epc == tag }?.newFields?.itemCode ?: "-",
-                                lastColumn = rfidTagList.find { it.epc == tag }?.newFields?.location ?: "-",
+                                itemName = rfidTagList.find { it.epc == tag.epc }?.epc ?: "-",
+                                itemCode = rfidTagList.find { it.epc == tag.epc }?.newFields?.itemCode ?: "-",
+                                lastColumn = rfidTagList.find { it.epc == tag.epc }?.newFields?.location ?: "-",
                             )
                         },
                     )

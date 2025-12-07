@@ -63,10 +63,8 @@ fun OutboundScreen(
 
     val inputState = appViewModel.inputState.collectAsStateWithLifecycle()
     val generalState = appViewModel.generalState.collectAsStateWithLifecycle()
-    val checkedMap by appViewModel.perTagChecked.collectAsStateWithLifecycle()
     val rfidTagList = scanViewModel.rfidTagList.collectAsStateWithLifecycle().value
     val processTypeMap by appViewModel.perTagProcessMethod.collectAsStateWithLifecycle()
-    val selectedCount by appViewModel.selectedCount.collectAsStateWithLifecycle()
     val scope = rememberCoroutineScope()
 
     LaunchedEffect(Unit) {

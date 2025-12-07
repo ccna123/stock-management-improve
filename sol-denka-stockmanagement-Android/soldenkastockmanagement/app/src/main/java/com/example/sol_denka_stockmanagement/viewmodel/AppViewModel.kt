@@ -225,19 +225,17 @@ class AppViewModel @Inject constructor(
             is InputIntent.ChangeFileTransferMethod ->
                 _inputState.update { it.copy(fileTransferMethod = intent.value) }
 
-            InputIntent.BulkApplyProcessMethod -> {
+            is InputIntent.BulkApplyProcessMethod -> {
                 val chosenMethod = _inputState.value.processMethod
-                val checked = _perTagChecked.value
-
                 val updated = perTagProcessMethod.value.toMutableMap()
 
-                checked.forEach { (tag, isChecked) ->
-                    if (isChecked) {
-                        updated[tag] = chosenMethod
-                    }
+                intent.checkedTags.forEach { epc ->
+                    updated[epc] = chosenMethod
                 }
+
                 perTagProcessMethod.value = updated
             }
+
 
             is InputIntent.ChangeOccurredAt -> {
                 _inputState.update { it.copy(occurredAt = intent.value) }

@@ -121,7 +121,7 @@ fun ScanScreen(
             },
             onApplyBulk = {
                 appViewModel.apply {
-                    onInputIntent(InputIntent.BulkApplyProcessMethod)
+                    onInputIntent(InputIntent.BulkApplyProcessMethod(checkedTags = displayTags.map { it.epc }))
                     onGeneralIntent(ShareIntent.ShowModalProcessMethod(false))
                 }
             }
