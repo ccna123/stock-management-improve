@@ -56,10 +56,9 @@ fun LocationChangeScreen(
     onGoBack: () -> Unit
 ) {
 
-    val expandState = appViewModel.expandState.collectAsStateWithLifecycle()
-    val rfidTagList = scanViewModel.rfidTagList.collectAsStateWithLifecycle().value
-    val inputState = appViewModel.inputState.collectAsStateWithLifecycle().value
-    val selectedCount by appViewModel.selectedCount.collectAsStateWithLifecycle()
+    val expandState by appViewModel.expandState.collectAsStateWithLifecycle()
+    val rfidTagList by scanViewModel.rfidTagList.collectAsStateWithLifecycle()
+    val inputState by appViewModel.inputState.collectAsStateWithLifecycle()
     val locationMaster by appViewModel.locationMaster.collectAsStateWithLifecycle()
     val scope = rememberCoroutineScope()
 
@@ -123,7 +122,7 @@ fun LocationChangeScreen(
                 .padding(paddingValues)
                 .padding(16.dp)
         ) {
-            Text(text = stringResource(R.string.planned_register_item_number, selectedCount))
+            Text(text = stringResource(R.string.planned_register_item_number, rfidTagList.count { it.newFields.isChecked }))
             Spacer(modifier = Modifier.height(18.dp))
             LazyColumn(
                 modifier = Modifier
@@ -146,7 +145,7 @@ fun LocationChangeScreen(
                     )
                     Spacer(modifier = Modifier.height(20.dp))
                     ExposedDropdownMenuBox(
-                        expanded = expandState.value.locationExpanded,
+                        expanded = expandState.locationExpanded,
                         onExpandedChange = { appViewModel.onExpandIntent(ExpandIntent.ToggleLocationExpanded) }) {
                         InputFieldContainer(
                             modifier = Modifier
@@ -171,7 +170,7 @@ fun LocationChangeScreen(
                             onEnterPressed = {}
                         )
                         ExposedDropdownMenu(
-                            expanded = expandState.value.locationExpanded,
+                            expanded = expandState.locationExpanded,
                             onDismissRequest = { appViewModel.onExpandIntent(ExpandIntent.ToggleLocationExpanded) }
                         ) {
                             DropdownMenuItem(

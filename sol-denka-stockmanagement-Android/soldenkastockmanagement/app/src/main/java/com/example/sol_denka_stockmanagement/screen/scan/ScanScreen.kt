@@ -73,7 +73,6 @@ fun ScanScreen(
     val scope = rememberCoroutineScope()
     val expandedMap by appViewModel.perTagExpanded.collectAsStateWithLifecycle()
     val processMap by appViewModel.perTagProcessMethod.collectAsStateWithLifecycle()
-    val checkedMap by appViewModel.perTagChecked.collectAsStateWithLifecycle()
     val inputState by appViewModel.inputState.collectAsStateWithLifecycle()
 
     val displayTags = rfidTagList.filter { it.epc in scannedTags }
@@ -330,7 +329,6 @@ fun ScanScreen(
                         when (prevScreenNameId) {
                             Screen.Outbound.routeId -> {
                                 val isExpanded = expandedMap[tag.first] ?: false
-                                val isChecked = checkedMap[tag.first] ?: false
                                 val value = processMap[tag.first] ?: ""
                                 OutboundSingleItem(
                                     tag = rfidTagList.find { it.epc == tag.first }?.epc ?: "",
@@ -404,7 +402,6 @@ fun ScanScreen(
                             }
 
                             Screen.LocationChange.routeId -> {
-                                val isChecked = checkedMap[tag.first] ?: false
                                 LocationChangeSingleItem(
                                     tag = rfidTagList.find { it.epc == tag.first }?.epc ?: "",
                                     itemName = rfidTagList.find { it.epc == tag.first }?.newFields?.itemName

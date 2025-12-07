@@ -61,9 +61,9 @@ fun OutboundScreen(
     onGoBack: () -> Unit,
 ) {
 
-    val inputState = appViewModel.inputState.collectAsStateWithLifecycle()
-    val generalState = appViewModel.generalState.collectAsStateWithLifecycle()
-    val rfidTagList = scanViewModel.rfidTagList.collectAsStateWithLifecycle().value
+    val inputState by appViewModel.inputState.collectAsStateWithLifecycle()
+    val generalState by appViewModel.generalState.collectAsStateWithLifecycle()
+    val rfidTagList by scanViewModel.rfidTagList.collectAsStateWithLifecycle()
     val processTypeMap by appViewModel.perTagProcessMethod.collectAsStateWithLifecycle()
     val scope = rememberCoroutineScope()
 
@@ -71,7 +71,7 @@ fun OutboundScreen(
         scanViewModel.applyProcessType(processTypeMap)
     }
 
-    if (generalState.value.showTimePicker) {
+    if (generalState.showTimePicker) {
         val current = Calendar.getInstance()
         val state = rememberTimePickerState(
             initialHour = current.get(Calendar.HOUR_OF_DAY),
@@ -129,13 +129,13 @@ fun OutboundScreen(
                 onClick = {
                     scope.launch {
                         outboundViewModel.saveOutboundToDb(
-                            memo = inputState.value.memo,
-                            occurredAt = inputState.value.occurredAt,
+                            memo = inputState.memo,
+                            occurredAt = inputState.occurredAt,
                             rfidTagList = rfidTagList.filter { it.newFields.isChecked }
                         )
                         val csvModels =
                             outboundViewModel.generateCsvData(
-                                memo = inputState.value.memo,
+                                memo = inputState.memo,
                                 rfidTagList = rfidTagList.filter { it.newFields.isChecked }
                             )
                         appViewModel.onGeneralIntent(
@@ -198,7 +198,7 @@ fun OutboundScreen(
                     ) {
                         InputFieldContainer(
                             modifier = Modifier.fillMaxWidth(),
-                            value = inputState.value.occurredAt,
+                            value = inputState.occurredAt,
                             label = stringResource(R.string.occurred_at),
                             isNumeric = false,
                             shape = RoundedCornerShape(13.dp),
@@ -213,7 +213,7 @@ fun OutboundScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(200.dp),
-                        value = inputState.value.memo,
+                        value = inputState.memo,
                         label = "${stringResource(R.string.memo)} (オプション)",
                         hintText = stringResource(R.string.memo_hint),
                         isNumeric = false,

@@ -94,15 +94,6 @@ class AppViewModel @Inject constructor(
     var showRadioPowerChangeDialog = mutableStateOf(false)
         private set
 
-    private val _perTagChecked = MutableStateFlow<Map<String, Boolean>>(emptyMap())
-    val perTagChecked: StateFlow<Map<String, Boolean>> = _perTagChecked.asStateFlow()
-
-    private val _isAllSelected = MutableStateFlow(false)
-    val isAllSelected = _isAllSelected.asStateFlow()
-
-    private val _selectedCount = MutableStateFlow(0)
-    val selectedCount = _selectedCount.asStateFlow()
-
     private val _showModalProcessMethod = MutableStateFlow(false)
     val showModalProcessMethod = _showModalProcessMethod.asStateFlow()
 
@@ -255,26 +246,10 @@ class AppViewModel @Inject constructor(
             is ShareIntent.ToggleSelectionMode ->
                 _generalState.update { it.copy(isSelectionMode = intent.selectionMode) }
 
-            is ShareIntent.ToggleTagSelection -> {
-                val current = generalState.value.selectedTags.toMutableList()
-                if (intent.item in current) current.remove(intent.item) else current.add(intent.item)
-                _generalState.update { it.copy(selectedTags = current) }
-                if (current.isEmpty()) _generalState.update { it.copy(isSelectionMode = false) }
-            }
-
             is ShareIntent.ToggleFoundTag -> {
                 val current = generalState.value.foundTags.toMutableList()
                 if (intent.tag in current) current.remove(intent.tag) else current.add(intent.tag)
                 _generalState.update { it.copy(foundTags = current) }
-            }
-
-            ShareIntent.ClearTagSelectionList -> {
-                _generalState.update {
-                    it.copy(
-                        selectedTags = emptyList(),
-                        isAllSelected = false
-                    )
-                }
             }
 
             ShareIntent.ClearFoundTag -> _generalState.update { it.copy(foundTags = emptyList()) }
@@ -288,36 +263,6 @@ class AppViewModel @Inject constructor(
             ShareIntent.Prev -> {
                 val current = _generalState.value.currentIndex
                 _generalState.update { it.copy(currentIndex = maxOf(current - 1, 0)) }
-            }
-
-            is ShareIntent.ToggleSelectionAll -> {
-                val allTags = intent.tagList
-                if (allTags.isEmpty()) return
-
-                val currentlyAll = allTags.all { tag -> _perTagChecked.value[tag] == true }
-
-                if (currentlyAll) {
-                    _perTagChecked.value = allTags.associateWith { false }
-                    _selectedCount.value = 0
-                    _isAllSelected.value = false
-                } else {
-                    _perTagChecked.value = allTags.associateWith { true }
-                    _selectedCount.value = allTags.size
-                    _isAllSelected.value = true
-                }
-            }
-
-            is ShareIntent.ToggleTagSelection1 -> {
-                val updated = _perTagChecked.value.toMutableMap()
-                updated[intent.tag] = !(updated[intent.tag] ?: false)
-                _perTagChecked.value = updated
-
-                val selectedCount = updated.values.count { it }
-                val allSelected = selectedCount == intent.totalTag
-
-                _isAllSelected.value = allSelected
-                _selectedCount.value = selectedCount
-
             }
 
             is ShareIntent.ToggleNetworkDialog ->
@@ -338,10 +283,7 @@ class AppViewModel @Inject constructor(
                 _generalState.value = GeneralState()
                 perTagExpanded.value = emptyMap()
                 perTagProcessMethod.value = emptyMap()
-                _perTagChecked.value = emptyMap()
-                _selectedCount.value = 0
                 _showModalProcessMethod.value = false
-                _isAllSelected.value = false
             }
 
             is ShareIntent.ChangeTabInReceivingScreen ->
@@ -417,11 +359,6 @@ class AppViewModel @Inject constructor(
 
             ShareIntent.ToggleRadioPowerChangeDialog -> showRadioPowerChangeDialog.value =
                 !showRadioPowerChangeDialog.value
-
-            is ShareIntent.UpdateSelectionStatus -> {
-                _selectedCount.value = intent.selectedCount
-                _isAllSelected.value = intent.allSelected
-            }
 
             is ShareIntent.ToggleTimePicker -> _generalState.update { it.copy(showTimePicker = intent.showTimePicker) }
             ShareIntent.ResetDetailIndex -> _generalState.update { it.copy(currentIndex = 0) }

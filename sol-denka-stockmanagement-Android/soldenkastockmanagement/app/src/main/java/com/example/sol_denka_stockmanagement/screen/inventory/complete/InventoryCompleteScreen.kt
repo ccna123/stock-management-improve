@@ -22,6 +22,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -61,14 +62,14 @@ fun InventoryCompleteScreen(
     onGoBack: () -> Unit,
 ) {
 
-    val generalState = appViewModel.generalState.collectAsStateWithLifecycle().value
-    val inputState = appViewModel.inputState.collectAsStateWithLifecycle().value
-    val rfidTagList = scanViewModel.rfidTagList.collectAsStateWithLifecycle().value
-    val wrongLocationCount =
+    val generalState by appViewModel.generalState.collectAsStateWithLifecycle()
+    val inputState by appViewModel.inputState.collectAsStateWithLifecycle()
+    val rfidTagList by scanViewModel.rfidTagList.collectAsStateWithLifecycle()
+    val wrongLocationCount by
         inventoryCompleteViewModel.wrongLocationCount.collectAsStateWithLifecycle()
-    val shortageCount = inventoryCompleteViewModel.shortageCount.collectAsStateWithLifecycle()
-    val overCount = inventoryCompleteViewModel.overCount.collectAsStateWithLifecycle()
-    val okCount = inventoryCompleteViewModel.okCount.collectAsStateWithLifecycle()
+    val shortageCount by inventoryCompleteViewModel.shortageCount.collectAsStateWithLifecycle()
+    val overCount by inventoryCompleteViewModel.overCount.collectAsStateWithLifecycle()
+    val okCount by inventoryCompleteViewModel.okCount.collectAsStateWithLifecycle()
     val scope = rememberCoroutineScope()
 
     LaunchedEffect(Unit) {
@@ -190,10 +191,10 @@ fun InventoryCompleteScreen(
                 ) {
                     inventoryStatusList.forEach { item ->
                         val count = when (item.status) {
-                            InventoryScanResult.OK -> okCount.value
-                            InventoryScanResult.SHORTAGE -> shortageCount.value
-                            InventoryScanResult.OVERLOAD -> overCount.value
-                            InventoryScanResult.WRONG_LOCATION -> wrongLocationCount.value
+                            InventoryScanResult.OK -> okCount
+                            InventoryScanResult.SHORTAGE -> shortageCount
+                            InventoryScanResult.OVERLOAD -> overCount
+                            InventoryScanResult.WRONG_LOCATION -> wrongLocationCount
                         }
                         Row(
                             modifier = Modifier

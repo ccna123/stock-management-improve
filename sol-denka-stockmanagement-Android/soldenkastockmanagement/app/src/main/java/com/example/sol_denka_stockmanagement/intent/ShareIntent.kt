@@ -13,14 +13,10 @@ sealed interface ShareIntent {
     data object ToggleRadioPowerChangeDialog : ShareIntent
     data class ToggleDropDown(val showDropDown: Boolean) : ShareIntent
     data class ToggleSelectionMode(val selectionMode: Boolean) : ShareIntent
-    data class ToggleTagSelection(val item: String) : ShareIntent
-    data class ToggleTagSelection1(val tag: String, val totalTag: Int) : ShareIntent
-    data object ClearTagSelectionList : ShareIntent
     data class ToggleFoundTag(val tag: String) : ShareIntent
     data object ClearFoundTag : ShareIntent
     data object Prev : ShareIntent
     data class Next(val lastItemIndex: Int) : ShareIntent
-    data class ToggleSelectionAll(val tagList: Set<String>) : ShareIntent
     data class ToggleNetworkDialog(val doesOpenDialog: Boolean) : ShareIntent
     data class ToggleTimePicker(val showTimePicker: Boolean) : ShareIntent
     data class ChangePerTagProcessMethod(val tag: String, val method: String) : ShareIntent
@@ -34,6 +30,4 @@ sealed interface ShareIntent {
         val direction: CsvHistoryDirection,
         val data: List<T>
     ) : ShareIntent
-
-    data class UpdateSelectionStatus(val selectedCount: Int, val allSelected: Boolean) : ShareIntent
 }
