@@ -49,7 +49,7 @@ import com.example.sol_denka_stockmanagement.database.entity.tag.TagMasterEntity
     ]
 )
 data class InboundEventEntity(
-    @PrimaryKey(autoGenerate = true) @ColumnInfo(name = "inbound_event_id") val inboundEventId: Int,
+    @PrimaryKey(autoGenerate = true) @ColumnInfo(name = "inbound_event_id") val inboundEventId: Int = 0,
     @ColumnInfo(name = "inbound_session_id") val inboundSessionId: Int,
     @ColumnInfo(name = "item_type_id") val itemTypeId: Int,
     @ColumnInfo(name = "location_id") val locationId: Int,
