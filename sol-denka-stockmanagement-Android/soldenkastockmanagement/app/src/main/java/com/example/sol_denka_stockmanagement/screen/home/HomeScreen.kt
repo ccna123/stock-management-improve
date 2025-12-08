@@ -43,6 +43,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.sol_denka_stockmanagement.R
+import com.example.sol_denka_stockmanagement.constant.ScanMode
 import com.example.sol_denka_stockmanagement.intent.ShareIntent
 import com.example.sol_denka_stockmanagement.screen.home.model.MenuModel
 import com.example.sol_denka_stockmanagement.navigation.Screen
@@ -83,6 +84,8 @@ fun HomeScreen(
         scanViewModel.apply {
             resetIsCheckedField()
             clearTagStatusAndRssi()
+            clearInboundDetail()
+            setScanMode(ScanMode.NONE)
         }
     }
 

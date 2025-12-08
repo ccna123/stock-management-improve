@@ -114,7 +114,7 @@ class InventoryCompleteViewModel @Inject constructor(
                     tagId = tag.tagId,
                     deviceId = Build.ID,
                     memo = memo,
-                    scannedAt = generateIso8601JstTimestamp(),
+                    scannedAt = if (inventoryResultTypeId == 3) "" else generateIso8601JstTimestamp(),
                     executedAt = generateIso8601JstTimestamp()
                 )
                 csvModels.add(model)

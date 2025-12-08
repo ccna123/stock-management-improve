@@ -20,7 +20,6 @@ import kotlinx.coroutines.withContext
 @HiltViewModel
 class InboundViewModel @Inject constructor(
     private val tagMasterRepository: TagMasterRepository,
-    private val processTypeRepository: ProcessTypeRepository,
     private val inboundSessionRepository: InboundSessionRepository,
     private val inboundEventRepository: InboundEventRepository
 ) : ViewModel() {
@@ -36,7 +35,7 @@ class InboundViewModel @Inject constructor(
         length: String,
         quantity: String,
         winderInfo: String,
-        misrollReason: String,
+        missRollReason: String,
         rfidTag: TagMasterModel?
     ): List<InboundResultCsvModel> =
         withContext(Dispatchers.IO) {
@@ -58,7 +57,7 @@ class InboundViewModel @Inject constructor(
                 length = length,
                 quantity = quantity,
                 winderInfo = winderInfo,
-                misrollReason = misrollReason,
+                missRollReason = missRollReason,
                 occurredAt = generateIso8601JstTimestamp(),
                 registeredAt = generateIso8601JstTimestamp()
             )
@@ -67,8 +66,12 @@ class InboundViewModel @Inject constructor(
         }
 
     suspend fun saveInboundToDb(
+        weight: String,
+        grade: String,
+        thickness: String,
+        length: String,
+        winderInfo: String,
         memo: String,
-        occurredAt: String,
         rfidTag: TagMasterModel?
     ) {
         withContext(Dispatchers.IO) {
@@ -88,14 +91,14 @@ class InboundViewModel @Inject constructor(
                         itemTypeId = itemTypeId,
                         locationId = locationId,
                         tagId = rfidTag?.tagId ?: 0,
-                        weight = 0,
-                        grade = "",
+                        weight = weight.takeIf { it.isNotBlank() }?.toInt() ?: 0,
+                        grade = grade,
                         specificGravity = "",
-                        thickness = 0,
+                        thickness = thickness.takeIf { it.isNotBlank() }?.toInt() ?: 0,
                         width = 0,
-                        length = 0,
+                        length = length.takeIf { it.isNotBlank() }?.toInt() ?: 0,
                         quantity = 0,
-                        winderInfo = "",
+                        winderInfo = winderInfo,
                         missRollReason = "",
                         memo = memo,
                         occurredAt = generateIso8601JstTimestamp(),
@@ -104,7 +107,7 @@ class InboundViewModel @Inject constructor(
                     inboundEventRepository.insert(model)
                 }
             } catch (e: Exception) {
-                Log.e("TSS", "saveOutboundToDb: ${e.message}")
+                Log.e("TSS", "saveInboundToDb: ${e.message}")
             }
         }
     }

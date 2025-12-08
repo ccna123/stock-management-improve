@@ -198,7 +198,7 @@ class AppViewModel @Inject constructor(
                 _inputState.update { it.copy(length = intent.value) }
 
             is InputIntent.ChangeRollingMachineInfo ->
-                _inputState.update { it.copy(rollingMachineInfo = intent.value) }
+                _inputState.update { it.copy(winderInfo = intent.value) }
 
             is InputIntent.ChangeThickness ->
                 _inputState.update { it.copy(thickness = intent.value) }

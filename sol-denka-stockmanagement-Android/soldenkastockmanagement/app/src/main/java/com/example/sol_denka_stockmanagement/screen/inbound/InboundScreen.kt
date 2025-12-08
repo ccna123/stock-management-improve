@@ -37,6 +37,8 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.sol_denka_stockmanagement.R
 import com.example.sol_denka_stockmanagement.constant.Category
+import com.example.sol_denka_stockmanagement.constant.CsvHistoryDirection
+import com.example.sol_denka_stockmanagement.constant.CsvTaskType
 import com.example.sol_denka_stockmanagement.constant.MaterialSelectionItem
 import com.example.sol_denka_stockmanagement.constant.SelectTitle
 import com.example.sol_denka_stockmanagement.intent.ExpandIntent
@@ -104,19 +106,34 @@ fun InboundScreen(
                 canClick = inputState.materialSelectedItem != SelectTitle.SelectMaterial.displayName,
                 onClick = {
                     scope.launch {
-                        val csvModels =
-                            inboundViewModel.generateCsvData(
-                                weight = inputState.weight,
-                                grade = inputState.grade,
-                                specificGravity = "",
-                                thickness = inputState.thickness,
-                                width = "",
-                                length = inputState.length,
-                                quantity = "",
-                                winderInfo = "",
-                                misrollReason = "",
-                                rfidTag = rfidTagList.find { it.epc == lastInboundEpc },
+                        inboundViewModel.saveInboundToDb(
+                            rfidTag = rfidTagList.find { it.epc == lastInboundEpc },
+                            weight = inputState.weight,
+                            grade = inputState.grade,
+                            thickness = inputState.thickness,
+                            length = inputState.length,
+                            winderInfo = inputState.winderInfo,
+                            memo = inputState.memo,
+                        )
+                        val csvModels = inboundViewModel.generateCsvData(
+                            weight = inputState.weight,
+                            grade = inputState.grade,
+                            specificGravity = "",
+                            thickness = inputState.thickness,
+                            width = "",
+                            length = inputState.length,
+                            quantity = "",
+                            winderInfo = inputState.winderInfo,
+                            missRollReason = "",
+                            rfidTag = rfidTagList.find { it.epc == lastInboundEpc },
+                        )
+                        appViewModel.onGeneralIntent(
+                            ShareIntent.SaveScanResult(
+                                data = csvModels,
+                                direction = CsvHistoryDirection.EXPORT,
+                                taskCode = CsvTaskType.IN,
                             )
+                        )
                     }
                 },
                 buttonText = stringResource(R.string.register),
@@ -149,7 +166,8 @@ fun InboundScreen(
                     ) {
                         Text(
                             text = stringResource(
-                                R.string.item_code,lastInboundEpc ?: "")
+                                R.string.item_code, lastInboundEpc ?: ""
+                            )
                         )
                         Spacer(modifier = Modifier.height(20.dp))
                         ExposedDropdownMenuBox(
@@ -206,7 +224,7 @@ fun InboundScreen(
                     SelectTitle.SelectMaterial.displayName -> {}
                     MaterialSelectionItem.MISS_ROLL.displayName -> MissRollInput(
                         thickness = inputState.thickness,
-                        rollingMachineInfo = inputState.rollingMachineInfo,
+                        rollingMachineInfo = inputState.winderInfo,
                         stockArea = inputState.location,
                         length = inputState.length,
                         packingStyle = inputState.packingStyle,

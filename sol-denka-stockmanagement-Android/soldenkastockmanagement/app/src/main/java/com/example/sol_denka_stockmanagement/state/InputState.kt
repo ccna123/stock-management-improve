@@ -13,7 +13,7 @@ data class InputState(
     val category: String = "",
     val materialSelectedItem: String = MaterialSelectionItem.MISS_ROLL.displayName,
     val processMethod: String = ProcessMethod.USE.displayName,
-    val rollingMachineInfo: String = "",
+    val winderInfo: String = "",
     val weight: String = "",
     val lotNo: String = "",
     val occurredAt: String = "",

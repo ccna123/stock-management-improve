@@ -50,7 +50,7 @@ import com.example.sol_denka_stockmanagement.database.entity.tag.TagMasterEntity
     ]
 )
 data class InventoryResultLocalEntity(
-    @PrimaryKey @ColumnInfo(name = "inventory_result_id") val inventoryResultId: Int,
+    @PrimaryKey(autoGenerate = true) @ColumnInfo(name = "inventory_result_id") val inventoryResultId: Int = 0,
     @ColumnInfo(name = "inventory_session_id") val inventorySessionId: Int,
     @ColumnInfo(name = "inventory_result_type_id") val inventoryResultTypeId: Int,
     @ColumnInfo(name = "ledger_item_id") val ledgerItemId: Int,

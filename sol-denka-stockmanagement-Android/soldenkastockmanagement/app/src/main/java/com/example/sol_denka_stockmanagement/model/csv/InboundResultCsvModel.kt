@@ -18,7 +18,7 @@ data class InboundResultCsvModel(
     val length: String,
     val quantity: String,
     val winderInfo: String,
-    val misrollReason: String,
+    val missRollReason: String,
     val occurredAt: String,
     val registeredAt: String,
 
@@ -54,7 +54,7 @@ data class InboundResultCsvModel(
         length,
         quantity,
         winderInfo,
-        misrollReason,
+        missRollReason,
         occurredAt,
         registeredAt
     )
