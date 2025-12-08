@@ -36,6 +36,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.sol_denka_stockmanagement.R
+import com.example.sol_denka_stockmanagement.constant.Category
 import com.example.sol_denka_stockmanagement.constant.MaterialSelectionItem
 import com.example.sol_denka_stockmanagement.constant.SelectTitle
 import com.example.sol_denka_stockmanagement.intent.ExpandIntent
@@ -152,8 +153,8 @@ fun InboundScreen(
                         )
                         Spacer(modifier = Modifier.height(20.dp))
                         ExposedDropdownMenuBox(
-                            expanded = expandState.materialSelection,
-                            onExpandedChange = { appViewModel.onExpandIntent(ExpandIntent.ToggleMissRollExpanded) }) {
+                            expanded = expandState.categoryExpanded,
+                            onExpandedChange = { appViewModel.onExpandIntent(ExpandIntent.ToggleCategoryExpanded) }) {
                             InputFieldContainer(
                                 modifier = Modifier
                                     .menuAnchor(
@@ -161,12 +162,12 @@ fun InboundScreen(
                                         enabled = true
                                     )
                                     .fillMaxWidth(),
-                                value = if (inputState.materialSelectedItem == SelectTitle.SelectMaterial.displayName) "" else inputState.materialSelectedItem,
+                                value = if (inputState.category == SelectTitle.SelectCategory.displayName) "" else inputState.category,
                                 isNumeric = false,
-                                hintText = SelectTitle.SelectMaterial.displayName,
+                                hintText = SelectTitle.SelectCategory.displayName,
                                 onChange = { newValue ->
                                     appViewModel.onInputIntent(
-                                        InputIntent.ChangeMissRoll(
+                                        InputIntent.ChangeCategory(
                                             newValue
                                         )
                                     )
@@ -176,22 +177,21 @@ fun InboundScreen(
                                 enable = true,
                             )
                             ExposedDropdownMenu(
-                                expanded = expandState.materialSelection,
-                                onDismissRequest = { appViewModel.onExpandIntent(ExpandIntent.ToggleMissRollExpanded) }
+                                expanded = expandState.categoryExpanded,
+                                onDismissRequest = { appViewModel.onExpandIntent(ExpandIntent.ToggleCategoryExpanded) }
                             ) {
                                 listOf(
-                                    SelectTitle.SelectMaterial.displayName,
-                                    MaterialSelectionItem.MISS_ROLL.displayName,
-                                    MaterialSelectionItem.LITER_CAN.displayName,
-                                    MaterialSelectionItem.PACKING_STYLE.displayName,
-                                    MaterialSelectionItem.PELLET.displayName,
-                                ).forEach { missRoll ->
+                                    SelectTitle.SelectCategory.displayName,
+                                    Category.SUB_MATERIAL.displayName,
+                                    Category.SUB_RAW_MATERIAL.displayName,
+                                    Category.NON_STANDARD_ITEM.displayName,
+                                ).forEach { category ->
                                     DropdownMenuItem(
-                                        text = { Text(text = missRoll) },
+                                        text = { Text(text = category) },
                                         onClick = {
                                             appViewModel.apply {
-                                                onInputIntent(InputIntent.ChangeMissRoll(if (missRoll == SelectTitle.SelectMissRoll.displayName) "" else missRoll))
-                                                onExpandIntent(ExpandIntent.ToggleMissRollExpanded)
+                                                onInputIntent(InputIntent.ChangeCategory(if (category == SelectTitle.SelectCategory.displayName) "" else category))
+                                                onExpandIntent(ExpandIntent.ToggleCategoryExpanded)
                                             }
                                         }
                                     )

@@ -180,7 +180,6 @@ class AppViewModel @Inject constructor(
         when (intent) {
             is InputIntent.ChangeProcessMethod -> {
                 _inputState.update { it.copy(processMethod = intent.value) }
-//                processMethod.value = intent.value
             }
 
             is InputIntent.ChangeLocation ->
@@ -228,9 +227,10 @@ class AppViewModel @Inject constructor(
             }
 
 
-            is InputIntent.ChangeOccurredAt -> {
-                _inputState.update { it.copy(occurredAt = intent.value) }
-            }
+            is InputIntent.ChangeOccurredAt -> _inputState.update { it.copy(occurredAt = intent.value) }
+
+
+            is InputIntent.ChangeCategory -> _inputState.update { it.copy(category = intent.value) }
         }
     }
 
@@ -378,7 +378,7 @@ class AppViewModel @Inject constructor(
             ExpandIntent.TogglePackingStyleExpanded ->
                 _expandState.update { it.copy(packingStyleExpanded = !_expandState.value.packingStyleExpanded) }
 
-            ExpandIntent.ToggleHandlingMethodExpanded ->
+            ExpandIntent.ToggleProcessMethodExpanded ->
                 _expandState.update { it.copy(handlingMethodExpanded = !_expandState.value.handlingMethodExpanded) }
 
             ExpandIntent.ToggleFileTransferMethodExpanded ->
@@ -396,6 +396,7 @@ class AppViewModel @Inject constructor(
             }
 
             ExpandIntent.ToggleCsvTypeExpanded -> _expandState.update { it.copy(csvTypeExpanded = !_expandState.value.csvTypeExpanded) }
+            ExpandIntent.ToggleCategoryExpanded -> _expandState.update { it.copy(categoryExpanded = !_expandState.value.categoryExpanded) }
         }
     }
 }

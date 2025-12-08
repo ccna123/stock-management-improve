@@ -3,6 +3,7 @@ package com.example.sol_denka_stockmanagement.intent
 sealed interface InputIntent {
     data class ChangeProcessMethod(val value: String) : InputIntent
     data class ChangeMissRoll(val value: String) : InputIntent
+    data class ChangeCategory(val value: String) : InputIntent
     data class ChangeLocation(val value: String) : InputIntent
     data class ChangeMemo(val value: String) : InputIntent
     data class ChangeOccurredAt(val value: String) : InputIntent

@@ -10,6 +10,7 @@ data class InputState(
     val grade: String = "",
     val length: String = "",
     val memo: String = "",
+    val category: String = "",
     val materialSelectedItem: String = MaterialSelectionItem.MISS_ROLL.displayName,
     val processMethod: String = ProcessMethod.USE.displayName,
     val rollingMachineInfo: String = "",

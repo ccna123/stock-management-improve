@@ -37,6 +37,7 @@ enum class SelectTitle(val displayName: String) {
     SelectProcessMethod("処理方法選択"),
     SelectPackingStyle("荷姿選択"),
     SelectMaterial("資材選択"),
+    SelectCategory("区分選択"),
 }
 
 enum class CsvType(val displayName: String) {
@@ -226,6 +227,12 @@ enum class ScanMode {
     LOCATION_CHANGE,
     INVENTORY_SCAN,
     SEARCH
+}
+
+enum class Category(val displayName: String){
+    SUB_MATERIAL("副資材"),
+    SUB_RAW_MATERIAL("副原料"),
+    NON_STANDARD_ITEM("格外品")
 }
 
 fun generateTimeStamp(): String {
