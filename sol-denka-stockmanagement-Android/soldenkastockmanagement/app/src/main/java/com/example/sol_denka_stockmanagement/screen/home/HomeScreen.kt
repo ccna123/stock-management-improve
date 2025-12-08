@@ -45,7 +45,7 @@ import androidx.compose.ui.unit.sp
 import com.example.sol_denka_stockmanagement.R
 import com.example.sol_denka_stockmanagement.constant.ScanMode
 import com.example.sol_denka_stockmanagement.intent.ShareIntent
-import com.example.sol_denka_stockmanagement.screen.home.model.MenuModel
+import com.example.sol_denka_stockmanagement.screen.home.model.HomeMenuModel
 import com.example.sol_denka_stockmanagement.navigation.Screen
 import com.example.sol_denka_stockmanagement.screen.layout.Layout
 import com.example.sol_denka_stockmanagement.share.ButtonContainer
@@ -67,10 +67,10 @@ fun HomeScreen(
     var showExitDialog by remember { mutableStateOf(false) }
 
     val menuItems = listOf(
-        MenuModel(screen = Screen.Inbound, icon = R.drawable.receiving),
-        MenuModel(screen = Screen.Outbound, icon = R.drawable.shipping),
-        MenuModel(screen = Screen.LocationChange, icon = R.drawable.warehouse),
-        MenuModel(screen = Screen.Inventory, icon = R.drawable.inventory),
+        HomeMenuModel(screen = Screen.Inbound, icon = R.drawable.receiving),
+        HomeMenuModel(screen = Screen.Outbound, icon = R.drawable.shipping),
+        HomeMenuModel(screen = Screen.LocationChange, icon = R.drawable.warehouse),
+        HomeMenuModel(screen = Screen.Inventory, icon = R.drawable.inventory),
     )
 
     BackHandler(enabled = true) {
