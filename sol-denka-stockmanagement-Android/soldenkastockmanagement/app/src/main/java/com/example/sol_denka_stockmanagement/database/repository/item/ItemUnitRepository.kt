@@ -1,15 +1,15 @@
 package com.example.sol_denka_stockmanagement.database.repository.item
 
 import android.util.Log
+import com.example.sol_denka_stockmanagement.constant.ItemUnit
 import com.example.sol_denka_stockmanagement.constant.generateTimeStamp
 import com.example.sol_denka_stockmanagement.database.dao.item.ItemUnitDao
 import com.example.sol_denka_stockmanagement.model.item.ItemUnitMasterModel
 import com.example.sol_denka_stockmanagement.model.item.toEntity
 import com.example.sol_denka_stockmanagement.model.item.toModel
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.*
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -19,16 +19,10 @@ class ItemUnitRepository @Inject constructor(
 ) {
 
     private val presetUnits = listOf(
-        ItemUnitMasterModel(1, "UNIT-PCS", generateTimeStamp(), generateTimeStamp()),
-        ItemUnitMasterModel(2, "UNIT-BOX", generateTimeStamp(), generateTimeStamp()),
-        ItemUnitMasterModel(3, "UNIT-ROLL", generateTimeStamp(), generateTimeStamp()),
-        ItemUnitMasterModel(4, "UNIT-PALLET", generateTimeStamp(), generateTimeStamp()),
-        ItemUnitMasterModel(5, "UNIT-BAG", generateTimeStamp(), generateTimeStamp()),
-        ItemUnitMasterModel(6, "UNIT-SET", generateTimeStamp(), generateTimeStamp()),
-        ItemUnitMasterModel(7, "UNIT-KG", generateTimeStamp(), generateTimeStamp()),
-        ItemUnitMasterModel(8, "UNIT-M", generateTimeStamp(), generateTimeStamp()),
-        ItemUnitMasterModel(9, "UNIT-CM", generateTimeStamp(), generateTimeStamp()),
-        ItemUnitMasterModel(10, "UNIT-L", generateTimeStamp(), generateTimeStamp())
+        ItemUnitMasterModel(itemUnitCode = ItemUnit.KG.displayName, createdAt = generateTimeStamp(), updatedAt = generateTimeStamp()),
+        ItemUnitMasterModel(itemUnitCode = ItemUnit.TON.displayName, createdAt = generateTimeStamp(), updatedAt = generateTimeStamp()),
+        ItemUnitMasterModel(itemUnitCode = ItemUnit.HON.displayName, createdAt = generateTimeStamp(), updatedAt = generateTimeStamp()),
+        ItemUnitMasterModel(itemUnitCode =  ItemUnit.MAI.displayName, createdAt = generateTimeStamp(), updatedAt = generateTimeStamp()),
     )
     suspend fun ensurePresetInserted() {
         val existing = dao.get().firstOrNull() ?: emptyList()

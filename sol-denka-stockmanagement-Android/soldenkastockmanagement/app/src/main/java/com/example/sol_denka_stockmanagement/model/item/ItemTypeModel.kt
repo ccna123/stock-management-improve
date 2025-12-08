@@ -3,8 +3,8 @@ package com.example.sol_denka_stockmanagement.model.item
 import com.example.sol_denka_stockmanagement.database.entity.item.ItemTypeMasterEntity
 
 data class ItemTypeMasterModel(
-    val itemTypeId: Long,
-    val itemUnitId: Long,
+    val itemTypeId: Int,
+    val itemUnitId: Int,
     val itemTypeCode: String,
     val itemTypeName: String,
     val createdAt: String,
