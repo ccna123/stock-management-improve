@@ -264,7 +264,7 @@ fun InboundScreen(
                     MaterialSelectionItem.LITER_CAN.displayName -> {
                         LiterInput(
                             thickness = inputState.thickness,
-                            stockArea = inputState.location,
+                            location = inputState.location,
                             lotNo = inputState.lotNo,
                             packingStyle = inputState.packingStyle,
                             packingStyleExpanded = expandState.packingStyleExpanded,
@@ -275,7 +275,7 @@ fun InboundScreen(
                                     )
                                 )
                             },
-                            onStockAreaChange = {
+                            onLocationChange = {
                                 appViewModel.onInputIntent(
                                     InputIntent.ChangeLocation(
                                         it

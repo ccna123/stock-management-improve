@@ -15,19 +15,18 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.sol_denka_stockmanagement.R
 import com.example.sol_denka_stockmanagement.constant.PackingStyleItem
-import com.example.sol_denka_stockmanagement.constant.SelectTitle
 import com.example.sol_denka_stockmanagement.share.InputFieldContainer
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LiterInput(
     thickness: String,
-    stockArea: String,
+    location: String,
     lotNo: String,
     packingStyle: String,
     packingStyleExpanded: Boolean,
     onThicknessChange: (String) -> Unit,
-    onStockAreaChange: (String) -> Unit,
+    onLocationChange: (String) -> Unit,
     onLotNoChange: (String) -> Unit,
     onPackingStyleChange: (String) -> Unit,
     onPackingStyleExpand: (Boolean) -> Unit,
@@ -50,7 +49,7 @@ fun LiterInput(
     Spacer(modifier = Modifier.height(10.dp))
     InputFieldContainer(
         modifier = Modifier.fillMaxWidth(),
-        value = stockArea,
+        value = location,
         label = stringResource(R.string.storage_area),
         hintText = stringResource(R.string.storage_area_hint),
         isNumeric = false,
@@ -63,7 +62,7 @@ fun LiterInput(
                 (char.isLetterOrDigit() && char.toString()
                     .toByteArray().size == 1) || char == '-'
             }
-            onStockAreaChange(filteredValue)
+            onLocationChange(filteredValue)
         }
     )
     Spacer(modifier = Modifier.height(10.dp))
@@ -96,9 +95,9 @@ fun LiterInput(
                     enabled = true
                 )
                 .fillMaxWidth(),
-            value = if (packingStyle == SelectTitle.SelectPackingStyle.displayName) "" else packingStyle,
+            value = if (packingStyle == PackingStyleItem.SELECTION_TITLE.displayName) "" else packingStyle,
             isNumeric = false,
-            hintText = SelectTitle.SelectPackingStyle.displayName,
+            hintText = PackingStyleItem.SELECTION_TITLE.displayName,
             shape = RoundedCornerShape(13.dp),
             onChange = { newValue ->
                 onPackingStyleChange(newValue)
@@ -112,7 +111,7 @@ fun LiterInput(
             onDismissRequest = { onPackingStyleExpand(false) }
         ) {
             listOf(
-                SelectTitle.SelectPackingStyle.displayName,
+                PackingStyleItem.SELECTION_TITLE.displayName,
                 PackingStyleItem.FLEXIBLE_CONTAINER_1T.displayName,
                 PackingStyleItem.PAPER_BAG_25KG.displayName,
             ).forEach { packingStyle ->
