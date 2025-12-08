@@ -6,7 +6,6 @@ import androidx.lifecycle.ViewModel
 import com.example.sol_denka_stockmanagement.constant.generateIso8601JstTimestamp
 import com.example.sol_denka_stockmanagement.database.repository.inbound.InboundEventRepository
 import com.example.sol_denka_stockmanagement.database.repository.inbound.InboundSessionRepository
-import com.example.sol_denka_stockmanagement.database.repository.process.ProcessTypeRepository
 import com.example.sol_denka_stockmanagement.database.repository.tag.TagMasterRepository
 import com.example.sol_denka_stockmanagement.model.csv.InboundResultCsvModel
 import com.example.sol_denka_stockmanagement.model.inbound.InboundEventModel
