@@ -12,8 +12,11 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -37,11 +40,13 @@ import com.example.sol_denka_stockmanagement.R
 import com.example.sol_denka_stockmanagement.constant.CsvHistoryDirection
 import com.example.sol_denka_stockmanagement.constant.CsvTaskType
 import com.example.sol_denka_stockmanagement.constant.InventoryScanResult
+import com.example.sol_denka_stockmanagement.intent.InputIntent
 import com.example.sol_denka_stockmanagement.intent.ShareIntent
 import com.example.sol_denka_stockmanagement.model.inventory.InventoryCompleteModel
 import com.example.sol_denka_stockmanagement.navigation.Screen
 import com.example.sol_denka_stockmanagement.screen.layout.Layout
 import com.example.sol_denka_stockmanagement.share.ButtonContainer
+import com.example.sol_denka_stockmanagement.share.InputFieldContainer
 import com.example.sol_denka_stockmanagement.share.dialog.NetworkDialog
 import com.example.sol_denka_stockmanagement.ui.theme.brightGreenPrimary
 import com.example.sol_denka_stockmanagement.ui.theme.brightOrange
@@ -164,63 +169,94 @@ fun InventoryCompleteScreen(
         Column(
             modifier = Modifier
                 .padding(paddingValues)
-                .padding(vertical = 20.dp, horizontal = 30.dp)
-                .fillMaxSize(),
+                .padding(vertical = 20.dp, horizontal = 30.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(text = stringResource(R.string.csv_export_title))
             Spacer(modifier = Modifier.height(30.dp))
-            Box(
+            LazyColumn(
                 modifier = Modifier
-                    .shadow(
-                        elevation = 3.dp,
-                        shape = RoundedCornerShape(12.dp),
-                        clip = false, // 👈 allow the shadow to bleed outside the box
-                    )
-                    .background(
-                        color = Color.White,
-                        shape = RoundedCornerShape(12.dp)
-                    )
-                    .border(1.dp, color = paleSkyBlue, shape = RoundedCornerShape(10.dp)),
+                    .imePadding()
             ) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(10.dp),
-                    verticalArrangement = Arrangement.spacedBy(10.dp)
-                ) {
-                    inventoryStatusList.forEach { item ->
-                        val count = when (item.status) {
-                            InventoryScanResult.OK -> okCount
-                            InventoryScanResult.SHORTAGE -> shortageCount
-                            InventoryScanResult.OVERLOAD -> overCount
-                            InventoryScanResult.WRONG_LOCATION -> wrongLocationCount
-                        }
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth(),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Row(
-                                modifier = Modifier.weight(1f),
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.spacedBy(6.dp)
-                            ) {
-                                Icon(
-                                    painter = painterResource(item.icon),
-                                    contentDescription = null,
-                                    tint = item.color,
-                                    modifier = Modifier.size(23.dp)
-                                )
-                                Text(text = item.status.displayName, fontSize = 18.sp)
-                            }
-                            Text(
-                                text = "$count 件",
-                                fontSize = 18.sp,
-                                color = item.color
+                item {
+                    Box(
+                        modifier = Modifier
+                            .shadow(
+                                elevation = 3.dp,
+                                shape = RoundedCornerShape(12.dp),
+                                clip = false, // 👈 allow the shadow to bleed outside the box
                             )
+                            .background(
+                                color = Color.White,
+                                shape = RoundedCornerShape(12.dp)
+                            )
+                            .border(1.dp, color = paleSkyBlue, shape = RoundedCornerShape(10.dp)),
+                    ) {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(10.dp),
+                            verticalArrangement = Arrangement.spacedBy(10.dp)
+                        ) {
+                            inventoryStatusList.forEach { item ->
+                                val count = when (item.status) {
+                                    InventoryScanResult.OK -> okCount
+                                    InventoryScanResult.SHORTAGE -> shortageCount
+                                    InventoryScanResult.OVERLOAD -> overCount
+                                    InventoryScanResult.WRONG_LOCATION -> wrongLocationCount
+                                }
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth(),
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Row(
+                                        modifier = Modifier.weight(1f),
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.spacedBy(6.dp)
+                                    ) {
+                                        Icon(
+                                            painter = painterResource(item.icon),
+                                            contentDescription = null,
+                                            tint = item.color,
+                                            modifier = Modifier.size(23.dp)
+                                        )
+                                        Text(text = item.status.displayName, fontSize = 18.sp)
+                                    }
+                                    Text(
+                                        text = "$count 件",
+                                        fontSize = 18.sp,
+                                        color = item.color
+                                    )
+                                }
+                            }
                         }
                     }
+                    Spacer(modifier = Modifier.height(10.dp))
+                    InputFieldContainer(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(200.dp),
+                        value = inputState.memo,
+                        label = "${stringResource(R.string.memo)} (オプション)",
+                        hintText = stringResource(R.string.memo_hint),
+                        isNumeric = false,
+                        readOnly = false,
+                        isDropDown = false,
+                        enable = true,
+                        singleLine = false,
+                        onChange = { newValue ->
+                            val filteredValue = newValue.trimStart().filter { char ->
+                                (char.isLetterOrDigit() && char.toString()
+                                    .toByteArray().size == 1) || char == '-'
+                            }
+                            appViewModel.onInputIntent(
+                                InputIntent.ChangeMemo(
+                                    filteredValue
+                                )
+                            )
+                        }
+                    )
                 }
             }
         }
