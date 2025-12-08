@@ -30,4 +30,8 @@ sealed interface ShareIntent {
         val direction: CsvHistoryDirection,
         val data: List<T>
     ) : ShareIntent
+
+    data class ShowErrorDialog(val message: String, val onOk: (() -> Unit)? = null) : ShareIntent
+    data class ShowConfirmDialog(val message: String, val onOk: (() -> Unit)?, val onCancel: (() -> Unit)? = null) : ShareIntent
+    data object HiddenDialog: ShareIntent
 }

@@ -19,10 +19,10 @@ class ItemTypeMasterImporter(
             .map { line -> line.split(",") }
             .map { p ->
                 ItemTypeMasterModel(
-                    itemTypeId = p[0].toLong(),
+                    itemTypeId = p[0].toInt(),
                     itemTypeCode = p[1],
                     itemTypeName = p[2],
-                    itemUnitId = p[3].toLong(),
+                    itemUnitId = p[3].toInt(),
                     createdAt = generateTimeStamp(),
                     updatedAt = generateTimeStamp(),
                 )

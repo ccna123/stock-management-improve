@@ -4,7 +4,7 @@ import com.example.sol_denka_stockmanagement.constant.InventoryResultType
 import com.example.sol_denka_stockmanagement.database.entity.inventory.InventoryResultTypeEntity
 
 data class InventoryResultTypeModel(
-    val inventoryResultTypeId: Int = 0,
+    val inventoryResultTypeId: Int,
     val inventoryResultTypeCode: InventoryResultType,
     val inventoryResultTypeName: String,
     val createdAt: String,

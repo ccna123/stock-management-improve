@@ -36,6 +36,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.sol_denka_stockmanagement.R
 import com.example.sol_denka_stockmanagement.constant.CsvHistoryDirection
 import com.example.sol_denka_stockmanagement.constant.CsvTaskType
+import com.example.sol_denka_stockmanagement.constant.StatusCode
+import com.example.sol_denka_stockmanagement.helper.message_mapper.MessageMapper
 import com.example.sol_denka_stockmanagement.intent.InputIntent
 import com.example.sol_denka_stockmanagement.intent.ShareIntent
 import com.example.sol_denka_stockmanagement.model.scan.ScanResultRowModel
@@ -128,11 +130,19 @@ fun OutboundScreen(
                 },
                 onClick = {
                     scope.launch {
-                        outboundViewModel.saveOutboundToDb(
+                        val result = outboundViewModel.saveOutboundToDb(
                             memo = inputState.memo,
                             occurredAt = inputState.occurredAt,
                             rfidTagList = rfidTagList.filter { it.newFields.isChecked }
                         )
+                        result.exceptionOrNull()?.let { e ->
+                            appViewModel.onGeneralIntent(
+                                ShareIntent.ShowErrorDialog(
+                                    MessageMapper.toMessage(StatusCode.FAILED)
+                                )
+                            )
+                            return@launch
+                        }
                         val csvModels =
                             outboundViewModel.generateCsvData(
                                 memo = inputState.memo,

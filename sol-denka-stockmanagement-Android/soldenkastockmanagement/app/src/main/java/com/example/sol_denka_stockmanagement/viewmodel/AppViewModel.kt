@@ -28,6 +28,7 @@ import com.example.sol_denka_stockmanagement.intent.ShareIntent
 import com.example.sol_denka_stockmanagement.model.csv.CsvHistoryModel
 import com.example.sol_denka_stockmanagement.model.location.LocationMasterModel
 import com.example.sol_denka_stockmanagement.model.reader.ReaderInfoModel
+import com.example.sol_denka_stockmanagement.state.DialogState
 import com.example.sol_denka_stockmanagement.state.ExpandState
 import com.example.sol_denka_stockmanagement.state.GeneralState
 import com.example.sol_denka_stockmanagement.state.InputState
@@ -69,6 +70,9 @@ class AppViewModel @Inject constructor(
 
     private val _inputState = MutableStateFlow(InputState())
     val inputState: StateFlow<InputState> = _inputState.asStateFlow()
+
+    private val _dialogState = MutableStateFlow<DialogState>(DialogState.Hidden)
+    val dialogState: StateFlow<DialogState> = _dialogState.asStateFlow()
 
     var showFileProgressDialog = mutableStateOf(false)
 
@@ -296,8 +300,9 @@ class AppViewModel @Inject constructor(
                     if (rows.isEmpty()) {
                         _isFileWorking.value = false
                         csvDialogIsError.value = true
-                        csvDialogMessage.value = MessageMapper.toMessage(StatusCode.EMPTY_DATA)
-                        showAppDialog.value = true
+                        _dialogState.value = DialogState.Error(
+                            message = MessageMapper.toMessage(StatusCode.EMPTY_DATA)
+                        )
                         return@launch
                     }
                     val first =
@@ -341,14 +346,16 @@ class AppViewModel @Inject constructor(
                     if (saveCsvResult is ProcessResult.Success && csvHistorySaveResult > 0) {
                         _isFileWorking.value = false
                         csvDialogIsError.value = false
-                        csvDialogMessage.value = MessageMapper.toMessage(saveCsvResult.statusCode)
-                        showAppDialog.value = true
+                        _dialogState.value = DialogState.Confirm(
+                            message = MessageMapper.toMessage(saveCsvResult.statusCode)
+                        )
 
                     } else if (saveCsvResult is ProcessResult.Failure) {
                         _isFileWorking.value = false
                         csvDialogIsError.value = true
-                        csvDialogMessage.value = MessageMapper.toMessage(saveCsvResult.statusCode)
-                        showAppDialog.value = true
+                        _dialogState.value = DialogState.Error(
+                            message = MessageMapper.toMessage(saveCsvResult.statusCode)
+                        )
                     }
                 }
             }
@@ -362,6 +369,22 @@ class AppViewModel @Inject constructor(
 
             is ShareIntent.ToggleTimePicker -> _generalState.update { it.copy(showTimePicker = intent.showTimePicker) }
             ShareIntent.ResetDetailIndex -> _generalState.update { it.copy(currentIndex = 0) }
+            ShareIntent.HiddenDialog -> _dialogState.update { DialogState.Hidden }
+            is ShareIntent.ShowConfirmDialog -> {
+                _dialogState.update {
+                    DialogState.Confirm(
+                        message = intent.message,
+                    )
+                }
+            }
+
+            is ShareIntent.ShowErrorDialog -> {
+                _dialogState.update {
+                    DialogState.Error(
+                        message = intent.message,
+                    )
+                }
+            }
         }
     }
 

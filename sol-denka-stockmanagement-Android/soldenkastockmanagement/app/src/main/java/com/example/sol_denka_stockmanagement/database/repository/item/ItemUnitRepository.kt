@@ -19,11 +19,32 @@ class ItemUnitRepository @Inject constructor(
 ) {
 
     private val presetUnits = listOf(
-        ItemUnitMasterModel(itemUnitCode = ItemUnit.KG.displayName, createdAt = generateTimeStamp(), updatedAt = generateTimeStamp()),
-        ItemUnitMasterModel(itemUnitCode = ItemUnit.TON.displayName, createdAt = generateTimeStamp(), updatedAt = generateTimeStamp()),
-        ItemUnitMasterModel(itemUnitCode = ItemUnit.HON.displayName, createdAt = generateTimeStamp(), updatedAt = generateTimeStamp()),
-        ItemUnitMasterModel(itemUnitCode =  ItemUnit.MAI.displayName, createdAt = generateTimeStamp(), updatedAt = generateTimeStamp()),
+        ItemUnitMasterModel(
+            itemUnitId = 1,
+            itemUnitCode = ItemUnit.KG.displayName,
+            createdAt = generateTimeStamp(),
+            updatedAt = generateTimeStamp()
+        ),
+        ItemUnitMasterModel(
+            itemUnitId = 2,
+            itemUnitCode = ItemUnit.TON.displayName,
+            createdAt = generateTimeStamp(),
+            updatedAt = generateTimeStamp()
+        ),
+        ItemUnitMasterModel(
+            itemUnitId = 3,
+            itemUnitCode = ItemUnit.HON.displayName,
+            createdAt = generateTimeStamp(),
+            updatedAt = generateTimeStamp()
+        ),
+        ItemUnitMasterModel(
+            itemUnitId = 4,
+            itemUnitCode = ItemUnit.MAI.displayName,
+            createdAt = generateTimeStamp(),
+            updatedAt = generateTimeStamp()
+        ),
     )
+
     suspend fun ensurePresetInserted() {
         val existing = dao.get().firstOrNull() ?: emptyList()
         if (existing.isEmpty()) {
