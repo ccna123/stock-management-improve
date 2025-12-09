@@ -35,4 +35,6 @@ sealed interface ShareIntent {
     data class ShowErrorDialog(val message: String, val onOk: (() -> Unit)? = null) : ShareIntent
     data class ShowConfirmDialog(val message: String, val onOk: (() -> Unit)?, val onCancel: (() -> Unit)? = null) : ShareIntent
     data object HiddenDialog: ShareIntent
+    data class MarkOutboundProcessError(val epcs: List<String>) : ShareIntent
+    data object ClearOutboundProcessError : ShareIntent
 }

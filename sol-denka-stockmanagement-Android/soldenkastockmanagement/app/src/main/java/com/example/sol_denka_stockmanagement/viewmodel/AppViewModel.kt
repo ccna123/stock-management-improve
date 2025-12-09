@@ -72,7 +72,7 @@ class AppViewModel @Inject constructor(
     private val _inputState = MutableStateFlow(InputState())
     val inputState: StateFlow<InputState> = _inputState.asStateFlow()
 
-    private val _dialogState = MutableStateFlow<DialogState>(DialogState.Hidden)
+    private val _dialogState = MutableStateFlow<DialogState>(Hidden)
     val dialogState: StateFlow<DialogState> = _dialogState.asStateFlow()
 
     var showFileProgressDialog = mutableStateOf(false)
@@ -105,11 +105,12 @@ class AppViewModel @Inject constructor(
     private val _locationMaster = MutableStateFlow<List<LocationMasterModel>>(emptyList())
     val locationMaster = _locationMaster.asStateFlow()
 
-    var csvDialogMessage = mutableStateOf<String?>(null)
-        private set
-
     var csvDialogIsError = mutableStateOf(false)
         private set
+
+    private val _outboundProcessErrorSet = MutableStateFlow<Set<String>>(emptySet())
+    val outboundProcessErrorSet = _outboundProcessErrorSet.asStateFlow()
+
 
     val readerInfo = readerController.readerInfo.stateIn(
         scope = viewModelScope,
@@ -371,7 +372,7 @@ class AppViewModel @Inject constructor(
 
             is ShareIntent.ToggleTimePicker -> _generalState.update { it.copy(showTimePicker = intent.showTimePicker) }
             ShareIntent.ResetDetailIndex -> _generalState.update { it.copy(currentIndex = 0) }
-            ShareIntent.HiddenDialog -> _dialogState.update { DialogState.Hidden }
+            ShareIntent.HiddenDialog -> _dialogState.update { Hidden }
             is ShareIntent.ShowConfirmDialog -> {
                 _dialogState.update {
                     Confirm(
@@ -389,6 +390,11 @@ class AppViewModel @Inject constructor(
             }
 
             is ShareIntent.ToggleDatePicker -> _generalState.update { it.copy(showDatePicker = intent.showDatePicker) }
+            is ShareIntent.MarkOutboundProcessError -> {
+                _outboundProcessErrorSet.value = intent.epcs.toSet()
+            }
+
+            ShareIntent.ClearOutboundProcessError -> _outboundProcessErrorSet.value = emptySet()
         }
     }
 

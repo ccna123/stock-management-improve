@@ -8,36 +8,38 @@ object MessageMapper {
 
             StatusCode.OK,
             StatusCode.DOWNLOAD_SFTP_OK ->
-                "処理が正常に完了しました"
+                "処理が正常に完了しました。"
 
             StatusCode.FILE_NOT_FOUND ->
-                "CSVファイルが見つかりません"
+                "CSVファイルが見つかりません。"
 
             StatusCode.FILE_EMPTY ->
-                "CSVファイルの内容が空です"
+                "CSVファイルの内容が空です。"
 
             StatusCode.FOLDER_NOT_FOUND ->
-                "保存先フォルダーが見つかりません"
+                "保存先フォルダーが見つかりません。"
 
             StatusCode.WRITE_ERROR ->
-                "CSVファイルの書き込みに失敗しました"
+                "CSVファイルの書き込みに失敗しました。"
 
             StatusCode.EMPTY_DATA ->
-                "保存するデータがありません"
+                "保存するデータがありません。"
 
             StatusCode.PERMISSION_DENIED ->
-                "権限がないため実行できません"
+                "権限がないため実行できません。"
 
             StatusCode.CSV_IMPORTER_NOT_FOUND ->
-                "CSVインポーターが見つかりません"
+                "CSVインポーターが見つかりません。"
 
             StatusCode.FILE_CREATED_FAILED ->
-                "CSVファイルの作成に失敗しました"
+                "CSVファイルの作成に失敗しました。"
 
             StatusCode.FAILED ->
-                "エラーが発生しました"
+                "エラーが発生しました。"
 
-            StatusCode.IMPORT_OK -> "取り込み成功しました"
+            StatusCode.PROCESS_NOT_CHOSEN -> "チェック済みのタグに処理方法を選択してください。"
+
+            StatusCode.IMPORT_OK -> "取り込み成功しました。"
             StatusCode.EXPORT_OK -> "CSVファイルの出力、\nWindowsアプリへの送信に成功しました。"
         }
     }

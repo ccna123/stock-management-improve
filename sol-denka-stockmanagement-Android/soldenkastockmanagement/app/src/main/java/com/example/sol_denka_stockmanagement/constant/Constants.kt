@@ -176,6 +176,7 @@ enum class StatusCode(val code: Int) {
     FAILED(500),
     CSV_IMPORTER_NOT_FOUND(501),
     FILE_CREATED_FAILED(502),
+    PROCESS_NOT_CHOSEN(503),
 }
 
 enum class TagStatus {

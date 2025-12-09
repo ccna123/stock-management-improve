@@ -3,14 +3,12 @@ package com.example.sol_denka_stockmanagement.screen.scan.components
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Checkbox
@@ -23,17 +21,15 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.example.sol_denka_stockmanagement.constant.ProcessMethod
-import com.example.sol_denka_stockmanagement.constant.MaterialSelectionItem
 import com.example.sol_denka_stockmanagement.constant.SelectTitle
 import com.example.sol_denka_stockmanagement.share.InputFieldContainer
 import com.example.sol_denka_stockmanagement.ui.theme.brightAzure
 import com.example.sol_denka_stockmanagement.ui.theme.brightGreenSecondary
 import com.example.sol_denka_stockmanagement.ui.theme.paleSkyBlue
+import com.example.sol_denka_stockmanagement.ui.theme.primaryRed
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -42,6 +38,7 @@ fun OutboundSingleItem(
     itemName: String,
     isChecked: Boolean,
     isExpanded: Boolean,
+    isError: Boolean,
     value: String,
     onSelect: () -> Unit,
     onExpandedChange: () -> Unit,
@@ -55,19 +52,11 @@ fun OutboundSingleItem(
         modifier = Modifier
             .fillMaxWidth()
             .padding(10.dp)
-            // ✨ Add the shadow first, with clip disabled so the shadow can extend beyond the shape
-            .shadow(
-                elevation = 3.dp,
-                shape = RoundedCornerShape(12.dp),
-                clip = false, // 👈 allow the shadow to bleed outside the box
-            )
-            // 💡 Then draw the background after the shadow
             .background(
-                color = Color.White,
+                color = if (isError) primaryRed.copy(.2f) else Color.White,
                 shape = RoundedCornerShape(12.dp)
             )
-            // Add border for your pale outline
-            .border(1.dp, color = paleSkyBlue, shape = RoundedCornerShape(12.dp))
+            .border(1.dp, color = if (isError) primaryRed else paleSkyBlue, shape = RoundedCornerShape(12.dp))
             .clickable(onClick = { onSelect() })
     ) {
         Checkbox(

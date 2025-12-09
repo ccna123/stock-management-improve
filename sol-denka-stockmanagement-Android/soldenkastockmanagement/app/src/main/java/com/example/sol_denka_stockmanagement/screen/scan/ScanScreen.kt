@@ -35,6 +35,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.sol_denka_stockmanagement.R
 import com.example.sol_denka_stockmanagement.constant.ScanMode
 import com.example.sol_denka_stockmanagement.constant.SelectTitle
+import com.example.sol_denka_stockmanagement.constant.StatusCode
+import com.example.sol_denka_stockmanagement.helper.message_mapper.MessageMapper
 import com.example.sol_denka_stockmanagement.intent.ExpandIntent
 import com.example.sol_denka_stockmanagement.intent.InputIntent
 import com.example.sol_denka_stockmanagement.intent.ShareIntent
@@ -72,8 +74,9 @@ fun ScanScreen(
     val isPerformingInventory by appViewModel.isPerformingInventory.collectAsStateWithLifecycle()
     val scope = rememberCoroutineScope()
     val expandedMap by appViewModel.perTagExpanded.collectAsStateWithLifecycle()
-    val processMap by appViewModel.perTagProcessMethod.collectAsStateWithLifecycle()
     val inputState by appViewModel.inputState.collectAsStateWithLifecycle()
+    val outboundProcessErrorSet by appViewModel.outboundProcessErrorSet.collectAsStateWithLifecycle()
+    val processMap by appViewModel.perTagProcessMethod.collectAsStateWithLifecycle()
 
     val displayTags = rfidTagList.filter { it.epc in scannedTags }
 
@@ -90,19 +93,6 @@ fun ScanScreen(
         scanViewModel.setScanMode(mode)
         scanViewModel.setEnableScan(true)
     }
-
-//    LaunchedEffect(scannedTags) {
-//        val selectedCount = rfidTagList.count { it.newFields.isChecked }
-//
-//        val allSelected = scannedTags.isNotEmpty() && rfidTagList.all { it.newFields.isChecked }
-//        appViewModel.onGeneralIntent(
-//            ShareIntent.UpdateSelectionStatus(
-//                selectedCount = selectedCount,
-//                allSelected = allSelected
-//            )
-//        )
-//    }
-
 
     if (showModalProcessMethod) {
         ProcessModal(
@@ -133,7 +123,7 @@ fun ScanScreen(
         buttons = listOf(
             {
                 ButtonContainer(
-                    buttonText = stringResource(R.string.ok),
+                    buttonText = stringResource(R.string.yes),
                     onClick = {
                         scanViewModel.apply {
                             clearInboundDetail()
@@ -233,14 +223,34 @@ fun ScanScreen(
                         )
                     },
                     onClick = {
-                        onNavigate(
-                            when (prevScreenNameId) {
-                                Screen.Outbound.routeId -> Screen.Outbound
-                                Screen.LocationChange.routeId -> Screen.LocationChange
-                                Screen.Inbound.routeId -> Screen.Inbound
-                                else -> Screen.Home
+                        when(prevScreenNameId){
+                            Screen.Outbound.routeId -> {
+                                val checkedTags = rfidTagList.filter { it.newFields.isChecked }
+                                val missingProcess  = checkedTags.filter { tag ->
+                                    val method = processMap[tag.epc]
+                                    method.isNullOrEmpty()
+                                }
+                                if (missingProcess.isNotEmpty()){
+                                    appViewModel.onGeneralIntent(
+                                        ShareIntent.MarkOutboundProcessError(
+                                            missingProcess.map { it.epc }
+                                        )
+                                    )
+                                    appViewModel.onGeneralIntent(
+                                        ShareIntent.ShowErrorDialog(
+                                            MessageMapper.toMessage(StatusCode.PROCESS_NOT_CHOSEN)
+                                        )
+                                    )
+                                    return@ButtonContainer
+                                }
+                                appViewModel.onGeneralIntent(ShareIntent.ClearOutboundProcessError)
+                                onNavigate(Screen.Outbound)
                             }
-                        )
+                            Screen.LocationChange.routeId -> onNavigate(Screen.LocationChange)
+                            Screen.Inbound.routeId -> onNavigate(Screen.Inbound)
+                            else -> onNavigate(Screen.Home)
+                        }
+
                     }
                 )
             }
@@ -289,11 +299,6 @@ fun ScanScreen(
                             scanViewModel.toggleCheckAll(
                                 targetEpcs = scannedTags.keys,
                                 value = !displayTags.all { it.newFields.isChecked })
-//                            appViewModel.onGeneralIntent(
-//                                ShareIntent.ToggleSelectionAll(
-//                                    tagList = scannedTags.keys
-//                                )
-//                            )
                         }
                     )
                 }
@@ -338,26 +343,15 @@ fun ScanScreen(
                                         ?: "",
                                     isChecked = rfidTagList.find { it.epc == tag.first }?.newFields?.isChecked
                                         ?: false,
+                                    isError = outboundProcessErrorSet.contains(tag.first),
                                     onSelect = {
                                         if (isPerformingInventory.not()) {
                                             scanViewModel.toggleCheck(tag.first)
-//                                            appViewModel.onGeneralIntent(
-//                                                ShareIntent.ToggleTagSelection1(
-//                                                    tag = tag.first,
-//                                                    totalTag = scannedTags.size
-//                                                )
-//                                            )
                                         }
                                     },
                                     onCheckedChange = {
                                         if (isPerformingInventory.not()) {
                                             scanViewModel.toggleCheck(tag.first)
-//                                            appViewModel.onGeneralIntent(
-//                                                ShareIntent.ToggleTagSelection1(
-//                                                    tag = tag.first,
-//                                                    totalTag = scannedTags.size
-//                                                )
-//                                            )
                                         }
                                     },
                                     isExpanded = isExpanded,
@@ -413,23 +407,11 @@ fun ScanScreen(
                                     onCheckedChange = {
                                         if (isPerformingInventory.not()) {
                                             scanViewModel.toggleCheck(tag.first)
-//                                            appViewModel.onGeneralIntent(
-//                                                ShareIntent.ToggleTagSelection1(
-//                                                    tag = tag.first,
-//                                                    totalTag = scannedTags.size
-//                                                )
-//                                            )
                                         }
                                     },
                                     onClick = {
                                         if (isPerformingInventory.not()) {
                                             scanViewModel.toggleCheck(tag.first)
-//                                            appViewModel.onGeneralIntent(
-//                                                ShareIntent.ToggleTagSelection1(
-//                                                    tag = tag.first,
-//                                                    totalTag = scannedTags.size
-//                                                )
-//                                            )
                                         }
                                     }
                                 )
