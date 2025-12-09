@@ -3,8 +3,9 @@ package com.example.sol_denka_stockmanagement.screen.outbound
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -15,12 +16,17 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.CalendarMonth
+import androidx.compose.material.icons.filled.Timer
+import androidx.compose.material3.DatePicker
+import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TimePicker
 import androidx.compose.material3.TimePickerDialog
+import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -46,6 +52,7 @@ import com.example.sol_denka_stockmanagement.screen.layout.Layout
 import com.example.sol_denka_stockmanagement.share.ButtonContainer
 import com.example.sol_denka_stockmanagement.share.InputFieldContainer
 import com.example.sol_denka_stockmanagement.share.ScanResultTable
+import com.example.sol_denka_stockmanagement.ui.theme.brightAzure
 import com.example.sol_denka_stockmanagement.viewmodel.AppViewModel
 import com.example.sol_denka_stockmanagement.viewmodel.ScanViewModel
 import kotlinx.coroutines.launch
@@ -89,23 +96,65 @@ fun OutboundScreen(
             confirmButton = {
                 TextButton(onClick = {
                     val timeStr = String.format(Locale.US, "%02d:%02d", state.hour, state.minute)
-                    appViewModel.onInputIntent(InputIntent.ChangeOccurredAt(timeStr))
+                    appViewModel.onInputIntent(InputIntent.ChangeOccurredAtTime(timeStr))
                     appViewModel.onGeneralIntent(ShareIntent.ToggleTimePicker(false))
                 }) {
-                    Text("OK")
+                    Text(text = stringResource(R.string.ok))
                 }
             },
             dismissButton = {
                 TextButton(onClick = {
                     appViewModel.onGeneralIntent(ShareIntent.ToggleTimePicker(false))
                 }) {
-                    Text("キャンセル")
+                    Text(text = stringResource(R.string.cancel))
                 }
             }
         ) {
             TimePicker(state = state)
         }
     }
+
+    if (generalState.showDatePicker) {
+        val today = Calendar.getInstance()
+        val datePickerState = rememberDatePickerState(
+            initialSelectedDateMillis = today.timeInMillis
+        )
+
+        DatePickerDialog(
+            onDismissRequest = {
+                appViewModel.onGeneralIntent(ShareIntent.ToggleDatePicker(false))
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        val millis = datePickerState.selectedDateMillis
+                        if (millis != null) {
+                            val cal = Calendar.getInstance().apply { timeInMillis = millis }
+                            val dateStr = String.format(
+                                Locale.US,
+                                "%04d/%02d/%02d",
+                                cal.get(Calendar.YEAR),
+                                cal.get(Calendar.MONTH) + 1,
+                                cal.get(Calendar.DAY_OF_MONTH)
+                            )
+                            appViewModel.onInputIntent(InputIntent.ChangeOccurredAtDate(dateStr))
+                        }
+                        appViewModel.onGeneralIntent(ShareIntent.ToggleDatePicker(false))
+                    }
+                ) { Text(text = stringResource(R.string.ok))  }
+            },
+            dismissButton = {
+                TextButton(
+                    onClick = {
+                        appViewModel.onGeneralIntent(ShareIntent.ToggleDatePicker(false))
+                    }
+                ) { Text(text = stringResource(R.string.cancel)) }
+            }
+        ) {
+            DatePicker(state = datePickerState)
+        }
+    }
+
     Layout(
         topBarText = stringResource(R.string.shipping),
         topBarIcon = Icons.AutoMirrored.Filled.ArrowBack,
@@ -132,7 +181,7 @@ fun OutboundScreen(
                     scope.launch {
                         val result = outboundViewModel.saveOutboundToDb(
                             memo = inputState.memo,
-                            occurredAt = inputState.occurredAt,
+                            occurredAt = inputState.occurredAtDate + "_" + inputState.occurredAtTime,
                             rfidTagList = rfidTagList.filter { it.newFields.isChecked }
                         )
                         result.exceptionOrNull()?.let { e ->
@@ -199,25 +248,56 @@ fun OutboundScreen(
                         },
                     )
                     Spacer(modifier = Modifier.height(20.dp))
-                    Box(
+                    Row(
                         modifier = Modifier
-                            .fillMaxWidth()
-                            .clickable {
-                                appViewModel.onGeneralIntent(ShareIntent.ToggleTimePicker(true))
-                            }
+                            .fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(10.dp)
                     ) {
                         InputFieldContainer(
-                            modifier = Modifier.fillMaxWidth(),
-                            value = inputState.occurredAt,
-                            label = stringResource(R.string.occurred_at),
+                            modifier = Modifier.weight(1f),
+                            value = inputState.occurredAtDate,
+                            label = stringResource(R.string.occurred_at_date),
                             isNumeric = false,
                             shape = RoundedCornerShape(13.dp),
                             readOnly = true,
                             isDropDown = false,
                             enable = false,
+                            trailingIcon = {
+                                Icon(
+                                    imageVector = Icons.Default.CalendarMonth,
+                                    contentDescription = null,
+                                    tint = brightAzure,
+                                    modifier = Modifier.clickable(
+                                        onClick = {
+                                            appViewModel.onGeneralIntent(ShareIntent.ToggleDatePicker(true))
+                                        }
+                                    )
+                                )
+                            }
+                        )
+                        InputFieldContainer(
+                            modifier = Modifier.weight(1f),
+                            value = inputState.occurredAtTime,
+                            label = stringResource(R.string.occurred_at_time),
+                            isNumeric = false,
+                            shape = RoundedCornerShape(13.dp),
+                            readOnly = true,
+                            isDropDown = false,
+                            enable = false,
+                            trailingIcon = {
+                                Icon(
+                                    imageVector = Icons.Default.Timer,
+                                    contentDescription = null,
+                                    tint = brightAzure,
+                                    modifier = Modifier.clickable(
+                                        onClick = {
+                                            appViewModel.onGeneralIntent(ShareIntent.ToggleTimePicker(true))
+                                        }
+                                    )
+                                )
+                            }
                         )
                     }
-
                     Spacer(modifier = Modifier.height(10.dp))
                     InputFieldContainer(
                         modifier = Modifier

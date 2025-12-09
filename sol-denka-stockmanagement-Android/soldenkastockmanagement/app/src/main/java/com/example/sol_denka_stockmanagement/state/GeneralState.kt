@@ -16,5 +16,6 @@ data class GeneralState(
     var showDropDown: Boolean = false,
     var showNetworkDialog: Boolean = false,
     var showTimePicker: Boolean = false,
+    var showDatePicker: Boolean = false,
     var isAllSelected: Boolean = false
 )

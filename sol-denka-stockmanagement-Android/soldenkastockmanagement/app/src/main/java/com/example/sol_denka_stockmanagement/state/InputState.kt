@@ -16,7 +16,8 @@ data class InputState(
     val winderInfo: String = "",
     val weight: String = "",
     val lotNo: String = "",
-    val occurredAt: String = "",
+    val occurredAtDate: String = "",
+    val occurredAtTime: String = "",
     val packingStyle: String = "",
     var fileTransferMethod: String = FileTransferMethod.WIFI.displayName
 )
