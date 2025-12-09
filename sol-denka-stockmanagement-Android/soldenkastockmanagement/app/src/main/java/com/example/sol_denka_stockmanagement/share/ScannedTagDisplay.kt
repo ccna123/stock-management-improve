@@ -1,5 +1,6 @@
 package com.example.sol_denka_stockmanagement.share
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
@@ -23,10 +24,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.sol_denka_stockmanagement.model.tag.TagMasterModel
 import com.example.sol_denka_stockmanagement.ui.theme.brightGreenSecondary
+import com.example.sol_denka_stockmanagement.ui.theme.primaryRed
 
 @Composable
 fun ScannedTagDisplay(
     rfidTagList: List<TagMasterModel>,
+    location: String,
     isSelectionMode: Boolean,
     onClick: (String) -> Unit,
     onLongClick: (String) -> Unit,
@@ -39,8 +42,8 @@ fun ScannedTagDisplay(
                 color = Color.LightGray,
                 shape = RoundedCornerShape(10.dp)
             )
+//            .padding(10.dp)
             .fillMaxSize()
-            .padding(10.dp)
     ) {
         items(rfidTagList) { item ->
             Row(
@@ -48,6 +51,7 @@ fun ScannedTagDisplay(
                 horizontalArrangement = Arrangement.spacedBy(10.dp),
                 modifier = Modifier
                     .fillMaxWidth()
+                    .background(color = if (item.newFields.location != location) primaryRed.copy(alpha = .2f) else Color.Unspecified)
                     .combinedClickable(
                         onClick = {
                             onClick(item.epc)
@@ -68,7 +72,10 @@ fun ScannedTagDisplay(
                         }
                     )
                 }
-                Column {
+                Column(
+                    modifier = Modifier
+                        .padding(vertical = 2.dp, horizontal = 5.dp)
+                ) {
                     Text(text = item.newFields.itemName, fontSize = 17.sp)
                     Text(
                         modifier = Modifier
@@ -77,7 +84,7 @@ fun ScannedTagDisplay(
                     )
                 }
             }
-            HorizontalDivider()
+            HorizontalDivider(color = Color.LightGray.copy(.4f))
         }
     }
 }

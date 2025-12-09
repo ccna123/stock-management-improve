@@ -53,8 +53,12 @@ class InventoryCompleteViewModel @Inject constructor(
             val currentLocationId =
                 locationMasterRepository.getLocationIdByName(locationName = locationName)
                     ?: 0
-            val scannedTags =
-                rfidTagList.filter { it.newFields.tagStatus == TagStatus.PROCESSED }.map { it.epc }
+            val matchLocationScannedTags =
+                rfidTagList.filter { it.newFields.tagStatus == TagStatus.PROCESSED && it.newFields.location == locationName }.map { it.epc }
+                    .toSet()
+
+            val notMatchLocationScannedTags =
+                rfidTagList.filter { it.newFields.tagStatus == TagStatus.PROCESSED && it.newFields.location != locationName }.map { it.epc }
                     .toSet()
 
             val tagsInStock = tagMasterRepository.getTagsByLocationAndStock(
@@ -64,10 +68,11 @@ class InventoryCompleteViewModel @Inject constructor(
 
 
             val newList = rfidTagList.map { tag ->
-                val wrongLocation = isWrongLocation(tag.tagId, currentLocationId)
-                val shortage = tag.epc in tagsInStock && tag.epc !in scannedTags
-                val over = tag.epc !in tagsInStock && tag.epc in scannedTags
-                val ok = !wrongLocation && !shortage && !over
+                val wrongLocation = notMatchLocationScannedTags.contains(tag.epc)
+                val shortage = tag.epc in tagsInStock && tag.epc !in matchLocationScannedTags
+                val over = tag.epc !in tagsInStock && tag.epc in matchLocationScannedTags
+                val ok = tag.epc in tagsInStock && tag.epc in matchLocationScannedTags
+
 
                 val resultType = when {
                     wrongLocation -> InventoryResultType.FOUND_WRONG_LOCATION
@@ -129,12 +134,8 @@ class InventoryCompleteViewModel @Inject constructor(
             )
             Result.success(sessionId)
         } catch (e: Exception) {
-            Log.e("TSS", "saveOutboundToDb: ${e.message}")
+            Log.e("TSS", "saveInventoryResultToDb: ${e.message}")
             Result.failure(e)
         }
-    }
-    private suspend fun isWrongLocation(tagId: Int, selectedLocationId: Int): Boolean {
-        val tagLocationId = tagMasterRepository.getLocationIdByTagId(tagId)
-        return selectedLocationId != tagLocationId
     }
 }

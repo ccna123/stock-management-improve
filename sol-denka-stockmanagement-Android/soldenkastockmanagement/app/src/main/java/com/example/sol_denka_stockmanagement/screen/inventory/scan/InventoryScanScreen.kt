@@ -1,7 +1,6 @@
 package com.example.sol_denka_stockmanagement.screen.inventory.scan
 
 import android.os.Build
-import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.fadeIn
@@ -83,6 +82,7 @@ fun InventoryScanScreen(
     onGoBack: () -> Unit,
 ) {
     val generalState by appViewModel.generalState.collectAsStateWithLifecycle()
+    val inputState by appViewModel.inputState.collectAsStateWithLifecycle()
     val rfidTagList by scanViewModel.rfidTagList.collectAsStateWithLifecycle()
     val readerSettingState by settingViewModel.readerSettingState.collectAsStateWithLifecycle()
     val showClearTagConfirmDialog = appViewModel.showClearTagConfirmDialog.value
@@ -178,7 +178,6 @@ fun InventoryScanScreen(
     Layout(
         topBarText = Screen.Inventory.displayName,
         topBarIcon = Icons.AutoMirrored.Filled.ArrowBack,
-        currentScreenNameId = Screen.InventoryScan("").routeId,
         prevScreenNameId = prevScreenNameId,
         hasBottomBar = true,
         appViewModel = appViewModel,
@@ -372,7 +371,7 @@ fun InventoryScanScreen(
                     ) {
                         Text(text = stringResource(R.string.process_status), fontSize = 26.sp)
                         Text(
-                            text = "${rfidTagList.count { it.newFields.tagStatus == TagStatus.PROCESSED }}/${rfidTagList.size}",
+                            text = "${rfidTagList.count { it.newFields.tagStatus == TagStatus.PROCESSED && it.newFields.location == inputState.location }}/${rfidTagList.count { it.newFields.location == inputState.location }}",
                             fontSize = 26.sp
                         )
                     }
@@ -405,12 +404,17 @@ fun InventoryScanScreen(
                     ) { tab ->
 
                         val displayList = when (tab) {
-                            Tab.Left -> rfidTagList.filter { it.newFields.tagStatus == TagStatus.UNPROCESSED }
-                            Tab.Right -> rfidTagList.filter { it.newFields.tagStatus == TagStatus.PROCESSED }
+                            Tab.Left -> {
+                                val matchLocation = rfidTagList.filter { it.newFields.tagStatus == TagStatus.UNPROCESSED && it.newFields.location == inputState.location }
+                                val unMatchLocation = rfidTagList.filter { it.newFields.tagStatus == TagStatus.PROCESSED && it.newFields.location != inputState.location }
+                                rfidTagList.filter { matchLocation.contains(it) || unMatchLocation.contains(it) }
+                            }
+                            Tab.Right -> rfidTagList.filter { it.newFields.tagStatus == TagStatus.PROCESSED && it.newFields.location == inputState.location }
                         }
 
                         ScannedTagDisplay(
                             rfidTagList = displayList,
+                            location = inputState.location,
                             isSelectionMode = if (rfidTagList.any { it.newFields.isChecked }) generalState.isSelectionMode else false,
                             onClick = { item ->
                                 if (generalState.isSelectionMode) {
