@@ -32,6 +32,8 @@ import com.example.sol_denka_stockmanagement.R
 import com.example.sol_denka_stockmanagement.constant.CsvHistoryDirection
 import com.example.sol_denka_stockmanagement.constant.CsvTaskType
 import com.example.sol_denka_stockmanagement.constant.SelectTitle
+import com.example.sol_denka_stockmanagement.constant.StatusCode
+import com.example.sol_denka_stockmanagement.helper.message_mapper.MessageMapper
 import com.example.sol_denka_stockmanagement.intent.ExpandIntent
 import com.example.sol_denka_stockmanagement.intent.InputIntent
 import com.example.sol_denka_stockmanagement.intent.ShareIntent
@@ -92,11 +94,19 @@ fun LocationChangeScreen(
                 },
                 onClick = {
                     scope.launch {
-                        locationChangeViewModel.saveLocationChangeToDb(
+                        val result = locationChangeViewModel.saveLocationChangeToDb(
                             memo = inputState.memo,
                             newLocation = inputState.location,
                             rfidTagList = rfidTagList.filter { it.newFields.isChecked }
                         )
+                        result.exceptionOrNull()?.let { e ->
+                            appViewModel.onGeneralIntent(
+                                ShareIntent.ShowErrorDialog(
+                                    MessageMapper.toMessage(StatusCode.FAILED)
+                                )
+                            )
+                            return@launch
+                        }
                         val csvModels =
                             locationChangeViewModel.generateCsvData(
                                 memo = inputState.memo,

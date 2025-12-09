@@ -41,6 +41,8 @@ import com.example.sol_denka_stockmanagement.constant.CsvHistoryDirection
 import com.example.sol_denka_stockmanagement.constant.CsvTaskType
 import com.example.sol_denka_stockmanagement.constant.MaterialSelectionItem
 import com.example.sol_denka_stockmanagement.constant.SelectTitle
+import com.example.sol_denka_stockmanagement.constant.StatusCode
+import com.example.sol_denka_stockmanagement.helper.message_mapper.MessageMapper
 import com.example.sol_denka_stockmanagement.intent.ExpandIntent
 import com.example.sol_denka_stockmanagement.intent.InputIntent
 import com.example.sol_denka_stockmanagement.intent.ShareIntent
@@ -106,7 +108,7 @@ fun InboundScreen(
                 canClick = inputState.materialSelectedItem != SelectTitle.SelectMaterial.displayName,
                 onClick = {
                     scope.launch {
-                        inboundViewModel.saveInboundToDb(
+                        val result = inboundViewModel.saveInboundToDb(
                             rfidTag = rfidTagList.find { it.epc == lastInboundEpc },
                             weight = inputState.weight,
                             grade = inputState.grade,
@@ -115,6 +117,14 @@ fun InboundScreen(
                             winderInfo = inputState.winderInfo,
                             memo = inputState.memo,
                         )
+                        result.exceptionOrNull()?.let { e ->
+                            appViewModel.onGeneralIntent(
+                                ShareIntent.ShowErrorDialog(
+                                    MessageMapper.toMessage(StatusCode.FAILED)
+                                )
+                            )
+                            return@launch
+                        }
                         val csvModels = inboundViewModel.generateCsvData(
                             weight = inputState.weight,
                             grade = inputState.grade,

@@ -4,13 +4,10 @@ import android.os.Build
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import com.example.sol_denka_stockmanagement.constant.generateIso8601JstTimestamp
-import com.example.sol_denka_stockmanagement.database.repository.location.LocationChangeEventRepository
-import com.example.sol_denka_stockmanagement.database.repository.location.LocationChangeSessionRepository
-import com.example.sol_denka_stockmanagement.database.repository.location.LocationRepository
+import com.example.sol_denka_stockmanagement.database.repository.location.LocationChangeRepository
+import com.example.sol_denka_stockmanagement.database.repository.location.LocationMasterRepository
 import com.example.sol_denka_stockmanagement.database.repository.tag.TagMasterRepository
 import com.example.sol_denka_stockmanagement.model.csv.LocationChangeResultCsvModel
-import com.example.sol_denka_stockmanagement.model.location.LocationChangeEventModel
-import com.example.sol_denka_stockmanagement.model.location.LocationChangeSessionModel
 import com.example.sol_denka_stockmanagement.model.tag.TagMasterModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
@@ -20,9 +17,8 @@ import kotlinx.coroutines.withContext
 @HiltViewModel
 class LocationChangeViewModel @Inject constructor(
     private val tagMasterRepository: TagMasterRepository,
-    private val locationRepository: LocationRepository,
-    private val locationChangeSessionRepository: LocationChangeSessionRepository,
-    private val locationChangeEventRepository: LocationChangeEventRepository
+    private val locationMasterRepository: LocationMasterRepository,
+    private val locationChangeRepository: LocationChangeRepository
 ) : ViewModel() {
 
     private val csvModels = mutableListOf<LocationChangeResultCsvModel>()
@@ -35,7 +31,7 @@ class LocationChangeViewModel @Inject constructor(
         withContext(Dispatchers.IO) {
             try {
                 csvModels.clear()
-                val newLocationId = locationRepository.getLocationIdByName(newLocation)
+                val newLocationId = locationMasterRepository.getLocationIdByName(newLocation)
                 rfidTagList.forEach { row ->
                     val ledgerId = tagMasterRepository.getLedgerIdByEpc(row.epc)
                     val model = LocationChangeResultCsvModel(
@@ -55,32 +51,21 @@ class LocationChangeViewModel @Inject constructor(
             }
         }
 
-    suspend fun saveLocationChangeToDb(memo: String, newLocation: String, rfidTagList: List<TagMasterModel>) {
-        withContext(Dispatchers.IO) {
-            try {
-                val sessionId = locationChangeSessionRepository.insert(
-                    LocationChangeSessionModel(
-                        deviceId = Build.ID,
-                        executedAt = generateIso8601JstTimestamp()
-                    )
-                )
-                val newLocationId = locationRepository.getLocationIdByName(newLocation)
-                sessionId.let {
-                    rfidTagList.forEach { row ->
-                        val ledgerId = tagMasterRepository.getLedgerIdByEpc(row.epc)
-                        val model = LocationChangeEventModel(
-                            locationChangeSessionId = sessionId.toInt(),
-                            ledgerItemId = ledgerId ?: 0,
-                            locationId = newLocationId ?: 0,
-                            memo = memo,
-                            scannedAt = generateIso8601JstTimestamp(),
-                        )
-                        locationChangeEventRepository.insert(model)
-                    }
-                }
-            } catch (e: Exception) {
-                Log.e("TSS", "saveLocationChangeToDb: ${e.message}")
-            }
+    suspend fun saveLocationChangeToDb(
+        memo: String,
+        newLocation: String,
+        rfidTagList: List<TagMasterModel>
+    ): Result<Int> {
+        return try {
+            val sessionId = locationChangeRepository.saveLocationChangeToDb(
+                memo = memo,
+                newLocation = newLocation,
+                rfidTagList = rfidTagList
+            )
+            Result.success(sessionId)
+        } catch (e: Exception) {
+            Log.e("TSS", "saveLocationChangeToDb: ${e.message}")
+            Result.failure(e)
         }
     }
 }

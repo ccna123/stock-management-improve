@@ -14,7 +14,7 @@ import com.example.sol_denka_stockmanagement.database.repository.csv.CsvHistoryR
 import com.example.sol_denka_stockmanagement.database.repository.csv.CsvTaskTypeRepository
 import com.example.sol_denka_stockmanagement.database.repository.inventory.InventoryResultTypeRepository
 import com.example.sol_denka_stockmanagement.database.repository.item.ItemUnitRepository
-import com.example.sol_denka_stockmanagement.database.repository.location.LocationRepository
+import com.example.sol_denka_stockmanagement.database.repository.location.LocationMasterRepository
 import com.example.sol_denka_stockmanagement.database.repository.process.ProcessTypeRepository
 import com.example.sol_denka_stockmanagement.helper.NetworkConnectionObserver
 import com.example.sol_denka_stockmanagement.helper.ProcessResult
@@ -52,7 +52,7 @@ class AppViewModel @Inject constructor(
     private val readerController: ReaderController,
     private val connectionObserver: NetworkConnectionObserver,
     private val itemUnitRepository: ItemUnitRepository,
-    private val locationRepository: LocationRepository,
+    private val locationMasterRepository: LocationMasterRepository,
     private val processTypeRepository: ProcessTypeRepository,
     private val csvTaskTypeRepository: CsvTaskTypeRepository,
     private val inventoryResultTypeRepository: InventoryResultTypeRepository,
@@ -142,7 +142,7 @@ class AppViewModel @Inject constructor(
         }
 
         viewModelScope.launch {
-            locationRepository.get().collect { locations ->
+            locationMasterRepository.get().collect { locations ->
                 _locationMaster.value = locations
             }
         }

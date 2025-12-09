@@ -9,14 +9,12 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -40,6 +38,8 @@ import com.example.sol_denka_stockmanagement.R
 import com.example.sol_denka_stockmanagement.constant.CsvHistoryDirection
 import com.example.sol_denka_stockmanagement.constant.CsvTaskType
 import com.example.sol_denka_stockmanagement.constant.InventoryScanResult
+import com.example.sol_denka_stockmanagement.constant.StatusCode
+import com.example.sol_denka_stockmanagement.helper.message_mapper.MessageMapper
 import com.example.sol_denka_stockmanagement.intent.InputIntent
 import com.example.sol_denka_stockmanagement.intent.ShareIntent
 import com.example.sol_denka_stockmanagement.model.inventory.InventoryCompleteModel
@@ -71,7 +71,7 @@ fun InventoryCompleteScreen(
     val inputState by appViewModel.inputState.collectAsStateWithLifecycle()
     val rfidTagList by scanViewModel.rfidTagList.collectAsStateWithLifecycle()
     val wrongLocationCount by
-        inventoryCompleteViewModel.wrongLocationCount.collectAsStateWithLifecycle()
+    inventoryCompleteViewModel.wrongLocationCount.collectAsStateWithLifecycle()
     val shortageCount by inventoryCompleteViewModel.shortageCount.collectAsStateWithLifecycle()
     val overCount by inventoryCompleteViewModel.overCount.collectAsStateWithLifecycle()
     val okCount by inventoryCompleteViewModel.okCount.collectAsStateWithLifecycle()
@@ -142,10 +142,18 @@ fun InventoryCompleteScreen(
                 },
                 onClick = {
                     scope.launch {
-                        inventoryCompleteViewModel.saveInventoryResultToDb(
+                        val result = inventoryCompleteViewModel.saveInventoryResultToDb(
                             memo = inputState.memo,
                             locationName = inputState.location,
                         )
+                        result.exceptionOrNull()?.let { e ->
+                            appViewModel.onGeneralIntent(
+                                ShareIntent.ShowErrorDialog(
+                                    MessageMapper.toMessage(StatusCode.FAILED)
+                                )
+                            )
+                            return@launch
+                        }
                         val csvModels =
                             inventoryCompleteViewModel.generateCsvData(
                                 memo = inputState.memo,

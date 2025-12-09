@@ -12,7 +12,7 @@ import com.example.sol_denka_stockmanagement.constant.CsvType
 import com.example.sol_denka_stockmanagement.constant.StatusCode
 import com.example.sol_denka_stockmanagement.database.repository.item.ItemTypeRepository
 import com.example.sol_denka_stockmanagement.database.repository.ledger.LedgerItemRepository
-import com.example.sol_denka_stockmanagement.database.repository.location.LocationRepository
+import com.example.sol_denka_stockmanagement.database.repository.location.LocationMasterRepository
 import com.example.sol_denka_stockmanagement.database.repository.tag.TagMasterRepository
 import com.example.sol_denka_stockmanagement.helper.ProcessResult
 import com.example.sol_denka_stockmanagement.model.csv.CsvFileInfoModel
@@ -31,7 +31,7 @@ import java.util.Vector
 import javax.inject.Inject
 
 class CsvHelper @Inject constructor(
-    private val locationRepository: LocationRepository,
+    private val locationMasterRepository: LocationMasterRepository,
     private val ledgerItemRepository: LedgerItemRepository,
     private val itemTypeRepository: ItemTypeRepository,
     private val tagMasterRepository: TagMasterRepository
@@ -457,7 +457,7 @@ class CsvHelper @Inject constructor(
 
     private fun getImporter(csvType: String): ICsvImport? {
         return when (csvType) {
-            CsvType.LocationMaster.displayName -> LocationMasterImporter(repository = locationRepository)
+            CsvType.LocationMaster.displayName -> LocationMasterImporter(repository = locationMasterRepository)
             CsvType.LedgerMaster.displayName -> LedgerItemMasterImporter(repository = ledgerItemRepository)
             CsvType.ItemTypeMaster.displayName -> ItemTypeMasterImporter(repository = itemTypeRepository)
             CsvType.TagMaster.displayName -> TagMasterImporter(repository = tagMasterRepository)

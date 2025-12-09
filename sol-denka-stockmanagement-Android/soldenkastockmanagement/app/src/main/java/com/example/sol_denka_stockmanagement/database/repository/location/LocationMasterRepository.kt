@@ -10,7 +10,7 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class LocationRepository @Inject constructor(
+class LocationMasterRepository @Inject constructor(
     private val dao: LocationDao
 ) {
     fun get(): Flow<List<LocationMasterModel>> = dao.get().map { entityList ->

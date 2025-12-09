@@ -1,15 +1,11 @@
 package com.example.sol_denka_stockmanagement.screen.inbound
 
 import android.os.Build
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import com.example.sol_denka_stockmanagement.constant.generateIso8601JstTimestamp
-import com.example.sol_denka_stockmanagement.database.repository.inbound.InboundEventRepository
-import com.example.sol_denka_stockmanagement.database.repository.inbound.InboundSessionRepository
+import com.example.sol_denka_stockmanagement.database.repository.inbound.InboundRepository
 import com.example.sol_denka_stockmanagement.database.repository.tag.TagMasterRepository
 import com.example.sol_denka_stockmanagement.model.csv.InboundResultCsvModel
-import com.example.sol_denka_stockmanagement.model.inbound.InboundEventModel
-import com.example.sol_denka_stockmanagement.model.inbound.InboundSessionModel
 import com.example.sol_denka_stockmanagement.model.tag.TagMasterModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
@@ -19,8 +15,7 @@ import kotlinx.coroutines.withContext
 @HiltViewModel
 class InboundViewModel @Inject constructor(
     private val tagMasterRepository: TagMasterRepository,
-    private val inboundSessionRepository: InboundSessionRepository,
-    private val inboundEventRepository: InboundEventRepository
+    private val inboundRepository: InboundRepository,
 ) : ViewModel() {
 
     private val csvModels = mutableListOf<InboundResultCsvModel>()
@@ -72,42 +67,20 @@ class InboundViewModel @Inject constructor(
         winderInfo: String,
         memo: String,
         rfidTag: TagMasterModel?
-    ) {
-        withContext(Dispatchers.IO) {
-            try {
-                val sessionId = inboundSessionRepository.insert(
-                    InboundSessionModel(
-                        deviceId = Build.ID,
-                        executedAt = generateIso8601JstTimestamp(),
-                    )
-                )
-                sessionId.let {
-                    val (itemTypeId, locationId) = tagMasterRepository.getItemTypeIdLocationIdByTagId(
-                        rfidTag?.tagId ?: 0
-                    )
-                    val model = InboundEventModel(
-                        inboundSessionId = sessionId.toInt(),
-                        itemTypeId = itemTypeId,
-                        locationId = locationId,
-                        tagId = rfidTag?.tagId ?: 0,
-                        weight = weight.takeIf { it.isNotBlank() }?.toInt() ?: 0,
-                        grade = grade,
-                        specificGravity = "",
-                        thickness = thickness.takeIf { it.isNotBlank() }?.toInt() ?: 0,
-                        width = 0,
-                        length = length.takeIf { it.isNotBlank() }?.toInt() ?: 0,
-                        quantity = 0,
-                        winderInfo = winderInfo,
-                        missRollReason = "",
-                        memo = memo,
-                        occurredAt = generateIso8601JstTimestamp(),
-                        registeredAt = generateIso8601JstTimestamp()
-                    )
-                    inboundEventRepository.insert(model)
-                }
-            } catch (e: Exception) {
-                Log.e("TSS", "saveInboundToDb: ${e.message}")
-            }
+    ): Result<Int> {
+        return try {
+            val sessionId = inboundRepository.saveInboundToDb(
+                memo = memo,
+                weight = weight,
+                grade = grade,
+                thickness = thickness,
+                length = length,
+                winderInfo = winderInfo,
+                rfidTag = rfidTag,
+            )
+            Result.success(sessionId)
+        } catch (e: Exception) {
+            Result.failure(e)
         }
     }
 }

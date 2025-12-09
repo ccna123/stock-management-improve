@@ -7,14 +7,11 @@ import androidx.lifecycle.viewModelScope
 import com.example.sol_denka_stockmanagement.constant.InventoryResultType
 import com.example.sol_denka_stockmanagement.constant.TagStatus
 import com.example.sol_denka_stockmanagement.constant.generateIso8601JstTimestamp
-import com.example.sol_denka_stockmanagement.database.repository.inventory.InventoryResultLocalRepository
+import com.example.sol_denka_stockmanagement.database.repository.inventory.InventoryCompleteRepository
 import com.example.sol_denka_stockmanagement.database.repository.inventory.InventoryResultTypeRepository
-import com.example.sol_denka_stockmanagement.database.repository.inventory.InventorySessionRepository
-import com.example.sol_denka_stockmanagement.database.repository.location.LocationRepository
+import com.example.sol_denka_stockmanagement.database.repository.location.LocationMasterRepository
 import com.example.sol_denka_stockmanagement.database.repository.tag.TagMasterRepository
 import com.example.sol_denka_stockmanagement.model.csv.InventoryResultCsvModel
-import com.example.sol_denka_stockmanagement.model.inventory.InventoryResultLocalModel
-import com.example.sol_denka_stockmanagement.model.inventory.InventorySessionModel
 import com.example.sol_denka_stockmanagement.model.tag.TagMasterModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -29,10 +26,9 @@ import javax.inject.Inject
 @HiltViewModel
 class InventoryCompleteViewModel @Inject constructor(
     private val tagMasterRepository: TagMasterRepository,
-    private val locationRepository: LocationRepository,
+    private val locationMasterRepository: LocationMasterRepository,
     private val inventoryResultTypeRepository: InventoryResultTypeRepository,
-    private val inventorySessionRepository: InventorySessionRepository,
-    private val inventoryResultLocalRepository: InventoryResultLocalRepository
+    private val inventoryCompleteRepository: InventoryCompleteRepository
 ) : ViewModel() {
 
     private val _wrongLocationCount = MutableStateFlow(0)
@@ -55,9 +51,11 @@ class InventoryCompleteViewModel @Inject constructor(
     fun computeResult(rfidTagList: List<TagMasterModel>, locationName: String) {
         viewModelScope.launch {
             val currentLocationId =
-                locationRepository.getLocationIdByName(locationName = locationName)
+                locationMasterRepository.getLocationIdByName(locationName = locationName)
                     ?: 0
-            val scannedTags = rfidTagList.filter { it.newFields.tagStatus == TagStatus.PROCESSED }.map { it.epc }.toSet()
+            val scannedTags =
+                rfidTagList.filter { it.newFields.tagStatus == TagStatus.PROCESSED }.map { it.epc }
+                    .toSet()
 
             val tagsInStock = tagMasterRepository.getTagsByLocationAndStock(
                 locationId = currentLocationId,
@@ -100,7 +98,7 @@ class InventoryCompleteViewModel @Inject constructor(
         withContext(Dispatchers.IO) {
             csvModels.clear()
 
-            val locationId = locationRepository.getLocationIdByName(locationName)
+            val locationId = locationMasterRepository.getLocationIdByName(locationName)
             _finalTagList.value.forEach { tag ->
                 val ledgerId = tag.ledgerItemId
                 val inventoryResultTypeId =
@@ -122,45 +120,21 @@ class InventoryCompleteViewModel @Inject constructor(
             csvModels.toList()
         }
 
-    suspend fun saveInventoryResultToDb(memo: String, locationName: String) {
-        withContext(Dispatchers.IO) {
-            try {
-                val locationId = locationRepository.getLocationIdByName(locationName)
-                val sessionId = inventorySessionRepository.insert(
-                    InventorySessionModel(
-                        deviceId = Build.ID,
-                        locationId = locationId ?: 0,
-                        executedAt = generateIso8601JstTimestamp(),
-                    )
-                )
-                sessionId.let {
-                    _finalTagList.value.forEach { tag ->
-                        val ledgerId = tagMasterRepository.getLedgerIdByEpc(tag.epc)
-                        val inventoryResultTypeId =
-                            inventoryResultTypeRepository.getInventoryResultTypeIdByCode(
-                                tag.newFields.inventoryResultType.name
-                            )
-                        val model = InventoryResultLocalModel(
-                            inventorySessionId = sessionId.toInt(),
-                            inventoryResultTypeId = inventoryResultTypeId,
-                            ledgerItemId = ledgerId ?: 0,
-                            tagId = tag.tagId,
-                            memo = memo,
-                            scannedAt = if (inventoryResultTypeId == 3) "" else generateIso8601JstTimestamp()
-                        )
-                        inventoryResultLocalRepository.insert(model)
-                    }
-                }
-            } catch (e: Exception) {
-                Log.e("TSS", "saveOutboundToDb: ${e.message}")
-            }
+    suspend fun saveInventoryResultToDb(memo: String, locationName: String): Result<Int> {
+        return try {
+            val sessionId = inventoryCompleteRepository.saveInventoryResultToDb(
+                memo = memo,
+                locationName = locationName,
+                tagList = _finalTagList.value
+            )
+            Result.success(sessionId)
+        } catch (e: Exception) {
+            Log.e("TSS", "saveOutboundToDb: ${e.message}")
+            Result.failure(e)
         }
     }
-
-
     private suspend fun isWrongLocation(tagId: Int, selectedLocationId: Int): Boolean {
         val tagLocationId = tagMasterRepository.getLocationIdByTagId(tagId)
         return selectedLocationId != tagLocationId
     }
-
 }
