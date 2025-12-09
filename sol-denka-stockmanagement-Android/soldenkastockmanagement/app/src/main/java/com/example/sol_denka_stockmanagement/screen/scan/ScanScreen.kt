@@ -260,7 +260,10 @@ fun ScanScreen(
                 if (scannedTags.isNotEmpty() || lastInboundEpc?.isNotEmpty() == true) {
                     appViewModel.onGeneralIntent(ShareIntent.ToggleClearTagConfirmDialog)
                 } else {
-                    scanViewModel.setScanMode(ScanMode.NONE)
+                    scanViewModel.apply {
+                        setScanMode(ScanMode.NONE)
+                        resetIsCheckedField()
+                    }
                     onGoBack()
                 }
             }
@@ -290,7 +293,7 @@ fun ScanScreen(
                     Text(text = stringResource(R.string.scan_tag_list_item))
                     ButtonContainer(
                         modifier = Modifier.width(120.dp),
-                        buttonText = if (displayTags.all { it.newFields.isChecked }) stringResource(R.string.select_all_remove) else stringResource(
+                        buttonText = if (displayTags.isNotEmpty() && displayTags.all { it.newFields.isChecked }) stringResource(R.string.select_all_remove) else stringResource(
                             R.string.select_all
                         ),
                         containerColor = if (displayTags.all { it.newFields.isChecked }) Color.Red else brightAzure,
