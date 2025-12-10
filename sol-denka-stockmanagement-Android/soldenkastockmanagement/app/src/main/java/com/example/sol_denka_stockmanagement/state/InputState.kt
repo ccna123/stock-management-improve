@@ -9,6 +9,7 @@ data class InputState(
     val thickness: String = "",
     val grade: String = "",
     val length: String = "",
+    val item: String = "",
     val memo: String = "",
     val category: String = "",
     val materialSelectedItem: String = MaterialSelectionItem.MISS_ROLL.displayName,

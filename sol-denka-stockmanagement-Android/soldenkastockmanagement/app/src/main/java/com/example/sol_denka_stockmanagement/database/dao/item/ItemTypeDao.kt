@@ -8,7 +8,6 @@ import androidx.room.Query
 import androidx.room.Update
 import com.example.sol_denka_stockmanagement.app_interface.IDao
 import com.example.sol_denka_stockmanagement.database.entity.item.ItemTypeMasterEntity
-import com.example.sol_denka_stockmanagement.database.entity.ledger.LedgerItemEntity
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -28,4 +27,7 @@ interface ItemTypeDao: IDao<ItemTypeMasterEntity> {
 
     @Delete
     override suspend fun delete(e: ItemTypeMasterEntity)
+
+    @Query("SELECT item_type_name FROM ItemTypeMaster WHERE item_type_name LIKE '%' || :keyword || '%'")
+    suspend fun findByName(keyword: String): List<String>?
 }

@@ -5,6 +5,8 @@ import androidx.room.RoomDatabase
 
 import com.example.sol_denka_stockmanagement.database.dao.csv.CsvHistoryDao
 import com.example.sol_denka_stockmanagement.database.dao.csv.CsvTaskTypeDao
+import com.example.sol_denka_stockmanagement.database.dao.field.FieldMasterDao
+import com.example.sol_denka_stockmanagement.database.dao.field.ItemTypeFieldSettingMasterDao
 import com.example.sol_denka_stockmanagement.database.dao.inbound.InboundEventDao
 import com.example.sol_denka_stockmanagement.database.dao.inbound.InboundSessionDao
 import com.example.sol_denka_stockmanagement.database.dao.inventory.InventorySessionDao
@@ -23,6 +25,8 @@ import com.example.sol_denka_stockmanagement.database.dao.process.ProcessTypeDao
 
 import com.example.sol_denka_stockmanagement.database.entity.csv.CsvHistoryEntity
 import com.example.sol_denka_stockmanagement.database.entity.csv.CsvTaskTypeEntity
+import com.example.sol_denka_stockmanagement.database.entity.field.FieldMasterEntity
+import com.example.sol_denka_stockmanagement.database.entity.field.ItemTypeFieldSettingMasterEntity
 import com.example.sol_denka_stockmanagement.database.entity.inbound.InboundEventEntity
 import com.example.sol_denka_stockmanagement.database.entity.inbound.InboundSessionEntity
 import com.example.sol_denka_stockmanagement.database.entity.inventory.InventorySessionEntity
@@ -64,9 +68,12 @@ import com.example.sol_denka_stockmanagement.database.entity.process.ProcessType
         OutBoundEventEntity::class,
         OutboundSessionEntity::class,
 
-        ProcessTypeEntity::class
+        ProcessTypeEntity::class,
+
+        FieldMasterEntity::class,
+        ItemTypeFieldSettingMasterEntity::class,
     ],
-    version = 10
+    version = 8
 )
 abstract class AppDatabase : RoomDatabase() {
 
@@ -104,4 +111,9 @@ abstract class AppDatabase : RoomDatabase() {
 
     // Process
     abstract fun processTypeDao(): ProcessTypeDao
+
+    //Field
+    abstract fun fieldMasterDao(): FieldMasterDao
+    abstract fun itemTypeFieldSettingMasterDao(): ItemTypeFieldSettingMasterDao
+
 }

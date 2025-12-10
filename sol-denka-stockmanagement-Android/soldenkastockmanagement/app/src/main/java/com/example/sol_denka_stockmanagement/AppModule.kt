@@ -9,6 +9,8 @@ import androidx.room.Room
 import com.example.sol_denka_stockmanagement.database.AppDatabase
 import com.example.sol_denka_stockmanagement.database.dao.csv.CsvHistoryDao
 import com.example.sol_denka_stockmanagement.database.dao.csv.CsvTaskTypeDao
+import com.example.sol_denka_stockmanagement.database.dao.field.FieldMasterDao
+import com.example.sol_denka_stockmanagement.database.dao.field.ItemTypeFieldSettingMasterDao
 import com.example.sol_denka_stockmanagement.database.dao.inbound.InboundEventDao
 import com.example.sol_denka_stockmanagement.database.dao.inbound.InboundSessionDao
 import com.example.sol_denka_stockmanagement.database.dao.inventory.InventoryResultLocalDao
@@ -24,8 +26,8 @@ import com.example.sol_denka_stockmanagement.database.dao.outbound.OutboundEvent
 import com.example.sol_denka_stockmanagement.database.dao.outbound.OutboundSessionDao
 import com.example.sol_denka_stockmanagement.database.dao.process.ProcessTypeDao
 import com.example.sol_denka_stockmanagement.database.dao.tag.TagMasterDao
-import com.example.sol_denka_stockmanagement.helper.controller.ReaderController
-import com.example.sol_denka_stockmanagement.helper.controller.TagController
+import com.example.sol_denka_stockmanagement.helper.ReaderController
+import com.example.sol_denka_stockmanagement.helper.TagController
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -55,7 +57,7 @@ object AppModule {
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     @Provides
     @Singleton
-    fun provideTagController(@ApplicationContext context: Context): TagController {
+    fun provideTagController(): TagController {
         return TagController()
     }
 
@@ -184,6 +186,16 @@ object AppModule {
     @Singleton
     fun provideInboundEventDao(database: AppDatabase): InboundEventDao {
         return database.inboundEventDao()
+    }
+    @Provides
+    @Singleton
+    fun provideFieldMasterDao(database: AppDatabase): FieldMasterDao {
+        return database.fieldMasterDao()
+    }
+    @Provides
+    @Singleton
+    fun provideItemTypeFieldSettingMasterDao(database: AppDatabase): ItemTypeFieldSettingMasterDao {
+        return database.itemTypeFieldSettingMasterDao()
     }
 
 }

@@ -12,7 +12,9 @@ import com.example.sol_denka_stockmanagement.constant.StatusCode
 import com.example.sol_denka_stockmanagement.constant.generateIso8601JstTimestamp
 import com.example.sol_denka_stockmanagement.database.repository.csv.CsvHistoryRepository
 import com.example.sol_denka_stockmanagement.database.repository.csv.CsvTaskTypeRepository
+import com.example.sol_denka_stockmanagement.database.repository.field.FieldMasterRepository
 import com.example.sol_denka_stockmanagement.database.repository.inventory.InventoryResultTypeRepository
+import com.example.sol_denka_stockmanagement.database.repository.item.ItemTypeRepository
 import com.example.sol_denka_stockmanagement.database.repository.item.ItemUnitRepository
 import com.example.sol_denka_stockmanagement.database.repository.location.LocationMasterRepository
 import com.example.sol_denka_stockmanagement.database.repository.process.ProcessTypeRepository
@@ -29,7 +31,9 @@ import com.example.sol_denka_stockmanagement.model.csv.CsvHistoryModel
 import com.example.sol_denka_stockmanagement.model.location.LocationMasterModel
 import com.example.sol_denka_stockmanagement.model.reader.ReaderInfoModel
 import com.example.sol_denka_stockmanagement.state.DialogState
-import com.example.sol_denka_stockmanagement.state.DialogState.*
+import com.example.sol_denka_stockmanagement.state.DialogState.Confirm
+import com.example.sol_denka_stockmanagement.state.DialogState.Error
+import com.example.sol_denka_stockmanagement.state.DialogState.Hidden
 import com.example.sol_denka_stockmanagement.state.ExpandState
 import com.example.sol_denka_stockmanagement.state.GeneralState
 import com.example.sol_denka_stockmanagement.state.InputState
@@ -58,6 +62,8 @@ class AppViewModel @Inject constructor(
     private val csvTaskTypeRepository: CsvTaskTypeRepository,
     private val inventoryResultTypeRepository: InventoryResultTypeRepository,
     private val csvHistoryRepository: CsvHistoryRepository,
+    private val fieldMasterRepository: FieldMasterRepository,
+    private val itemTypeRepository: ItemTypeRepository,
     private val csvHelper: CsvHelper,
 ) : ViewModel() {
 
@@ -111,6 +117,9 @@ class AppViewModel @Inject constructor(
     private val _outboundProcessErrorSet = MutableStateFlow<Set<String>>(emptySet())
     val outboundProcessErrorSet = _outboundProcessErrorSet.asStateFlow()
 
+    private val _searchResults = MutableStateFlow<List<String>>(emptyList())
+    val searchResults = _searchResults.asStateFlow()
+
 
     val readerInfo = readerController.readerInfo.stateIn(
         scope = viewModelScope,
@@ -144,6 +153,10 @@ class AppViewModel @Inject constructor(
         }
 
         viewModelScope.launch {
+            csvHelper.createAppFolders(context)
+        }
+
+        viewModelScope.launch {
             locationMasterRepository.get().collect { locations ->
                 _locationMaster.value = locations
             }
@@ -170,6 +183,7 @@ class AppViewModel @Inject constructor(
             processTypeRepository.ensurePresetInserted()
             csvTaskTypeRepository.ensurePresetInserted()
             inventoryResultTypeRepository.ensurePresetInserted()
+            fieldMasterRepository.ensurePresetInserted()
         }
     }
 
@@ -238,6 +252,7 @@ class AppViewModel @Inject constructor(
 
             is InputIntent.ChangeCategory -> _inputState.update { it.copy(category = intent.value) }
             is InputIntent.ChangeOccurredAtTime -> _inputState.update { it.copy(occurredAtTime = intent.value) }
+            is InputIntent.ChangeItem -> _inputState.update { it.copy(item = intent.value) }
         }
     }
 
@@ -395,6 +410,17 @@ class AppViewModel @Inject constructor(
             }
 
             ShareIntent.ClearOutboundProcessError -> _outboundProcessErrorSet.value = emptySet()
+            is ShareIntent.SelectChipIndex -> _generalState.update { it.copy(selectedChipIndex = intent.index) }
+            is ShareIntent.FindItemNameByKeyWord -> {
+                viewModelScope.launch {
+                    if (intent.keyword.isBlank()){
+                        _searchResults.value = emptyList()
+                        return@launch
+                    }
+                    val result = itemTypeRepository.findByName(intent.keyword)
+                    _searchResults.value = result ?: emptyList()
+                }
+            }
         }
     }
 

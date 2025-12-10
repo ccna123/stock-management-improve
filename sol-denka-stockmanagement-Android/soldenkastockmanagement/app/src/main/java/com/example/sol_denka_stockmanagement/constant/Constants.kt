@@ -49,6 +49,7 @@ enum class CsvType(val displayName: String) {
     LocationChangeResult("保管場所変更CSV"),
     ItemTypeMaster("品目マスタCSV"),
     TagMaster("タグマスタCSV"),
+    ItemTypeFieldSettingMaster("品目項目設定マスタCSV"),
 }
 
 enum class CsvTaskType(val displayNameJp: String, val displayNameEng: String) {
@@ -234,6 +235,16 @@ enum class Category(val displayName: String){
     SUB_MATERIAL("副資材"),
     SUB_RAW_MATERIAL("副原料"),
     NON_STANDARD_ITEM("格外品")
+}
+
+enum class DataType {
+    TEXT,
+    NUMBER
+}
+
+enum class ControlType{
+    INPUT,
+    DROPDOWN
 }
 
 fun generateTimeStamp(): String {

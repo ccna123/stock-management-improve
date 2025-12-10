@@ -25,6 +25,8 @@ sealed interface ShareIntent {
     data object ResetState : ShareIntent
     data class ChangeTabInReceivingScreen(val tab: String) : ShareIntent
     data object ResetDetailIndex: ShareIntent
+    data class SelectChipIndex(val index: Int) : ShareIntent
+    data class FindItemNameByKeyWord(val keyword: String): ShareIntent
 
     data class SaveScanResult<T : ICsvExport>(
         val taskCode: CsvTaskType,

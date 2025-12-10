@@ -2,13 +2,17 @@ package com.example.sol_denka_stockmanagement.screen.inbound
 
 import android.os.Build
 import androidx.annotation.RequiresApi
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -16,10 +20,10 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExposedDropdownMenuAnchorType
-import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.FilterChip
+import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -47,11 +51,13 @@ import com.example.sol_denka_stockmanagement.intent.ExpandIntent
 import com.example.sol_denka_stockmanagement.intent.InputIntent
 import com.example.sol_denka_stockmanagement.intent.ShareIntent
 import com.example.sol_denka_stockmanagement.navigation.Screen
-import com.example.sol_denka_stockmanagement.screen.layout.Layout
+import com.example.sol_denka_stockmanagement.screen.inbound.components.ItemSearchBar
 import com.example.sol_denka_stockmanagement.screen.inbound.components.LiterInput
 import com.example.sol_denka_stockmanagement.screen.inbound.components.MissRollInput
+import com.example.sol_denka_stockmanagement.screen.layout.Layout
 import com.example.sol_denka_stockmanagement.share.ButtonContainer
-import com.example.sol_denka_stockmanagement.share.InputFieldContainer
+import com.example.sol_denka_stockmanagement.ui.theme.brightAzure
+import com.example.sol_denka_stockmanagement.ui.theme.brightGreenSecondary
 import com.example.sol_denka_stockmanagement.ui.theme.paleSkyBlue
 import com.example.sol_denka_stockmanagement.viewmodel.AppViewModel
 import com.example.sol_denka_stockmanagement.viewmodel.ScanViewModel
@@ -68,8 +74,10 @@ fun InboundScreen(
     onGoBack: () -> Unit,
 ) {
 
-    val inputState = appViewModel.inputState.collectAsStateWithLifecycle().value
-    val expandState = appViewModel.expandState.collectAsStateWithLifecycle().value
+    val inputState by appViewModel.inputState.collectAsStateWithLifecycle()
+    val generalState by appViewModel.generalState.collectAsStateWithLifecycle()
+    val expandState by appViewModel.expandState.collectAsStateWithLifecycle()
+    val searchResults by appViewModel.searchResults.collectAsStateWithLifecycle()
     val lastInboundEpc by scanViewModel.lastInboundEpc.collectAsStateWithLifecycle()
     val rfidTagList by scanViewModel.rfidTagList.collectAsStateWithLifecycle()
     val scope = rememberCoroutineScope()
@@ -179,53 +187,114 @@ fun InboundScreen(
                                 R.string.item_code, lastInboundEpc ?: ""
                             )
                         )
-                        Spacer(modifier = Modifier.height(20.dp))
-                        ExposedDropdownMenuBox(
-                            expanded = expandState.categoryExpanded,
-                            onExpandedChange = { appViewModel.onExpandIntent(ExpandIntent.ToggleCategoryExpanded) }) {
-                            InputFieldContainer(
-                                modifier = Modifier
-                                    .menuAnchor(
-                                        type = ExposedDropdownMenuAnchorType.PrimaryNotEditable,
-                                        enabled = true
+                        Spacer(modifier = Modifier.height(10.dp))
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            listOf(
+                                Category.SUB_MATERIAL.displayName,
+                                Category.SUB_RAW_MATERIAL.displayName,
+                                Category.NON_STANDARD_ITEM.displayName,
+                            ).forEachIndexed { index, category ->
+
+                                val isSelected = index == generalState.selectedChipIndex
+
+                                // --- ANIMATION COLORS ---
+                                val bgColor by animateColorAsState(
+                                    targetValue = if (isSelected) brightGreenSecondary else Color.White,
+                                    label = "chip-bg"
+                                )
+                                val labelColor by animateColorAsState(
+                                    targetValue = if (isSelected) Color.White else Color.Black,
+                                    label = "chip-label"
+                                )
+                                val iconTint by animateColorAsState(
+                                    targetValue = if (isSelected) Color.White else Color.Black,
+                                    label = "chip-icon"
+                                )
+                                val borderColor by animateColorAsState(
+                                    targetValue = if (isSelected) Color.Transparent else brightAzure,
+                                    label = "chip-border"
+                                )
+
+                                FilterChip(
+                                    selected = isSelected,
+                                    onClick = {
+                                        appViewModel.onGeneralIntent(
+                                            ShareIntent.SelectChipIndex(
+                                                index
+                                            )
+                                        )
+                                    },
+                                    label = { Text(text = category, color = labelColor) },
+                                    leadingIcon = {
+                                        if (isSelected) {
+                                            Icon(
+                                                imageVector = Icons.Default.Check,
+                                                contentDescription = null,
+                                                tint = iconTint,
+                                            )
+                                        }
+                                    },
+                                    enabled = true,
+                                    colors = FilterChipDefaults.filterChipColors(
+                                        containerColor = bgColor,
+                                        disabledContainerColor = bgColor,
+                                        labelColor = labelColor,
+                                        iconColor = iconTint,
+                                        selectedContainerColor = bgColor,
+                                        selectedLabelColor = labelColor,
+                                        selectedLeadingIconColor = iconTint,
+                                    ),
+                                    border = FilterChipDefaults.filterChipBorder(
+                                        borderColor = borderColor,
+                                        borderWidth = 1.dp,
+                                        enabled = true,
+                                        selected = isSelected
                                     )
-                                    .fillMaxWidth(),
-                                value = if (inputState.category == SelectTitle.SelectCategory.displayName) "" else inputState.category,
-                                isNumeric = false,
-                                hintText = SelectTitle.SelectCategory.displayName,
-                                onChange = { newValue ->
-                                    appViewModel.onInputIntent(
-                                        InputIntent.ChangeCategory(
-                                            newValue
+                                )
+                            }
+                        }
+                        Spacer(modifier = Modifier.height(10.dp))
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .heightIn(min = 56.dp, max = 300.dp)
+                        ) {
+                            ItemSearchBar(
+                                keyword = inputState.item,
+                                results = searchResults,
+                                onKeywordChange = {
+                                    appViewModel.onInputIntent(InputIntent.ChangeItem(it))
+                                    appViewModel.onGeneralIntent(
+                                        ShareIntent.FindItemNameByKeyWord(
+                                            it
                                         )
                                     )
                                 },
-                                readOnly = true,
-                                isDropDown = true,
-                                enable = true,
-                            )
-                            ExposedDropdownMenu(
-                                expanded = expandState.categoryExpanded,
-                                onDismissRequest = { appViewModel.onExpandIntent(ExpandIntent.ToggleCategoryExpanded) }
-                            ) {
-                                listOf(
-                                    SelectTitle.SelectCategory.displayName,
-                                    Category.SUB_MATERIAL.displayName,
-                                    Category.SUB_RAW_MATERIAL.displayName,
-                                    Category.NON_STANDARD_ITEM.displayName,
-                                ).forEach { category ->
-                                    DropdownMenuItem(
-                                        text = { Text(text = category) },
-                                        onClick = {
-                                            appViewModel.apply {
-                                                onInputIntent(InputIntent.ChangeCategory(if (category == SelectTitle.SelectCategory.displayName) "" else category))
-                                                onExpandIntent(ExpandIntent.ToggleCategoryExpanded)
-                                            }
-                                        }
-                                    )
+                                onSelectItem = {
+                                    appViewModel.onInputIntent(InputIntent.ChangeItem(it))
                                 }
-                            }
+                            )
                         }
+//                        InputFieldContainer(
+//                            modifier = Modifier.fillMaxWidth(),
+//                            value = inputState.item,
+//                            label = stringResource(R.string.item),
+//                            hintText = stringResource(R.string.item_hint),
+//                            isNumeric = false,
+//                            readOnly = false,
+//                            isDropDown = false,
+//                            enable = true,
+//                            onChange = { newValue ->
+//                                appViewModel.apply {
+//                                    onInputIntent(InputIntent.ChangeItem(newValue))
+//                                    onGeneralIntent(ShareIntent.FindItemNameByKeyWord(newValue))
+//                                }
+//                            }
+//                        )
                         Spacer(modifier = Modifier.height(10.dp))
                     }
                 }
