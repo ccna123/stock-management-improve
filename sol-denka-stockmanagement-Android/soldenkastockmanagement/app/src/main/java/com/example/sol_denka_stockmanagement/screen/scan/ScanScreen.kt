@@ -2,6 +2,8 @@ package com.example.sol_denka_stockmanagement.screen.scan
 
 import android.os.Build
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -15,9 +17,9 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -51,6 +53,7 @@ import com.example.sol_denka_stockmanagement.share.dialog.ConfirmDialog
 import com.example.sol_denka_stockmanagement.ui.theme.brightAzure
 import com.example.sol_denka_stockmanagement.ui.theme.brightGreenSecondary
 import com.example.sol_denka_stockmanagement.ui.theme.orange
+import com.example.sol_denka_stockmanagement.ui.theme.paleSkyBlue
 import com.example.sol_denka_stockmanagement.ui.theme.tealGreen
 import com.example.sol_denka_stockmanagement.viewmodel.AppViewModel
 import com.example.sol_denka_stockmanagement.viewmodel.ScanViewModel
@@ -284,56 +287,74 @@ fun ScanScreen(
                         .format(DateTimeFormatter.ofPattern("HH:mm"))
                 )
             } else {
-
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
+                Box(
+                    modifier = Modifier
+                        .background(
+                            color = Color.White,
+                            shape = RoundedCornerShape(12.dp)
+                        )
+                        .border(1.dp, color = paleSkyBlue, shape = RoundedCornerShape(12.dp))
+                        .fillMaxWidth(),
                 ) {
-                    Text(text = stringResource(R.string.scan_tag_list_item))
-                    ButtonContainer(
-                        modifier = Modifier.width(120.dp),
-                        buttonText = if (displayTags.isNotEmpty() && displayTags.all { it.newFields.isChecked }) stringResource(R.string.select_all_remove) else stringResource(
-                            R.string.select_all
-                        ),
-                        containerColor = if (displayTags.all { it.newFields.isChecked }) Color.Red else brightAzure,
-                        canClick = scannedTags.isNotEmpty() && isPerformingInventory.not(),
-                        onClick = {
-                            scanViewModel.toggleCheckAll(
-                                targetEpcs = scannedTags.keys,
-                                value = !displayTags.all { it.newFields.isChecked })
-                        }
-                    )
-                }
-                Spacer(modifier = Modifier.height(5.dp))
-                HorizontalDivider(color = brightAzure)
-                Spacer(modifier = Modifier.height(10.dp))
-                if (prevScreenNameId == Screen.Outbound.routeId) {
-                    Box(
+                    Column(
                         modifier = Modifier
+                            .padding(10.dp)
                             .fillMaxWidth(),
-                        contentAlignment = Alignment.Center
+                        verticalArrangement = Arrangement.spacedBy(10.dp)
                     ) {
-                        ButtonContainer(
+                        Row(
                             modifier = Modifier
                                 .fillMaxWidth(),
-                            containerColor = brightGreenSecondary,
-                            buttonText = stringResource(
-                                R.string.bulk_register,
-                                rfidTagList.count { it.newFields.isChecked }.toString()
-                            ),
-                            canClick = rfidTagList.any { it.newFields.isChecked },
-                            onClick = {
-                                appViewModel.onGeneralIntent(
-                                    ShareIntent.ShowModalProcessMethod(
-                                        true
-                                    )
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Text(text = stringResource(R.string.scan_tag_list_item))
+                            ButtonContainer(
+                                modifier = Modifier.width(120.dp),
+                                buttonText = if (displayTags.isNotEmpty() && displayTags.all { it.newFields.isChecked }) stringResource(
+                                    R.string.select_all_remove
+                                ) else stringResource(
+                                    R.string.select_all
+                                ),
+                                shape = RoundedCornerShape(10.dp),
+                                containerColor = if (displayTags.all { it.newFields.isChecked }) Color.Red else brightAzure,
+                                canClick = scannedTags.isNotEmpty() && isPerformingInventory.not(),
+                                onClick = {
+                                    scanViewModel.toggleCheckAll(
+                                        targetEpcs = scannedTags.keys,
+                                        value = !displayTags.all { it.newFields.isChecked })
+                                }
+                            )
+                        }
+                        if (prevScreenNameId == Screen.Outbound.routeId) {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth(),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                ButtonContainer(
+                                    modifier = Modifier
+                                        .fillMaxWidth(),
+                                    shape = RoundedCornerShape(10.dp),
+                                    containerColor = brightGreenSecondary,
+                                    buttonText = stringResource(
+                                        R.string.bulk_register,
+                                        rfidTagList.count { it.newFields.isChecked }.toString()
+                                    ),
+                                    canClick = rfidTagList.any { it.newFields.isChecked },
+                                    onClick = {
+                                        appViewModel.onGeneralIntent(
+                                            ShareIntent.ShowModalProcessMethod(
+                                                true
+                                            )
+                                        )
+                                    }
                                 )
                             }
-                        )
+                        }
                     }
                 }
-                Spacer(modifier = Modifier.height(10.dp))
+                Spacer(modifier = Modifier.height(25.dp))
                 LazyColumn {
                     items(scannedTags.toList(), key = { tag -> tag }) { tag ->
                         when (prevScreenNameId) {
