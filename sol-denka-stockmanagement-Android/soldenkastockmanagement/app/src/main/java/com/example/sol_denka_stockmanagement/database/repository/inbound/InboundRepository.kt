@@ -26,9 +26,13 @@ class InboundRepository @Inject constructor(
     suspend fun saveInboundToDb(
         weight: String,
         grade: String,
+        specificGravity: String,
         thickness: String,
+        width: String,
         length: String,
+        quantity: String,
         winderInfo: String,
+        missRollReason: String,
         memo: String,
         rfidTag: TagMasterModel?
     ): Int = db.withTransaction {
@@ -50,13 +54,13 @@ class InboundRepository @Inject constructor(
                     tagId = rfidTag?.tagId ?: 0,
                     weight = weight.takeIf { it.isNotBlank() }?.toInt() ?: 0,
                     grade = grade,
-                    specificGravity = "",
+                    specificGravity = specificGravity,
                     thickness = thickness.takeIf { it.isNotBlank() }?.toInt() ?: 0,
-                    width = 0,
+                    width =  width.takeIf { it.isNotBlank() }?.toInt() ?: 0,
                     length = length.takeIf { it.isNotBlank() }?.toInt() ?: 0,
                     quantity = 0,
                     winderInfo = winderInfo,
-                    missRollReason = "",
+                    missRollReason = missRollReason,
                     memo = memo,
                     occurredAt = generateIso8601JstTimestamp(),
                     registeredAt = generateIso8601JstTimestamp()

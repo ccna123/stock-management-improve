@@ -34,7 +34,6 @@ class InboundViewModel @Inject constructor(
     ): List<InboundResultCsvModel> =
         withContext(Dispatchers.IO) {
             csvModels.clear()
-
             val (itemTypeId, locationId) = tagMasterRepository.getItemTypeIdLocationIdByTagId(
                 rfidTag?.tagId ?: 0
             )
@@ -62,9 +61,13 @@ class InboundViewModel @Inject constructor(
     suspend fun saveInboundToDb(
         weight: String,
         grade: String,
+        specificGravity: String,
         thickness: String,
+        width: String,
         length: String,
+        quantity: String,
         winderInfo: String,
+        missRollReason: String,
         memo: String,
         rfidTag: TagMasterModel?
     ): Result<Int> {
@@ -73,9 +76,13 @@ class InboundViewModel @Inject constructor(
                 memo = memo,
                 weight = weight,
                 grade = grade,
+                specificGravity = specificGravity,
                 thickness = thickness,
+                width = width,
                 length = length,
+                quantity = quantity,
                 winderInfo = winderInfo,
+                missRollReason = missRollReason,
                 rfidTag = rfidTag,
             )
             Result.success(sessionId)

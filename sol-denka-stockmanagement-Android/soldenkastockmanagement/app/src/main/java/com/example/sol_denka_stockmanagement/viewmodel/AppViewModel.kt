@@ -2,7 +2,6 @@ package com.example.sol_denka_stockmanagement.viewmodel
 
 import android.content.Context
 import android.os.Build
-import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
@@ -216,8 +215,8 @@ class AppViewModel @Inject constructor(
             is InputIntent.ChangeMemo ->
                 _inputState.update { it.copy(memo = intent.value) }
 
-            is InputIntent.ChangeMissRoll ->
-                _inputState.update { it.copy(materialSelectedItem = intent.value) }
+            is InputIntent.ChangeMissRollReason ->
+                _inputState.update { it.copy(missRollReason = intent.value) }
 
             is InputIntent.ChangeGrade ->
                 _inputState.update { it.copy(grade = intent.value) }
@@ -225,7 +224,7 @@ class AppViewModel @Inject constructor(
             is InputIntent.ChangeLength ->
                 _inputState.update { it.copy(length = intent.value) }
 
-            is InputIntent.ChangeRollingMachineInfo ->
+            is InputIntent.ChangeWinderInfo ->
                 _inputState.update { it.copy(winderInfo = intent.value) }
 
             is InputIntent.ChangeThickness ->
@@ -268,7 +267,6 @@ class AppViewModel @Inject constructor(
                         return@launch
                     }
                     _inboundInputFormResults.value = result
-                    Log.e("TSS", "onInputIntent: $result", )
                 }
             }
 
@@ -328,6 +326,7 @@ class AppViewModel @Inject constructor(
                 perTagExpanded.value = emptyMap()
                 perTagProcessMethod.value = emptyMap()
                 _showModalProcessMethod.value = false
+                _inboundInputFormResults.value = emptyList()
             }
 
             is ShareIntent.ChangeTabInReceivingScreen ->

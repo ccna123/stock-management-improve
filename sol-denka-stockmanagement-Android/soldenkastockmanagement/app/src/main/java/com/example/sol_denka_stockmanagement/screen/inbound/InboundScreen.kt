@@ -131,6 +131,10 @@ fun InboundScreen(
                             length = inputState.length,
                             winderInfo = inputState.winderInfo,
                             memo = inputState.memo,
+                            specificGravity = inputState.specificGravity,
+                            width = inputState.width,
+                            quantity = "",
+                            missRollReason = inputState.missRollReason,
                         )
                         result.exceptionOrNull()?.let { e ->
                             appViewModel.onGeneralIntent(
@@ -390,11 +394,11 @@ fun InboundScreen(
                                                 )
 
                                                 "巻き取り機情報" -> appViewModel.onInputIntent(
-                                                    InputIntent.ChangeRollingMachineInfo(newValue)
+                                                    InputIntent.ChangeWinderInfo(newValue)
                                                 )
 
                                                 "ミスロールになった理由" -> appViewModel.onInputIntent(
-                                                    InputIntent.ChangeMissRoll(newValue)
+                                                    InputIntent.ChangeMissRollReason(newValue)
                                                 )
 
                                                 "備考" -> appViewModel.onInputIntent(
