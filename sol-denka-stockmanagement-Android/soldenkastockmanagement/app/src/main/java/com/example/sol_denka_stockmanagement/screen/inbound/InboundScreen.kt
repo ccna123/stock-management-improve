@@ -48,13 +48,13 @@ import com.example.sol_denka_stockmanagement.constant.ControlType
 import com.example.sol_denka_stockmanagement.constant.CsvHistoryDirection
 import com.example.sol_denka_stockmanagement.constant.CsvTaskType
 import com.example.sol_denka_stockmanagement.constant.DataType
+import com.example.sol_denka_stockmanagement.constant.PackingStyleItem
 import com.example.sol_denka_stockmanagement.constant.SelectTitle
 import com.example.sol_denka_stockmanagement.constant.StatusCode
 import com.example.sol_denka_stockmanagement.helper.message_mapper.MessageMapper
 import com.example.sol_denka_stockmanagement.intent.ExpandIntent
 import com.example.sol_denka_stockmanagement.intent.InputIntent
 import com.example.sol_denka_stockmanagement.intent.ShareIntent
-import com.example.sol_denka_stockmanagement.model.inbound.InboundInputFormModel
 import com.example.sol_denka_stockmanagement.navigation.Screen
 import com.example.sol_denka_stockmanagement.screen.inbound.components.ItemSearchBar
 import com.example.sol_denka_stockmanagement.screen.layout.Layout
@@ -198,7 +198,7 @@ fun InboundScreen(
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween
+                            horizontalArrangement = Arrangement.SpaceEvenly
                         ) {
                             listOf(
                                 Category.SUB_MATERIAL.displayName,
@@ -359,7 +359,7 @@ fun InboundScreen(
                                         singleLine = result.fieldName != "備考",
                                         onChange = { newValue ->
                                             when (result.fieldName) {
-                                                "重さ" -> appViewModel.onInputIntent(
+                                                "重量" -> appViewModel.onInputIntent(
                                                     InputIntent.ChangeWeight(
                                                         newValue
                                                     )
@@ -416,11 +416,28 @@ fun InboundScreen(
 
                                 ControlType.DROPDOWN -> {
                                     ExposedDropdownMenuBox(
-                                        expanded = expandState.locationExpanded,
+                                        expanded = when (result.fieldName) {
+                                            "保管場所" -> expandState.locationExpanded
+                                            "荷姿" -> expandState.packingStyleExpanded
+                                            else -> false
+                                        },
                                         onExpandedChange = {
-                                            appViewModel.onExpandIntent(
-                                                ExpandIntent.ToggleLocationExpanded
-                                            )
+                                            when (result.fieldName) {
+                                                "保管場所" -> {
+                                                    appViewModel.onExpandIntent(
+                                                        ExpandIntent.ToggleLocationExpanded
+                                                    )
+                                                }
+
+                                                "荷姿" -> {
+                                                    appViewModel.onExpandIntent(
+                                                        ExpandIntent.TogglePackingStyleExpanded
+                                                    )
+                                                }
+
+                                                else -> false
+                                            }
+
                                         }
                                     ) {
                                         InputFieldContainer(
@@ -430,15 +447,31 @@ fun InboundScreen(
                                                     enabled = true
                                                 )
                                                 .fillMaxWidth(),
-                                            value = if (inputState.location == SelectTitle.SelectLocation.displayName) "" else inputState.location,
-                                            hintText = SelectTitle.SelectLocation.displayName,
+                                            value = when (result.fieldName) {
+                                                "保管場所" -> if (inputState.location == SelectTitle.SelectLocation.displayName) "" else inputState.location
+                                                "荷姿" -> if (inputState.packingStyle == SelectTitle.SelectPackingStyle.displayName) "" else inputState.packingStyle
+                                                else -> ""
+                                            },
+                                            hintText = when (result.fieldName) {
+                                                "保管場所" -> SelectTitle.SelectLocation.displayName
+                                                "荷姿" -> SelectTitle.SelectPackingStyle.displayName
+                                                else -> ""
+                                            },
                                             isNumeric = false,
                                             onChange = { newValue ->
-                                                appViewModel.onInputIntent(
-                                                    InputIntent.ChangeLocation(
-                                                        newValue
+                                                when (result.fieldName) {
+                                                    "保管場所" -> appViewModel.onInputIntent(
+                                                        InputIntent.ChangeLocation(newValue)
                                                     )
-                                                )
+
+                                                    "荷姿" -> appViewModel.onInputIntent(
+                                                        InputIntent.ChangePackingStyle(
+                                                            newValue
+                                                        )
+                                                    )
+
+                                                    else -> ""
+                                                }
                                             },
                                             readOnly = true,
                                             isDropDown = true,
@@ -446,41 +479,111 @@ fun InboundScreen(
                                             onEnterPressed = {}
                                         )
                                         ExposedDropdownMenu(
-                                            expanded = expandState.locationExpanded,
+                                            expanded = when (result.fieldName) {
+                                                "保管場所" -> expandState.locationExpanded
+                                                "荷姿" -> expandState.packingStyleExpanded
+                                                else -> false
+                                            },
                                             onDismissRequest = {
-                                                appViewModel.onExpandIntent(
-                                                    ExpandIntent.ToggleLocationExpanded
-                                                )
+                                                when (result.fieldName) {
+                                                    "保管場所" -> appViewModel.onExpandIntent(
+                                                        ExpandIntent.ToggleLocationExpanded
+                                                    )
+
+                                                    "荷姿" -> appViewModel.onExpandIntent(
+                                                        ExpandIntent.TogglePackingStyleExpanded
+                                                    )
+
+                                                    else -> ""
+                                                }
                                             }
                                         ) {
                                             DropdownMenuItem(
-                                                text = { Text(text = SelectTitle.SelectLocation.displayName) },
+                                                text = {
+                                                    Text(
+                                                        text = when (result.fieldName) {
+                                                            "保管場所" -> SelectTitle.SelectLocation.displayName
+                                                            "荷姿" -> SelectTitle.SelectPackingStyle.displayName
+                                                            else -> ""
+                                                        }
+                                                    )
+                                                },
                                                 onClick = {
-                                                    appViewModel.apply {
-                                                        onInputIntent(InputIntent.ChangeLocation(""))
-                                                        onExpandIntent(ExpandIntent.ToggleLocationExpanded)
+                                                    when (result.fieldName) {
+                                                        "保管場所" -> {
+                                                            appViewModel.apply {
+                                                                onInputIntent(
+                                                                    InputIntent.ChangeLocation(
+                                                                        ""
+                                                                    )
+                                                                )
+                                                                onExpandIntent(ExpandIntent.ToggleLocationExpanded)
+                                                            }
+                                                        }
+
+                                                        "荷姿" -> {
+                                                            appViewModel.apply {
+                                                                onInputIntent(
+                                                                    InputIntent.ChangePackingStyle(
+                                                                        ""
+                                                                    )
+                                                                )
+                                                                onExpandIntent(ExpandIntent.TogglePackingStyleExpanded)
+                                                            }
+                                                        }
+
+                                                        else -> ""
                                                     }
                                                 }
                                             )
-                                            locationMaster.forEach { location ->
-                                                DropdownMenuItem(
-                                                    text = {
-                                                        Text(
-                                                            text = location.locationName ?: ""
+                                            when (result.fieldName) {
+                                                "保管場所" -> {
+                                                    locationMaster.forEach { location ->
+                                                        DropdownMenuItem(
+                                                            text = {
+                                                                location.locationName?.let {
+                                                                    Text(
+                                                                        text = it
+                                                                    )
+                                                                }
+                                                            },
+                                                            onClick = {
+                                                                appViewModel.apply {
+                                                                    onInputIntent(
+                                                                        InputIntent.ChangeLocation(
+                                                                            if (location.locationName == SelectTitle.SelectLocation.displayName) "" else location.locationName
+                                                                                ?: ""
+                                                                        )
+                                                                    )
+                                                                    onExpandIntent(ExpandIntent.ToggleLocationExpanded)
+                                                                }
+                                                            }
                                                         )
-                                                    },
-                                                    onClick = {
-                                                        appViewModel.apply {
-                                                            onInputIntent(
-                                                                InputIntent.ChangeLocation(
-                                                                    if (location.locationName == SelectTitle.SelectLocation.displayName) "" else location.locationName
-                                                                        ?: ""
-                                                                )
-                                                            )
-                                                            onExpandIntent(ExpandIntent.ToggleLocationExpanded)
-                                                        }
                                                     }
-                                                )
+                                                }
+
+                                                "荷姿" -> {
+                                                    listOf(
+                                                        PackingStyleItem.PAPER_BAG_25KG.displayName,
+                                                        PackingStyleItem.FLEXIBLE_CONTAINER_1T.displayName
+                                                    ).forEach { packingStyle ->
+                                                        DropdownMenuItem(
+                                                            text = {
+                                                                Text(text = packingStyle)
+                                                            },
+                                                            onClick = {
+                                                                appViewModel.apply {
+                                                                    onInputIntent(
+                                                                        InputIntent.ChangePackingStyle(
+                                                                            if (inputState.packingStyle == SelectTitle.SelectPackingStyle.displayName) "" else packingStyle
+                                                                        )
+                                                                    )
+                                                                    onExpandIntent(ExpandIntent.TogglePackingStyleExpanded)
+                                                                }
+                                                            }
+                                                        )
+                                                    }
+                                                }
                                             }
                                         }
                                     }

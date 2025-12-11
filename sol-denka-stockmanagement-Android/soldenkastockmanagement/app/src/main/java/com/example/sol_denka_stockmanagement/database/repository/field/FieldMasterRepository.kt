@@ -78,6 +78,12 @@ class FieldMasterRepository @Inject constructor(
             dataType = DataType.TEXT,
             controlType = ControlType.DROPDOWN
         ),
+        FieldMasterModel(
+            fieldId = 11,
+            fieldName = "荷姿",
+            dataType = DataType.TEXT,
+            controlType = ControlType.DROPDOWN
+        ),
     )
 
     suspend fun ensurePresetInserted() {
