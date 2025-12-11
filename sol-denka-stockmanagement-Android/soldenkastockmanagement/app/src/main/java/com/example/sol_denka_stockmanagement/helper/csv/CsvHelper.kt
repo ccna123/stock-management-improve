@@ -14,6 +14,7 @@ import com.example.sol_denka_stockmanagement.database.repository.item.ItemTypeRe
 import com.example.sol_denka_stockmanagement.database.repository.ledger.LedgerItemRepository
 import com.example.sol_denka_stockmanagement.database.repository.location.LocationMasterRepository
 import com.example.sol_denka_stockmanagement.database.repository.tag.TagMasterRepository
+import com.example.sol_denka_stockmanagement.database.repository.field.ItemTypeFieldSettingMasterRepository
 import com.example.sol_denka_stockmanagement.helper.ProcessResult
 import com.example.sol_denka_stockmanagement.model.csv.CsvFileInfoModel
 import com.jcraft.jsch.ChannelSftp
@@ -34,7 +35,8 @@ class CsvHelper @Inject constructor(
     private val locationMasterRepository: LocationMasterRepository,
     private val ledgerItemRepository: LedgerItemRepository,
     private val itemTypeRepository: ItemTypeRepository,
-    private val tagMasterRepository: TagMasterRepository
+    private val tagMasterRepository: TagMasterRepository,
+    private val itemTypeFieldSettingMasterRepository: ItemTypeFieldSettingMasterRepository
 ) {
     companion object {
         private const val ROOT_FOLDER = "DenkaStockManagement"
@@ -50,6 +52,7 @@ class CsvHelper @Inject constructor(
         private const val LOCATION_MASTER = "LocationMaster"
         private const val ITEM_TYPE_MASTER = "ItemTypeMaster"
         private const val TAG_MASTER = "TagMaster"
+        private const val ITEM_TYPE_FIELD_SETTING_MASTER = "ItemTypeFieldSettingMaster"
     }
 
     suspend fun createAppFolders(context: Context) = withContext(Dispatchers.IO) {
@@ -98,6 +101,7 @@ class CsvHelper @Inject constructor(
             ensureScopedFolder("$ROOT_FOLDER/$IMPORT/$LOCATION_MASTER")
             ensureScopedFolder("$ROOT_FOLDER/$IMPORT/$ITEM_TYPE_MASTER")
             ensureScopedFolder("$ROOT_FOLDER/$IMPORT/$TAG_MASTER")
+            ensureScopedFolder("$ROOT_FOLDER/$IMPORT/$ITEM_TYPE_FIELD_SETTING_MASTER")
             Log.i("TSS", "✅ Folder structure ensured")
         } catch (e: Exception) {
             Log.e("TSS", "Error creating folders: ${e.message}", e)
@@ -125,6 +129,11 @@ class CsvHelper @Inject constructor(
             CsvType.TagMaster.displayName -> Pair(
                 "Import/TagMaster",
                 "$IMPORT/$TAG_MASTER"
+            )
+
+            CsvType.ItemTypeFieldSettingMaster.displayName -> Pair(
+                "Import/ItemTypeFieldSettingMaster",
+                "$IMPORT/$ITEM_TYPE_FIELD_SETTING_MASTER"
             )
 
             CsvType.InventoryResult.displayName -> Pair(
@@ -212,8 +221,8 @@ class CsvHelper @Inject constructor(
     private fun formatSize(sizeBytes: Long): String {
         val size = sizeBytes.toDouble()
         return when {
-            size >= 1024 * 1024 -> String.format(Locale.US, "%.1f MB", size / (1024 * 1024))
-            size >= 1024 -> String.format(Locale.US, "%.1f KB", size / 1024)
+            size >= 1000 * 1000 -> String.format(Locale.US, "%.1f MB", size / (1024 * 1024))
+            size >= 1000 -> String.format(Locale.US, "%.1f KB", size / 1024)
             else -> "$sizeBytes B"
         }
     }
@@ -461,6 +470,7 @@ class CsvHelper @Inject constructor(
             CsvType.LedgerMaster.displayName -> LedgerItemMasterImporter(repository = ledgerItemRepository)
             CsvType.ItemTypeMaster.displayName -> ItemTypeMasterImporter(repository = itemTypeRepository)
             CsvType.TagMaster.displayName -> TagMasterImporter(repository = tagMasterRepository)
+            CsvType.ItemTypeFieldSettingMaster.displayName -> ItemTypeFieldSettingMasterImporter(repository = itemTypeFieldSettingMasterRepository)
             else -> null
         }
     }

@@ -214,7 +214,7 @@ fun ScanScreen(
                             Screen.LocationChange.routeId
                         ) -> rfidTagList.any { it.newFields.isChecked }
 
-                        Screen.Inbound.routeId -> lastInboundEpc?.isNotEmpty() == true
+                        Screen.Inbound.routeId -> isPerformingInventory.not() && lastInboundEpc?.isNotEmpty() == true
                         else -> true
                     },
                     icon = {

@@ -8,6 +8,8 @@ sealed interface InputIntent {
     data class ChangeMemo(val value: String) : InputIntent
     data class ChangeOccurredAtDate(val value: String) : InputIntent
     data class ChangeOccurredAtTime(val value: String) : InputIntent
+    data class ChangeWidth(val value: String) : InputIntent
+    data class ChangeSpecificGravity(val value: String) : InputIntent
     data class ChangeThickness(val value: String) : InputIntent
     data class ChangeGrade(val value: String) : InputIntent
     data class ChangeRollingMachineInfo(val value: String) : InputIntent
@@ -16,6 +18,7 @@ sealed interface InputIntent {
     data class ChangeLotNo(val value: String) : InputIntent
     data class ChangePackingStyle(val value: String) : InputIntent
     data class ChangeFileTransferMethod(val value: String): InputIntent
-    data class ChangeItem(val value: String): InputIntent
+    data class ChangeItem(val itemName: String, val itemId: Int): InputIntent
+    data class SearchKeyWord(val itemName: String): InputIntent
     data class BulkApplyProcessMethod(val checkedTags: List<String>): InputIntent
 }

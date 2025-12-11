@@ -143,7 +143,7 @@ fun LocationChangeScreen(
                         tableHeader = listOf(
                             stringResource(R.string.item_name_title),
                             stringResource(R.string.item_code_title),
-                            stringResource(R.string.storage_area)
+                            stringResource(R.string.location)
                         ),
                         scanResult = rfidTagList.filter { it.newFields.isChecked }.map { tag ->
                             ScanResultRowModel(

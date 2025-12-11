@@ -25,6 +25,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.sol_denka_stockmanagement.R
+import com.example.sol_denka_stockmanagement.model.item.ItemTypeMasterModel
 import com.example.sol_denka_stockmanagement.ui.theme.brightAzure
 import kotlin.collections.isNotEmpty
 
@@ -33,8 +34,8 @@ import kotlin.collections.isNotEmpty
 fun ItemSearchBar(
     keyword: String,
     onKeywordChange: (String) -> Unit,
-    results: List<String?>,
-    onSelectItem: (String) -> Unit,
+    results: List<ItemTypeMasterModel>,
+    onSelectItem: (String, Int) -> Unit,
 ) {
     var active by remember { mutableStateOf(false) }
     SearchBar(
@@ -44,7 +45,7 @@ fun ItemSearchBar(
             active = true
         },
         onSearch = { active = true },
-        active = if (results.isNotEmpty()) active else false,
+        active = active,
         onActiveChange = { active = it },
 
         tonalElevation = 0.dp,
@@ -84,11 +85,11 @@ fun ItemSearchBar(
             ) {
                 items(results) { item ->
                     Text(
-                        text = item ?: "",
+                        text = item.itemTypeName,
                         modifier = Modifier
                             .fillMaxWidth()
                             .clickable {
-                                onSelectItem(item ?: "")
+                                onSelectItem(item.itemTypeName, item.itemTypeId)
                                 active = false
                             }
                             .padding(12.dp),

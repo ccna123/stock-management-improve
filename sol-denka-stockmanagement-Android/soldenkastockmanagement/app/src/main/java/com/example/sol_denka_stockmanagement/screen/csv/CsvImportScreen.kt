@@ -87,6 +87,7 @@ fun CsvImportScreen(
                 CsvType.LedgerMaster.displayName,
                 CsvType.LocationMaster.displayName,
                 CsvType.ItemTypeMaster.displayName,
+                CsvType.ItemTypeFieldSettingMaster.displayName,
                 CsvType.TagMaster.displayName,
             ) -> {
                 csvViewModel.apply {
@@ -252,6 +253,7 @@ fun CsvImportScreen(
                                         CsvType.LedgerMaster.displayName,
                                         CsvType.LocationMaster.displayName,
                                         CsvType.ItemTypeMaster.displayName,
+                                        CsvType.ItemTypeFieldSettingMaster.displayName,
                                         CsvType.TagMaster.displayName,
                                     ).forEach { csvType ->
                                         DropdownMenuItem(

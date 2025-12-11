@@ -35,6 +35,7 @@ fun InputFieldContainer(
     isNumeric: Boolean = false,
     shape: Shape = RoundedCornerShape(13.dp),
     fontSize: TextUnit = 16.sp,
+    isRequired: Boolean = false,
     enable: Boolean,
     label: String? = null,
     iconColor: Color = brightAzure,
@@ -53,7 +54,14 @@ fun InputFieldContainer(
         },
         modifier = modifier,
         shape = shape,
-        label = label?.let { { Text(text = it) } },
+        label = label?.let {
+            {
+                Text(
+                    text = if (isRequired) "$it＊" else it ,
+                    color = if (isRequired) Color.Red else Color.Black,
+                )
+            }
+        },
         placeholder = { Text(text = hintText, color = Color.Gray, fontSize = 16.sp) },
         interactionSource = textFieldInteractionSource,
         colors = OutlinedTextFieldDefaults.colors(

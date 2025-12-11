@@ -26,8 +26,8 @@ import com.example.sol_denka_stockmanagement.database.dao.outbound.OutboundEvent
 import com.example.sol_denka_stockmanagement.database.dao.outbound.OutboundSessionDao
 import com.example.sol_denka_stockmanagement.database.dao.process.ProcessTypeDao
 import com.example.sol_denka_stockmanagement.database.dao.tag.TagMasterDao
-import com.example.sol_denka_stockmanagement.helper.ReaderController
-import com.example.sol_denka_stockmanagement.helper.TagController
+import com.example.sol_denka_stockmanagement.helper.controller.ReaderController
+import com.example.sol_denka_stockmanagement.helper.controller.TagController
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

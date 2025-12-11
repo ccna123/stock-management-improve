@@ -28,6 +28,6 @@ interface ItemTypeDao: IDao<ItemTypeMasterEntity> {
     @Delete
     override suspend fun delete(e: ItemTypeMasterEntity)
 
-    @Query("SELECT item_type_name FROM ItemTypeMaster WHERE item_type_name LIKE '%' || :keyword || '%'")
-    suspend fun findByName(keyword: String): List<String>?
+    @Query("SELECT * FROM ItemTypeMaster WHERE item_type_name LIKE '%' || :keyword || '%'")
+    suspend fun findByName(keyword: String): List<ItemTypeMasterEntity>?
 }

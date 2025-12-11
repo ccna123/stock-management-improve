@@ -49,10 +49,10 @@ class ScanViewModel @Inject constructor(
     init {
 
         viewModelScope.launch {
-            val fullInfoList = tagMasterRepository.getFullInfo()
-            val infoMap = fullInfoList.associateBy { it.epc }
 
             tagMasterRepository.get().collect { tagList ->
+                val fullInfoList = tagMasterRepository.getFullInfo()
+                val infoMap = fullInfoList.associateBy { it.epc }
                 val enriched = tagList.map { tag ->
                     val info = infoMap[tag.epc]
 

@@ -4,8 +4,6 @@ import com.example.sol_denka_stockmanagement.database.dao.field.ItemTypeFieldSet
 import com.example.sol_denka_stockmanagement.model.field.ItemTypeFieldSettingMasterModel
 import com.example.sol_denka_stockmanagement.model.field.toEntity
 import com.example.sol_denka_stockmanagement.model.field.toModel
-import com.example.sol_denka_stockmanagement.model.location.LocationMasterModel
-import com.example.sol_denka_stockmanagement.model.location.toEntity
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
@@ -20,6 +18,7 @@ class ItemTypeFieldSettingMasterRepository @Inject constructor(
     fun get(): Flow<List<ItemTypeFieldSettingMasterModel>> = dao.get().map { entityList ->
         entityList.map { it.toModel() }
     }
+    suspend fun getFieldForItemTypeByItemTypeId(id: Int) = dao.getFieldForItemTypeByItemTypeId(id)
     suspend fun insert(model: ItemTypeFieldSettingMasterModel) = dao.insert(model.toEntity())
     suspend fun insertAll(model: List<ItemTypeFieldSettingMasterModel>) = dao.insertAll(model.map { it.toEntity() })
     suspend fun update(model: ItemTypeFieldSettingMasterModel) = dao.update(model.toEntity())

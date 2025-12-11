@@ -20,5 +20,8 @@ data class InputState(
     val occurredAtDate: String = "",
     val occurredAtTime: String = "",
     val packingStyle: String = "",
+    val width: String = "",
+    val missRollReason: String = "",
+    val specificGravity: String = "",
     var fileTransferMethod: String = FileTransferMethod.WIFI.displayName
 )

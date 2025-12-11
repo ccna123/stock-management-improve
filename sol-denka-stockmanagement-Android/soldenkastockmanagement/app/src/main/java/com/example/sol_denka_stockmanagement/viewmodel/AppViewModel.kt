@@ -2,6 +2,7 @@ package com.example.sol_denka_stockmanagement.viewmodel
 
 import android.content.Context
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
@@ -13,6 +14,7 @@ import com.example.sol_denka_stockmanagement.constant.generateIso8601JstTimestam
 import com.example.sol_denka_stockmanagement.database.repository.csv.CsvHistoryRepository
 import com.example.sol_denka_stockmanagement.database.repository.csv.CsvTaskTypeRepository
 import com.example.sol_denka_stockmanagement.database.repository.field.FieldMasterRepository
+import com.example.sol_denka_stockmanagement.database.repository.field.ItemTypeFieldSettingMasterRepository
 import com.example.sol_denka_stockmanagement.database.repository.inventory.InventoryResultTypeRepository
 import com.example.sol_denka_stockmanagement.database.repository.item.ItemTypeRepository
 import com.example.sol_denka_stockmanagement.database.repository.item.ItemUnitRepository
@@ -28,6 +30,8 @@ import com.example.sol_denka_stockmanagement.intent.ExpandIntent
 import com.example.sol_denka_stockmanagement.intent.InputIntent
 import com.example.sol_denka_stockmanagement.intent.ShareIntent
 import com.example.sol_denka_stockmanagement.model.csv.CsvHistoryModel
+import com.example.sol_denka_stockmanagement.model.inbound.InboundInputFormModel
+import com.example.sol_denka_stockmanagement.model.item.ItemTypeMasterModel
 import com.example.sol_denka_stockmanagement.model.location.LocationMasterModel
 import com.example.sol_denka_stockmanagement.model.reader.ReaderInfoModel
 import com.example.sol_denka_stockmanagement.state.DialogState
@@ -64,6 +68,7 @@ class AppViewModel @Inject constructor(
     private val csvHistoryRepository: CsvHistoryRepository,
     private val fieldMasterRepository: FieldMasterRepository,
     private val itemTypeRepository: ItemTypeRepository,
+    private val itemTypeFieldSettingMasterRepository: ItemTypeFieldSettingMasterRepository,
     private val csvHelper: CsvHelper,
 ) : ViewModel() {
 
@@ -117,8 +122,11 @@ class AppViewModel @Inject constructor(
     private val _outboundProcessErrorSet = MutableStateFlow<Set<String>>(emptySet())
     val outboundProcessErrorSet = _outboundProcessErrorSet.asStateFlow()
 
-    private val _searchResults = MutableStateFlow<List<String>>(emptyList())
+    private val _searchResults = MutableStateFlow<List<ItemTypeMasterModel>>(emptyList())
     val searchResults = _searchResults.asStateFlow()
+
+    private val _inboundInputFormResults = MutableStateFlow<List<InboundInputFormModel>>(emptyList())
+    val inboundInputFormResults = _inboundInputFormResults.asStateFlow()
 
 
     val readerInfo = readerController.readerInfo.stateIn(
@@ -252,7 +260,21 @@ class AppViewModel @Inject constructor(
 
             is InputIntent.ChangeCategory -> _inputState.update { it.copy(category = intent.value) }
             is InputIntent.ChangeOccurredAtTime -> _inputState.update { it.copy(occurredAtTime = intent.value) }
-            is InputIntent.ChangeItem -> _inputState.update { it.copy(item = intent.value) }
+            is InputIntent.ChangeItem -> {
+                _inputState.update { it.copy(item = intent.itemName) }
+                viewModelScope.launch {
+                    val result = itemTypeFieldSettingMasterRepository.getFieldForItemTypeByItemTypeId(intent.itemId)
+                    if (result.isEmpty()){
+                        return@launch
+                    }
+                    _inboundInputFormResults.value = result
+                    Log.e("TSS", "onInputIntent: $result", )
+                }
+            }
+
+            is InputIntent.SearchKeyWord -> _inputState.update { it.copy(item = intent.itemName) }
+            is InputIntent.ChangeSpecificGravity -> _inputState.update { it.copy(specificGravity = intent.value) }
+            is InputIntent.ChangeWidth -> _inputState.update { it.copy(width = intent.value) }
         }
     }
 

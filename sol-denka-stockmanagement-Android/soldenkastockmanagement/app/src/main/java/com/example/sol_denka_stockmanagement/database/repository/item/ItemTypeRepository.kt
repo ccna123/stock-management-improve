@@ -18,7 +18,7 @@ class ItemTypeRepository @Inject constructor(
     fun get(): Flow<List<ItemTypeMasterModel>> =
         dao.get().map { list -> list.map { it.toModel() } }
 
-    suspend fun findByName(keyword: String) = dao.findByName(keyword)
+    suspend fun findByName(keyword: String) = dao.findByName(keyword)?.map { it.toModel() }
 
     suspend fun insert(model: ItemTypeMasterModel) = dao.insert(model.toEntity())
     suspend fun insertAll(model: List<ItemTypeMasterModel>) = dao.insertAll(model.map { it.toEntity() })

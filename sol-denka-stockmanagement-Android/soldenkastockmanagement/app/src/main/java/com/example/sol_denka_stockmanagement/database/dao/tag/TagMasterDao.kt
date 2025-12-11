@@ -42,7 +42,12 @@ interface TagMasterDao : IDao<TagMasterEntity> {
     suspend fun getTagIdLedgerIdByEpc(epc: String): TagMasterEntity
 
     @Query("""
-        SELECT t.tag_id AS tagId, t.epc , it.item_type_name AS itemName, it.item_type_code AS itemCode, lo.location_name AS location
+        SELECT 
+                t.tag_id AS tagId, 
+                t.epc , 
+                IFNULL(it.item_type_name, '') AS itemName,
+                IFNULL(it.item_type_code, '') AS itemCode,
+                IFNULL(lo.location_name, '') AS location
             FROM tagmaster AS t 
             LEFT JOIN ledgeritem le ON le.ledger_item_id = t.ledger_item_id
             LEFT JOIN locationmaster lo ON lo.location_id = le.location_id

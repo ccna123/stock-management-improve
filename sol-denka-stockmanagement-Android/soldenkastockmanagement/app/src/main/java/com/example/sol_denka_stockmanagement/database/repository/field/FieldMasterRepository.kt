@@ -21,7 +21,7 @@ class FieldMasterRepository @Inject constructor(
     val presetUnits = listOf(
         FieldMasterModel(
             fieldId = 1,
-            fieldName = "重さ",
+            fieldName = "重量",
             dataType = DataType.NUMBER,
             controlType = ControlType.INPUT
         ),FieldMasterModel(
