@@ -3,6 +3,7 @@ package com.example.sol_denka_stockmanagement.intent
 import com.example.sol_denka_stockmanagement.app_interface.ICsvExport
 import com.example.sol_denka_stockmanagement.constant.CsvHistoryDirection
 import com.example.sol_denka_stockmanagement.constant.CsvTaskType
+import com.example.sol_denka_stockmanagement.constant.DialogType
 import com.example.sol_denka_stockmanagement.constant.Tab
 
 
@@ -34,8 +35,7 @@ sealed interface ShareIntent {
         val data: List<T>
     ) : ShareIntent
 
-    data class ShowErrorDialog(val message: String, val onOk: (() -> Unit)? = null) : ShareIntent
-    data class ShowConfirmDialog(val message: String, val onOk: (() -> Unit)?, val onCancel: (() -> Unit)? = null) : ShareIntent
+    data class ShowDialog(val message: String, val type: DialogType) : ShareIntent
     data object HiddenDialog: ShareIntent
     data class MarkOutboundProcessError(val epcs: List<String>) : ShareIntent
     data object ClearOutboundProcessError : ShareIntent

@@ -35,6 +35,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.sol_denka_stockmanagement.R
+import com.example.sol_denka_stockmanagement.constant.DialogType
 import com.example.sol_denka_stockmanagement.constant.ScanMode
 import com.example.sol_denka_stockmanagement.constant.SelectTitle
 import com.example.sol_denka_stockmanagement.constant.StatusCode
@@ -240,8 +241,9 @@ fun ScanScreen(
                                         )
                                     )
                                     appViewModel.onGeneralIntent(
-                                        ShareIntent.ShowErrorDialog(
-                                            MessageMapper.toMessage(StatusCode.PROCESS_NOT_CHOSEN)
+                                        ShareIntent.ShowDialog(
+                                            type = DialogType.ERROR,
+                                            message = MessageMapper.toMessage(StatusCode.PROCESS_NOT_CHOSEN)
                                         )
                                     )
                                     return@ButtonContainer

@@ -37,6 +37,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.sol_denka_stockmanagement.R
 import com.example.sol_denka_stockmanagement.constant.CsvHistoryDirection
 import com.example.sol_denka_stockmanagement.constant.CsvTaskType
+import com.example.sol_denka_stockmanagement.constant.DialogType
 import com.example.sol_denka_stockmanagement.constant.InventoryScanResult
 import com.example.sol_denka_stockmanagement.constant.StatusCode
 import com.example.sol_denka_stockmanagement.helper.message_mapper.MessageMapper
@@ -70,11 +71,12 @@ fun InventoryCompleteScreen(
     val generalState by appViewModel.generalState.collectAsStateWithLifecycle()
     val inputState by appViewModel.inputState.collectAsStateWithLifecycle()
     val rfidTagList by scanViewModel.rfidTagList.collectAsStateWithLifecycle()
-    val wrongLocationCount by
-    inventoryCompleteViewModel.wrongLocationCount.collectAsStateWithLifecycle()
+    val wrongLocationCount by inventoryCompleteViewModel.wrongLocationCount.collectAsStateWithLifecycle()
     val shortageCount by inventoryCompleteViewModel.shortageCount.collectAsStateWithLifecycle()
     val overCount by inventoryCompleteViewModel.overCount.collectAsStateWithLifecycle()
     val okCount by inventoryCompleteViewModel.okCount.collectAsStateWithLifecycle()
+    val isNetworkConnected by appViewModel.isNetworkConnected.collectAsStateWithLifecycle()
+
     val scope = rememberCoroutineScope()
 
     LaunchedEffect(Unit) {
@@ -148,8 +150,9 @@ fun InventoryCompleteScreen(
                         )
                         result.exceptionOrNull()?.let { e ->
                             appViewModel.onGeneralIntent(
-                                ShareIntent.ShowErrorDialog(
-                                    MessageMapper.toMessage(StatusCode.FAILED)
+                                ShareIntent.ShowDialog(
+                                    type = DialogType.ERROR,
+                                    message = MessageMapper.toMessage(StatusCode.FAILED)
                                 )
                             )
                             return@launch
@@ -159,13 +162,35 @@ fun InventoryCompleteScreen(
                                 memo = inputState.memo,
                                 locationName = inputState.location,
                             )
-                        appViewModel.onGeneralIntent(
-                            ShareIntent.SaveScanResult(
-                                data = csvModels,
-                                direction = CsvHistoryDirection.EXPORT,
-                                taskCode = CsvTaskType.INVENTORY,
-                            )
+                        val saveResult = appViewModel.saveScanResultToCsv(
+                            data = csvModels,
+                            direction = CsvHistoryDirection.EXPORT,
+                            taskCode = CsvTaskType.INVENTORY,
                         )
+                        saveResult
+                            .onSuccess {
+                                // SAVE CSV success
+                                // Now check network and send SFTP
+                                if (isNetworkConnected) {
+                                    //sftp send
+                                } else {
+                                    appViewModel.onGeneralIntent(
+                                        ShareIntent.ShowDialog(
+                                            type = DialogType.SAVE_CSV_SUCCESS_FAILED_SFTP,
+                                            message = MessageMapper.toMessage(StatusCode.EXPORT_OK)
+                                        )
+                                    )
+                                }
+                            }
+                            .onFailure { throwable ->
+                                val code = StatusCode.valueOf(throwable.message!!)
+                                appViewModel.onGeneralIntent(
+                                    ShareIntent.ShowDialog(
+                                        type = DialogType.ERROR,
+                                        message = MessageMapper.toMessage(code)
+                                    )
+                                )
+                            }
                     }
                 },
                 buttonText = stringResource(R.string.finish_inventory),

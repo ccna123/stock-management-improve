@@ -163,6 +163,14 @@ enum class ConnectionState {
     CONNECTED
 }
 
+enum class DialogType{
+    CONFIRM,
+    SAVE_CSV_SUCCESS_FAILED_SFTP,
+    SAVE_CSV_SEND_SFTP_SUCCESS,
+    ERROR
+
+}
+
 enum class StatusCode(val code: Int) {
     OK(200),
     DOWNLOAD_SFTP_OK(201),

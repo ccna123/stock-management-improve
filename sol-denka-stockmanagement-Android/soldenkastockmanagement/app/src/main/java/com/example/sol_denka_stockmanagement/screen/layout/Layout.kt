@@ -135,7 +135,6 @@ fun Layout(
     val isPerformingInventory by (appViewModel?.isPerformingInventory
         ?: MutableStateFlow(false)).collectAsStateWithLifecycle()
 
-    val showAppDialog = appViewModel?.showAppDialog?.value ?: false
     val dialogState by appViewModel?.dialogState?.collectAsStateWithLifecycle() ?: remember {
         mutableStateOf(
             DialogState.Hidden
@@ -143,20 +142,47 @@ fun Layout(
     }
 
     when (val d = dialogState) {
-
         is DialogState.Error -> {
             ConfirmDialog(
                 showDialog = true,
                 textColor = Color.Red,
                 dialogTitle = d.message,
-                buttons = listOf({
-                    ButtonContainer(
-                        buttonText = "閉じる",
-                        onClick = {
-                            appViewModel?.onGeneralIntent(ShareIntent.HiddenDialog)
-                        }
-                    )
-                })
+                buttons = listOf(
+                    {
+                        ButtonContainer(
+                            buttonText = stringResource(R.string.close),
+                            onClick = {
+                                appViewModel?.onGeneralIntent(ShareIntent.HiddenDialog)
+                            }
+                        )
+                    }
+                )
+            )
+        }
+
+        is DialogState.SaveCsvSuccessFailSftp -> {
+            ConfirmDialog(
+                showDialog = true,
+                textColor = Color.Black,
+                dialogTitle = d.message,
+                buttons = listOf(
+                    {
+                        ButtonContainer(
+                            containerColor = Color.Red,
+                            buttonText = stringResource(R.string.re_send),
+                            onClick = {
+                                appViewModel?.onGeneralIntent(ShareIntent.HiddenDialog)
+                            }
+                        )
+                        ButtonContainer(
+                            buttonText = stringResource(R.string.return_home),
+                            onClick = {
+                                appViewModel?.onGeneralIntent(ShareIntent.HiddenDialog)
+                                onNavigate?.invoke(Screen.Home)
+                            }
+                        )
+                    }
+                )
             )
         }
 
@@ -164,55 +190,42 @@ fun Layout(
             ConfirmDialog(
                 showDialog = true,
                 textColor = Color.Black,
-                dialogTitle = stringResource(R.string.csv_save_message),
-                buttons = listOf({
-                    ButtonContainer(
-                        buttonText = "Homeへ戻る",
-                        onClick = {
-                            appViewModel?.onGeneralIntent(ShareIntent.HiddenDialog)
-                            onNavigate?.invoke(Screen.Home)
-                        }
-                    )
-                })
+                dialogTitle = d.message,
+                buttons = listOf(
+                    {
+                        ButtonContainer(
+                            buttonText = stringResource(R.string.return_home),
+                            onClick = {
+                                appViewModel?.onGeneralIntent(ShareIntent.HiddenDialog)
+                                onNavigate?.invoke(Screen.Home)
+                            }
+                        )
+                    }
+                )
+            )
+        }
+
+        is DialogState.SaveCsvSendSftpSuccess -> {
+            ConfirmDialog(
+                showDialog = true,
+                textColor = Color.Black,
+                dialogTitle = d.message,
+                buttons = listOf(
+                    {
+                        ButtonContainer(
+                            buttonText = stringResource(R.string.return_home),
+                            onClick = {
+                                appViewModel?.onGeneralIntent(ShareIntent.HiddenDialog)
+                                onNavigate?.invoke(Screen.Home)
+                            }
+                        )
+                    }
+                )
             )
         }
 
         DialogState.Hidden -> Unit
     }
-
-
-
-//    ConfirmDialog(
-//        showDialog = showAppDialog,
-//        textColor = if (appViewModel?.csvDialogIsError?.value == true)
-//            Color.Red
-//        else
-//            Color.Black,
-//        dialogTitle =
-//            if (appViewModel?.csvDialogIsError?.value == true)
-//                appViewModel.csvDialogMessage.value ?: ""
-//            else
-//                stringResource(R.string.csv_save_message),
-//        buttons = listOf(
-//            {
-//                ButtonContainer(
-//                    buttonText = if (appViewModel?.csvDialogIsError?.value == true)
-//                        stringResource(R.string.close)
-//                    else {
-//                        stringResource(R.string.return_home)
-//                    },
-//                    onClick = {
-//                        if (appViewModel?.csvDialogIsError?.value == true)
-//                            appViewModel.onGeneralIntent(ShareIntent.ToggleDialog)
-//                        else {
-//                            appViewModel?.onGeneralIntent(ShareIntent.ToggleDialog)
-//                            onNavigate?.invoke(Screen.Home)
-//                        }
-//                    }
-//                )
-//            }
-//        )
-//    )
 
     if (showFileProgressBar == true) {
         AppDialog {

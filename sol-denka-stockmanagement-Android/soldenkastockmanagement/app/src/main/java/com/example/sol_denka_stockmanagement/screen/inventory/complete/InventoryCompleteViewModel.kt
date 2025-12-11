@@ -67,7 +67,7 @@ class InventoryCompleteViewModel @Inject constructor(
             ).map { it.epc }.toList()
 
 
-            val newList = rfidTagList.map { tag ->
+            val newList = rfidTagList.filter { it.newFields.tagStatus == TagStatus.PROCESSED }.map { tag ->
                 val wrongLocation = notMatchLocationScannedTags.contains(tag.epc)
                 val shortage = tag.epc in tagsInStock && tag.epc !in matchLocationScannedTags
                 val over = tag.epc !in tagsInStock && tag.epc in matchLocationScannedTags

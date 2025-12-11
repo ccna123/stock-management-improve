@@ -42,6 +42,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.sol_denka_stockmanagement.R
 import com.example.sol_denka_stockmanagement.constant.CsvHistoryDirection
 import com.example.sol_denka_stockmanagement.constant.CsvTaskType
+import com.example.sol_denka_stockmanagement.constant.DialogType
 import com.example.sol_denka_stockmanagement.constant.StatusCode
 import com.example.sol_denka_stockmanagement.helper.message_mapper.MessageMapper
 import com.example.sol_denka_stockmanagement.intent.InputIntent
@@ -74,6 +75,7 @@ fun OutboundScreen(
     val generalState by appViewModel.generalState.collectAsStateWithLifecycle()
     val rfidTagList by scanViewModel.rfidTagList.collectAsStateWithLifecycle()
     val processTypeMap by appViewModel.perTagProcessMethod.collectAsStateWithLifecycle()
+    val isNetworkConnected by appViewModel.isNetworkConnected.collectAsStateWithLifecycle()
     val scope = rememberCoroutineScope()
 
     LaunchedEffect(Unit) {
@@ -186,8 +188,9 @@ fun OutboundScreen(
                         )
                         result.exceptionOrNull()?.let { e ->
                             appViewModel.onGeneralIntent(
-                                ShareIntent.ShowErrorDialog(
-                                    MessageMapper.toMessage(StatusCode.FAILED)
+                                ShareIntent.ShowDialog(
+                                    type = DialogType.ERROR,
+                                    message = MessageMapper.toMessage(StatusCode.FAILED)
                                 )
                             )
                             return@launch
@@ -197,13 +200,35 @@ fun OutboundScreen(
                                 memo = inputState.memo,
                                 rfidTagList = rfidTagList.filter { it.newFields.isChecked }
                             )
-                        appViewModel.onGeneralIntent(
-                            ShareIntent.SaveScanResult(
-                                data = csvModels,
-                                direction = CsvHistoryDirection.EXPORT,
-                                taskCode = CsvTaskType.OUT
-                            )
+                        val saveResult = appViewModel.saveScanResultToCsv(
+                            data = csvModels,
+                            direction = CsvHistoryDirection.EXPORT,
+                            taskCode = CsvTaskType.OUT,
                         )
+                        saveResult
+                            .onSuccess {
+                                // SAVE CSV success
+                                // Now check network and send SFTP
+                                if (isNetworkConnected) {
+                                    //sftp send
+                                } else {
+                                    appViewModel.onGeneralIntent(
+                                        ShareIntent.ShowDialog(
+                                            type = DialogType.SAVE_CSV_SUCCESS_FAILED_SFTP,
+                                            message = MessageMapper.toMessage(StatusCode.EXPORT_OK)
+                                        )
+                                    )
+                                }
+                            }
+                            .onFailure { throwable ->
+                                val code = StatusCode.valueOf(throwable.message!!)
+                                appViewModel.onGeneralIntent(
+                                    ShareIntent.ShowDialog(
+                                        type = DialogType.ERROR,
+                                        message = MessageMapper.toMessage(code)
+                                    )
+                                )
+                            }
                     }
                 },
                 buttonText = stringResource(R.string.register),

@@ -31,6 +31,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.sol_denka_stockmanagement.R
 import com.example.sol_denka_stockmanagement.constant.CsvHistoryDirection
 import com.example.sol_denka_stockmanagement.constant.CsvTaskType
+import com.example.sol_denka_stockmanagement.constant.DialogType
 import com.example.sol_denka_stockmanagement.constant.SelectTitle
 import com.example.sol_denka_stockmanagement.constant.StatusCode
 import com.example.sol_denka_stockmanagement.helper.message_mapper.MessageMapper
@@ -62,6 +63,7 @@ fun LocationChangeScreen(
     val rfidTagList by scanViewModel.rfidTagList.collectAsStateWithLifecycle()
     val inputState by appViewModel.inputState.collectAsStateWithLifecycle()
     val locationMaster by appViewModel.locationMaster.collectAsStateWithLifecycle()
+    val isNetworkConnected by appViewModel.isNetworkConnected.collectAsStateWithLifecycle()
     val scope = rememberCoroutineScope()
 
     Layout(
@@ -101,8 +103,9 @@ fun LocationChangeScreen(
                         )
                         result.exceptionOrNull()?.let { e ->
                             appViewModel.onGeneralIntent(
-                                ShareIntent.ShowErrorDialog(
-                                    MessageMapper.toMessage(StatusCode.FAILED)
+                                ShareIntent.ShowDialog(
+                                    type = DialogType.ERROR,
+                                    message = MessageMapper.toMessage(StatusCode.FAILED)
                                 )
                             )
                             return@launch
@@ -113,13 +116,35 @@ fun LocationChangeScreen(
                                 newLocation = inputState.location,
                                 rfidTagList = rfidTagList.filter { it.newFields.isChecked }
                             )
-                        appViewModel.onGeneralIntent(
-                            ShareIntent.SaveScanResult(
-                                data = csvModels,
-                                direction = CsvHistoryDirection.EXPORT,
-                                taskCode = CsvTaskType.LOCATION_CHANGE
-                            )
+                        val saveResult = appViewModel.saveScanResultToCsv(
+                            data = csvModels,
+                            direction = CsvHistoryDirection.EXPORT,
+                            taskCode = CsvTaskType.LOCATION_CHANGE,
                         )
+                        saveResult
+                            .onSuccess {
+                                // SAVE CSV success
+                                // Now check network and send SFTP
+                                if (isNetworkConnected) {
+                                    //sftp send
+                                } else {
+                                    appViewModel.onGeneralIntent(
+                                        ShareIntent.ShowDialog(
+                                            type = DialogType.SAVE_CSV_SUCCESS_FAILED_SFTP,
+                                            message = MessageMapper.toMessage(StatusCode.EXPORT_OK)
+                                        )
+                                    )
+                                }
+                            }
+                            .onFailure { throwable ->
+                                val code = StatusCode.valueOf(throwable.message!!)
+                                appViewModel.onGeneralIntent(
+                                    ShareIntent.ShowDialog(
+                                        type = DialogType.ERROR,
+                                        message = MessageMapper.toMessage(code)
+                                    )
+                                )
+                            }
                     }
                 },
             )
@@ -132,7 +157,11 @@ fun LocationChangeScreen(
                 .padding(paddingValues)
                 .padding(16.dp)
         ) {
-            Text(text = stringResource(R.string.planned_register_item_number, rfidTagList.count { it.newFields.isChecked }))
+            Text(
+                text = stringResource(
+                    R.string.planned_register_item_number,
+                    rfidTagList.count { it.newFields.isChecked })
+            )
             Spacer(modifier = Modifier.height(18.dp))
             LazyColumn(
                 modifier = Modifier
@@ -148,8 +177,10 @@ fun LocationChangeScreen(
                         scanResult = rfidTagList.filter { it.newFields.isChecked }.map { tag ->
                             ScanResultRowModel(
                                 itemName = rfidTagList.find { it.epc == tag.epc }?.epc ?: "-",
-                                itemCode = rfidTagList.find { it.epc == tag.epc }?.newFields?.itemCode ?: "-",
-                                lastColumn = rfidTagList.find { it.epc == tag.epc }?.newFields?.location ?: "-",
+                                itemCode = rfidTagList.find { it.epc == tag.epc }?.newFields?.itemCode
+                                    ?: "-",
+                                lastColumn = rfidTagList.find { it.epc == tag.epc }?.newFields?.location
+                                    ?: "-",
                             )
                         },
                     )

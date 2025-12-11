@@ -1,7 +1,9 @@
 package com.example.sol_denka_stockmanagement.database.repository.inventory
 
 import android.os.Build
+import android.util.Log
 import androidx.room.withTransaction
+import com.example.sol_denka_stockmanagement.constant.InventoryResultType
 import com.example.sol_denka_stockmanagement.constant.generateIso8601JstTimestamp
 import com.example.sol_denka_stockmanagement.database.AppDatabase
 import com.example.sol_denka_stockmanagement.database.repository.location.LocationMasterRepository
@@ -36,6 +38,7 @@ class InventoryCompleteRepository @Inject constructor(
                 executedAt = generateIso8601JstTimestamp(),
             )
         )
+
         tagList.forEach { tag ->
             val ledgerId = tagMasterRepository.getLedgerIdByEpc(tag.epc)
             val inventoryResultTypeId =

@@ -40,7 +40,7 @@ object MessageMapper {
             StatusCode.PROCESS_NOT_CHOSEN -> "チェック済みのタグに処理方法を選択してください。"
 
             StatusCode.IMPORT_OK -> "取り込み成功しました。"
-            StatusCode.EXPORT_OK -> "CSVファイルの出力、\nWindowsアプリへの送信に成功しました。"
+            StatusCode.EXPORT_OK -> "CSV ファイルの保存は正常に完了しましたが、\n送信処理でエラーが発生しました。再度送信をお試しください。"
         }
     }
 }
