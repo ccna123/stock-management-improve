@@ -62,7 +62,7 @@ data class InboundEventEntity(
     @ColumnInfo(name = "length") val length: Int?,
     @ColumnInfo(name = "quantity") val quantity: Int?,
     @ColumnInfo(name = "winder_info") val winderInfo: String?,
-    @ColumnInfo(name = "missRoll_reason") val missRollReason: String?,
+    @ColumnInfo(name = "occurrence_reason") val occurrenceReason: String?,
     @ColumnInfo(name = "memo") val memo: String?,
     @ColumnInfo(name = "occurred_at") val occurredAt: String,
     @ColumnInfo(name = "registered_at") val registeredAt: String,
