@@ -16,7 +16,7 @@ data class InboundEventModel(
     val length: Int?,
     val quantity: Int?,
     val winderInfo: String?,
-    val missRollReason: String?,
+    val occurrenceReason: String?,
     val memo: String?,
     val occurredAt: String,
     val registeredAt: String,
@@ -36,7 +36,7 @@ fun InboundEventEntity.toModel() = InboundEventModel(
     length = length,
     quantity = quantity,
     winderInfo = winderInfo,
-    missRollReason = missRollReason,
+    occurrenceReason = missRollReason,
     memo = memo,
     occurredAt = occurredAt,
     registeredAt = registeredAt
@@ -56,7 +56,7 @@ fun InboundEventModel.toEntity() = InboundEventEntity(
     length = length,
     quantity = quantity,
     winderInfo = winderInfo,
-    missRollReason = missRollReason,
+    missRollReason = occurrenceReason,
     memo = memo,
     occurredAt = occurredAt,
     registeredAt = registeredAt

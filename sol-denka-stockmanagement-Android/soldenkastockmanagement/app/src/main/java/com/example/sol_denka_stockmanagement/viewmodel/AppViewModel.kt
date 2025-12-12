@@ -230,7 +230,7 @@ class AppViewModel @Inject constructor(
                 _inputState.update { it.copy(memo = intent.value) }
 
             is InputIntent.ChangeMissRollReason ->
-                _inputState.update { it.copy(missRollReason = intent.value) }
+                _inputState.update { it.copy(occurrenceReason = intent.value) }
 
             is InputIntent.ChangeGrade ->
                 _inputState.update { it.copy(grade = intent.value) }
@@ -250,8 +250,8 @@ class AppViewModel @Inject constructor(
             is InputIntent.ChangeLotNo ->
                 _inputState.update { it.copy(lotNo = intent.value) }
 
-            is InputIntent.ChangePackingStyle ->
-                _inputState.update { it.copy(packingStyle = intent.value) }
+            is InputIntent.ChangePackingType ->
+                _inputState.update { it.copy(packingType = intent.value) }
 
             is InputIntent.ChangeFileTransferMethod ->
                 _inputState.update { it.copy(fileTransferMethod = intent.value) }
@@ -271,10 +271,26 @@ class AppViewModel @Inject constructor(
             is InputIntent.ChangeOccurredAtDate -> _inputState.update { it.copy(occurredAtDate = intent.value) }
 
 
-            is InputIntent.ChangeCategory -> _inputState.update { it.copy(category = intent.value) }
+            is InputIntent.ChangeCategory -> {
+                if (intent.categoryId == 0) {
+                    _searchResults.value = emptyList()
+                    _inputState.update { it.copy(category = "", itemInCategory = "") }
+                    _inboundInputFormResults.value = emptyList()
+                    return
+                }
+                _inputState.update { it.copy(category = intent.value, itemInCategory = "") }
+                _inboundInputFormResults.value = emptyList()
+                resetInboundInputForm()
+                viewModelScope.launch {
+                    val result = itemTypeRepository.getItemTypeByCategoryId(intent.categoryId)
+                    _searchResults.value = result
+                }
+            }
+
             is InputIntent.ChangeOccurredAtTime -> _inputState.update { it.copy(occurredAtTime = intent.value) }
-            is InputIntent.ChangeItem -> {
-                _inputState.update { it.copy(item = intent.itemName) }
+            is InputIntent.ChangeItemInCategory -> {
+                _inputState.update { it.copy(itemInCategory = intent.itemName) }
+                resetInboundInputForm()
                 viewModelScope.launch {
                     val result =
                         itemTypeFieldSettingMasterRepository.getFieldForItemTypeByItemTypeId(intent.itemId)
@@ -285,7 +301,7 @@ class AppViewModel @Inject constructor(
                 }
             }
 
-            is InputIntent.SearchKeyWord -> _inputState.update { it.copy(item = intent.itemName) }
+            is InputIntent.SearchKeyWord -> _inputState.update { it.copy(itemInCategory = intent.itemName) }
             is InputIntent.ChangeSpecificGravity -> _inputState.update { it.copy(specificGravity = intent.value) }
             is InputIntent.ChangeWidth -> _inputState.update { it.copy(width = intent.value) }
         }
@@ -396,6 +412,7 @@ class AppViewModel @Inject constructor(
                     }
                 }
             }
+
             is ShareIntent.ToggleDatePicker -> _generalState.update { it.copy(showDatePicker = intent.showDatePicker) }
             is ShareIntent.MarkOutboundProcessError -> {
                 _outboundProcessErrorSet.value = intent.epcs.toSet()
@@ -405,12 +422,20 @@ class AppViewModel @Inject constructor(
             is ShareIntent.SelectChipIndex -> _generalState.update { it.copy(selectedChipIndex = intent.index) }
             is ShareIntent.FindItemNameByKeyWord -> {
                 viewModelScope.launch {
-                    if (intent.keyword.isBlank()) {
-                        _searchResults.value = emptyList()
-                        return@launch
+                    val keyword = intent.keyword.trim()
+
+                    // case: keyword empty ⇒ reload full list from DB
+                    if (keyword.isBlank()) {
+                        val categoryId = itemCategoryRepository.getIdByName(intent.categoryName)
+                        val fullList =
+                            itemTypeRepository.getItemTypeByCategoryId(categoryId)
+                        _searchResults.value = fullList
                     }
-                    val result = itemTypeRepository.findByName(intent.keyword)
-                    _searchResults.value = result ?: emptyList()
+
+                    // case: progressive filtering on the current list
+                    _searchResults.value = _searchResults.value.filter {
+                        it.itemTypeName.contains(keyword, ignoreCase = true)
+                    }
                 }
             }
         }
@@ -511,6 +536,26 @@ class AppViewModel @Inject constructor(
 
             is ProcessResult.Failure ->
                 Result.failure(Exception(saveCsvResult.statusCode.name))
+        }
+    }
+
+    private fun resetInboundInputForm(){
+        _inputState.update {
+            it.copy(
+                width = "",
+                specificGravity = "",
+                length = "",
+                thickness = "",
+                grade = "",
+                winderInfo = "",
+                memo = "",
+                location = "",
+                processMethod = "",
+                weight = "",
+                lotNo = "",
+                packingType = "",
+                occurrenceReason = ""
+            )
         }
     }
 }

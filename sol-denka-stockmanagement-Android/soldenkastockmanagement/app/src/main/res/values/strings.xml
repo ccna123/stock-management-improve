@@ -114,8 +114,8 @@
     <string name="width_hint">巾入力</string>
     <string name="specific_gravity">比重</string>
     <string name="specific_gravity_hint">比重入力</string>
-    <string name="missRollReason">ミスロールになった理由</string>
-    <string name="missRollReason_hint">ミスロールになった理由入力</string>
+    <string name="occurrenceReason">発生理由</string>
+    <string name="occurrenceReason_hint">発生理由入力</string>
 
     <!-- 設定画面 -->
     <string name="setting_basic_title">基本設定</string>

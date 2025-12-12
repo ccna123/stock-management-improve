@@ -65,6 +65,8 @@ class ItemCategoryRepository @Inject constructor(
     fun get(): Flow<List<ItemCategoryModel>> =
         dao.get().map { list -> list.map { it.toModel() } }
 
+    suspend fun getIdByName(name: String): Int = dao.getIdByName(name).toInt()
+
     suspend fun insert(model: ItemCategoryModel) = dao.insert(model.toEntity())
     suspend fun insertAll(model: List<ItemCategoryModel>) = dao.insertAll(model.map { it.toEntity() })
     suspend fun update(model: ItemCategoryModel) = dao.update(model.toEntity())

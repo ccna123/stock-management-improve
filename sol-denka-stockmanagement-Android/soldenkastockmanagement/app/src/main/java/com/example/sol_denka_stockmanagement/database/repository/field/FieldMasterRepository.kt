@@ -62,7 +62,7 @@ class FieldMasterRepository @Inject constructor(
         ),
         FieldMasterModel(
             fieldId = 8,
-            fieldName = "ミスロールになった理由",
+            fieldName = "発生理由",
             dataType = DataType.TEXT,
             controlType = ControlType.INPUT
         ),

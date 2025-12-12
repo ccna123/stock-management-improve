@@ -29,7 +29,7 @@ class InboundViewModel @Inject constructor(
         length: String,
         quantity: String,
         winderInfo: String,
-        missRollReason: String,
+        occurrenceReason: String,
         rfidTag: TagMasterModel?
     ): List<InboundResultCsvModel> =
         withContext(Dispatchers.IO) {
@@ -50,7 +50,7 @@ class InboundViewModel @Inject constructor(
                 length = length,
                 quantity = quantity,
                 winderInfo = winderInfo,
-                missRollReason = missRollReason,
+                occurrenceReason = occurrenceReason,
                 occurredAt = generateIso8601JstTimestamp(),
                 registeredAt = generateIso8601JstTimestamp()
             )
@@ -67,7 +67,7 @@ class InboundViewModel @Inject constructor(
         length: String,
         quantity: String,
         winderInfo: String,
-        missRollReason: String,
+        occurrenceReason: String,
         memo: String,
         rfidTag: TagMasterModel?
     ): Result<Int> {
@@ -82,7 +82,7 @@ class InboundViewModel @Inject constructor(
                 length = length,
                 quantity = quantity,
                 winderInfo = winderInfo,
-                missRollReason = missRollReason,
+                occurrenceReason = occurrenceReason,
                 rfidTag = rfidTag,
             )
             Result.success(sessionId)

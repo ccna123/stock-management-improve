@@ -19,9 +19,13 @@ class ItemTypeRepository @Inject constructor(
         dao.get().map { list -> list.map { it.toModel() } }
 
     suspend fun findByName(keyword: String) = dao.findByName(keyword)?.map { it.toModel() }
+    suspend fun getItemTypeByCategoryId(categoryId: Int) =
+        dao.getItemTypeByCategoryId(categoryId).map { it.toModel() }
 
     suspend fun insert(model: ItemTypeMasterModel) = dao.insert(model.toEntity())
-    suspend fun insertAll(model: List<ItemTypeMasterModel>) = dao.insertAll(model.map { it.toEntity() })
+    suspend fun insertAll(model: List<ItemTypeMasterModel>) =
+        dao.insertAll(model.map { it.toEntity() })
+
     suspend fun update(model: ItemTypeMasterModel) = dao.update(model.toEntity())
     suspend fun delete(model: ItemTypeMasterModel) = dao.delete(model.toEntity())
 }

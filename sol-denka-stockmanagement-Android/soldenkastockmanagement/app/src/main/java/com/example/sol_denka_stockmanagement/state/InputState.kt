@@ -9,7 +9,7 @@ data class InputState(
     val thickness: String = "",
     val grade: String = "",
     val length: String = "",
-    val item: String = "",
+    val itemInCategory: String = "",
     val memo: String = "",
     val category: String = "",
     val materialSelectedItem: String = MaterialSelectionItem.MISS_ROLL.displayName,
@@ -19,9 +19,9 @@ data class InputState(
     val lotNo: String = "",
     val occurredAtDate: String = "",
     val occurredAtTime: String = "",
-    val packingStyle: String = "",
+    val packingType: String = "",
     val width: String = "",
-    val missRollReason: String = "",
+    val occurrenceReason: String = "",
     val specificGravity: String = "",
     var fileTransferMethod: String = FileTransferMethod.WIFI.displayName
 )

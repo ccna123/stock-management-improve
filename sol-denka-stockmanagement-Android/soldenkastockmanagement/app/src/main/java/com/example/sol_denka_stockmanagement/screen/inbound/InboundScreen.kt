@@ -127,7 +127,7 @@ fun InboundScreen(
                             specificGravity = inputState.specificGravity,
                             width = inputState.width,
                             quantity = "",
-                            missRollReason = inputState.missRollReason,
+                            occurrenceReason = inputState.occurrenceReason,
                         )
                         result.exceptionOrNull()?.let { e ->
                             appViewModel.onGeneralIntent(
@@ -147,7 +147,7 @@ fun InboundScreen(
                             length = inputState.length,
                             quantity = "",
                             winderInfo = inputState.winderInfo,
-                            missRollReason = inputState.missRollReason,
+                            occurrenceReason = inputState.occurrenceReason,
                             rfidTag = rfidTagList.find { it.epc == lastInboundEpc },
                         )
                         val saveResult = appViewModel.saveScanResultToCsv(
@@ -230,7 +230,8 @@ fun InboundScreen(
                             onChange = { newValue ->
                                 appViewModel.onInputIntent(
                                     InputIntent.ChangeCategory(
-                                        newValue
+                                        categoryId = 0,
+                                        value = newValue
                                     )
                                 )
                             },
@@ -244,10 +245,15 @@ fun InboundScreen(
                             onDismissRequest = { appViewModel.onExpandIntent(ExpandIntent.ToggleCategoryExpanded) }
                         ) {
                             DropdownMenuItem(
-                                text = { Text(text = SelectTitle.SelectLocation.displayName) },
+                                text = { Text(text = SelectTitle.SelectCategory.displayName) },
                                 onClick = {
                                     appViewModel.apply {
-                                        onInputIntent(InputIntent.ChangeCategory(""))
+                                        onInputIntent(
+                                            InputIntent.ChangeCategory(
+                                                categoryId = 0,
+                                                value = ""
+                                            )
+                                        )
                                         onExpandIntent(ExpandIntent.ToggleCategoryExpanded)
                                     }
                                 }
@@ -259,7 +265,8 @@ fun InboundScreen(
                                         appViewModel.apply {
                                             onInputIntent(
                                                 InputIntent.ChangeCategory(
-                                                    if (category.itemCategoryName == SelectTitle.SelectCategory.displayName) "" else category.itemCategoryName
+                                                    categoryId = category.itemCategoryId,
+                                                    value = category.itemCategoryName
                                                 )
                                             )
                                             onExpandIntent(ExpandIntent.ToggleCategoryExpanded)
@@ -276,7 +283,8 @@ fun InboundScreen(
                             .heightIn(min = 56.dp, max = 300.dp)
                     ) {
                         ItemSearchBar(
-                            keyword = inputState.item,
+                            enable = inputState.category.isNotBlank(),
+                            keyword = inputState.itemInCategory,
                             results = searchResults,
                             onKeywordChange = { itemName ->
                                 appViewModel.onInputIntent(
@@ -286,13 +294,14 @@ fun InboundScreen(
                                 )
                                 appViewModel.onGeneralIntent(
                                     ShareIntent.FindItemNameByKeyWord(
-                                        itemName
+                                        categoryName = inputState.category,
+                                        keyword = itemName
                                     )
                                 )
                             },
                             onSelectItem = { itemName, itemId ->
                                 appViewModel.onInputIntent(
-                                    InputIntent.ChangeItem(
+                                    InputIntent.ChangeItemInCategory(
                                         itemName = itemName,
                                         itemId = itemId
                                     )
@@ -327,7 +336,7 @@ fun InboundScreen(
                                                 "巾" -> inputState.width
                                                 "比重" -> inputState.specificGravity
                                                 "巻き取り機情報" -> inputState.winderInfo
-                                                "ミスロールになった理由" -> inputState.missRollReason
+                                                "発生理由" -> inputState.occurrenceReason
                                                 "備考" -> inputState.memo
                                                 "Lot No" -> inputState.lotNo
                                                 else -> ""
@@ -339,7 +348,7 @@ fun InboundScreen(
                                                 "巾" -> stringResource(R.string.width)
                                                 "比重" -> stringResource(R.string.specific_gravity)
                                                 "巻き取り機情報" -> stringResource(R.string.winderInfo)
-                                                "ミスロールになった理由" -> stringResource(R.string.missRollReason)
+                                                "発生理由" -> stringResource(R.string.occurrenceReason)
                                                 "備考" -> stringResource(R.string.memo)
                                                 "Lot No" -> stringResource(R.string.lot_no)
                                                 else -> ""
@@ -351,7 +360,7 @@ fun InboundScreen(
                                                 "巾" -> stringResource(R.string.width_hint)
                                                 "比重" -> stringResource(R.string.specific_gravity_hint)
                                                 "巻き取り機情報" -> stringResource(R.string.winderInfo_hint)
-                                                "ミスロールになった理由" -> stringResource(R.string.missRollReason_hint)
+                                                "発生理由" -> stringResource(R.string.occurrenceReason)
                                                 "備考" -> stringResource(R.string.memo_hint)
                                                 "Lot No" -> stringResource(R.string.lot_no_hint)
                                                 else -> ""
@@ -401,7 +410,7 @@ fun InboundScreen(
                                                         InputIntent.ChangeWinderInfo(newValue)
                                                     )
 
-                                                    "ミスロールになった理由" -> appViewModel.onInputIntent(
+                                                    "発生理由" -> appViewModel.onInputIntent(
                                                         InputIntent.ChangeMissRollReason(newValue)
                                                     )
 
@@ -457,7 +466,7 @@ fun InboundScreen(
                                                     .fillMaxWidth(),
                                                 value = when (result.fieldName) {
                                                     "保管場所" -> if (inputState.location == SelectTitle.SelectLocation.displayName) "" else inputState.location
-                                                    "荷姿" -> if (inputState.packingStyle == SelectTitle.SelectPackingStyle.displayName) "" else inputState.packingStyle
+                                                    "荷姿" -> if (inputState.packingType == SelectTitle.SelectPackingStyle.displayName) "" else inputState.packingType
                                                     else -> ""
                                                 },
                                                 hintText = when (result.fieldName) {
@@ -473,7 +482,7 @@ fun InboundScreen(
                                                         )
 
                                                         "荷姿" -> appViewModel.onInputIntent(
-                                                            InputIntent.ChangePackingStyle(
+                                                            InputIntent.ChangePackingType(
                                                                 newValue
                                                             )
                                                         )
@@ -532,7 +541,7 @@ fun InboundScreen(
                                                             "荷姿" -> {
                                                                 appViewModel.apply {
                                                                     onInputIntent(
-                                                                        InputIntent.ChangePackingStyle(
+                                                                        InputIntent.ChangePackingType(
                                                                             ""
                                                                         )
                                                                     )
@@ -582,8 +591,8 @@ fun InboundScreen(
                                                                 onClick = {
                                                                     appViewModel.apply {
                                                                         onInputIntent(
-                                                                            InputIntent.ChangePackingStyle(
-                                                                                if (inputState.packingStyle == SelectTitle.SelectPackingStyle.displayName) "" else packingStyle
+                                                                            InputIntent.ChangePackingType(
+                                                                                if (inputState.packingType == SelectTitle.SelectPackingStyle.displayName) "" else packingStyle
                                                                             )
                                                                         )
                                                                         onExpandIntent(ExpandIntent.TogglePackingStyleExpanded)

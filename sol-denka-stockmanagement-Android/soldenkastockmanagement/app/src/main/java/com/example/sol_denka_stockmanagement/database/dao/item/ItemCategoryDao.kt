@@ -16,6 +16,9 @@ interface ItemCategoryDao: IDao<ItemCategoryEntity> {
     @Query("SELECT * FROM ItemCategoryMaster")
     override fun get(): Flow<List<ItemCategoryEntity>>
 
+    @Query("SELECT item_category_id FROM ItemCategoryMaster WHERE item_category_name = :name")
+    suspend fun getIdByName(name: String): Long
+
     @Insert(onConflict = REPLACE)
     override suspend fun insert(e: ItemCategoryEntity): Long
 

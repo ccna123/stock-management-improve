@@ -30,4 +30,12 @@ interface ItemTypeDao: IDao<ItemTypeMasterEntity> {
 
     @Query("SELECT * FROM ItemTypeMaster WHERE item_type_name LIKE '%' || :keyword || '%'")
     suspend fun findByName(keyword: String): List<ItemTypeMasterEntity>?
+
+    @Query("""
+        SELECT *
+        FROM itemtypemaster type
+        LEFT JOIN itemcategorymaster category ON type.item_category_id = category.item_category_id
+        WHERE (:categoryId = 0 OR category.item_category_id = :categoryId)
+    """)
+    suspend fun getItemTypeByCategoryId(categoryId: Int): List<ItemTypeMasterEntity>
 }

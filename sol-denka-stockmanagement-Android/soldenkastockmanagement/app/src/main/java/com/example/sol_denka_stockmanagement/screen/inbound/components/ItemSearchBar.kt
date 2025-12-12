@@ -33,6 +33,7 @@ import com.example.sol_denka_stockmanagement.ui.theme.brightAzure
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ItemSearchBar(
+    enable: Boolean,
     keyword: String,
     onKeywordChange: (String) -> Unit,
     results: List<ItemTypeMasterModel>,
@@ -52,14 +53,15 @@ fun ItemSearchBar(
     SearchBar(
         inputField = {
             SearchBarDefaults.InputField(
+                enabled = enable,
                 query = keyword,
                 onQueryChange = {
                     onKeywordChange(it)
                     active = true
                 },
                 onSearch = { active = true },
-                expanded = active,
-                onExpandedChange = { active = it },
+                expanded = if (enable) active else false,
+                onExpandedChange = { if (enable) active = it },
                 placeholder = {
                     Text(
                         text = stringResource(R.string.item_hint),
@@ -70,7 +72,8 @@ fun ItemSearchBar(
                     Icon(
                         imageVector = if (active) Icons.Default.ArrowDropUp else Icons.Default.ArrowDropDown,
                         contentDescription = null,
-                        modifier = Modifier.clickable { active = !active }
+                        modifier = Modifier
+                            .then(if (enable) Modifier.clickable { active = !active } else Modifier)
                     )
                 },
                 leadingIcon = {
@@ -85,7 +88,7 @@ fun ItemSearchBar(
         expanded = active,
         onExpandedChange = { active = it },
         modifier = Modifier
-            .border(1.dp, color = brightAzure, shape = RoundedCornerShape(12.dp))
+            .border(1.dp, color = if (enable) brightAzure else Color.LightGray, shape = RoundedCornerShape(12.dp))
             .fillMaxWidth(),
         shape = SearchBarDefaults.inputFieldShape,
         colors = colors1,

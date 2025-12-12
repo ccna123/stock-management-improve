@@ -32,7 +32,7 @@ class InboundRepository @Inject constructor(
         length: String,
         quantity: String,
         winderInfo: String,
-        missRollReason: String,
+        occurrenceReason: String,
         memo: String,
         rfidTag: TagMasterModel?
     ): Int = db.withTransaction {
@@ -60,7 +60,7 @@ class InboundRepository @Inject constructor(
                     length = length.takeIf { it.isNotBlank() }?.toInt() ?: 0,
                     quantity = 0,
                     winderInfo = winderInfo,
-                    missRollReason = missRollReason,
+                    occurrenceReason = occurrenceReason,
                     memo = memo,
                     occurredAt = generateIso8601JstTimestamp(),
                     registeredAt = generateIso8601JstTimestamp()
