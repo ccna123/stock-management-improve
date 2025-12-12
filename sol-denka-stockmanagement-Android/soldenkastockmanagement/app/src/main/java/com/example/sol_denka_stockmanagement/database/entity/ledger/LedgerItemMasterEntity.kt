@@ -43,7 +43,7 @@ data class LedgerItemEntity(
     @ColumnInfo(name = "length") val length: Int?,
     @ColumnInfo(name = "quantity") val quantity: Int?,
     @ColumnInfo(name = "winder_info") val winderInfo: String?,
-    @ColumnInfo(name = "missRoll_reason") val missRollReason: String?,
+    @ColumnInfo(name = "occurrence_reason") val occurrenceReason: String?,
     @ColumnInfo(name = "created_at") val createdAt: String,
     @ColumnInfo(name = "updated_at") val updatedAt: String,
 )

@@ -76,7 +76,7 @@ import com.example.sol_denka_stockmanagement.database.entity.process.ProcessType
         FieldMasterEntity::class,
         ItemTypeFieldSettingMasterEntity::class,
     ],
-    version = 11
+    version = 12
 )
 abstract class AppDatabase : RoomDatabase() {
 

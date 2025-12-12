@@ -15,7 +15,7 @@ data class LedgerItemModel(
     val length: Int?,
     val quantity: Int?,
     val winderInfo: String?,
-    val missRollReason: String?,
+    val occurrenceReason: String?,
     val createdAt: String,
     val updatedAt: String,
 )
@@ -33,7 +33,7 @@ fun LedgerItemEntity.toModel() = LedgerItemModel(
     length = length,
     quantity = quantity,
     winderInfo = winderInfo,
-    missRollReason = missRollReason,
+    occurrenceReason = occurrenceReason,
     createdAt = createdAt,
     updatedAt = updatedAt
 )
@@ -51,7 +51,7 @@ fun LedgerItemModel.toEntity() = LedgerItemEntity(
     length = length,
     quantity = quantity,
     winderInfo = winderInfo,
-    missRollReason = missRollReason,
+    occurrenceReason = occurrenceReason,
     createdAt = createdAt,
     updatedAt = updatedAt
 )
