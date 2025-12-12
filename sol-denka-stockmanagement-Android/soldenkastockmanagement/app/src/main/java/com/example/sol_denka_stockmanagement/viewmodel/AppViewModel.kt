@@ -35,6 +35,7 @@ import com.example.sol_denka_stockmanagement.intent.InputIntent
 import com.example.sol_denka_stockmanagement.intent.ShareIntent
 import com.example.sol_denka_stockmanagement.model.csv.CsvHistoryModel
 import com.example.sol_denka_stockmanagement.model.inbound.InboundInputFormModel
+import com.example.sol_denka_stockmanagement.model.item.ItemCategoryModel
 import com.example.sol_denka_stockmanagement.model.item.ItemTypeMasterModel
 import com.example.sol_denka_stockmanagement.model.location.LocationMasterModel
 import com.example.sol_denka_stockmanagement.model.reader.ReaderInfoModel
@@ -120,6 +121,9 @@ class AppViewModel @Inject constructor(
     private val _locationMaster = MutableStateFlow<List<LocationMasterModel>>(emptyList())
     val locationMaster = _locationMaster.asStateFlow()
 
+    private val _itemCategoryMaster = MutableStateFlow<List<ItemCategoryModel>>(emptyList())
+    val itemCategoryMaster = _itemCategoryMaster.asStateFlow()
+
     private val _outboundProcessErrorSet = MutableStateFlow<Set<String>>(emptySet())
     val outboundProcessErrorSet = _outboundProcessErrorSet.asStateFlow()
 
@@ -169,6 +173,12 @@ class AppViewModel @Inject constructor(
         viewModelScope.launch {
             locationMasterRepository.get().collect { locations ->
                 _locationMaster.value = locations
+            }
+        }
+
+        viewModelScope.launch {
+            itemCategoryRepository.get().collect { categories ->
+                _itemCategoryMaster.value = categories
             }
         }
 

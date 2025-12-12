@@ -2,13 +2,10 @@ package com.example.sol_denka_stockmanagement.screen.inbound
 
 import android.os.Build
 import androidx.annotation.RequiresApi
-import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -20,13 +17,10 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuAnchorType
 import androidx.compose.material3.ExposedDropdownMenuBox
-import androidx.compose.material3.FilterChip
-import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -43,7 +37,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.sol_denka_stockmanagement.R
-import com.example.sol_denka_stockmanagement.constant.Category
 import com.example.sol_denka_stockmanagement.constant.ControlType
 import com.example.sol_denka_stockmanagement.constant.CsvHistoryDirection
 import com.example.sol_denka_stockmanagement.constant.CsvTaskType
@@ -61,8 +54,6 @@ import com.example.sol_denka_stockmanagement.screen.inbound.components.ItemSearc
 import com.example.sol_denka_stockmanagement.screen.layout.Layout
 import com.example.sol_denka_stockmanagement.share.ButtonContainer
 import com.example.sol_denka_stockmanagement.share.InputFieldContainer
-import com.example.sol_denka_stockmanagement.ui.theme.brightAzure
-import com.example.sol_denka_stockmanagement.ui.theme.brightGreenSecondary
 import com.example.sol_denka_stockmanagement.ui.theme.paleSkyBlue
 import com.example.sol_denka_stockmanagement.viewmodel.AppViewModel
 import com.example.sol_denka_stockmanagement.viewmodel.ScanViewModel
@@ -80,13 +71,13 @@ fun InboundScreen(
 ) {
 
     val inputState by appViewModel.inputState.collectAsStateWithLifecycle()
-    val generalState by appViewModel.generalState.collectAsStateWithLifecycle()
     val expandState by appViewModel.expandState.collectAsStateWithLifecycle()
     val searchResults by appViewModel.searchResults.collectAsStateWithLifecycle()
     val inboundInputFormResults by appViewModel.inboundInputFormResults.collectAsStateWithLifecycle()
     val lastInboundEpc by scanViewModel.lastInboundEpc.collectAsStateWithLifecycle()
     val rfidTagList by scanViewModel.rfidTagList.collectAsStateWithLifecycle()
     val locationMaster by appViewModel.locationMaster.collectAsStateWithLifecycle()
+    val itemCategoryMaster by appViewModel.itemCategoryMaster.collectAsStateWithLifecycle()
     val isNetworkConnected by appViewModel.isNetworkConnected.collectAsStateWithLifecycle()
 
     val scope = rememberCoroutineScope()
@@ -196,431 +187,420 @@ fun InboundScreen(
         onBackArrowClick = {
             onGoBack()
         }) { paddingValues ->
-        LazyColumn(
+        Column(
             modifier = Modifier
                 .padding(paddingValues)
                 .imePadding()
                 .padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            item {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .shadow(
-                            elevation = 3.dp,
-                            shape = RoundedCornerShape(12.dp),
-                            clip = false, // 👈 allow the shadow to bleed outside the box
-                        )
-                        .border(1.dp, color = paleSkyBlue, shape = RoundedCornerShape(12.dp))
-                        .background(Color.White, RoundedCornerShape(12.dp))
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .shadow(
+                        elevation = 3.dp,
+                        shape = RoundedCornerShape(12.dp),
+                        clip = false, // 👈 allow the shadow to bleed outside the box
+                    )
+                    .border(1.dp, color = paleSkyBlue, shape = RoundedCornerShape(12.dp))
+                    .background(Color.White, RoundedCornerShape(12.dp))
+            ) {
+                Column(
+                    modifier = Modifier.padding(10.dp),
                 ) {
-                    Column(
-                        modifier = Modifier.padding(10.dp),
-                    ) {
-                        Text(
-                            text = stringResource(
-                                R.string.item_code, lastInboundEpc ?: ""
-                            )
+                    Text(
+                        text = stringResource(
+                            R.string.item_code, lastInboundEpc ?: ""
                         )
-                        Spacer(modifier = Modifier.height(10.dp))
-                        Row(
+                    )
+                    Spacer(modifier = Modifier.height(10.dp))
+                    ExposedDropdownMenuBox(
+                        expanded = expandState.categoryExpanded,
+                        onExpandedChange = { appViewModel.onExpandIntent(ExpandIntent.ToggleCategoryExpanded) }) {
+                        InputFieldContainer(
                             modifier = Modifier
+                                .menuAnchor(
+                                    type = ExposedDropdownMenuAnchorType.PrimaryNotEditable,
+                                    enabled = true
+                                )
                                 .fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceEvenly
-                        ) {
-                            listOf(
-                                Category.SUB_MATERIAL.displayName,
-                                Category.SUB_RAW_MATERIAL.displayName,
-                                Category.NON_STANDARD_ITEM.displayName,
-                            ).forEachIndexed { index, category ->
-
-                                val isSelected = index == generalState.selectedChipIndex
-
-                                // --- ANIMATION COLORS ---
-                                val bgColor by animateColorAsState(
-                                    targetValue = if (isSelected) brightGreenSecondary else Color.White,
-                                    label = "chip-bg"
-                                )
-                                val labelColor by animateColorAsState(
-                                    targetValue = if (isSelected) Color.White else Color.Black,
-                                    label = "chip-label"
-                                )
-                                val iconTint by animateColorAsState(
-                                    targetValue = if (isSelected) Color.White else Color.Black,
-                                    label = "chip-icon"
-                                )
-                                val borderColor by animateColorAsState(
-                                    targetValue = if (isSelected) Color.Transparent else brightAzure,
-                                    label = "chip-border"
-                                )
-
-                                FilterChip(
-                                    selected = isSelected,
-                                    onClick = {
-                                        appViewModel.onGeneralIntent(
-                                            ShareIntent.SelectChipIndex(
-                                                index
-                                            )
-                                        )
-                                    },
-                                    label = { Text(text = category, color = labelColor) },
-                                    leadingIcon = {
-                                        if (isSelected) {
-                                            Icon(
-                                                imageVector = Icons.Default.Check,
-                                                contentDescription = null,
-                                                tint = iconTint,
-                                            )
-                                        }
-                                    },
-                                    enabled = true,
-                                    colors = FilterChipDefaults.filterChipColors(
-                                        containerColor = bgColor,
-                                        disabledContainerColor = bgColor,
-                                        labelColor = labelColor,
-                                        iconColor = iconTint,
-                                        selectedContainerColor = bgColor,
-                                        selectedLabelColor = labelColor,
-                                        selectedLeadingIconColor = iconTint,
-                                    ),
-                                    border = FilterChipDefaults.filterChipBorder(
-                                        borderColor = borderColor,
-                                        borderWidth = 1.dp,
-                                        enabled = true,
-                                        selected = isSelected
+                            value = if (inputState.category == SelectTitle.SelectCategory.displayName) "" else inputState.category,
+                            hintText = SelectTitle.SelectCategory.displayName,
+                            isNumeric = false,
+                            onChange = { newValue ->
+                                appViewModel.onInputIntent(
+                                    InputIntent.ChangeCategory(
+                                        newValue
                                     )
+                                )
+                            },
+                            readOnly = true,
+                            isDropDown = true,
+                            enable = true,
+                            onEnterPressed = {}
+                        )
+                        ExposedDropdownMenu(
+                            expanded = expandState.categoryExpanded,
+                            onDismissRequest = { appViewModel.onExpandIntent(ExpandIntent.ToggleCategoryExpanded) }
+                        ) {
+                            DropdownMenuItem(
+                                text = { Text(text = SelectTitle.SelectLocation.displayName) },
+                                onClick = {
+                                    appViewModel.apply {
+                                        onInputIntent(InputIntent.ChangeCategory(""))
+                                        onExpandIntent(ExpandIntent.ToggleCategoryExpanded)
+                                    }
+                                }
+                            )
+                            itemCategoryMaster.forEach { category ->
+                                DropdownMenuItem(
+                                    text = { Text(text = category.itemCategoryName) },
+                                    onClick = {
+                                        appViewModel.apply {
+                                            onInputIntent(
+                                                InputIntent.ChangeCategory(
+                                                    if (category.itemCategoryName == SelectTitle.SelectCategory.displayName) "" else category.itemCategoryName
+                                                )
+                                            )
+                                            onExpandIntent(ExpandIntent.ToggleCategoryExpanded)
+                                        }
+                                    }
                                 )
                             }
                         }
-                        Spacer(modifier = Modifier.height(10.dp))
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .heightIn(min = 56.dp, max = 300.dp)
-                        ) {
-                            ItemSearchBar(
-                                keyword = inputState.item,
-                                results = searchResults,
-                                onKeywordChange = { itemName ->
-                                    appViewModel.onInputIntent(
-                                        InputIntent.SearchKeyWord(
-                                            itemName = itemName,
-                                        )
-                                    )
-                                    appViewModel.onGeneralIntent(
-                                        ShareIntent.FindItemNameByKeyWord(
-                                            itemName
-                                        )
-                                    )
-                                },
-                                onSelectItem = { itemName, itemId ->
-                                    appViewModel.onInputIntent(
-                                        InputIntent.ChangeItem(
-                                            itemName = itemName,
-                                            itemId = itemId
-                                        )
-                                    )
-                                }
-                            )
-                        }
-                        Spacer(modifier = Modifier.height(10.dp))
                     }
-                }
-                Spacer(modifier = Modifier.height(20.dp))
-                inboundInputFormResults
-                    .sortedWith(compareBy {
-                        if (it.fieldName == "備考") 1 else 0
-                    })
-                    .forEach { result ->
-                        if (result.isVisible) {
-
-                            when (result.controlType) {
-                                ControlType.INPUT -> {
-                                    InputFieldContainer(
-                                        modifier = Modifier
-                                            .height(if (result.fieldName == "備考") 200.dp else 60.dp)
-                                            .fillMaxWidth(),
-                                        value = when (result.fieldName) {
-                                            "重量" -> inputState.weight
-                                            "長さ" -> inputState.length
-                                            "厚み" -> inputState.thickness
-                                            "巾" -> inputState.width
-                                            "比重" -> inputState.specificGravity
-                                            "巻き取り機情報" -> inputState.winderInfo
-                                            "ミスロールになった理由" -> inputState.missRollReason
-                                            "備考" -> inputState.memo
-                                            "Lot No" -> inputState.lotNo
-                                            else -> ""
-                                        },
-                                        label = when (result.fieldName) {
-                                            "重量" -> stringResource(R.string.weight)
-                                            "長さ" -> stringResource(R.string.length)
-                                            "厚み" -> stringResource(R.string.thickness)
-                                            "巾" -> stringResource(R.string.width)
-                                            "比重" -> stringResource(R.string.specific_gravity)
-                                            "巻き取り機情報" -> stringResource(R.string.winderInfo)
-                                            "ミスロールになった理由" -> stringResource(R.string.missRollReason)
-                                            "備考" -> stringResource(R.string.memo)
-                                            "Lot No" -> stringResource(R.string.lot_no)
-                                            else -> ""
-                                        },
-                                        hintText = when (result.fieldName) {
-                                            "重量" -> stringResource(R.string.weight_hint)
-                                            "長さ" -> stringResource(R.string.length_hint)
-                                            "厚み" -> stringResource(R.string.thickness_hint)
-                                            "巾" -> stringResource(R.string.width_hint)
-                                            "比重" -> stringResource(R.string.specific_gravity_hint)
-                                            "巻き取り機情報" -> stringResource(R.string.winderInfo_hint)
-                                            "ミスロールになった理由" -> stringResource(R.string.missRollReason_hint)
-                                            "備考" -> stringResource(R.string.memo_hint)
-                                            "Lot No" -> stringResource(R.string.lot_no_hint)
-                                            else -> ""
-                                        },
-                                        isNumeric = when (result.dataType) {
-                                            DataType.TEXT -> false
-                                            DataType.NUMBER -> true
-                                        },
-                                        readOnly = false,
-                                        isDropDown = false,
-                                        enable = true,
-                                        isRequired = result.isRequired,
-                                        singleLine = result.fieldName != "備考",
-                                        onChange = { newValue ->
-                                            when (result.fieldName) {
-                                                "重量" -> appViewModel.onInputIntent(
-                                                    InputIntent.ChangeWeight(
-                                                        newValue
-                                                    )
-                                                )
-
-                                                "長さ" -> appViewModel.onInputIntent(
-                                                    InputIntent.ChangeLength(
-                                                        newValue
-                                                    )
-                                                )
-
-                                                "厚み" -> appViewModel.onInputIntent(
-                                                    InputIntent.ChangeThickness(
-                                                        newValue
-                                                    )
-                                                )
-
-                                                "巾" -> appViewModel.onInputIntent(
-                                                    InputIntent.ChangeWidth(
-                                                        newValue
-                                                    )
-                                                )
-
-                                                "比重" -> appViewModel.onInputIntent(
-                                                    InputIntent.ChangeSpecificGravity(
-                                                        newValue
-                                                    )
-                                                )
-
-                                                "巻き取り機情報" -> appViewModel.onInputIntent(
-                                                    InputIntent.ChangeWinderInfo(newValue)
-                                                )
-
-                                                "ミスロールになった理由" -> appViewModel.onInputIntent(
-                                                    InputIntent.ChangeMissRollReason(newValue)
-                                                )
-
-                                                "備考" -> appViewModel.onInputIntent(
-                                                    InputIntent.ChangeMemo(
-                                                        newValue
-                                                    )
-                                                )
-
-                                                "Lot No" -> appViewModel.onInputIntent(
-                                                    InputIntent.ChangeLotNo(
-                                                        newValue
-                                                    )
-                                                )
-                                            }
-                                        }
+                    Spacer(modifier = Modifier.height(10.dp))
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .heightIn(min = 56.dp, max = 300.dp)
+                    ) {
+                        ItemSearchBar(
+                            keyword = inputState.item,
+                            results = searchResults,
+                            onKeywordChange = { itemName ->
+                                appViewModel.onInputIntent(
+                                    InputIntent.SearchKeyWord(
+                                        itemName = itemName,
                                     )
-                                    Spacer(modifier = Modifier.height(15.dp))
-                                }
+                                )
+                                appViewModel.onGeneralIntent(
+                                    ShareIntent.FindItemNameByKeyWord(
+                                        itemName
+                                    )
+                                )
+                            },
+                            onSelectItem = { itemName, itemId ->
+                                appViewModel.onInputIntent(
+                                    InputIntent.ChangeItem(
+                                        itemName = itemName,
+                                        itemId = itemId
+                                    )
+                                )
+                            }
+                        )
+                    }
+                    Spacer(modifier = Modifier.height(10.dp))
+                }
+            }
+            Spacer(modifier = Modifier.height(20.dp))
+            LazyColumn {
+                item {
 
-                                ControlType.DROPDOWN -> {
-                                    ExposedDropdownMenuBox(
-                                        expanded = when (result.fieldName) {
-                                            "保管場所" -> expandState.locationExpanded
-                                            "荷姿" -> expandState.packingStyleExpanded
-                                            else -> false
-                                        },
-                                        onExpandedChange = {
-                                            when (result.fieldName) {
-                                                "保管場所" -> {
-                                                    appViewModel.onExpandIntent(
-                                                        ExpandIntent.ToggleLocationExpanded
-                                                    )
-                                                }
+                    inboundInputFormResults
+                        .sortedWith(compareBy {
+                            if (it.fieldName == "備考") 1 else 0
+                        })
+                        .forEach { result ->
+                            if (result.isVisible) {
 
-                                                "荷姿" -> {
-                                                    appViewModel.onExpandIntent(
-                                                        ExpandIntent.TogglePackingStyleExpanded
-                                                    )
-                                                }
-
-                                                else -> false
-                                            }
-
-                                        }
-                                    ) {
+                                when (result.controlType) {
+                                    ControlType.INPUT -> {
                                         InputFieldContainer(
                                             modifier = Modifier
-                                                .menuAnchor(
-                                                    type = ExposedDropdownMenuAnchorType.PrimaryNotEditable,
-                                                    enabled = true
-                                                )
+                                                .height(if (result.fieldName == "備考") 200.dp else 60.dp)
                                                 .fillMaxWidth(),
                                             value = when (result.fieldName) {
-                                                "保管場所" -> if (inputState.location == SelectTitle.SelectLocation.displayName) "" else inputState.location
-                                                "荷姿" -> if (inputState.packingStyle == SelectTitle.SelectPackingStyle.displayName) "" else inputState.packingStyle
+                                                "重量" -> inputState.weight
+                                                "長さ" -> inputState.length
+                                                "厚み" -> inputState.thickness
+                                                "巾" -> inputState.width
+                                                "比重" -> inputState.specificGravity
+                                                "巻き取り機情報" -> inputState.winderInfo
+                                                "ミスロールになった理由" -> inputState.missRollReason
+                                                "備考" -> inputState.memo
+                                                "Lot No" -> inputState.lotNo
+                                                else -> ""
+                                            },
+                                            label = when (result.fieldName) {
+                                                "重量" -> stringResource(R.string.weight)
+                                                "長さ" -> stringResource(R.string.length)
+                                                "厚み" -> stringResource(R.string.thickness)
+                                                "巾" -> stringResource(R.string.width)
+                                                "比重" -> stringResource(R.string.specific_gravity)
+                                                "巻き取り機情報" -> stringResource(R.string.winderInfo)
+                                                "ミスロールになった理由" -> stringResource(R.string.missRollReason)
+                                                "備考" -> stringResource(R.string.memo)
+                                                "Lot No" -> stringResource(R.string.lot_no)
                                                 else -> ""
                                             },
                                             hintText = when (result.fieldName) {
-                                                "保管場所" -> SelectTitle.SelectLocation.displayName
-                                                "荷姿" -> SelectTitle.SelectPackingStyle.displayName
+                                                "重量" -> stringResource(R.string.weight_hint)
+                                                "長さ" -> stringResource(R.string.length_hint)
+                                                "厚み" -> stringResource(R.string.thickness_hint)
+                                                "巾" -> stringResource(R.string.width_hint)
+                                                "比重" -> stringResource(R.string.specific_gravity_hint)
+                                                "巻き取り機情報" -> stringResource(R.string.winderInfo_hint)
+                                                "ミスロールになった理由" -> stringResource(R.string.missRollReason_hint)
+                                                "備考" -> stringResource(R.string.memo_hint)
+                                                "Lot No" -> stringResource(R.string.lot_no_hint)
                                                 else -> ""
                                             },
-                                            isNumeric = false,
+                                            isNumeric = when (result.dataType) {
+                                                DataType.TEXT -> false
+                                                DataType.NUMBER -> true
+                                            },
+                                            readOnly = false,
+                                            isDropDown = false,
+                                            enable = true,
+                                            isRequired = result.isRequired,
+                                            singleLine = result.fieldName != "備考",
                                             onChange = { newValue ->
                                                 when (result.fieldName) {
-                                                    "保管場所" -> appViewModel.onInputIntent(
-                                                        InputIntent.ChangeLocation(newValue)
-                                                    )
-
-                                                    "荷姿" -> appViewModel.onInputIntent(
-                                                        InputIntent.ChangePackingStyle(
+                                                    "重量" -> appViewModel.onInputIntent(
+                                                        InputIntent.ChangeWeight(
                                                             newValue
                                                         )
                                                     )
 
-                                                    else -> ""
+                                                    "長さ" -> appViewModel.onInputIntent(
+                                                        InputIntent.ChangeLength(
+                                                            newValue
+                                                        )
+                                                    )
+
+                                                    "厚み" -> appViewModel.onInputIntent(
+                                                        InputIntent.ChangeThickness(
+                                                            newValue
+                                                        )
+                                                    )
+
+                                                    "巾" -> appViewModel.onInputIntent(
+                                                        InputIntent.ChangeWidth(
+                                                            newValue
+                                                        )
+                                                    )
+
+                                                    "比重" -> appViewModel.onInputIntent(
+                                                        InputIntent.ChangeSpecificGravity(
+                                                            newValue
+                                                        )
+                                                    )
+
+                                                    "巻き取り機情報" -> appViewModel.onInputIntent(
+                                                        InputIntent.ChangeWinderInfo(newValue)
+                                                    )
+
+                                                    "ミスロールになった理由" -> appViewModel.onInputIntent(
+                                                        InputIntent.ChangeMissRollReason(newValue)
+                                                    )
+
+                                                    "備考" -> appViewModel.onInputIntent(
+                                                        InputIntent.ChangeMemo(
+                                                            newValue
+                                                        )
+                                                    )
+
+                                                    "Lot No" -> appViewModel.onInputIntent(
+                                                        InputIntent.ChangeLotNo(
+                                                            newValue
+                                                        )
+                                                    )
                                                 }
-                                            },
-                                            readOnly = true,
-                                            isDropDown = true,
-                                            enable = true,
-                                            onEnterPressed = {}
+                                            }
                                         )
-                                        ExposedDropdownMenu(
+                                        Spacer(modifier = Modifier.height(15.dp))
+                                    }
+
+                                    ControlType.DROPDOWN -> {
+                                        ExposedDropdownMenuBox(
                                             expanded = when (result.fieldName) {
                                                 "保管場所" -> expandState.locationExpanded
                                                 "荷姿" -> expandState.packingStyleExpanded
                                                 else -> false
                                             },
-                                            onDismissRequest = {
+                                            onExpandedChange = {
                                                 when (result.fieldName) {
-                                                    "保管場所" -> appViewModel.onExpandIntent(
-                                                        ExpandIntent.ToggleLocationExpanded
-                                                    )
+                                                    "保管場所" -> {
+                                                        appViewModel.onExpandIntent(
+                                                            ExpandIntent.ToggleLocationExpanded
+                                                        )
+                                                    }
 
-                                                    "荷姿" -> appViewModel.onExpandIntent(
-                                                        ExpandIntent.TogglePackingStyleExpanded
-                                                    )
+                                                    "荷姿" -> {
+                                                        appViewModel.onExpandIntent(
+                                                            ExpandIntent.TogglePackingStyleExpanded
+                                                        )
+                                                    }
 
-                                                    else -> ""
+                                                    else -> false
                                                 }
+
                                             }
                                         ) {
-                                            DropdownMenuItem(
-                                                text = {
-                                                    Text(
-                                                        text = when (result.fieldName) {
-                                                            "保管場所" -> SelectTitle.SelectLocation.displayName
-                                                            "荷姿" -> SelectTitle.SelectPackingStyle.displayName
-                                                            else -> ""
-                                                        }
+                                            InputFieldContainer(
+                                                modifier = Modifier
+                                                    .menuAnchor(
+                                                        type = ExposedDropdownMenuAnchorType.PrimaryNotEditable,
+                                                        enabled = true
                                                     )
+                                                    .fillMaxWidth(),
+                                                value = when (result.fieldName) {
+                                                    "保管場所" -> if (inputState.location == SelectTitle.SelectLocation.displayName) "" else inputState.location
+                                                    "荷姿" -> if (inputState.packingStyle == SelectTitle.SelectPackingStyle.displayName) "" else inputState.packingStyle
+                                                    else -> ""
                                                 },
-                                                onClick = {
+                                                hintText = when (result.fieldName) {
+                                                    "保管場所" -> SelectTitle.SelectLocation.displayName
+                                                    "荷姿" -> SelectTitle.SelectPackingStyle.displayName
+                                                    else -> ""
+                                                },
+                                                isNumeric = false,
+                                                onChange = { newValue ->
                                                     when (result.fieldName) {
-                                                        "保管場所" -> {
-                                                            appViewModel.apply {
-                                                                onInputIntent(
-                                                                    InputIntent.ChangeLocation(
-                                                                        ""
-                                                                    )
-                                                                )
-                                                                onExpandIntent(ExpandIntent.ToggleLocationExpanded)
-                                                            }
-                                                        }
+                                                        "保管場所" -> appViewModel.onInputIntent(
+                                                            InputIntent.ChangeLocation(newValue)
+                                                        )
 
-                                                        "荷姿" -> {
-                                                            appViewModel.apply {
-                                                                onInputIntent(
-                                                                    InputIntent.ChangePackingStyle(
-                                                                        ""
-                                                                    )
-                                                                )
-                                                                onExpandIntent(ExpandIntent.TogglePackingStyleExpanded)
-                                                            }
-                                                        }
+                                                        "荷姿" -> appViewModel.onInputIntent(
+                                                            InputIntent.ChangePackingStyle(
+                                                                newValue
+                                                            )
+                                                        )
+
+                                                        else -> ""
+                                                    }
+                                                },
+                                                readOnly = true,
+                                                isDropDown = true,
+                                                enable = true,
+                                                onEnterPressed = {}
+                                            )
+                                            ExposedDropdownMenu(
+                                                expanded = when (result.fieldName) {
+                                                    "保管場所" -> expandState.locationExpanded
+                                                    "荷姿" -> expandState.packingStyleExpanded
+                                                    else -> false
+                                                },
+                                                onDismissRequest = {
+                                                    when (result.fieldName) {
+                                                        "保管場所" -> appViewModel.onExpandIntent(
+                                                            ExpandIntent.ToggleLocationExpanded
+                                                        )
+
+                                                        "荷姿" -> appViewModel.onExpandIntent(
+                                                            ExpandIntent.TogglePackingStyleExpanded
+                                                        )
 
                                                         else -> ""
                                                     }
                                                 }
-                                            )
-                                            when (result.fieldName) {
-                                                "保管場所" -> {
-                                                    locationMaster.forEach { location ->
-                                                        DropdownMenuItem(
-                                                            text = {
-                                                                location.locationName?.let {
-                                                                    Text(
-                                                                        text = it
-                                                                    )
-                                                                }
-                                                            },
-                                                            onClick = {
+                                            ) {
+                                                DropdownMenuItem(
+                                                    text = {
+                                                        Text(
+                                                            text = when (result.fieldName) {
+                                                                "保管場所" -> SelectTitle.SelectLocation.displayName
+                                                                "荷姿" -> SelectTitle.SelectPackingStyle.displayName
+                                                                else -> ""
+                                                            }
+                                                        )
+                                                    },
+                                                    onClick = {
+                                                        when (result.fieldName) {
+                                                            "保管場所" -> {
                                                                 appViewModel.apply {
                                                                     onInputIntent(
                                                                         InputIntent.ChangeLocation(
-                                                                            if (location.locationName == SelectTitle.SelectLocation.displayName) "" else location.locationName
-                                                                                ?: ""
+                                                                            ""
                                                                         )
                                                                     )
                                                                     onExpandIntent(ExpandIntent.ToggleLocationExpanded)
                                                                 }
                                                             }
-                                                        )
-                                                    }
-                                                }
 
-                                                "荷姿" -> {
-                                                    listOf(
-                                                        PackingStyleItem.PAPER_BAG_25KG.displayName,
-                                                        PackingStyleItem.FLEXIBLE_CONTAINER_1T.displayName
-                                                    ).forEach { packingStyle ->
-                                                        DropdownMenuItem(
-                                                            text = {
-                                                                Text(text = packingStyle)
-                                                            },
-                                                            onClick = {
+                                                            "荷姿" -> {
                                                                 appViewModel.apply {
                                                                     onInputIntent(
                                                                         InputIntent.ChangePackingStyle(
-                                                                            if (inputState.packingStyle == SelectTitle.SelectPackingStyle.displayName) "" else packingStyle
+                                                                            ""
                                                                         )
                                                                     )
                                                                     onExpandIntent(ExpandIntent.TogglePackingStyleExpanded)
                                                                 }
                                                             }
-                                                        )
+
+                                                            else -> ""
+                                                        }
+                                                    }
+                                                )
+                                                when (result.fieldName) {
+                                                    "保管場所" -> {
+                                                        locationMaster.forEach { location ->
+                                                            DropdownMenuItem(
+                                                                text = {
+                                                                    location.locationName?.let {
+                                                                        Text(
+                                                                            text = it
+                                                                        )
+                                                                    }
+                                                                },
+                                                                onClick = {
+                                                                    appViewModel.apply {
+                                                                        onInputIntent(
+                                                                            InputIntent.ChangeLocation(
+                                                                                if (location.locationName == SelectTitle.SelectLocation.displayName) "" else location.locationName
+                                                                                    ?: ""
+                                                                            )
+                                                                        )
+                                                                        onExpandIntent(ExpandIntent.ToggleLocationExpanded)
+                                                                    }
+                                                                }
+                                                            )
+                                                        }
+                                                    }
+
+                                                    "荷姿" -> {
+                                                        listOf(
+                                                            PackingStyleItem.PAPER_BAG_25KG.displayName,
+                                                            PackingStyleItem.FLEXIBLE_CONTAINER_1T.displayName
+                                                        ).forEach { packingStyle ->
+                                                            DropdownMenuItem(
+                                                                text = {
+                                                                    Text(text = packingStyle)
+                                                                },
+                                                                onClick = {
+                                                                    appViewModel.apply {
+                                                                        onInputIntent(
+                                                                            InputIntent.ChangePackingStyle(
+                                                                                if (inputState.packingStyle == SelectTitle.SelectPackingStyle.displayName) "" else packingStyle
+                                                                            )
+                                                                        )
+                                                                        onExpandIntent(ExpandIntent.TogglePackingStyleExpanded)
+                                                                    }
+                                                                }
+                                                            )
+                                                        }
                                                     }
                                                 }
                                             }
                                         }
+                                        Spacer(modifier = Modifier.height(15.dp))
                                     }
-                                    Spacer(modifier = Modifier.height(15.dp))
                                 }
                             }
                         }
-                    }
+                }
             }
         }
     }
