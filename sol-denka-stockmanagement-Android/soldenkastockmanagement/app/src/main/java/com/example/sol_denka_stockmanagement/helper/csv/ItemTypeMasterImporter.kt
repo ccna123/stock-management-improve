@@ -23,6 +23,7 @@ class ItemTypeMasterImporter(
                     itemTypeCode = p[1],
                     itemTypeName = p[2],
                     itemUnitId = p[3].toInt(),
+                    itemCategoryId = p[4].toInt(),
                     createdAt = generateTimeStamp(),
                     updatedAt = generateTimeStamp(),
                 )

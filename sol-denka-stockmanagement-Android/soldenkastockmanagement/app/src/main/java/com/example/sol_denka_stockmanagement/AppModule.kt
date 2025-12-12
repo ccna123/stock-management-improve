@@ -16,6 +16,7 @@ import com.example.sol_denka_stockmanagement.database.dao.inbound.InboundSession
 import com.example.sol_denka_stockmanagement.database.dao.inventory.InventoryResultLocalDao
 import com.example.sol_denka_stockmanagement.database.dao.inventory.InventoryResultTypeDao
 import com.example.sol_denka_stockmanagement.database.dao.inventory.InventorySessionDao
+import com.example.sol_denka_stockmanagement.database.dao.item.ItemCategoryDao
 import com.example.sol_denka_stockmanagement.database.dao.item.ItemTypeDao
 import com.example.sol_denka_stockmanagement.database.dao.item.ItemUnitDao
 import com.example.sol_denka_stockmanagement.database.dao.leger.LedgerItemDao
@@ -196,6 +197,11 @@ object AppModule {
     @Singleton
     fun provideItemTypeFieldSettingMasterDao(database: AppDatabase): ItemTypeFieldSettingMasterDao {
         return database.itemTypeFieldSettingMasterDao()
+    }
+    @Provides
+    @Singleton
+    fun provideItemCategoryDao(database: AppDatabase): ItemCategoryDao {
+        return database.itemCategoryDao()
     }
 
 }

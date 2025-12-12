@@ -12,6 +12,7 @@ import com.example.sol_denka_stockmanagement.database.dao.inbound.InboundSession
 import com.example.sol_denka_stockmanagement.database.dao.inventory.InventorySessionDao
 import com.example.sol_denka_stockmanagement.database.dao.inventory.InventoryResultLocalDao
 import com.example.sol_denka_stockmanagement.database.dao.inventory.InventoryResultTypeDao
+import com.example.sol_denka_stockmanagement.database.dao.item.ItemCategoryDao
 import com.example.sol_denka_stockmanagement.database.dao.location.LocationDao
 import com.example.sol_denka_stockmanagement.database.dao.location.LocationChangeEventDao
 import com.example.sol_denka_stockmanagement.database.dao.location.LocationChangeSessionDao
@@ -32,6 +33,7 @@ import com.example.sol_denka_stockmanagement.database.entity.inbound.InboundSess
 import com.example.sol_denka_stockmanagement.database.entity.inventory.InventorySessionEntity
 import com.example.sol_denka_stockmanagement.database.entity.inventory.InventoryResultLocalEntity
 import com.example.sol_denka_stockmanagement.database.entity.inventory.InventoryResultTypeEntity
+import com.example.sol_denka_stockmanagement.database.entity.item.ItemCategoryEntity
 import com.example.sol_denka_stockmanagement.database.entity.location.LocationChangeEventEntity
 import com.example.sol_denka_stockmanagement.database.entity.location.LocationChangeSessionEntity
 import com.example.sol_denka_stockmanagement.database.entity.location.LocationMasterEntity
@@ -61,6 +63,7 @@ import com.example.sol_denka_stockmanagement.database.entity.process.ProcessType
 
         ItemTypeMasterEntity::class,
         ItemUnitMasterEntity::class,
+        ItemCategoryEntity::class,
 
         LedgerItemEntity::class,
         TagMasterEntity::class,
@@ -73,7 +76,7 @@ import com.example.sol_denka_stockmanagement.database.entity.process.ProcessType
         FieldMasterEntity::class,
         ItemTypeFieldSettingMasterEntity::class,
     ],
-    version = 9
+    version = 11
 )
 abstract class AppDatabase : RoomDatabase() {
 
@@ -98,6 +101,8 @@ abstract class AppDatabase : RoomDatabase() {
     // Item
     abstract fun itemTypeDao(): ItemTypeDao
     abstract fun itemUnitDao(): ItemUnitDao
+    abstract fun itemCategoryDao(): ItemCategoryDao
+
 
     // Ledger
     abstract fun ledgerItemDao(): LedgerItemDao

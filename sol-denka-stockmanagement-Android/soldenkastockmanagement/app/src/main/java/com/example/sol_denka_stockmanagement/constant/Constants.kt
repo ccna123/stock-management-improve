@@ -242,7 +242,9 @@ enum class ScanMode {
 enum class Category(val displayName: String){
     SUB_MATERIAL("副資材"),
     SUB_RAW_MATERIAL("副原料"),
-    NON_STANDARD_ITEM("格外品")
+    NON_STANDARD_ITEM("格外品"),
+    SEMI_FINISHED_PRODUCT("半製品"),
+    INTERMEDIATE_PRODUCT("中間品"),
 }
 
 enum class DataType {

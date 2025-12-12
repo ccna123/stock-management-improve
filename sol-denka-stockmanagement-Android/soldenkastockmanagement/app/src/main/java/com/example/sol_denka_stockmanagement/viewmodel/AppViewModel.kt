@@ -19,6 +19,7 @@ import com.example.sol_denka_stockmanagement.database.repository.csv.CsvTaskType
 import com.example.sol_denka_stockmanagement.database.repository.field.FieldMasterRepository
 import com.example.sol_denka_stockmanagement.database.repository.field.ItemTypeFieldSettingMasterRepository
 import com.example.sol_denka_stockmanagement.database.repository.inventory.InventoryResultTypeRepository
+import com.example.sol_denka_stockmanagement.database.repository.item.ItemCategoryRepository
 import com.example.sol_denka_stockmanagement.database.repository.item.ItemTypeRepository
 import com.example.sol_denka_stockmanagement.database.repository.item.ItemUnitRepository
 import com.example.sol_denka_stockmanagement.database.repository.location.LocationMasterRepository
@@ -71,6 +72,7 @@ class AppViewModel @Inject constructor(
     private val fieldMasterRepository: FieldMasterRepository,
     private val itemTypeRepository: ItemTypeRepository,
     private val itemTypeFieldSettingMasterRepository: ItemTypeFieldSettingMasterRepository,
+    private val itemCategoryRepository: ItemCategoryRepository,
     private val csvHelper: CsvHelper,
 ) : ViewModel() {
 
@@ -192,6 +194,7 @@ class AppViewModel @Inject constructor(
             csvTaskTypeRepository.ensurePresetInserted()
             inventoryResultTypeRepository.ensurePresetInserted()
             fieldMasterRepository.ensurePresetInserted()
+            itemCategoryRepository.ensurePresetInserted()
         }
     }
 
