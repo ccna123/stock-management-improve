@@ -23,7 +23,6 @@ import com.example.sol_denka_stockmanagement.database.dao.tag.TagMasterDao
 import com.example.sol_denka_stockmanagement.database.dao.outbound.OutboundEventDao
 import com.example.sol_denka_stockmanagement.database.dao.outbound.OutboundSessionDao
 import com.example.sol_denka_stockmanagement.database.dao.process.ProcessTypeDao
-
 import com.example.sol_denka_stockmanagement.database.entity.csv.CsvHistoryEntity
 import com.example.sol_denka_stockmanagement.database.entity.csv.CsvTaskTypeEntity
 import com.example.sol_denka_stockmanagement.database.entity.field.FieldMasterEntity
@@ -76,7 +75,7 @@ import com.example.sol_denka_stockmanagement.database.entity.process.ProcessType
         FieldMasterEntity::class,
         ItemTypeFieldSettingMasterEntity::class,
     ],
-    version = 13
+    version = 14
 )
 abstract class AppDatabase : RoomDatabase() {
 

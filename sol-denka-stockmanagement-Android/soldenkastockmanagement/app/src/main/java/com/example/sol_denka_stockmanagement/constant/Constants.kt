@@ -200,6 +200,18 @@ enum class ControlType{
     DROPDOWN
 }
 
+enum class WinderType(val displayName: String) {
+    MACHINE_2("2号機"),
+    SLITTING_B_F("BスリF"),
+    SLITTING_B_B("BスリB"),
+    MACHINE_3_LINE_1("3号機No.1"),
+    MACHINE_3_LINE_2("3号機No.2"),
+    MACHINE_4_LINE_1("4号機No.1"),
+    MACHINE_4_LINE_2("4号機No.2"),
+    OTHERS("その他")
+}
+
+
 fun generateTimeStamp(): String {
     val formatter = DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss_SSS")
     return LocalDateTime.now(ZoneId.of("Asia/Tokyo")).format(formatter)

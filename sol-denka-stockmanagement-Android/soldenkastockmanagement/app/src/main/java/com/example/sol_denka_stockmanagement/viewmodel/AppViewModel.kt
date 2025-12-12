@@ -21,7 +21,7 @@ import com.example.sol_denka_stockmanagement.database.repository.field.ItemTypeF
 import com.example.sol_denka_stockmanagement.database.repository.inventory.InventoryResultTypeRepository
 import com.example.sol_denka_stockmanagement.database.repository.item.ItemCategoryRepository
 import com.example.sol_denka_stockmanagement.database.repository.item.ItemTypeRepository
-import com.example.sol_denka_stockmanagement.database.repository.item.ItemUnitRepository
+import com.example.sol_denka_stockmanagement.database.repository.winder.ItemUnitRepository
 import com.example.sol_denka_stockmanagement.database.repository.location.LocationMasterRepository
 import com.example.sol_denka_stockmanagement.database.repository.process.ProcessTypeRepository
 import com.example.sol_denka_stockmanagement.helper.NetworkConnectionObserver
