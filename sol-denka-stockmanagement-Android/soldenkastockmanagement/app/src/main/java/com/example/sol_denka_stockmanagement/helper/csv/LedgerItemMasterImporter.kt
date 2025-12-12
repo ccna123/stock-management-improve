@@ -1,6 +1,5 @@
 package com.example.sol_denka_stockmanagement.helper.csv
 
-import android.util.Log
 import com.example.sol_denka_stockmanagement.app_interface.ICsvImport
 import com.example.sol_denka_stockmanagement.constant.generateTimeStamp
 import com.example.sol_denka_stockmanagement.database.repository.ledger.LedgerItemRepository
@@ -45,7 +44,7 @@ class LedgerItemMasterImporter(
                     quantity = parseNullableInt(p[10]),
 
                     winderInfo = p[11].ifBlank { null },
-                    missRollReason = p[12].ifBlank { null },
+                    occurrenceReason = p[12].ifBlank { null },
 
                     createdAt = generateTimeStamp(),
                     updatedAt = generateTimeStamp()

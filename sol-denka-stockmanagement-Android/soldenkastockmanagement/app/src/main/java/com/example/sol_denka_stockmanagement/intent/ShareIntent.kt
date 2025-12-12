@@ -1,8 +1,5 @@
 package com.example.sol_denka_stockmanagement.intent
 
-import com.example.sol_denka_stockmanagement.app_interface.ICsvExport
-import com.example.sol_denka_stockmanagement.constant.CsvHistoryDirection
-import com.example.sol_denka_stockmanagement.constant.CsvTaskType
 import com.example.sol_denka_stockmanagement.constant.DialogType
 import com.example.sol_denka_stockmanagement.constant.Tab
 
@@ -24,16 +21,9 @@ sealed interface ShareIntent {
     data class ChangePerTagProcessMethod(val tag: String, val method: String) : ShareIntent
     data class ShowModalProcessMethod(val showBottomSheet: Boolean) : ShareIntent
     data object ResetState : ShareIntent
-    data class ChangeTabInReceivingScreen(val tab: String) : ShareIntent
     data object ResetDetailIndex: ShareIntent
     data class SelectChipIndex(val index: Int) : ShareIntent
     data class FindItemNameByKeyWord(val keyword: String, val categoryName: String): ShareIntent
-
-    data class SaveScanResult<T : ICsvExport>(
-        val taskCode: CsvTaskType,
-        val direction: CsvHistoryDirection,
-        val data: List<T>
-    ) : ShareIntent
 
     data class ShowDialog(val message: String, val type: DialogType) : ShareIntent
     data object HiddenDialog: ShareIntent

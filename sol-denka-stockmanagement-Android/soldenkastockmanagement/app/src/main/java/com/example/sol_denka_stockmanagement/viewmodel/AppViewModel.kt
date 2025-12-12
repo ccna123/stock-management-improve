@@ -360,13 +360,6 @@ class AppViewModel @Inject constructor(
                 _inboundInputFormResults.value = emptyList()
             }
 
-            is ShareIntent.ChangeTabInReceivingScreen ->
-                _inputState.update { it.copy(materialSelectedItem = intent.tab) }
-
-            is ShareIntent.SaveScanResult<*> -> {
-
-            }
-
             ShareIntent.ToggleDialog -> showAppDialog.value = !showAppDialog.value
             ShareIntent.ToggleClearTagConfirmDialog -> showClearTagConfirmDialog.value =
                 !showClearTagConfirmDialog.value

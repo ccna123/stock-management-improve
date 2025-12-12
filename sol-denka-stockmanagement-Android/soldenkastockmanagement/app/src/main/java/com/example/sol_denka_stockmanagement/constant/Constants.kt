@@ -11,16 +11,8 @@ enum class ProcessMethod(val displayName: String) {
     CRUSH("粉砕")
 }
 
-enum class MaterialSelectionItem(val displayName: String) {
-    MISS_ROLL("ミスロール"),
-    PAPER_CORE("紙管"),
-    PACKING_STYLE("荷姿"),
-    LITER_CAN("一斗缶"),
-    PELLET("ペレット"),
-}
 
-enum class PackingStyleItem(val displayName: String) {
-    SELECTION_TITLE("荷姿選択"),
+enum class PackingType(val displayName: String) {
     FLEXIBLE_CONTAINER_1T("1tフレコン"),
     PAPER_BAG_25KG("25Kg詰PPT防湿紙入り3層紙袋"),
 }
@@ -31,12 +23,10 @@ enum class Tab(val displayName: String) {
 }
 
 enum class SelectTitle(val displayName: String) {
-    SelectMissRoll("資材選択"),
     SelectLocation("保管場所選択"),
     SelectCsvType("CSVファイル種類選択"),
     SelectProcessMethod("処理方法選択"),
     SelectPackingStyle("荷姿選択"),
-    SelectMaterial("資材選択"),
     SelectCategory("区分選択"),
 }
 
@@ -52,13 +42,13 @@ enum class CsvType(val displayName: String) {
     ItemTypeFieldSettingMaster("品目項目設定マスタCSV"),
 }
 
-enum class CsvTaskType(val displayNameJp: String, val displayNameEng: String) {
-    IN("入庫", "IN"),
-    OUT("出庫", "OUT"),
-    INVENTORY("棚卸", "INVENTORY"),
-    LOCATION_CHANGE("保管場所変更", "LOCATION_CHANGE"),
-    UPPER_SYSTEM("上位システム", "UPPER_SYSTEM"),
-    OTHER("その他", "OTHER"),
+enum class CsvTaskType(val displayNameJp: String) {
+    IN("入庫"),
+    OUT("出庫"),
+    INVENTORY("棚卸"),
+    LOCATION_CHANGE("保管場所変更"),
+    UPPER_SYSTEM("上位システム"),
+    OTHER("その他"),
 }
 
 enum class InventoryResultCsvHeader {
@@ -71,41 +61,6 @@ enum class InventoryResultCsvHeader {
     scanned_at,
     executed_at
 }
-
-enum class MaterialMasterCsvHeader {
-    id,
-    material_code,
-    material_name,
-    created_at,
-    updated_at
-}
-
-enum class StorageAreaMasterCsvHeader {
-    id,
-    location_code,
-    location_name,
-    created_at,
-    updated_at
-}
-
-enum class StockMasterCsvHeader {
-    material_code,
-    stock_quantity,
-    scanned_at
-}
-
-enum class LedgerMasterCsvHeader {
-    id,
-    material_id,
-    location_id,
-    item_name,
-    epc,
-    is_present,
-    status,
-    created_at,
-    updated_at
-}
-
 enum class InventoryScanResult(val displayName: String) {
     OK("正常"),
     SHORTAGE("在庫不足"),
@@ -117,11 +72,6 @@ enum class InventoryScanResult(val displayName: String) {
 enum class CsvHistoryDirection(val displayName: String) {
     EXPORT("EXPORT"),
     IMPORT("IMPORT")
-}
-
-enum class CsvHistoryTarget(val displayName: String) {
-    WINDOWS("Windows"),
-    BACKUP("Backup")
 }
 
 enum class CsvHistoryResult(val displayName: String) {
@@ -142,13 +92,6 @@ enum class ItemUnit(val displayName: String) {
     TON("TON"),
     MAI("MAI"),
     HON("HON"),
-}
-
-enum class BeeperVolume(val displayName: String) {
-    QUIET_BEEP("静音"),
-    LOW_BEEP("小"),
-    MEDIUM_BEEP("中"),
-    HIGH_BEEP("高"),
 }
 
 enum class FileTransferMethod(val displayName: String) {

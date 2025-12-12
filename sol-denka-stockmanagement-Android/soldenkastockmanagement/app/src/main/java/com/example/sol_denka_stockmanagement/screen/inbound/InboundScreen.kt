@@ -42,7 +42,7 @@ import com.example.sol_denka_stockmanagement.constant.CsvHistoryDirection
 import com.example.sol_denka_stockmanagement.constant.CsvTaskType
 import com.example.sol_denka_stockmanagement.constant.DataType
 import com.example.sol_denka_stockmanagement.constant.DialogType
-import com.example.sol_denka_stockmanagement.constant.PackingStyleItem
+import com.example.sol_denka_stockmanagement.constant.PackingType
 import com.example.sol_denka_stockmanagement.constant.SelectTitle
 import com.example.sol_denka_stockmanagement.constant.StatusCode
 import com.example.sol_denka_stockmanagement.helper.message_mapper.MessageMapper
@@ -113,7 +113,7 @@ fun InboundScreen(
                     elevation = 13.dp, clip = true, ambientColor = Color.Gray.copy(alpha = 0.5f),
                     spotColor = Color.DarkGray.copy(alpha = 0.7f)
                 ),
-                canClick = inputState.materialSelectedItem != SelectTitle.SelectMaterial.displayName,
+                canClick = inputState.category.isNotBlank() && inputState.itemInCategory.isNotBlank(),
                 onClick = {
                     scope.launch {
                         val result = inboundViewModel.saveInboundToDb(
@@ -581,8 +581,8 @@ fun InboundScreen(
 
                                                     "荷姿" -> {
                                                         listOf(
-                                                            PackingStyleItem.PAPER_BAG_25KG.displayName,
-                                                            PackingStyleItem.FLEXIBLE_CONTAINER_1T.displayName
+                                                            PackingType.PAPER_BAG_25KG.displayName,
+                                                            PackingType.FLEXIBLE_CONTAINER_1T.displayName
                                                         ).forEach { packingStyle ->
                                                             DropdownMenuItem(
                                                                 text = {
