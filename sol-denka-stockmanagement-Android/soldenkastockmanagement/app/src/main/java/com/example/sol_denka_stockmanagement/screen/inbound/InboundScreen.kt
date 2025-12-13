@@ -384,7 +384,7 @@ fun InboundScreen(
                 }
             }
             Spacer(modifier = Modifier.height(20.dp))
-            LazyColumn{
+            LazyColumn {
                 item {
                     inboundInputFormResults
                         .sortedWith(compareBy {
@@ -553,8 +553,10 @@ fun InboundScreen(
                                             }
                                         )
                                     }
+
                                     ControlType.DROPDOWN -> {
                                         ExposedDropdownMenuBox(
+                                            modifier = Modifier.height(55.dp),
                                             expanded = when (result.fieldName) {
                                                 InboundInputField.LOCATION.displayName -> expandState.locationExpanded
                                                 InboundInputField.PACKING_TYPE.displayName -> expandState.packingStyleExpanded
@@ -691,7 +693,9 @@ fun InboundScreen(
                                                                                 if (location.locationName == SelectTitle.SelectLocation.displayName) "" else location.locationName
                                                                             )
                                                                         )
-                                                                        onExpandIntent(ExpandIntent.ToggleLocationExpanded)
+                                                                        onExpandIntent(
+                                                                            ExpandIntent.ToggleLocationExpanded
+                                                                        )
                                                                     }
                                                                 }
                                                             )
@@ -714,7 +718,9 @@ fun InboundScreen(
                                                                                 if (inputState.packingType == SelectTitle.SelectPackingStyle.displayName) "" else packingStyle
                                                                             )
                                                                         )
-                                                                        onExpandIntent(ExpandIntent.TogglePackingTypeExpanded)
+                                                                        onExpandIntent(
+                                                                            ExpandIntent.TogglePackingTypeExpanded
+                                                                        )
                                                                     }
                                                                 }
                                                             )
@@ -826,7 +832,7 @@ fun InboundScreen(
                                         }
                                     }
                                 }
-                                Spacer(modifier = Modifier.height(12.dp))
+                                Spacer(modifier = Modifier.height(10.dp))
                             }
                         }
                 }
