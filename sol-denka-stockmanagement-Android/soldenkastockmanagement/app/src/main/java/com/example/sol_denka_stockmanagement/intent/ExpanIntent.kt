@@ -3,7 +3,7 @@ package com.example.sol_denka_stockmanagement.intent
 sealed interface ExpandIntent{
     data object ToggleLocationExpanded: ExpandIntent
     data object ToggleMissRollExpanded: ExpandIntent
-    data object TogglePackingStyleExpanded: ExpandIntent
+    data object TogglePackingTypeExpanded: ExpandIntent
     data object ToggleProcessMethodExpanded: ExpandIntent
     data object ToggleCategoryExpanded: ExpandIntent
     data object ToggleFileTransferMethodExpanded: ExpandIntent

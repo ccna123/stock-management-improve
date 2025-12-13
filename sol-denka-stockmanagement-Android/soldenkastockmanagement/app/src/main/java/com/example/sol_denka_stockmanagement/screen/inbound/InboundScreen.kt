@@ -4,8 +4,11 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -17,6 +20,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.CalendarMonth
+import androidx.compose.material.icons.filled.Timer
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuAnchorType
@@ -42,18 +47,38 @@ import com.example.sol_denka_stockmanagement.constant.CsvHistoryDirection
 import com.example.sol_denka_stockmanagement.constant.CsvTaskType
 import com.example.sol_denka_stockmanagement.constant.DataType
 import com.example.sol_denka_stockmanagement.constant.DialogType
+import com.example.sol_denka_stockmanagement.constant.InboundInputField
 import com.example.sol_denka_stockmanagement.constant.PackingType
 import com.example.sol_denka_stockmanagement.constant.SelectTitle
 import com.example.sol_denka_stockmanagement.constant.StatusCode
 import com.example.sol_denka_stockmanagement.helper.message_mapper.MessageMapper
 import com.example.sol_denka_stockmanagement.intent.ExpandIntent
 import com.example.sol_denka_stockmanagement.intent.InputIntent
+import com.example.sol_denka_stockmanagement.intent.InputIntent.ChangeCategory
+import com.example.sol_denka_stockmanagement.intent.InputIntent.ChangeItemInCategory
+import com.example.sol_denka_stockmanagement.intent.InputIntent.ChangeLength
+import com.example.sol_denka_stockmanagement.intent.InputIntent.ChangeLocation
+import com.example.sol_denka_stockmanagement.intent.InputIntent.ChangeLotNo
+import com.example.sol_denka_stockmanagement.intent.InputIntent.ChangeMemo
+import com.example.sol_denka_stockmanagement.intent.InputIntent.ChangeMissRollReason
+import com.example.sol_denka_stockmanagement.intent.InputIntent.ChangeOccurredAtDate
+import com.example.sol_denka_stockmanagement.intent.InputIntent.ChangeOccurredAtTime
+import com.example.sol_denka_stockmanagement.intent.InputIntent.ChangePackingType
+import com.example.sol_denka_stockmanagement.intent.InputIntent.ChangeSpecificGravity
+import com.example.sol_denka_stockmanagement.intent.InputIntent.ChangeThickness
+import com.example.sol_denka_stockmanagement.intent.InputIntent.ChangeWeight
+import com.example.sol_denka_stockmanagement.intent.InputIntent.ChangeWidth
+import com.example.sol_denka_stockmanagement.intent.InputIntent.ChangeWinderInfo
+import com.example.sol_denka_stockmanagement.intent.InputIntent.SearchKeyWord
 import com.example.sol_denka_stockmanagement.intent.ShareIntent
 import com.example.sol_denka_stockmanagement.navigation.Screen
 import com.example.sol_denka_stockmanagement.screen.inbound.components.ItemSearchBar
 import com.example.sol_denka_stockmanagement.screen.layout.Layout
 import com.example.sol_denka_stockmanagement.share.ButtonContainer
 import com.example.sol_denka_stockmanagement.share.InputFieldContainer
+import com.example.sol_denka_stockmanagement.share.dialog.DateDialog
+import com.example.sol_denka_stockmanagement.share.dialog.TimeDialog
+import com.example.sol_denka_stockmanagement.ui.theme.brightAzure
 import com.example.sol_denka_stockmanagement.ui.theme.paleSkyBlue
 import com.example.sol_denka_stockmanagement.viewmodel.AppViewModel
 import com.example.sol_denka_stockmanagement.viewmodel.ScanViewModel
@@ -71,6 +96,7 @@ fun InboundScreen(
 ) {
 
     val inputState by appViewModel.inputState.collectAsStateWithLifecycle()
+    val generalState by appViewModel.generalState.collectAsStateWithLifecycle()
     val expandState by appViewModel.expandState.collectAsStateWithLifecycle()
     val searchResults by appViewModel.searchResults.collectAsStateWithLifecycle()
     val inboundInputFormResults by appViewModel.inboundInputFormResults.collectAsStateWithLifecycle()
@@ -91,6 +117,48 @@ fun InboundScreen(
             appViewModel.onGeneralIntent(ShareIntent.ResetState)
         }
     }
+
+    TimeDialog(
+        showTimeDialog = generalState.showTimePicker,
+        title = stringResource(R.string.choose_time),
+        confirmText = stringResource(R.string.ok),
+        cancelText = stringResource(R.string.cancel),
+        onConfirm = { time ->
+            when (generalState.inboundInputFieldDateTime) {
+                InboundInputField.OCCURRED_AT.displayName -> appViewModel.onInputIntent(
+                    ChangeOccurredAtTime(time)
+                )
+
+                InboundInputField.PROCESSED_AT.displayName -> appViewModel.onInputIntent(
+                    InputIntent.ChangeProcessedAtTime(time)
+                )
+            }
+            appViewModel.onGeneralIntent(ShareIntent.ToggleTimePicker(false))
+        },
+        onDismissRequest = {
+            appViewModel.onGeneralIntent(ShareIntent.ToggleTimePicker(false))
+        }
+    )
+
+    DateDialog(
+        showDateDialog = generalState.showDatePicker,
+        confirmText = stringResource(R.string.ok),
+        cancelText = stringResource(R.string.cancel),
+        onConfirm = { date ->
+            when (generalState.inboundInputFieldDateTime) {
+                InboundInputField.OCCURRED_AT.displayName -> appViewModel.onInputIntent(
+                    ChangeOccurredAtDate(date)
+                )
+
+                InboundInputField.PROCESSED_AT.displayName -> appViewModel.onInputIntent(
+                    InputIntent.ChangeProcessedAtDate(date)
+                )
+            }
+        },
+        onDismissRequest = { appViewModel.onGeneralIntent(ShareIntent.ToggleDatePicker(false)) }
+    )
+
+
     Layout(
         topBarText = stringResource(R.string.receiving),
         topBarIcon = Icons.AutoMirrored.Filled.ArrowBack,
@@ -229,7 +297,7 @@ fun InboundScreen(
                             isNumeric = false,
                             onChange = { newValue ->
                                 appViewModel.onInputIntent(
-                                    InputIntent.ChangeCategory(
+                                    ChangeCategory(
                                         categoryId = 0,
                                         value = newValue
                                     )
@@ -249,7 +317,7 @@ fun InboundScreen(
                                 onClick = {
                                     appViewModel.apply {
                                         onInputIntent(
-                                            InputIntent.ChangeCategory(
+                                            ChangeCategory(
                                                 categoryId = 0,
                                                 value = ""
                                             )
@@ -264,7 +332,7 @@ fun InboundScreen(
                                     onClick = {
                                         appViewModel.apply {
                                             onInputIntent(
-                                                InputIntent.ChangeCategory(
+                                                ChangeCategory(
                                                     categoryId = category.itemCategoryId,
                                                     value = category.itemCategoryName
                                                 )
@@ -288,7 +356,7 @@ fun InboundScreen(
                             results = searchResults,
                             onKeywordChange = { itemName ->
                                 appViewModel.onInputIntent(
-                                    InputIntent.SearchKeyWord(
+                                    SearchKeyWord(
                                         itemName = itemName,
                                     )
                                 )
@@ -301,7 +369,7 @@ fun InboundScreen(
                             },
                             onSelectItem = { itemName, itemId ->
                                 appViewModel.onInputIntent(
-                                    InputIntent.ChangeItemInCategory(
+                                    ChangeItemInCategory(
                                         itemName = itemName,
                                         itemId = itemId
                                     )
@@ -315,113 +383,166 @@ fun InboundScreen(
             Spacer(modifier = Modifier.height(20.dp))
             LazyColumn {
                 item {
-
                     inboundInputFormResults
                         .sortedWith(compareBy {
-                            if (it.fieldName == "備考") 1 else 0
+                            if (it.fieldName == InboundInputField.MEMO.displayName) 1 else 0
                         })
                         .forEach { result ->
                             if (result.isVisible) {
-
                                 when (result.controlType) {
                                     ControlType.INPUT -> {
                                         InputFieldContainer(
                                             modifier = Modifier
-                                                .height(if (result.fieldName == "備考") 200.dp else 60.dp)
+                                                .height(if (result.fieldName == InboundInputField.MEMO.displayName) 200.dp else 60.dp)
                                                 .fillMaxWidth(),
                                             value = when (result.fieldName) {
-                                                "重量" -> inputState.weight
-                                                "長さ" -> inputState.length
-                                                "厚み" -> inputState.thickness
-                                                "巾" -> inputState.width
-                                                "比重" -> inputState.specificGravity
-                                                "巻き取り機情報" -> inputState.winderInfo
-                                                "発生理由" -> inputState.occurrenceReason
-                                                "備考" -> inputState.memo
-                                                "Lot No" -> inputState.lotNo
+                                                InboundInputField.WEIGHT.displayName -> inputState.weight
+                                                InboundInputField.LENGTH.displayName -> inputState.length
+                                                InboundInputField.THICKNESS.displayName -> inputState.thickness
+                                                InboundInputField.WIDTH.displayName -> inputState.width
+                                                InboundInputField.SPECIFIC_GRAVITY.displayName -> inputState.specificGravity
+                                                InboundInputField.WINDER_INFO.displayName -> inputState.winderInfo
+                                                InboundInputField.OCCURRENCE_REASON.displayName -> inputState.occurrenceReason
+                                                InboundInputField.MEMO.displayName -> inputState.memo
+                                                InboundInputField.LOT_NO.displayName -> inputState.lotNo
                                                 else -> ""
                                             },
                                             label = when (result.fieldName) {
-                                                "重量" -> stringResource(R.string.weight)
-                                                "長さ" -> stringResource(R.string.length)
-                                                "厚み" -> stringResource(R.string.thickness)
-                                                "巾" -> stringResource(R.string.width)
-                                                "比重" -> stringResource(R.string.specific_gravity)
-                                                "巻き取り機情報" -> stringResource(R.string.winderInfo)
-                                                "発生理由" -> stringResource(R.string.occurrenceReason)
-                                                "備考" -> stringResource(R.string.memo)
-                                                "Lot No" -> stringResource(R.string.lot_no)
+                                                InboundInputField.WEIGHT.displayName -> stringResource(
+                                                    R.string.weight
+                                                )
+
+                                                InboundInputField.LENGTH.displayName -> stringResource(
+                                                    R.string.length
+                                                )
+
+                                                InboundInputField.THICKNESS.displayName -> stringResource(
+                                                    R.string.thickness
+                                                )
+
+                                                InboundInputField.WIDTH.displayName -> stringResource(
+                                                    R.string.width
+                                                )
+
+                                                InboundInputField.SPECIFIC_GRAVITY.displayName -> stringResource(
+                                                    R.string.specific_gravity
+                                                )
+
+                                                InboundInputField.WINDER_INFO.displayName -> stringResource(
+                                                    R.string.winderInfo
+                                                )
+
+                                                InboundInputField.OCCURRENCE_REASON.displayName -> stringResource(
+                                                    R.string.occurrenceReason
+                                                )
+
+                                                InboundInputField.MEMO.displayName -> stringResource(
+                                                    R.string.memo
+                                                )
+
+                                                InboundInputField.LOT_NO.displayName -> stringResource(
+                                                    R.string.lot_no
+                                                )
+
                                                 else -> ""
                                             },
                                             hintText = when (result.fieldName) {
-                                                "重量" -> stringResource(R.string.weight_hint)
-                                                "長さ" -> stringResource(R.string.length_hint)
-                                                "厚み" -> stringResource(R.string.thickness_hint)
-                                                "巾" -> stringResource(R.string.width_hint)
-                                                "比重" -> stringResource(R.string.specific_gravity_hint)
-                                                "巻き取り機情報" -> stringResource(R.string.winderInfo_hint)
-                                                "発生理由" -> stringResource(R.string.occurrenceReason)
-                                                "備考" -> stringResource(R.string.memo_hint)
-                                                "Lot No" -> stringResource(R.string.lot_no_hint)
+                                                InboundInputField.WEIGHT.displayName -> stringResource(
+                                                    R.string.weight_hint
+                                                )
+
+                                                InboundInputField.LENGTH.displayName -> stringResource(
+                                                    R.string.length_hint
+                                                )
+
+                                                InboundInputField.THICKNESS.displayName -> stringResource(
+                                                    R.string.thickness_hint
+                                                )
+
+                                                InboundInputField.WIDTH.displayName -> stringResource(
+                                                    R.string.width_hint
+                                                )
+
+                                                InboundInputField.SPECIFIC_GRAVITY.displayName -> stringResource(
+                                                    R.string.specific_gravity_hint
+                                                )
+
+                                                InboundInputField.WINDER_INFO.displayName -> stringResource(
+                                                    R.string.winderInfo_hint
+                                                )
+
+                                                InboundInputField.OCCURRENCE_REASON.displayName -> stringResource(
+                                                    R.string.occurrenceReason
+                                                )
+
+                                                InboundInputField.MEMO.displayName -> stringResource(
+                                                    R.string.memo_hint
+                                                )
+
+                                                InboundInputField.LOT_NO.displayName -> stringResource(
+                                                    R.string.lot_no_hint
+                                                )
+
                                                 else -> ""
                                             },
                                             isNumeric = when (result.dataType) {
                                                 DataType.TEXT -> false
                                                 DataType.NUMBER -> true
+                                                DataType.DATETIME -> false
                                             },
                                             readOnly = false,
                                             isDropDown = false,
                                             enable = true,
                                             isRequired = result.isRequired,
-                                            singleLine = result.fieldName != "備考",
+                                            singleLine = result.fieldName != InboundInputField.MEMO.displayName,
                                             onChange = { newValue ->
                                                 when (result.fieldName) {
-                                                    "重量" -> appViewModel.onInputIntent(
-                                                        InputIntent.ChangeWeight(
+                                                    InboundInputField.WEIGHT.displayName -> appViewModel.onInputIntent(
+                                                        ChangeWeight(
                                                             newValue
                                                         )
                                                     )
 
-                                                    "長さ" -> appViewModel.onInputIntent(
-                                                        InputIntent.ChangeLength(
+                                                    InboundInputField.LENGTH.displayName -> appViewModel.onInputIntent(
+                                                        ChangeLength(
                                                             newValue
                                                         )
                                                     )
 
-                                                    "厚み" -> appViewModel.onInputIntent(
-                                                        InputIntent.ChangeThickness(
+                                                    InboundInputField.THICKNESS.displayName -> appViewModel.onInputIntent(
+                                                        ChangeThickness(
                                                             newValue
                                                         )
                                                     )
 
-                                                    "巾" -> appViewModel.onInputIntent(
-                                                        InputIntent.ChangeWidth(
+                                                    InboundInputField.WIDTH.displayName -> appViewModel.onInputIntent(
+                                                        ChangeWidth(
                                                             newValue
                                                         )
                                                     )
 
-                                                    "比重" -> appViewModel.onInputIntent(
-                                                        InputIntent.ChangeSpecificGravity(
+                                                    InboundInputField.SPECIFIC_GRAVITY.displayName -> appViewModel.onInputIntent(
+                                                        ChangeSpecificGravity(
                                                             newValue
                                                         )
                                                     )
 
-                                                    "巻き取り機情報" -> appViewModel.onInputIntent(
-                                                        InputIntent.ChangeWinderInfo(newValue)
+                                                    InboundInputField.WINDER_INFO.displayName -> appViewModel.onInputIntent(
+                                                        ChangeWinderInfo(newValue)
                                                     )
 
-                                                    "発生理由" -> appViewModel.onInputIntent(
-                                                        InputIntent.ChangeMissRollReason(newValue)
+                                                    InboundInputField.OCCURRENCE_REASON.displayName -> appViewModel.onInputIntent(
+                                                        ChangeMissRollReason(newValue)
                                                     )
 
-                                                    "備考" -> appViewModel.onInputIntent(
-                                                        InputIntent.ChangeMemo(
+                                                    InboundInputField.MEMO.displayName -> appViewModel.onInputIntent(
+                                                        ChangeMemo(
                                                             newValue
                                                         )
                                                     )
 
-                                                    "Lot No" -> appViewModel.onInputIntent(
-                                                        InputIntent.ChangeLotNo(
+                                                    InboundInputField.LOT_NO.displayName -> appViewModel.onInputIntent(
+                                                        ChangeLotNo(
                                                             newValue
                                                         )
                                                     )
@@ -434,21 +555,21 @@ fun InboundScreen(
                                     ControlType.DROPDOWN -> {
                                         ExposedDropdownMenuBox(
                                             expanded = when (result.fieldName) {
-                                                "保管場所" -> expandState.locationExpanded
-                                                "荷姿" -> expandState.packingStyleExpanded
+                                                InboundInputField.LOCATION.displayName -> expandState.locationExpanded
+                                                InboundInputField.PACKING_TYPE.displayName -> expandState.packingStyleExpanded
                                                 else -> false
                                             },
                                             onExpandedChange = {
                                                 when (result.fieldName) {
-                                                    "保管場所" -> {
+                                                    InboundInputField.LOCATION.displayName -> {
                                                         appViewModel.onExpandIntent(
                                                             ExpandIntent.ToggleLocationExpanded
                                                         )
                                                     }
 
-                                                    "荷姿" -> {
+                                                    InboundInputField.PACKING_TYPE.displayName -> {
                                                         appViewModel.onExpandIntent(
-                                                            ExpandIntent.TogglePackingStyleExpanded
+                                                            ExpandIntent.TogglePackingTypeExpanded
                                                         )
                                                     }
 
@@ -465,24 +586,24 @@ fun InboundScreen(
                                                     )
                                                     .fillMaxWidth(),
                                                 value = when (result.fieldName) {
-                                                    "保管場所" -> if (inputState.location == SelectTitle.SelectLocation.displayName) "" else inputState.location
-                                                    "荷姿" -> if (inputState.packingType == SelectTitle.SelectPackingStyle.displayName) "" else inputState.packingType
+                                                    InboundInputField.LOCATION.displayName -> if (inputState.location == SelectTitle.SelectLocation.displayName) "" else inputState.location
+                                                    InboundInputField.PACKING_TYPE.displayName -> if (inputState.packingType == SelectTitle.SelectPackingStyle.displayName) "" else inputState.packingType
                                                     else -> ""
                                                 },
                                                 hintText = when (result.fieldName) {
-                                                    "保管場所" -> SelectTitle.SelectLocation.displayName
-                                                    "荷姿" -> SelectTitle.SelectPackingStyle.displayName
+                                                    InboundInputField.LOCATION.displayName -> SelectTitle.SelectLocation.displayName
+                                                    InboundInputField.PACKING_TYPE.displayName -> SelectTitle.SelectPackingStyle.displayName
                                                     else -> ""
                                                 },
                                                 isNumeric = false,
                                                 onChange = { newValue ->
                                                     when (result.fieldName) {
-                                                        "保管場所" -> appViewModel.onInputIntent(
-                                                            InputIntent.ChangeLocation(newValue)
+                                                        InboundInputField.LOCATION.displayName -> appViewModel.onInputIntent(
+                                                            ChangeLocation(newValue)
                                                         )
 
-                                                        "荷姿" -> appViewModel.onInputIntent(
-                                                            InputIntent.ChangePackingType(
+                                                        InboundInputField.PACKING_TYPE.displayName -> appViewModel.onInputIntent(
+                                                            ChangePackingType(
                                                                 newValue
                                                             )
                                                         )
@@ -497,18 +618,18 @@ fun InboundScreen(
                                             )
                                             ExposedDropdownMenu(
                                                 expanded = when (result.fieldName) {
-                                                    "保管場所" -> expandState.locationExpanded
-                                                    "荷姿" -> expandState.packingStyleExpanded
+                                                    InboundInputField.LOCATION.displayName -> expandState.locationExpanded
+                                                    InboundInputField.PACKING_TYPE.displayName -> expandState.packingStyleExpanded
                                                     else -> false
                                                 },
                                                 onDismissRequest = {
                                                     when (result.fieldName) {
-                                                        "保管場所" -> appViewModel.onExpandIntent(
+                                                        InboundInputField.LOCATION.displayName -> appViewModel.onExpandIntent(
                                                             ExpandIntent.ToggleLocationExpanded
                                                         )
 
-                                                        "荷姿" -> appViewModel.onExpandIntent(
-                                                            ExpandIntent.TogglePackingStyleExpanded
+                                                        InboundInputField.PACKING_TYPE.displayName -> appViewModel.onExpandIntent(
+                                                            ExpandIntent.TogglePackingTypeExpanded
                                                         )
 
                                                         else -> ""
@@ -519,18 +640,18 @@ fun InboundScreen(
                                                     text = {
                                                         Text(
                                                             text = when (result.fieldName) {
-                                                                "保管場所" -> SelectTitle.SelectLocation.displayName
-                                                                "荷姿" -> SelectTitle.SelectPackingStyle.displayName
+                                                                InboundInputField.LOCATION.displayName -> SelectTitle.SelectLocation.displayName
+                                                                InboundInputField.PACKING_TYPE.displayName -> SelectTitle.SelectPackingStyle.displayName
                                                                 else -> ""
                                                             }
                                                         )
                                                     },
                                                     onClick = {
                                                         when (result.fieldName) {
-                                                            "保管場所" -> {
+                                                            InboundInputField.LOCATION.displayName -> {
                                                                 appViewModel.apply {
                                                                     onInputIntent(
-                                                                        InputIntent.ChangeLocation(
+                                                                        ChangeLocation(
                                                                             ""
                                                                         )
                                                                     )
@@ -538,14 +659,14 @@ fun InboundScreen(
                                                                 }
                                                             }
 
-                                                            "荷姿" -> {
+                                                            InboundInputField.PACKING_TYPE.displayName -> {
                                                                 appViewModel.apply {
                                                                     onInputIntent(
-                                                                        InputIntent.ChangePackingType(
+                                                                        ChangePackingType(
                                                                             ""
                                                                         )
                                                                     )
-                                                                    onExpandIntent(ExpandIntent.TogglePackingStyleExpanded)
+                                                                    onExpandIntent(ExpandIntent.TogglePackingTypeExpanded)
                                                                 }
                                                             }
 
@@ -554,7 +675,7 @@ fun InboundScreen(
                                                     }
                                                 )
                                                 when (result.fieldName) {
-                                                    "保管場所" -> {
+                                                    InboundInputField.LOCATION.displayName -> {
                                                         locationMaster.forEach { location ->
                                                             DropdownMenuItem(
                                                                 text = {
@@ -567,7 +688,7 @@ fun InboundScreen(
                                                                 onClick = {
                                                                     appViewModel.apply {
                                                                         onInputIntent(
-                                                                            InputIntent.ChangeLocation(
+                                                                            ChangeLocation(
                                                                                 if (location.locationName == SelectTitle.SelectLocation.displayName) "" else location.locationName
                                                                                     ?: ""
                                                                             )
@@ -579,7 +700,7 @@ fun InboundScreen(
                                                         }
                                                     }
 
-                                                    "荷姿" -> {
+                                                    InboundInputField.PACKING_TYPE.displayName -> {
                                                         listOf(
                                                             PackingType.PAPER_BAG_25KG.displayName,
                                                             PackingType.FLEXIBLE_CONTAINER_1T.displayName
@@ -591,11 +712,11 @@ fun InboundScreen(
                                                                 onClick = {
                                                                     appViewModel.apply {
                                                                         onInputIntent(
-                                                                            InputIntent.ChangePackingType(
+                                                                            ChangePackingType(
                                                                                 if (inputState.packingType == SelectTitle.SelectPackingStyle.displayName) "" else packingStyle
                                                                             )
                                                                         )
-                                                                        onExpandIntent(ExpandIntent.TogglePackingStyleExpanded)
+                                                                        onExpandIntent(ExpandIntent.TogglePackingTypeExpanded)
                                                                     }
                                                                 }
                                                             )
@@ -605,6 +726,107 @@ fun InboundScreen(
                                             }
                                         }
                                         Spacer(modifier = Modifier.height(15.dp))
+                                    }
+
+                                    ControlType.DATETIMEPICKER -> {
+                                        Row(
+                                            modifier = Modifier
+                                                .fillMaxWidth(),
+                                            horizontalArrangement = Arrangement.spacedBy(10.dp)
+                                        ) {
+                                            InputFieldContainer(
+                                                modifier = Modifier.weight(1f),
+                                                value = when (result.fieldName) {
+                                                    InboundInputField.OCCURRED_AT.displayName -> inputState.occurredAtDate
+                                                    InboundInputField.PROCESSED_AT.displayName -> inputState.processedAtDate
+                                                    else -> ""
+                                                },
+                                                label = when (result.fieldName) {
+                                                    InboundInputField.OCCURRED_AT.displayName -> stringResource(
+                                                        R.string.occurred_at_date
+                                                    )
+
+                                                    InboundInputField.PROCESSED_AT.displayName -> stringResource(
+                                                        R.string.processed_at_date
+                                                    )
+
+                                                    else -> ""
+                                                },
+                                                isRequired = result.isRequired,
+                                                isNumeric = false,
+                                                shape = RoundedCornerShape(13.dp),
+                                                readOnly = true,
+                                                isDropDown = false,
+                                                enable = false,
+                                                trailingIcon = {
+                                                    Icon(
+                                                        imageVector = Icons.Default.CalendarMonth,
+                                                        contentDescription = null,
+                                                        tint = brightAzure,
+                                                        modifier = Modifier.clickable(
+                                                            onClick = {
+                                                                appViewModel.onGeneralIntent(
+                                                                    ShareIntent.ToggleDatePicker(
+                                                                        field = when (result.fieldName) {
+                                                                            InboundInputField.OCCURRED_AT.displayName -> InboundInputField.OCCURRED_AT.displayName
+                                                                            InboundInputField.PROCESSED_AT.displayName -> InboundInputField.PROCESSED_AT.displayName
+                                                                            else -> ""
+                                                                        },
+                                                                        showDatePicker = true
+                                                                    )
+                                                                )
+                                                            }
+                                                        )
+                                                    )
+                                                }
+                                            )
+                                            InputFieldContainer(
+                                                modifier = Modifier.weight(1f),
+                                                value = when (result.fieldName) {
+                                                    InboundInputField.OCCURRED_AT.displayName -> inputState.occurredAtTime
+                                                    InboundInputField.PROCESSED_AT.displayName -> inputState.processedAtTime
+                                                    else -> ""
+                                                },
+                                                label = when (result.fieldName) {
+                                                    InboundInputField.OCCURRED_AT.displayName -> stringResource(
+                                                        R.string.occurred_at_time
+                                                    )
+
+                                                    InboundInputField.PROCESSED_AT.displayName -> stringResource(
+                                                        R.string.processed_at_time
+                                                    )
+
+                                                    else -> ""
+                                                },
+                                                isRequired = result.isRequired,
+                                                isNumeric = false,
+                                                shape = RoundedCornerShape(13.dp),
+                                                readOnly = true,
+                                                isDropDown = false,
+                                                enable = false,
+                                                trailingIcon = {
+                                                    Icon(
+                                                        imageVector = Icons.Default.Timer,
+                                                        contentDescription = null,
+                                                        tint = brightAzure,
+                                                        modifier = Modifier.clickable(
+                                                            onClick = {
+                                                                appViewModel.onGeneralIntent(
+                                                                    ShareIntent.ToggleTimePicker(
+                                                                        field = when (result.fieldName) {
+                                                                            InboundInputField.OCCURRED_AT.displayName -> InboundInputField.OCCURRED_AT.displayName
+                                                                            InboundInputField.PROCESSED_AT.displayName -> InboundInputField.PROCESSED_AT.displayName
+                                                                            else -> ""
+                                                                        },
+                                                                        showTimePicker = true
+                                                                    )
+                                                                )
+                                                            }
+                                                        )
+                                                    )
+                                                }
+                                            )
+                                        }
                                     }
                                 }
                             }

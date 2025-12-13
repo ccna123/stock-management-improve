@@ -13,6 +13,7 @@ import com.example.sol_denka_stockmanagement.constant.CsvHistoryDirection
 import com.example.sol_denka_stockmanagement.constant.CsvHistoryResult
 import com.example.sol_denka_stockmanagement.constant.CsvTaskType
 import com.example.sol_denka_stockmanagement.constant.DialogType
+import com.example.sol_denka_stockmanagement.constant.InboundInputField
 import com.example.sol_denka_stockmanagement.constant.StatusCode
 import com.example.sol_denka_stockmanagement.constant.generateIso8601JstTimestamp
 import com.example.sol_denka_stockmanagement.database.repository.csv.CsvHistoryRepository
@@ -127,7 +128,6 @@ class AppViewModel @Inject constructor(
     private val _inboundInputFormResults =
         MutableStateFlow<List<InboundInputFormModel>>(emptyList())
     val inboundInputFormResults = _inboundInputFormResults.asStateFlow()
-
 
     val readerInfo = readerController.readerInfo.stateIn(
         scope = viewModelScope,
@@ -295,6 +295,8 @@ class AppViewModel @Inject constructor(
             is InputIntent.SearchKeyWord -> _inputState.update { it.copy(itemInCategory = intent.itemName) }
             is InputIntent.ChangeSpecificGravity -> _inputState.update { it.copy(specificGravity = intent.value) }
             is InputIntent.ChangeWidth -> _inputState.update { it.copy(width = intent.value) }
+            is InputIntent.ChangeProcessedAtDate -> _inputState.update { it.copy(processedAtDate = intent.value) }
+            is InputIntent.ChangeProcessedAtTime -> _inputState.update { it.copy(processedAtTime = intent.value) }
         }
     }
 
@@ -358,7 +360,7 @@ class AppViewModel @Inject constructor(
             ShareIntent.ToggleRadioPowerChangeDialog -> showRadioPowerChangeDialog.value =
                 !showRadioPowerChangeDialog.value
 
-            is ShareIntent.ToggleTimePicker -> _generalState.update { it.copy(showTimePicker = intent.showTimePicker) }
+
             ShareIntent.ResetDetailIndex -> _generalState.update { it.copy(currentIndex = 0) }
             ShareIntent.HiddenDialog -> _dialogState.update { Hidden }
             is ShareIntent.ShowDialog -> {
@@ -397,7 +399,32 @@ class AppViewModel @Inject constructor(
                 }
             }
 
-            is ShareIntent.ToggleDatePicker -> _generalState.update { it.copy(showDatePicker = intent.showDatePicker) }
+            is ShareIntent.ToggleTimePicker -> {
+                _generalState.update {
+                    it.copy(
+                        showTimePicker = intent.showTimePicker,
+                        inboundInputFieldDateTime = when (intent.field) {
+                            InboundInputField.OCCURRED_AT.displayName -> InboundInputField.OCCURRED_AT.displayName
+                            InboundInputField.PROCESSED_AT.displayName -> InboundInputField.PROCESSED_AT.displayName
+                            else -> ""
+                        }
+                    )
+                }
+            }
+
+            is ShareIntent.ToggleDatePicker -> {
+                _generalState.update {
+                    it.copy(
+                        showDatePicker = intent.showDatePicker,
+                        inboundInputFieldDateTime = when (intent.field) {
+                            InboundInputField.OCCURRED_AT.displayName -> InboundInputField.OCCURRED_AT.displayName
+                            InboundInputField.PROCESSED_AT.displayName -> InboundInputField.PROCESSED_AT.displayName
+                            else -> ""
+                        }
+                    )
+                }
+            }
+
             is ShareIntent.MarkOutboundProcessError -> {
                 _outboundProcessErrorSet.value = intent.epcs.toSet()
             }
@@ -435,7 +462,7 @@ class AppViewModel @Inject constructor(
             ExpandIntent.ToggleLocationExpanded ->
                 _expandState.update { it.copy(locationExpanded = !_expandState.value.locationExpanded) }
 
-            ExpandIntent.TogglePackingStyleExpanded ->
+            ExpandIntent.TogglePackingTypeExpanded ->
                 _expandState.update { it.copy(packingStyleExpanded = !_expandState.value.packingStyleExpanded) }
 
             ExpandIntent.ToggleProcessMethodExpanded ->
@@ -523,7 +550,7 @@ class AppViewModel @Inject constructor(
         }
     }
 
-    private fun resetInboundInputForm(){
+    private fun resetInboundInputForm() {
         _inputState.update {
             it.copy(
                 width = "",
@@ -538,7 +565,11 @@ class AppViewModel @Inject constructor(
                 weight = "",
                 lotNo = "",
                 packingType = "",
-                occurrenceReason = ""
+                occurrenceReason = "",
+                occurredAtDate = "",
+                occurredAtTime = "",
+                processedAtDate = "",
+                processedAtTime = "",
             )
         }
     }

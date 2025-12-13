@@ -190,14 +190,32 @@ enum class Category(val displayName: String){
     INTERMEDIATE_PRODUCT("中間品"),
 }
 
+enum class InboundInputField(val displayName: String){
+    WEIGHT("重量"),
+    LENGTH("長さ"),
+    WIDTH("巾"),
+    THICKNESS("厚み"),
+    SPECIFIC_GRAVITY("比重"),
+    LOT_NO("Lot No"),
+    WINDER_INFO("巻き取り機情報"),
+    OCCURRENCE_REASON("発生理由"),
+    MEMO("備考"),
+    LOCATION("保管場所"),
+    PACKING_TYPE("荷姿"),
+    OCCURRED_AT("発生日時"),
+    PROCESSED_AT("処理日時")
+}
+
 enum class DataType {
     TEXT,
-    NUMBER
+    NUMBER,
+    DATETIME
 }
 
 enum class ControlType{
     INPUT,
-    DROPDOWN
+    DROPDOWN,
+    DATETIMEPICKER
 }
 
 enum class WinderType(val displayName: String) {

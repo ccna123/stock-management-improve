@@ -17,6 +17,8 @@ data class InputState(
     val lotNo: String = "",
     val occurredAtDate: String = "",
     val occurredAtTime: String = "",
+    val processedAtDate: String = "",
+    val processedAtTime: String = "",
     val packingType: String = "",
     val width: String = "",
     val occurrenceReason: String = "",

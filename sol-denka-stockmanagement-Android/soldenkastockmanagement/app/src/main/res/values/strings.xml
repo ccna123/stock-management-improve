@@ -44,6 +44,8 @@
     <string name="occurred_at_hint">発生日時入力</string>
     <string name="occurred_at_date">発生日</string>
     <string name="occurred_at_time">発生時間</string>
+    <string name="processed_at_date">処理日</string>
+    <string name="processed_at_time">処理時間</string>
     <string name="finish_search">探索完了</string>
     <string name="no_items_found">発見数</string>
     <string name="found">発見</string>
@@ -90,6 +92,7 @@
     <string name="unknown">未知</string>
     <string name="no_csv_file_found">CSVファイルが見つかりません。</string>
     <string name="csv_export_title">以下の内容でCSVファイルを出力します</string>
+    <string name="choose_time">時刻を選択</string>
 
     <!-- 入力-->
     <string name="grade_hint">グレード入力</string>

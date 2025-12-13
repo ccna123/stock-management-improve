@@ -4,6 +4,7 @@ import android.util.Log
 import com.example.sol_denka_stockmanagement.app_interface.IPresetRepo
 import com.example.sol_denka_stockmanagement.constant.ControlType
 import com.example.sol_denka_stockmanagement.constant.DataType
+import com.example.sol_denka_stockmanagement.constant.InboundInputField
 import com.example.sol_denka_stockmanagement.database.dao.field.FieldMasterDao
 import com.example.sol_denka_stockmanagement.model.field.FieldMasterModel
 import com.example.sol_denka_stockmanagement.model.field.toEntity
@@ -22,68 +23,80 @@ class FieldMasterRepository @Inject constructor(
     val presetUnits = listOf(
         FieldMasterModel(
             fieldId = 1,
-            fieldName = "重量",
+            fieldName = InboundInputField.WEIGHT.displayName,
             dataType = DataType.NUMBER,
             controlType = ControlType.INPUT
         ),FieldMasterModel(
             fieldId = 2,
-            fieldName = "長さ",
+            fieldName = InboundInputField.LENGTH.displayName,
             dataType = DataType.NUMBER,
             controlType = ControlType.INPUT
         ),
         FieldMasterModel(
             fieldId = 3,
-            fieldName = "比重",
+            fieldName = InboundInputField.SPECIFIC_GRAVITY.displayName,
             dataType = DataType.NUMBER,
             controlType = ControlType.INPUT
         ),
         FieldMasterModel(
             fieldId = 4,
-            fieldName = "巾",
+            fieldName = InboundInputField.WIDTH.displayName,
             dataType = DataType.NUMBER,
             controlType = ControlType.INPUT
         ),
         FieldMasterModel(
             fieldId = 5,
-            fieldName = "厚み",
+            fieldName = InboundInputField.THICKNESS.displayName,
             dataType = DataType.NUMBER,
             controlType = ControlType.INPUT
         ),
         FieldMasterModel(
             fieldId = 6,
-            fieldName = "Lot No",
+            fieldName = InboundInputField.LOT_NO.displayName,
             dataType = DataType.NUMBER,
             controlType = ControlType.INPUT
         ),
         FieldMasterModel(
             fieldId = 7,
-            fieldName = "巻き取り機情報",
+            fieldName = InboundInputField.WINDER_INFO.displayName,
             dataType = DataType.TEXT,
             controlType = ControlType.INPUT
         ),
         FieldMasterModel(
             fieldId = 8,
-            fieldName = "発生理由",
+            fieldName = InboundInputField.OCCURRENCE_REASON.displayName,
             dataType = DataType.TEXT,
             controlType = ControlType.INPUT
         ),
         FieldMasterModel(
             fieldId = 9,
-            fieldName = "備考",
+            fieldName = InboundInputField.MEMO.displayName,
             dataType = DataType.TEXT,
             controlType = ControlType.INPUT
         ),
         FieldMasterModel(
             fieldId = 10,
-            fieldName = "保管場所",
+            fieldName = InboundInputField.LOCATION.displayName,
             dataType = DataType.TEXT,
             controlType = ControlType.DROPDOWN
         ),
         FieldMasterModel(
             fieldId = 11,
-            fieldName = "荷姿",
+            fieldName = InboundInputField.PACKING_TYPE.displayName,
             dataType = DataType.TEXT,
             controlType = ControlType.DROPDOWN
+        ),
+        FieldMasterModel(
+            fieldId = 12,
+            fieldName = InboundInputField.OCCURRED_AT.displayName,
+            dataType = DataType.DATETIME,
+            controlType = ControlType.DATETIMEPICKER
+        ),
+        FieldMasterModel(
+            fieldId = 13,
+            fieldName = InboundInputField.PROCESSED_AT.displayName,
+            dataType = DataType.DATETIME,
+            controlType = ControlType.DATETIMEPICKER
         ),
     )
 

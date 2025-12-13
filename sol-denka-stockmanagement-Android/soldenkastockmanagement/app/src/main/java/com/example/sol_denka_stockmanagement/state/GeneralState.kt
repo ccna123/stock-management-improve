@@ -17,4 +17,5 @@ data class GeneralState(
     val showDatePicker: Boolean = false,
     var isAllSelected: Boolean = false,
     val selectedChipIndex: Int = 0,
+    val inboundInputFieldDateTime: String = ""
 )

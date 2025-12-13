@@ -18,16 +18,9 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.Timer
-import androidx.compose.material3.DatePicker
-import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
-import androidx.compose.material3.TimePicker
-import androidx.compose.material3.TimePickerDialog
-import androidx.compose.material3.rememberDatePickerState
-import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -46,6 +39,7 @@ import com.example.sol_denka_stockmanagement.constant.DialogType
 import com.example.sol_denka_stockmanagement.constant.StatusCode
 import com.example.sol_denka_stockmanagement.helper.message_mapper.MessageMapper
 import com.example.sol_denka_stockmanagement.intent.InputIntent
+import com.example.sol_denka_stockmanagement.intent.InputIntent.ChangeOccurredAtTime
 import com.example.sol_denka_stockmanagement.intent.ShareIntent
 import com.example.sol_denka_stockmanagement.model.scan.ScanResultRowModel
 import com.example.sol_denka_stockmanagement.navigation.Screen
@@ -53,12 +47,12 @@ import com.example.sol_denka_stockmanagement.screen.layout.Layout
 import com.example.sol_denka_stockmanagement.share.ButtonContainer
 import com.example.sol_denka_stockmanagement.share.InputFieldContainer
 import com.example.sol_denka_stockmanagement.share.ScanResultTable
+import com.example.sol_denka_stockmanagement.share.dialog.DateDialog
+import com.example.sol_denka_stockmanagement.share.dialog.TimeDialog
 import com.example.sol_denka_stockmanagement.ui.theme.brightAzure
 import com.example.sol_denka_stockmanagement.viewmodel.AppViewModel
 import com.example.sol_denka_stockmanagement.viewmodel.ScanViewModel
 import kotlinx.coroutines.launch
-import java.util.Calendar
-import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
@@ -82,80 +76,27 @@ fun OutboundScreen(
         scanViewModel.applyProcessType(processTypeMap)
     }
 
-    if (generalState.showTimePicker) {
-        val current = Calendar.getInstance()
-        val state = rememberTimePickerState(
-            initialHour = current.get(Calendar.HOUR_OF_DAY),
-            initialMinute = current.get(Calendar.MINUTE),
-            is24Hour = true
-        )
-
-        TimePickerDialog(
-            title = { Text("時刻を選択") },
-            onDismissRequest = {
-                appViewModel.onGeneralIntent(ShareIntent.ToggleTimePicker(false))
-            },
-            confirmButton = {
-                TextButton(onClick = {
-                    val timeStr = String.format(Locale.US, "%02d:%02d", state.hour, state.minute)
-                    appViewModel.onInputIntent(InputIntent.ChangeOccurredAtTime(timeStr))
-                    appViewModel.onGeneralIntent(ShareIntent.ToggleTimePicker(false))
-                }) {
-                    Text(text = stringResource(R.string.ok))
-                }
-            },
-            dismissButton = {
-                TextButton(onClick = {
-                    appViewModel.onGeneralIntent(ShareIntent.ToggleTimePicker(false))
-                }) {
-                    Text(text = stringResource(R.string.cancel))
-                }
-            }
-        ) {
-            TimePicker(state = state)
+    TimeDialog(
+        showTimeDialog = generalState.showTimePicker,
+        title = stringResource(R.string.choose_time),
+        confirmText = stringResource(R.string.ok),
+        cancelText = stringResource(R.string.cancel),
+        onConfirm = { time ->
+            appViewModel.onInputIntent(ChangeOccurredAtTime(time))
+            appViewModel.onGeneralIntent(ShareIntent.ToggleTimePicker(false))
+        },
+        onDismissRequest = {
+            appViewModel.onGeneralIntent(ShareIntent.ToggleTimePicker(false))
         }
-    }
+    )
 
-    if (generalState.showDatePicker) {
-        val today = Calendar.getInstance()
-        val datePickerState = rememberDatePickerState(
-            initialSelectedDateMillis = today.timeInMillis
-        )
-
-        DatePickerDialog(
-            onDismissRequest = {
-                appViewModel.onGeneralIntent(ShareIntent.ToggleDatePicker(false))
-            },
-            confirmButton = {
-                TextButton(
-                    onClick = {
-                        val millis = datePickerState.selectedDateMillis
-                        if (millis != null) {
-                            val cal = Calendar.getInstance().apply { timeInMillis = millis }
-                            val dateStr = String.format(
-                                Locale.US,
-                                "%04d/%02d/%02d",
-                                cal.get(Calendar.YEAR),
-                                cal.get(Calendar.MONTH) + 1,
-                                cal.get(Calendar.DAY_OF_MONTH)
-                            )
-                            appViewModel.onInputIntent(InputIntent.ChangeOccurredAtDate(dateStr))
-                        }
-                        appViewModel.onGeneralIntent(ShareIntent.ToggleDatePicker(false))
-                    }
-                ) { Text(text = stringResource(R.string.ok))  }
-            },
-            dismissButton = {
-                TextButton(
-                    onClick = {
-                        appViewModel.onGeneralIntent(ShareIntent.ToggleDatePicker(false))
-                    }
-                ) { Text(text = stringResource(R.string.cancel)) }
-            }
-        ) {
-            DatePicker(state = datePickerState)
-        }
-    }
+    DateDialog(
+        showDateDialog = generalState.showDatePicker,
+        confirmText = stringResource(R.string.ok),
+        cancelText = stringResource(R.string.cancel),
+        onConfirm = { date -> appViewModel.onInputIntent(InputIntent.ChangeOccurredAtDate(date)) },
+        onDismissRequest = { appViewModel.onGeneralIntent(ShareIntent.ToggleDatePicker(false)) }
+    )
 
     Layout(
         topBarText = stringResource(R.string.shipping),
