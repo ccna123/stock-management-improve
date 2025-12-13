@@ -1,6 +1,5 @@
 package com.example.sol_denka_stockmanagement.helper.controller
 
-import android.app.Application
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
@@ -35,7 +34,6 @@ import javax.inject.Singleton
 @OptIn(DelicateCoroutinesApi::class)
 @Singleton
 class ReaderController @Inject constructor(
-    private val context: Application,
 ) : IDeviceManager {
     private var fakeReader: FakeReader? = null
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)

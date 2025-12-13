@@ -1,15 +1,13 @@
 package com.example.sol_denka_stockmanagement.database.repository.winder
 
 import android.util.Log
-import com.example.sol_denka_stockmanagement.constant.ItemUnit
+import com.example.sol_denka_stockmanagement.app_interface.IPresetRepo
 import com.example.sol_denka_stockmanagement.constant.WinderType
 import com.example.sol_denka_stockmanagement.constant.generateTimeStamp
-import com.example.sol_denka_stockmanagement.database.dao.item.ItemUnitDao
 import com.example.sol_denka_stockmanagement.database.dao.winder.WinderInfoDao
-import com.example.sol_denka_stockmanagement.model.item.ItemUnitMasterModel
-import com.example.sol_denka_stockmanagement.model.item.toEntity
-import com.example.sol_denka_stockmanagement.model.item.toModel
 import com.example.sol_denka_stockmanagement.model.winder.WinderInfoModel
+import com.example.sol_denka_stockmanagement.model.winder.toEntity
+import com.example.sol_denka_stockmanagement.model.winder.toModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
@@ -19,7 +17,7 @@ import javax.inject.Singleton
 @Singleton
 class WinderInfoRepository @Inject constructor(
     private val dao: WinderInfoDao
-) {
+): IPresetRepo {
 
     private val presetUnits = listOf(
         WinderInfoModel(
@@ -72,20 +70,20 @@ class WinderInfoRepository @Inject constructor(
         ),
     )
 
-//    suspend fun ensurePresetInserted() {
-//        val existing = dao.get().firstOrNull() ?: emptyList()
-//        if (existing.isEmpty()) {
-//            presetUnits.forEach { dao.insert(it.toEntity()) }
-//            Log.i("TSS", "📦 [WinderInfoRepository] Preset Item Units inserted into DB")
-//        } else {
-//            Log.i("TSS", "📦 [WinderInfoRepository] Preset already exists → skip insert")
-//        }
-//    }
-//
-//    fun get(): Flow<List<WinderInfoModel>> =
-//        dao.get().map { entityList -> entityList.map { it.toModel() } }
-//
-//    suspend fun insert(model: WinderInfoModel) = dao.insert(model.toEntity())
-//    suspend fun update(model: WinderInfoModel) = dao.update(model.toEntity())
-//    suspend fun delete(model: WinderInfoModel) = dao.delete(model.toEntity())
+    override suspend fun ensurePresetInserted() {
+        val existing = dao.get().firstOrNull() ?: emptyList()
+        if (existing.isEmpty()) {
+            presetUnits.forEach { dao.insert(it.toEntity()) }
+            Log.i("TSS", "📦 [WinderInfoRepository] Preset Item Units inserted into DB")
+        } else {
+            Log.i("TSS", "📦 [WinderInfoRepository] Preset already exists → skip insert")
+        }
+    }
+
+    fun get(): Flow<List<WinderInfoModel>> =
+        dao.get().map { entityList -> entityList.map { it.toModel() } }
+
+    suspend fun insert(model: WinderInfoModel) = dao.insert(model.toEntity())
+    suspend fun update(model: WinderInfoModel) = dao.update(model.toEntity())
+    suspend fun delete(model: WinderInfoModel) = dao.delete(model.toEntity())
 }

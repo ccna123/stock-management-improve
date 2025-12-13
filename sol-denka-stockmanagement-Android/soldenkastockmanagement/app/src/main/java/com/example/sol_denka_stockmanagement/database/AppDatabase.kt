@@ -23,6 +23,7 @@ import com.example.sol_denka_stockmanagement.database.dao.tag.TagMasterDao
 import com.example.sol_denka_stockmanagement.database.dao.outbound.OutboundEventDao
 import com.example.sol_denka_stockmanagement.database.dao.outbound.OutboundSessionDao
 import com.example.sol_denka_stockmanagement.database.dao.process.ProcessTypeDao
+import com.example.sol_denka_stockmanagement.database.dao.winder.WinderInfoDao
 import com.example.sol_denka_stockmanagement.database.entity.csv.CsvHistoryEntity
 import com.example.sol_denka_stockmanagement.database.entity.csv.CsvTaskTypeEntity
 import com.example.sol_denka_stockmanagement.database.entity.field.FieldMasterEntity
@@ -43,6 +44,7 @@ import com.example.sol_denka_stockmanagement.database.entity.tag.TagMasterEntity
 import com.example.sol_denka_stockmanagement.database.entity.outbound.OutBoundEventEntity
 import com.example.sol_denka_stockmanagement.database.entity.outbound.OutboundSessionEntity
 import com.example.sol_denka_stockmanagement.database.entity.process.ProcessTypeEntity
+import com.example.sol_denka_stockmanagement.database.entity.winder.WinderInfoEntity
 
 @Database(
     entities = [
@@ -74,6 +76,8 @@ import com.example.sol_denka_stockmanagement.database.entity.process.ProcessType
 
         FieldMasterEntity::class,
         ItemTypeFieldSettingMasterEntity::class,
+
+        WinderInfoEntity::class
     ],
     version = 14
 )
@@ -119,5 +123,8 @@ abstract class AppDatabase : RoomDatabase() {
     //Field
     abstract fun fieldMasterDao(): FieldMasterDao
     abstract fun itemTypeFieldSettingMasterDao(): ItemTypeFieldSettingMasterDao
+
+    //Winder
+    abstract fun winderInfoDao(): WinderInfoDao
 
 }

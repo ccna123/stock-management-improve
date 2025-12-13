@@ -7,6 +7,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.sol_denka_stockmanagement.app_interface.ICsvExport
+import com.example.sol_denka_stockmanagement.app_interface.IPresetRepo
 import com.example.sol_denka_stockmanagement.constant.ConnectionState
 import com.example.sol_denka_stockmanagement.constant.CsvHistoryDirection
 import com.example.sol_denka_stockmanagement.constant.CsvHistoryResult
@@ -16,14 +17,10 @@ import com.example.sol_denka_stockmanagement.constant.StatusCode
 import com.example.sol_denka_stockmanagement.constant.generateIso8601JstTimestamp
 import com.example.sol_denka_stockmanagement.database.repository.csv.CsvHistoryRepository
 import com.example.sol_denka_stockmanagement.database.repository.csv.CsvTaskTypeRepository
-import com.example.sol_denka_stockmanagement.database.repository.field.FieldMasterRepository
 import com.example.sol_denka_stockmanagement.database.repository.field.ItemTypeFieldSettingMasterRepository
-import com.example.sol_denka_stockmanagement.database.repository.inventory.InventoryResultTypeRepository
 import com.example.sol_denka_stockmanagement.database.repository.item.ItemCategoryRepository
 import com.example.sol_denka_stockmanagement.database.repository.item.ItemTypeRepository
-import com.example.sol_denka_stockmanagement.database.repository.winder.ItemUnitRepository
 import com.example.sol_denka_stockmanagement.database.repository.location.LocationMasterRepository
-import com.example.sol_denka_stockmanagement.database.repository.process.ProcessTypeRepository
 import com.example.sol_denka_stockmanagement.helper.NetworkConnectionObserver
 import com.example.sol_denka_stockmanagement.helper.ProcessResult
 import com.example.sol_denka_stockmanagement.helper.controller.ReaderController
@@ -64,16 +61,13 @@ class AppViewModel @Inject constructor(
     @ApplicationContext private val context: Context,
     private val readerController: ReaderController,
     private val connectionObserver: NetworkConnectionObserver,
-    private val itemUnitRepository: ItemUnitRepository,
     private val locationMasterRepository: LocationMasterRepository,
-    private val processTypeRepository: ProcessTypeRepository,
     private val csvTaskTypeRepository: CsvTaskTypeRepository,
-    private val inventoryResultTypeRepository: InventoryResultTypeRepository,
     private val csvHistoryRepository: CsvHistoryRepository,
-    private val fieldMasterRepository: FieldMasterRepository,
     private val itemTypeRepository: ItemTypeRepository,
     private val itemTypeFieldSettingMasterRepository: ItemTypeFieldSettingMasterRepository,
     private val itemCategoryRepository: ItemCategoryRepository,
+    private val presetRepositories: Set<@JvmSuppressWildcards IPresetRepo>,
     private val csvHelper: CsvHelper,
 ) : ViewModel() {
 
@@ -199,12 +193,9 @@ class AppViewModel @Inject constructor(
             }
         }
         viewModelScope.launch(Dispatchers.IO) {
-            itemUnitRepository.ensurePresetInserted()
-            processTypeRepository.ensurePresetInserted()
-            csvTaskTypeRepository.ensurePresetInserted()
-            inventoryResultTypeRepository.ensurePresetInserted()
-            fieldMasterRepository.ensurePresetInserted()
-            itemCategoryRepository.ensurePresetInserted()
+            presetRepositories.forEach {
+                it.ensurePresetInserted()
+            }
         }
     }
 

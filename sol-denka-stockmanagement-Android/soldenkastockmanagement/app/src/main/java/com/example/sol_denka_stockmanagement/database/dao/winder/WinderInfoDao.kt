@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface WinderInfoDao: IDao<WinderInfoEntity> {
 
-    @Query("SELECT * FROM CsvHistory")
+    @Query("SELECT * FROM WinderInfo")
     override fun get(): Flow<List<WinderInfoEntity>>
 
     @Insert

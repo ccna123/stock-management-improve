@@ -2,7 +2,7 @@ package com.example.sol_denka_stockmanagement.model.csv
 
 import com.example.sol_denka_stockmanagement.constant.CsvHistoryDirection
 import com.example.sol_denka_stockmanagement.constant.CsvHistoryResult
-import com.example.sol_denka_stockmanagement.database.entity.winder.CsvHistoryEntity
+import com.example.sol_denka_stockmanagement.database.entity.csv.CsvHistoryEntity
 
 data class CsvHistoryModel(
     val csvHistoryId: Int = 0,
@@ -35,4 +35,13 @@ fun CsvHistoryModel.toEntity() = CsvHistoryEntity(
     recordNum = recordNum,
     errorMessage = errorMessage,
     executedAt = executedAt
+)
+
+data class CsvFileInfoModel(
+    val fileName: String,
+    val fileSize: String,
+    val filePath: String,
+    val progress: Float = 0f,
+    val isCompleted: Boolean = false,
+    val isFailed: Boolean = false,
 )

@@ -1,6 +1,7 @@
 package com.example.sol_denka_stockmanagement.database.repository.csv
 
 import android.util.Log
+import com.example.sol_denka_stockmanagement.app_interface.IPresetRepo
 import com.example.sol_denka_stockmanagement.constant.CsvTaskType
 import com.example.sol_denka_stockmanagement.constant.generateTimeStamp
 import com.example.sol_denka_stockmanagement.database.dao.csv.CsvTaskTypeDao
@@ -16,7 +17,7 @@ import javax.inject.Singleton
 @Singleton
 class CsvTaskTypeRepository @Inject constructor(
     private val dao: CsvTaskTypeDao
-) {
+): IPresetRepo {
 
     val presetUnits = listOf(
         CsvTaskTypeModel(
@@ -63,7 +64,7 @@ class CsvTaskTypeRepository @Inject constructor(
         ),
     )
 
-    suspend fun ensurePresetInserted() {
+    override suspend fun ensurePresetInserted() {
         val existing = dao.get().firstOrNull() ?: emptyList()
         if (existing.isEmpty()) {
             presetUnits.forEach { dao.insert(it.toEntity()) }

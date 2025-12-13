@@ -1,6 +1,7 @@
 package com.example.sol_denka_stockmanagement.database.repository.process
 
 import android.util.Log
+import com.example.sol_denka_stockmanagement.app_interface.IPresetRepo
 import com.example.sol_denka_stockmanagement.constant.ProcessMethod
 import com.example.sol_denka_stockmanagement.constant.generateTimeStamp
 import com.example.sol_denka_stockmanagement.database.dao.process.ProcessTypeDao
@@ -16,7 +17,7 @@ import javax.inject.Singleton
 @Singleton
 class ProcessTypeRepository @Inject constructor(
     private val dao: ProcessTypeDao
-) {
+): IPresetRepo {
 
     val presetUnits = listOf(
         ProcessTypeModel(
@@ -42,7 +43,7 @@ class ProcessTypeRepository @Inject constructor(
         ),
     )
 
-    suspend fun ensurePresetInserted() {
+    override suspend fun ensurePresetInserted() {
         val existing = dao.get().firstOrNull() ?: emptyList()
         if (existing.isEmpty()) {
             presetUnits.forEach { dao.insert(it.toEntity()) }

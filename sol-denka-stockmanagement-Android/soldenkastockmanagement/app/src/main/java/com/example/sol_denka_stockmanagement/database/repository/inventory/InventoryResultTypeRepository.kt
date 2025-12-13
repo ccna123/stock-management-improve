@@ -1,6 +1,7 @@
 package com.example.sol_denka_stockmanagement.database.repository.inventory
 
 import android.util.Log
+import com.example.sol_denka_stockmanagement.app_interface.IPresetRepo
 import com.example.sol_denka_stockmanagement.constant.InventoryResultType
 import com.example.sol_denka_stockmanagement.constant.generateTimeStamp
 import com.example.sol_denka_stockmanagement.database.dao.inventory.InventoryResultTypeDao
@@ -16,7 +17,7 @@ import javax.inject.Singleton
 @Singleton
 class InventoryResultTypeRepository @Inject constructor(
     private val dao: InventoryResultTypeDao
-) {
+): IPresetRepo {
 
     val presetUnits = listOf(
         InventoryResultTypeModel(
@@ -49,7 +50,7 @@ class InventoryResultTypeRepository @Inject constructor(
         ),
     )
 
-    suspend fun ensurePresetInserted() {
+    override suspend fun ensurePresetInserted() {
         val existing = dao.get().firstOrNull() ?: emptyList()
         if (existing.isEmpty()) {
             presetUnits.forEach { dao.insert(it.toEntity()) }

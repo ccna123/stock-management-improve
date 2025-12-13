@@ -1,6 +1,5 @@
-package com.example.sol_denka_stockmanagement
+package com.example.sol_denka_stockmanagement.hilt
 
-import android.app.Application
 import android.content.Context
 import android.content.SharedPreferences
 import android.os.Build
@@ -27,6 +26,7 @@ import com.example.sol_denka_stockmanagement.database.dao.outbound.OutboundEvent
 import com.example.sol_denka_stockmanagement.database.dao.outbound.OutboundSessionDao
 import com.example.sol_denka_stockmanagement.database.dao.process.ProcessTypeDao
 import com.example.sol_denka_stockmanagement.database.dao.tag.TagMasterDao
+import com.example.sol_denka_stockmanagement.database.dao.winder.WinderInfoDao
 import com.example.sol_denka_stockmanagement.helper.controller.ReaderController
 import com.example.sol_denka_stockmanagement.helper.controller.TagController
 import dagger.Module
@@ -52,7 +52,7 @@ object AppModule {
     @Provides
     @Singleton
     fun provideReaderController(@ApplicationContext context: Context): ReaderController {
-        return ReaderController(context = context as Application)
+        return ReaderController()
     }
 
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
@@ -202,6 +202,12 @@ object AppModule {
     @Singleton
     fun provideItemCategoryDao(database: AppDatabase): ItemCategoryDao {
         return database.itemCategoryDao()
+    }
+
+    @Provides
+    @Singleton
+    fun provideWinderInfoDao(database: AppDatabase): WinderInfoDao {
+        return database.winderInfoDao()
     }
 
 }
