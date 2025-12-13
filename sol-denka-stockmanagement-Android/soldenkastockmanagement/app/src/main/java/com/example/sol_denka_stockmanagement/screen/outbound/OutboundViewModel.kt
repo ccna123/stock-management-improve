@@ -1,10 +1,7 @@
 package com.example.sol_denka_stockmanagement.screen.outbound
 
 import android.os.Build
-import android.util.Log
 import androidx.lifecycle.ViewModel
-import androidx.sqlite.SQLiteException
-import com.example.sol_denka_stockmanagement.constant.generateIso8601JstTimestamp
 import com.example.sol_denka_stockmanagement.database.repository.outbound.OutboundRepository
 import com.example.sol_denka_stockmanagement.database.repository.process.ProcessTypeRepository
 import com.example.sol_denka_stockmanagement.database.repository.tag.TagMasterRepository
@@ -26,6 +23,8 @@ class OutboundViewModel @Inject constructor(
 
     suspend fun generateCsvData(
         memo: String,
+        processedAt: String,
+        registeredAt: String,
         rfidTagList: List<TagMasterModel>
     ): List<OutboundResultCsvModel> =
         withContext(Dispatchers.IO) {
@@ -40,8 +39,8 @@ class OutboundViewModel @Inject constructor(
                     processTypeId = processTypeId,
                     deviceId = Build.ID,
                     memo = memo,
-                    occurredAt = generateIso8601JstTimestamp(),
-                    registeredAt = generateIso8601JstTimestamp()
+                    processedAt = processedAt,
+                    registeredAt = registeredAt
                 )
                 csvModels.add(model)
             }
@@ -49,14 +48,16 @@ class OutboundViewModel @Inject constructor(
         }
 
     suspend fun saveOutboundToDb(
-        memo: String,
-        occurredAt: String,
+        memo: String?,
+        processedAt: String,
+        registeredAt: String,
         rfidTagList: List<TagMasterModel>
     ): Result<Int> {
         return try {
             val sessionId = outboundRepository.saveOutbound(
-                memo = memo,
-                occurredAt = occurredAt,
+                memo = memo?.takeIf { it.isNotBlank() } ?: "",
+                processedAt = processedAt,
+                registeredAt = registeredAt,
                 tags = rfidTagList
             )
             Result.success(sessionId)

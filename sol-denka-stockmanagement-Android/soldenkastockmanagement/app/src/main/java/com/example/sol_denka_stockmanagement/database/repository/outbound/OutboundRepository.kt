@@ -22,8 +22,9 @@ class OutboundRepository @Inject constructor(
 ) {
 
     suspend fun saveOutbound(
-        memo: String,
-        occurredAt: String,
+        memo: String?,
+        processedAt: String,
+        registeredAt: String,
         tags: List<TagMasterModel>
     ): Int = db.withTransaction {
 
@@ -45,8 +46,8 @@ class OutboundRepository @Inject constructor(
                     ledgerItemId = ledgerId ?: 0,
                     processTypeId = processTypeId,
                     memo = memo,
-                    occurredAt = occurredAt,
-                    registeredAt = generateIso8601JstTimestamp()
+                    processedAt = processedAt,
+                    registeredAt = registeredAt
                 )
             )
         }

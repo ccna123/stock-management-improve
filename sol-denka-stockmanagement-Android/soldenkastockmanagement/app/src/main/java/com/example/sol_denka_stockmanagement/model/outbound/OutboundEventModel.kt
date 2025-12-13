@@ -8,7 +8,7 @@ data class OutBoundEventModel(
     val ledgerItemId: Int,
     val processTypeId: Int,
     val memo: String?,
-    val occurredAt: String,
+    val processedAt: String?,
     val registeredAt: String,
 )
 
@@ -18,7 +18,7 @@ fun OutBoundEventEntity.toModel() = OutBoundEventModel(
     ledgerItemId = ledgerItemId,
     processTypeId = processTypeId,
     memo = memo,
-    occurredAt = occurredAt,
+    processedAt = processedAt,
     registeredAt = registeredAt
 )
 
@@ -28,6 +28,6 @@ fun OutBoundEventModel.toEntity() = OutBoundEventEntity(
     ledgerItemId = ledgerItemId,
     processTypeId = processTypeId,
     memo = memo,
-    occurredAt = occurredAt,
+    processedAt = processedAt,
     registeredAt = registeredAt
 )

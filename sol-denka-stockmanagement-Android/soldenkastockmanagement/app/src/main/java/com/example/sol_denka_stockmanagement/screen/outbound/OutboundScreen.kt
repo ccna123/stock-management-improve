@@ -37,6 +37,7 @@ import com.example.sol_denka_stockmanagement.constant.CsvHistoryDirection
 import com.example.sol_denka_stockmanagement.constant.CsvTaskType
 import com.example.sol_denka_stockmanagement.constant.DialogType
 import com.example.sol_denka_stockmanagement.constant.StatusCode
+import com.example.sol_denka_stockmanagement.constant.generateIso8601JstTimestamp
 import com.example.sol_denka_stockmanagement.helper.message_mapper.MessageMapper
 import com.example.sol_denka_stockmanagement.intent.InputIntent
 import com.example.sol_denka_stockmanagement.intent.InputIntent.ChangeOccurredAtTime
@@ -124,7 +125,8 @@ fun OutboundScreen(
                     scope.launch {
                         val result = outboundViewModel.saveOutboundToDb(
                             memo = inputState.memo,
-                            occurredAt = inputState.occurredAtDate + "_" + inputState.occurredAtTime,
+                            processedAt = "${inputState.processedAtDate}_${inputState.processedAtTime}",
+                            registeredAt = generateIso8601JstTimestamp(),
                             rfidTagList = rfidTagList.filter { it.newFields.isChecked }
                         )
                         result.exceptionOrNull()?.let { e ->
@@ -139,6 +141,8 @@ fun OutboundScreen(
                         val csvModels =
                             outboundViewModel.generateCsvData(
                                 memo = inputState.memo,
+                                processedAt = "${inputState.processedAtDate}_${inputState.processedAtTime}",
+                                registeredAt = generateIso8601JstTimestamp(),
                                 rfidTagList = rfidTagList.filter { it.newFields.isChecked }
                             )
                         val saveResult = appViewModel.saveScanResultToCsv(
@@ -235,7 +239,11 @@ fun OutboundScreen(
                                     tint = brightAzure,
                                     modifier = Modifier.clickable(
                                         onClick = {
-                                            appViewModel.onGeneralIntent(ShareIntent.ToggleDatePicker(true))
+                                            appViewModel.onGeneralIntent(
+                                                ShareIntent.ToggleDatePicker(
+                                                    true
+                                                )
+                                            )
                                         }
                                     )
                                 )
@@ -257,7 +265,11 @@ fun OutboundScreen(
                                     tint = brightAzure,
                                     modifier = Modifier.clickable(
                                         onClick = {
-                                            appViewModel.onGeneralIntent(ShareIntent.ToggleTimePicker(true))
+                                            appViewModel.onGeneralIntent(
+                                                ShareIntent.ToggleTimePicker(
+                                                    true
+                                                )
+                                            )
                                         }
                                     )
                                 )

@@ -24,8 +24,6 @@ class TagMasterImporter(
                     tagId = p[0].toInt(),
                     ledgerItemId = p[1].ifBlank { null }?.toIntOrNull(),
                     epc = p[2],
-                    createdAt = generateTimeStamp(),
-                    updatedAt = generateTimeStamp(),
                     newFields = AdditionalFieldsModel(
                         tagStatus = TagStatus.UNPROCESSED,
                         inventoryResultType = InventoryResultType.UNKNOWN,

@@ -22,14 +22,15 @@ class InboundViewModel @Inject constructor(
 
     suspend fun generateCsvData(
         weight: String,
-        grade: String,
-        specificGravity: String,
-        thickness: String,
         width: String,
         length: String,
-        quantity: String,
-        winderInfo: String,
+        thickness: String,
+        lotNo: String,
         occurrenceReason: String,
+        quantity: String,
+        memo: String,
+        occurredAt: String,
+        processedAt: String,
         rfidTag: TagMasterModel?
     ): List<InboundResultCsvModel> =
         withContext(Dispatchers.IO) {
@@ -37,21 +38,23 @@ class InboundViewModel @Inject constructor(
             val (itemTypeId, locationId) = tagMasterRepository.getItemTypeIdLocationIdByTagId(
                 rfidTag?.tagId ?: 0
             )
+            val winderId = 0
             val model = InboundResultCsvModel(
                 tagId = rfidTag?.tagId ?: 0,
                 itemTypeId = itemTypeId,
                 locationId = locationId,
+                winderId = winderId,
                 deviceId = Build.ID,
                 weight = weight,
-                grade = grade,
-                specificGravity = specificGravity,
-                thickness = thickness,
                 width = width,
                 length = length,
-                quantity = quantity,
-                winderInfo = winderInfo,
+                thickness = thickness,
+                lotNo = lotNo,
                 occurrenceReason = occurrenceReason,
-                occurredAt = generateIso8601JstTimestamp(),
+                quantity = quantity,
+                memo = memo,
+                occurredAt = occurredAt,
+                processedAt = processedAt,
                 registeredAt = generateIso8601JstTimestamp()
             )
             csvModels.add(model)
@@ -59,30 +62,32 @@ class InboundViewModel @Inject constructor(
         }
 
     suspend fun saveInboundToDb(
-        weight: String,
-        grade: String,
-        specificGravity: String,
-        thickness: String,
-        width: String,
-        length: String,
-        quantity: String,
-        winderInfo: String,
-        occurrenceReason: String,
-        memo: String,
+        weight: String?,
+        thickness: String?,
+        width: String?,
+        length: String?,
+        quantity: String?,
+        lotNo: String?,
+        occurrenceReason: String?,
+        memo: String?,
+        occurredAt: String?,
+        processedAt: String?,
+        registeredAt: String,
         rfidTag: TagMasterModel?
     ): Result<Int> {
         return try {
             val sessionId = inboundRepository.saveInboundToDb(
-                memo = memo,
-                weight = weight,
-                grade = grade,
-                specificGravity = specificGravity,
-                thickness = thickness,
-                width = width,
-                length = length,
-                quantity = quantity,
-                winderInfo = winderInfo,
-                occurrenceReason = occurrenceReason,
+                weight = weight?.takeIf { it.isNotBlank() }?.toInt() ?: 0,
+                width = width?.takeIf { it.isNotBlank() }?.toInt() ?: 0,
+                length = length?.takeIf { it.isNotBlank() }?.toInt() ?: 0,
+                thickness = thickness?.takeIf { it.isNotBlank() }?.toInt() ?: 0,
+                lotNo = lotNo?.takeIf { it.isNotBlank() },
+                occurrenceReason = occurrenceReason?.takeIf { it.isNotBlank() },
+                quantity = quantity?.takeIf { it.isNotBlank() }?.toInt() ?: 0,
+                memo = memo?.takeIf { it.isNotBlank() },
+                occurredAt = occurredAt?.takeIf { it.isNotBlank() },
+                processedAt = processedAt?.takeIf { it.isNotBlank() },
+                registeredAt = registeredAt,
                 rfidTag = rfidTag,
             )
             Result.success(sessionId)

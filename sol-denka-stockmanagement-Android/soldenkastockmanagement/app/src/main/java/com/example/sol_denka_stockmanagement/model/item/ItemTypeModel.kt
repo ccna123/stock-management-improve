@@ -8,8 +8,9 @@ data class ItemTypeMasterModel(
     val itemCategoryId: Int,
     val itemTypeCode: String,
     val itemTypeName: String,
-    val createdAt: String,
-    val updatedAt: String,
+    val packingType: String?,
+    val grade: String?,
+    val specificGravity: String?,
 )
 
 fun ItemTypeMasterEntity.toModel() = ItemTypeMasterModel(
@@ -18,8 +19,9 @@ fun ItemTypeMasterEntity.toModel() = ItemTypeMasterModel(
     itemCategoryId = itemCategoryId,
     itemTypeCode = itemTypeCode,
     itemTypeName = itemTypeName,
-    createdAt = createdAt,
-    updatedAt = updatedAt
+    packingType = packingType,
+    specificGravity = specificGravity,
+    grade = grade,
 )
 
 fun ItemTypeMasterModel.toEntity() = ItemTypeMasterEntity(
@@ -28,6 +30,7 @@ fun ItemTypeMasterModel.toEntity() = ItemTypeMasterEntity(
     itemCategoryId = itemCategoryId,
     itemTypeCode = itemTypeCode,
     itemTypeName = itemTypeName,
-    createdAt = createdAt,
-    updatedAt = updatedAt
+    packingType = packingType,
+    specificGravity = specificGravity,
+    grade = grade,
 )

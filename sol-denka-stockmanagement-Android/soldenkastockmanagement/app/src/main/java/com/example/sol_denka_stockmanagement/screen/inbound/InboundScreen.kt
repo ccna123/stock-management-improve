@@ -51,6 +51,7 @@ import com.example.sol_denka_stockmanagement.constant.InboundInputField
 import com.example.sol_denka_stockmanagement.constant.PackingType
 import com.example.sol_denka_stockmanagement.constant.SelectTitle
 import com.example.sol_denka_stockmanagement.constant.StatusCode
+import com.example.sol_denka_stockmanagement.constant.generateIso8601JstTimestamp
 import com.example.sol_denka_stockmanagement.helper.message_mapper.MessageMapper
 import com.example.sol_denka_stockmanagement.intent.ExpandIntent
 import com.example.sol_denka_stockmanagement.intent.InputIntent
@@ -187,15 +188,16 @@ fun InboundScreen(
                         val result = inboundViewModel.saveInboundToDb(
                             rfidTag = rfidTagList.find { it.epc == lastInboundEpc },
                             weight = inputState.weight,
-                            grade = inputState.grade,
-                            thickness = inputState.thickness,
-                            length = inputState.length,
-                            winderInfo = inputState.winderInfo,
-                            memo = inputState.memo,
-                            specificGravity = inputState.specificGravity,
                             width = inputState.width,
-                            quantity = "",
+                            length = inputState.length,
+                            thickness = inputState.thickness,
+                            lotNo = inputState.lotNo,
                             occurrenceReason = inputState.occurrenceReason,
+                            quantity = inputState.quantity,
+                            memo = inputState.memo,
+                            occurredAt = "${inputState.occurredAtDate}_${inputState.occurredAtTime}",
+                            processedAt = "${inputState.processedAtDate}_${inputState.processedAtTime}",
+                            registeredAt = generateIso8601JstTimestamp()
                         )
                         result.exceptionOrNull()?.let { e ->
                             appViewModel.onGeneralIntent(
@@ -208,14 +210,15 @@ fun InboundScreen(
                         }
                         val csvModels = inboundViewModel.generateCsvData(
                             weight = inputState.weight,
-                            grade = inputState.grade,
-                            specificGravity = inputState.specificGravity,
-                            thickness = inputState.thickness,
                             width = inputState.width,
                             length = inputState.length,
-                            quantity = "",
-                            winderInfo = inputState.winderInfo,
+                            thickness = inputState.thickness,
+                            lotNo = inputState.lotNo,
                             occurrenceReason = inputState.occurrenceReason,
+                            quantity = inputState.quantity,
+                            memo = inputState.memo,
+                            occurredAt = "${inputState.occurredAtDate}_${inputState.occurredAtTime}",
+                            processedAt = "${inputState.processedAtDate}_${inputState.processedAtTime}",
                             rfidTag = rfidTagList.find { it.epc == lastInboundEpc },
                         )
                         val saveResult = appViewModel.saveScanResultToCsv(
@@ -679,18 +682,15 @@ fun InboundScreen(
                                                         locationMaster.forEach { location ->
                                                             DropdownMenuItem(
                                                                 text = {
-                                                                    location.locationName?.let {
-                                                                        Text(
-                                                                            text = it
-                                                                        )
-                                                                    }
+                                                                    Text(
+                                                                        text = location.locationName
+                                                                    )
                                                                 },
                                                                 onClick = {
                                                                     appViewModel.apply {
                                                                         onInputIntent(
                                                                             ChangeLocation(
                                                                                 if (location.locationName == SelectTitle.SelectLocation.displayName) "" else location.locationName
-                                                                                    ?: ""
                                                                             )
                                                                         )
                                                                         onExpandIntent(ExpandIntent.ToggleLocationExpanded)

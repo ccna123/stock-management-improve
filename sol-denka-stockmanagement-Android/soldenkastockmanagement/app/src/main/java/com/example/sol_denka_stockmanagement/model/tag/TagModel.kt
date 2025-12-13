@@ -7,8 +7,6 @@ data class TagMasterModel(
     val tagId: Int,
     val ledgerItemId: Int?,
     val epc: String,
-    val createdAt: String,
-    val updatedAt: String,
     val newFields: AdditionalFieldsModel = AdditionalFieldsModel.default()
 )
 
@@ -16,8 +14,6 @@ fun TagMasterEntity.toModel() = TagMasterModel(
     tagId = tagId,
     ledgerItemId = ledgerItemId,
     epc = epc,
-    createdAt = createdAt,
-    updatedAt = updatedAt,
     newFields = AdditionalFieldsModel.default()
 )
 
@@ -25,6 +21,4 @@ fun TagMasterModel.toEntity() = TagMasterEntity(
     tagId = tagId,
     ledgerItemId = ledgerItemId,
     epc = epc,
-    createdAt = createdAt,
-    updatedAt = updatedAt
 )

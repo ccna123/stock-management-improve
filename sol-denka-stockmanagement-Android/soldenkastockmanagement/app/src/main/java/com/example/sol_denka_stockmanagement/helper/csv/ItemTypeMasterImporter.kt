@@ -24,8 +24,9 @@ class ItemTypeMasterImporter(
                     itemTypeName = p[2],
                     itemUnitId = p[3].toInt(),
                     itemCategoryId = p[4].toInt(),
-                    createdAt = generateTimeStamp(),
-                    updatedAt = generateTimeStamp(),
+                    specificGravity = p[5],
+                    grade = p[6],
+                    packingType = p[7],
                 )
             }
 

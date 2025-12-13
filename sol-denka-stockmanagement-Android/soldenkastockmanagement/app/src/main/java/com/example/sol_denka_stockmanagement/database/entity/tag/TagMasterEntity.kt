@@ -27,6 +27,4 @@ data class TagMasterEntity(
     @PrimaryKey @ColumnInfo(name = "tag_id") val tagId: Int,
     @ColumnInfo(name = "ledger_item_id") val ledgerItemId: Int?,
     @ColumnInfo(name = "epc") val epc: String,
-    @ColumnInfo(name = "created_at") val createdAt: String,
-    @ColumnInfo(name = "updated_at") val updatedAt: String,
 )

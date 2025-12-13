@@ -4,24 +4,18 @@ import com.example.sol_denka_stockmanagement.database.entity.location.LocationMa
 
 data class LocationMasterModel(
     val locationId: Int,
+    val locationName: String,
     val locationCode: String?,
-    val locationName: String?,
-    val createdAt: String,
-    val updatedAt: String,
 )
 
 fun LocationMasterEntity.toModel() = LocationMasterModel(
     locationId = locationId,
     locationCode = locationCode,
     locationName = locationName,
-    createdAt = createdAt,
-    updatedAt = updatedAt
 )
 
 fun LocationMasterModel.toEntity() = LocationMasterEntity(
     locationId = locationId,
     locationCode = locationCode,
     locationName = locationName,
-    createdAt = createdAt,
-    updatedAt = updatedAt
 )

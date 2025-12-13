@@ -25,8 +25,6 @@ class LocationMasterImporter(
                     locationId = p[0].toInt(),
                     locationCode = p[1],
                     locationName = p[2],
-                    createdAt = generateTimeStamp(),
-                    updatedAt = generateTimeStamp()
                 )
             }
 

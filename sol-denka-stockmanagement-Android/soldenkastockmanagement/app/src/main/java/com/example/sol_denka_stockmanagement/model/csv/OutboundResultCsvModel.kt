@@ -11,7 +11,7 @@ data class OutboundResultCsvModel(
     val processTypeId: Int,
     val deviceId: String,
     val memo: String,
-    val occurredAt: String,
+    val processedAt: String,
     val registeredAt: String,
 
     ) : ICsvExport {
@@ -21,7 +21,7 @@ data class OutboundResultCsvModel(
         OutboundResultCsvHeader.process_type_id.name,
         OutboundResultCsvHeader.device_id.name,
         OutboundResultCsvHeader.memo.name,
-        OutboundResultCsvHeader.occurred_at.name,
+        OutboundResultCsvHeader.processed_at.name,
         OutboundResultCsvHeader.registerd_at.name
     )
 
@@ -31,7 +31,7 @@ data class OutboundResultCsvModel(
         processTypeId.toString(),
         deviceId,
         memo,
-        occurredAt,
+        processedAt,
         registeredAt
     )
 

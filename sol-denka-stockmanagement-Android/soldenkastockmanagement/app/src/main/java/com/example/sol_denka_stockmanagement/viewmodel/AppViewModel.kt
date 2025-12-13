@@ -297,6 +297,7 @@ class AppViewModel @Inject constructor(
             is InputIntent.ChangeWidth -> _inputState.update { it.copy(width = intent.value) }
             is InputIntent.ChangeProcessedAtDate -> _inputState.update { it.copy(processedAtDate = intent.value) }
             is InputIntent.ChangeProcessedAtTime -> _inputState.update { it.copy(processedAtTime = intent.value) }
+            is InputIntent.ChangeQuantity -> _inputState.update { it.copy(quantity = intent.value) }
         }
     }
 

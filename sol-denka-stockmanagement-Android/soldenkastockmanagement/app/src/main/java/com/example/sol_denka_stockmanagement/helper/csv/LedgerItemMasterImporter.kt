@@ -1,7 +1,6 @@
 package com.example.sol_denka_stockmanagement.helper.csv
 
 import com.example.sol_denka_stockmanagement.app_interface.ICsvImport
-import com.example.sol_denka_stockmanagement.constant.generateTimeStamp
 import com.example.sol_denka_stockmanagement.database.repository.ledger.LedgerItemRepository
 import com.example.sol_denka_stockmanagement.model.ledger.LedgerItemModel
 
@@ -33,21 +32,18 @@ class LedgerItemMasterImporter(
                     ledgerItemId = p[0].toInt(),
                     itemTypeId = p[1].toInt(),
                     locationId = p[2].toInt(),
-                    isInStock = parseBoolean(p[3]),
-
-                    weight = parseNullableInt(p[4]),
-                    grade = p[5].ifBlank { null },
-                    specificGravity = parseNullableInt(p[6]),
-                    thickness = parseNullableInt(p[7]),
-                    width = parseNullableInt(p[8]),
-                    length = parseNullableInt(p[9]),
-                    quantity = parseNullableInt(p[10]),
-
-                    winderInfo = p[11].ifBlank { null },
-                    occurrenceReason = p[12].ifBlank { null },
-
-                    createdAt = generateTimeStamp(),
-                    updatedAt = generateTimeStamp()
+                    winderInfoId = p[3].toInt(),
+                    isInStock = parseBoolean(p[4]),
+                    weight = parseNullableInt(p[5]),
+                    width = parseNullableInt(p[6]),
+                    length = parseNullableInt(p[7]),
+                    thickness = parseNullableInt(p[8]),
+                    lotNo = parseNullableInt(p[9]),
+                    occurrenceReason = p[10].ifBlank { null },
+                    quantity = parseNullableInt(p[11]),
+                    memo = p[12],
+                    occurredAt = p[13],
+                    processedAt = p[14],
                 )
             }
 

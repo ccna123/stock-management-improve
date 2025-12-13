@@ -15,6 +15,7 @@ data class InputState(
     val winderInfo: String = "",
     val weight: String = "",
     val lotNo: String = "",
+    val quantity: String = "",
     val occurredAtDate: String = "",
     val occurredAtTime: String = "",
     val processedAtDate: String = "",

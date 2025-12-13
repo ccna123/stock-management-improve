@@ -45,6 +45,6 @@ data class OutBoundEventEntity(
     @ColumnInfo(name = "ledger_item_id") val ledgerItemId: Int,
     @ColumnInfo(name = "process_type_id") val processTypeId: Int,
     @ColumnInfo(name = "memo") val memo: String?,
-    @ColumnInfo(name = "occurred_at") val occurredAt: String,
+    @ColumnInfo(name = "processed_at") val processedAt: String?,
     @ColumnInfo(name = "registered_at") val registeredAt: String,
 )

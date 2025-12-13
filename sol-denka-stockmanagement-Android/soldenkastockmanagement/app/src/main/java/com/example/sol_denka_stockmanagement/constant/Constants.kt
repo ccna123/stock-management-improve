@@ -139,18 +139,19 @@ enum class TagStatus {
 enum class InboundResultCsvHeader {
     tag_id,
     item_type_id,
+    winder_id,
     location_id,
     device_id,
     weight,
-    grade,
-    specific_gravity,
     thickness,
     width,
     length,
     quantity,
-    winder_info,
-    missroll_reason,
+    occurrence_reason,
+    lot_no,
+    memo,
     occurred_at,
+    processed_at,
     registerd_at
 }
 
@@ -160,7 +161,7 @@ enum class OutboundResultCsvHeader {
     process_type_id,
     device_id,
     memo,
-    occurred_at,
+    processed_at,
     registerd_at
 }
 

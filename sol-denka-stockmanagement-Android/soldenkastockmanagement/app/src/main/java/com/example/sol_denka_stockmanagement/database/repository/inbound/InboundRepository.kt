@@ -10,10 +10,6 @@ import com.example.sol_denka_stockmanagement.model.inbound.InboundSessionModel
 import com.example.sol_denka_stockmanagement.model.tag.TagMasterModel
 import javax.inject.Inject
 import javax.inject.Singleton
-import kotlin.let
-import kotlin.takeIf
-import kotlin.text.isNotBlank
-import kotlin.text.toInt
 
 @Singleton
 class InboundRepository @Inject constructor(
@@ -24,16 +20,17 @@ class InboundRepository @Inject constructor(
 ) {
 
     suspend fun saveInboundToDb(
-        weight: String,
-        grade: String,
-        specificGravity: String,
-        thickness: String,
-        width: String,
-        length: String,
-        quantity: String,
-        winderInfo: String,
-        occurrenceReason: String,
-        memo: String,
+        weight: Int?,
+        width: Int?,
+        length: Int?,
+        thickness: Int?,
+        lotNo: String?,
+        occurrenceReason: String?,
+        quantity: Int?,
+        memo: String?,
+        occurredAt: String?,
+        processedAt: String?,
+        registeredAt: String,
         rfidTag: TagMasterModel?
     ): Int = db.withTransaction {
         val sessionId = sessionRepo.insert(
@@ -46,24 +43,25 @@ class InboundRepository @Inject constructor(
             val (itemTypeId, locationId) = tagMasterRepository.getItemTypeIdLocationIdByTagId(
                 rfidTag?.tagId ?: 0
             )
+            val winderId = 0
             eventRepo.insert(
                 InboundEventModel(
                     inboundSessionId = sessionId.toInt(),
                     itemTypeId = itemTypeId,
                     locationId = locationId,
+                    winderId = winderId ?: 0,
                     tagId = rfidTag?.tagId ?: 0,
-                    weight = weight.takeIf { it.isNotBlank() }?.toInt() ?: 0,
-                    grade = grade,
-                    specificGravity = specificGravity,
-                    thickness = thickness.takeIf { it.isNotBlank() }?.toInt() ?: 0,
-                    width =  width.takeIf { it.isNotBlank() }?.toInt() ?: 0,
-                    length = length.takeIf { it.isNotBlank() }?.toInt() ?: 0,
-                    quantity = 0,
-                    winderInfo = winderInfo,
+                    weight = weight,
+                    width =  width,
+                    length = length,
+                    thickness = thickness,
+                    lotNo = lotNo,
                     occurrenceReason = occurrenceReason,
+                    quantity = quantity,
                     memo = memo,
-                    occurredAt = generateIso8601JstTimestamp(),
-                    registeredAt = generateIso8601JstTimestamp()
+                    occurredAt = occurredAt,
+                    processedAt = processedAt,
+                    registeredAt = registeredAt
                 )
             )
             sessionId.toInt()

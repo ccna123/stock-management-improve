@@ -34,6 +34,7 @@ data class ItemTypeMasterEntity(
     @ColumnInfo(name = "item_category_id") val itemCategoryId: Int,
     @ColumnInfo(name = "item_type_code") val itemTypeCode: String,
     @ColumnInfo(name = "item_type_name") val itemTypeName: String,
-    @ColumnInfo(name = "created_at") val createdAt: String,
-    @ColumnInfo(name = "updated_at") val updatedAt: String,
+    @ColumnInfo(name = "packing_type") val packingType: String?,
+    @ColumnInfo(name = "specific_gravity") val specificGravity: String?,
+    @ColumnInfo(name = "grade") val grade: String?,
 )

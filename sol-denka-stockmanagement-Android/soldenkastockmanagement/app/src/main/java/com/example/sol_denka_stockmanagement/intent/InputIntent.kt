@@ -5,6 +5,7 @@ sealed interface InputIntent {
     data class ChangeMissRollReason(val value: String) : InputIntent
     data class ChangeCategory(val value: String, val categoryId: Int) : InputIntent
     data class ChangeLocation(val value: String) : InputIntent
+    data class ChangeQuantity(val value: String) : InputIntent
     data class ChangeMemo(val value: String) : InputIntent
     data class ChangeOccurredAtDate(val value: String) : InputIntent
     data class ChangeProcessedAtDate(val value: String) : InputIntent
