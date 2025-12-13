@@ -384,7 +384,7 @@ fun InboundScreen(
                 }
             }
             Spacer(modifier = Modifier.height(20.dp))
-            LazyColumn {
+            LazyColumn{
                 item {
                     inboundInputFormResults
                         .sortedWith(compareBy {
@@ -552,9 +552,7 @@ fun InboundScreen(
                                                 }
                                             }
                                         )
-                                        Spacer(modifier = Modifier.height(15.dp))
                                     }
-
                                     ControlType.DROPDOWN -> {
                                         ExposedDropdownMenuBox(
                                             expanded = when (result.fieldName) {
@@ -725,14 +723,13 @@ fun InboundScreen(
                                                 }
                                             }
                                         }
-                                        Spacer(modifier = Modifier.height(15.dp))
                                     }
 
                                     ControlType.DATETIMEPICKER -> {
                                         Row(
                                             modifier = Modifier
                                                 .fillMaxWidth(),
-                                            horizontalArrangement = Arrangement.spacedBy(10.dp)
+                                            horizontalArrangement = Arrangement.spacedBy(10.dp),
                                         ) {
                                             InputFieldContainer(
                                                 modifier = Modifier.weight(1f),
@@ -829,6 +826,7 @@ fun InboundScreen(
                                         }
                                     }
                                 }
+                                Spacer(modifier = Modifier.height(12.dp))
                             }
                         }
                 }
