@@ -46,6 +46,7 @@ object InputValidate {
                             InboundInputField.LOT_NO.displayName -> inputState.lotNo
                             InboundInputField.LOCATION.displayName -> inputState.location
                             InboundInputField.PACKING_TYPE.displayName -> inputState.packingType
+                            InboundInputField.WINDER_INFO.displayName -> inputState.winderInfo
                             else -> ""
                         }
                         if (value.isBlank()) {

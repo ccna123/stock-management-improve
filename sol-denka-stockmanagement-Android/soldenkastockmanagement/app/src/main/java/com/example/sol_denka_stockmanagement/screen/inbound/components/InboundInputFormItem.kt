@@ -44,6 +44,7 @@ import com.example.sol_denka_stockmanagement.intent.InputIntent.ChangeWinderInfo
 import com.example.sol_denka_stockmanagement.intent.ShareIntent
 import com.example.sol_denka_stockmanagement.model.inbound.InboundInputFormModel
 import com.example.sol_denka_stockmanagement.model.location.LocationMasterModel
+import com.example.sol_denka_stockmanagement.model.winder.WinderInfoModel
 import com.example.sol_denka_stockmanagement.share.InputFieldContainer
 import com.example.sol_denka_stockmanagement.state.ExpandState
 import com.example.sol_denka_stockmanagement.state.InputState
@@ -56,6 +57,7 @@ import com.example.sol_denka_stockmanagement.viewmodel.AppViewModel
 fun InboundInputForm(
     result: InboundInputFormModel,
     locationMaster: List<LocationMasterModel>,
+    winderMaster: List<WinderInfoModel>,
     expandState: ExpandState,
     inputState: InputState,
     appViewModel: AppViewModel
@@ -64,7 +66,7 @@ fun InboundInputForm(
         ControlType.INPUT -> {
             InputFieldContainer(
                 modifier = Modifier
-                    .height(if (result.fieldName == InboundInputField.MEMO.displayName) 200.dp else 60.dp)
+                    .height(if (result.fieldName == InboundInputField.MEMO.displayName) 200.dp else 68.dp)
                     .fillMaxWidth(),
                 value = when (result.fieldName) {
                     InboundInputField.WEIGHT.displayName -> inputState.weight
@@ -193,10 +195,6 @@ fun InboundInputForm(
                             ChangeSpecificGravity(filteredValue)
                         )
 
-                        InboundInputField.WINDER_INFO.displayName -> appViewModel.onInputIntent(
-                            ChangeWinderInfo(newValue)
-                        )
-
                         InboundInputField.OCCURRENCE_REASON.displayName -> appViewModel.onInputIntent(
                             ChangeMissRollReason(newValue)
                         )
@@ -219,6 +217,7 @@ fun InboundInputForm(
                 expanded = when (result.fieldName) {
                     InboundInputField.LOCATION.displayName -> expandState.locationExpanded
                     InboundInputField.PACKING_TYPE.displayName -> expandState.packingStyleExpanded
+                    InboundInputField.WINDER_INFO.displayName -> expandState.winderExpanded
                     else -> false
                 },
                 onExpandedChange = {
@@ -232,6 +231,12 @@ fun InboundInputForm(
                         InboundInputField.PACKING_TYPE.displayName -> {
                             appViewModel.onExpandIntent(
                                 ExpandIntent.TogglePackingTypeExpanded
+                            )
+                        }
+
+                        InboundInputField.WINDER_INFO.displayName -> {
+                            appViewModel.onExpandIntent(
+                                ExpandIntent.ToggleWinderExpanded
                             )
                         }
 
@@ -250,16 +255,19 @@ fun InboundInputForm(
                     value = when (result.fieldName) {
                         InboundInputField.LOCATION.displayName -> if (inputState.location == SelectTitle.SelectLocation.displayName) "" else inputState.location
                         InboundInputField.PACKING_TYPE.displayName -> if (inputState.packingType == SelectTitle.SelectPackingStyle.displayName) "" else inputState.packingType
+                        InboundInputField.WINDER_INFO.displayName -> if (inputState.winderInfo == SelectTitle.SelectWinder.displayName) "" else inputState.winderInfo
                         else -> ""
                     },
                     hintText = when (result.fieldName) {
                         InboundInputField.LOCATION.displayName -> SelectTitle.SelectLocation.displayName
                         InboundInputField.PACKING_TYPE.displayName -> SelectTitle.SelectPackingStyle.displayName
+                        InboundInputField.WINDER_INFO.displayName -> SelectTitle.SelectWinder.displayName
                         else -> ""
                     },
                     label = when (result.fieldName) {
                         InboundInputField.LOCATION.displayName -> SelectTitle.SelectLocation.displayName
                         InboundInputField.PACKING_TYPE.displayName -> SelectTitle.SelectPackingStyle.displayName
+                        InboundInputField.WINDER_INFO.displayName -> SelectTitle.SelectWinder.displayName
                         else -> ""
                     },
                     isNumeric = false,
@@ -271,6 +279,12 @@ fun InboundInputForm(
 
                             InboundInputField.PACKING_TYPE.displayName -> appViewModel.onInputIntent(
                                 ChangePackingType(
+                                    newValue
+                                )
+                            )
+
+                            InboundInputField.WINDER_INFO.displayName -> appViewModel.onInputIntent(
+                                ChangeWinderInfo(
                                     newValue
                                 )
                             )
@@ -289,6 +303,7 @@ fun InboundInputForm(
                     expanded = when (result.fieldName) {
                         InboundInputField.LOCATION.displayName -> expandState.locationExpanded
                         InboundInputField.PACKING_TYPE.displayName -> expandState.packingStyleExpanded
+                        InboundInputField.WINDER_INFO.displayName -> expandState.winderExpanded
                         else -> false
                     },
                     onDismissRequest = {
@@ -301,6 +316,10 @@ fun InboundInputForm(
                                 ExpandIntent.TogglePackingTypeExpanded
                             )
 
+                            InboundInputField.WINDER_INFO.displayName -> appViewModel.onExpandIntent(
+                                ExpandIntent.ToggleWinderExpanded
+                            )
+
                             else -> ""
                         }
                     }
@@ -311,6 +330,7 @@ fun InboundInputForm(
                                 text = when (result.fieldName) {
                                     InboundInputField.LOCATION.displayName -> SelectTitle.SelectLocation.displayName
                                     InboundInputField.PACKING_TYPE.displayName -> SelectTitle.SelectPackingStyle.displayName
+                                    InboundInputField.WINDER_INFO.displayName -> SelectTitle.SelectWinder.displayName
                                     else -> ""
                                 }
                             )
@@ -336,6 +356,17 @@ fun InboundInputForm(
                                             )
                                         )
                                         onExpandIntent(ExpandIntent.TogglePackingTypeExpanded)
+                                    }
+                                }
+
+                                InboundInputField.WINDER_INFO.displayName -> {
+                                    appViewModel.apply {
+                                        onInputIntent(
+                                            ChangeWinderInfo(
+                                                ""
+                                            )
+                                        )
+                                        onExpandIntent(ExpandIntent.ToggleWinderExpanded)
                                     }
                                 }
 
@@ -386,6 +417,27 @@ fun InboundInputForm(
                                             )
                                             onExpandIntent(
                                                 ExpandIntent.TogglePackingTypeExpanded
+                                            )
+                                        }
+                                    }
+                                )
+                            }
+                        }
+                        InboundInputField.WINDER_INFO.displayName -> {
+                            winderMaster.forEach { winder ->
+                                DropdownMenuItem(
+                                    text = {
+                                        Text(text = winder.winderName)
+                                    },
+                                    onClick = {
+                                        appViewModel.apply {
+                                            onInputIntent(
+                                                ChangeWinderInfo(
+                                                    if (inputState.winderInfo == SelectTitle.SelectWinder.displayName) "" else winder.winderName
+                                                )
+                                            )
+                                            onExpandIntent(
+                                                ExpandIntent.ToggleWinderExpanded
                                             )
                                         }
                                     }

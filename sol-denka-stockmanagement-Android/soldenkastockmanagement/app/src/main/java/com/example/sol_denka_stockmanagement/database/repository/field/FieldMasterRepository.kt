@@ -56,33 +56,34 @@ class FieldMasterRepository @Inject constructor(
             dataType = DataType.NUMBER,
             controlType = ControlType.INPUT
         ),
+
         FieldMasterModel(
             fieldId = 7,
-            fieldName = InboundInputField.WINDER_INFO.displayName,
-            dataType = DataType.TEXT,
-            controlType = ControlType.INPUT
-        ),
-        FieldMasterModel(
-            fieldId = 8,
             fieldName = InboundInputField.OCCURRENCE_REASON.displayName,
             dataType = DataType.TEXT,
             controlType = ControlType.INPUT
         ),
         FieldMasterModel(
-            fieldId = 9,
+            fieldId = 8,
             fieldName = InboundInputField.MEMO.displayName,
             dataType = DataType.TEXT,
             controlType = ControlType.INPUT
         ),
         FieldMasterModel(
-            fieldId = 10,
+            fieldId = 9,
             fieldName = InboundInputField.LOCATION.displayName,
             dataType = DataType.TEXT,
             controlType = ControlType.DROPDOWN
         ),
         FieldMasterModel(
-            fieldId = 11,
+            fieldId = 10,
             fieldName = InboundInputField.PACKING_TYPE.displayName,
+            dataType = DataType.TEXT,
+            controlType = ControlType.DROPDOWN
+        ),
+        FieldMasterModel(
+            fieldId = 11,
+            fieldName = InboundInputField.WINDER_INFO.displayName,
             dataType = DataType.TEXT,
             controlType = ControlType.DROPDOWN
         ),

@@ -10,4 +10,5 @@ sealed interface ExpandIntent{
     data object ToggleCsvTypeExpanded: ExpandIntent
     data class TogglePerTagProcessExpanded(val tag: String): ExpandIntent
     data class CloseProcessExpanded(val tag: String): ExpandIntent
+    data object ToggleWinderExpanded: ExpandIntent
 }

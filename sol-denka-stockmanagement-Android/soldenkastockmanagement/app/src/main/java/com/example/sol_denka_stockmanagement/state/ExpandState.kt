@@ -9,4 +9,5 @@ data class ExpandState(
     val handlingMethodExpanded: Boolean = false,
     val fileTransferMethodExpanded: Boolean = false,
     val csvTypeExpanded: Boolean = false,
+    val winderExpanded: Boolean = false,
 )

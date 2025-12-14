@@ -28,6 +28,7 @@ enum class SelectTitle(val displayName: String) {
     SelectProcessMethod("処理方法選択"),
     SelectPackingStyle("荷姿選択"),
     SelectCategory("区分選択"),
+    SelectWinder("巻き取り機選択"),
 }
 
 enum class CsvType(val displayName: String) {

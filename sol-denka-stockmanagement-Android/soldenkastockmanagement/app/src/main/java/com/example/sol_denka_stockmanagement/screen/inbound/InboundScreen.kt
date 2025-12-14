@@ -88,6 +88,7 @@ fun InboundScreen(
     val lastInboundEpc by scanViewModel.lastInboundEpc.collectAsStateWithLifecycle()
     val rfidTagList by scanViewModel.rfidTagList.collectAsStateWithLifecycle()
     val locationMaster by appViewModel.locationMaster.collectAsStateWithLifecycle()
+    val winderMaster by appViewModel.winderMaster.collectAsStateWithLifecycle()
     val itemCategoryMaster by appViewModel.itemCategoryMaster.collectAsStateWithLifecycle()
     val isNetworkConnected by appViewModel.isNetworkConnected.collectAsStateWithLifecycle()
 
@@ -390,6 +391,7 @@ fun InboundScreen(
                         appViewModel = appViewModel,
                         expandState = expandState,
                         locationMaster = locationMaster,
+                        winderMaster = winderMaster,
                     )
                 }
             }

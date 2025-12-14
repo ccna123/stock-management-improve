@@ -22,6 +22,7 @@ import com.example.sol_denka_stockmanagement.database.repository.field.ItemTypeF
 import com.example.sol_denka_stockmanagement.database.repository.item.ItemCategoryRepository
 import com.example.sol_denka_stockmanagement.database.repository.item.ItemTypeRepository
 import com.example.sol_denka_stockmanagement.database.repository.location.LocationMasterRepository
+import com.example.sol_denka_stockmanagement.database.repository.winder.WinderInfoRepository
 import com.example.sol_denka_stockmanagement.helper.NetworkConnectionObserver
 import com.example.sol_denka_stockmanagement.helper.ProcessResult
 import com.example.sol_denka_stockmanagement.helper.controller.ReaderController
@@ -37,6 +38,7 @@ import com.example.sol_denka_stockmanagement.model.item.ItemCategoryModel
 import com.example.sol_denka_stockmanagement.model.item.ItemTypeMasterModel
 import com.example.sol_denka_stockmanagement.model.location.LocationMasterModel
 import com.example.sol_denka_stockmanagement.model.reader.ReaderInfoModel
+import com.example.sol_denka_stockmanagement.model.winder.WinderInfoModel
 import com.example.sol_denka_stockmanagement.state.DialogState
 import com.example.sol_denka_stockmanagement.state.DialogState.Error
 import com.example.sol_denka_stockmanagement.state.DialogState.Hidden
@@ -68,6 +70,7 @@ class AppViewModel @Inject constructor(
     private val itemTypeRepository: ItemTypeRepository,
     private val itemTypeFieldSettingMasterRepository: ItemTypeFieldSettingMasterRepository,
     private val itemCategoryRepository: ItemCategoryRepository,
+    private val winderInfoRepository: WinderInfoRepository,
     private val presetRepositories: Set<@JvmSuppressWildcards IPresetRepo>,
     private val csvHelper: CsvHelper,
 ) : ViewModel() {
@@ -118,6 +121,9 @@ class AppViewModel @Inject constructor(
 
     private val _itemCategoryMaster = MutableStateFlow<List<ItemCategoryModel>>(emptyList())
     val itemCategoryMaster = _itemCategoryMaster.asStateFlow()
+
+    private val _winderMaster = MutableStateFlow<List<WinderInfoModel>>(emptyList())
+    val winderMaster = _winderMaster.asStateFlow()
 
     private val _outboundProcessErrorSet = MutableStateFlow<Set<String>>(emptySet())
     val outboundProcessErrorSet = _outboundProcessErrorSet.asStateFlow()
@@ -173,6 +179,12 @@ class AppViewModel @Inject constructor(
         viewModelScope.launch {
             itemCategoryRepository.get().collect { categories ->
                 _itemCategoryMaster.value = categories
+            }
+        }
+
+        viewModelScope.launch {
+            winderInfoRepository.get().collect { winders ->
+                _winderMaster.value = winders
             }
         }
 
@@ -491,6 +503,7 @@ class AppViewModel @Inject constructor(
 
             ExpandIntent.ToggleCsvTypeExpanded -> _expandState.update { it.copy(csvTypeExpanded = !_expandState.value.csvTypeExpanded) }
             ExpandIntent.ToggleCategoryExpanded -> _expandState.update { it.copy(categoryExpanded = !_expandState.value.categoryExpanded) }
+            ExpandIntent.ToggleWinderExpanded -> _expandState.update { it.copy(winderExpanded = !_expandState.value.winderExpanded) }
         }
     }
 
