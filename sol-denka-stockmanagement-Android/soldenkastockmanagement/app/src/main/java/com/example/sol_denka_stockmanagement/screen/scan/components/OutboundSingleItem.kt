@@ -21,12 +21,14 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.example.sol_denka_stockmanagement.constant.ProcessMethod
 import com.example.sol_denka_stockmanagement.constant.SelectTitle
 import com.example.sol_denka_stockmanagement.share.InputFieldContainer
 import com.example.sol_denka_stockmanagement.ui.theme.brightAzure
+import com.example.sol_denka_stockmanagement.ui.theme.brightGreenPrimary
 import com.example.sol_denka_stockmanagement.ui.theme.brightGreenSecondary
 import com.example.sol_denka_stockmanagement.ui.theme.paleSkyBlue
 import com.example.sol_denka_stockmanagement.ui.theme.primaryRed
@@ -53,10 +55,34 @@ fun OutboundSingleItem(
             .fillMaxWidth()
             .padding(10.dp)
             .background(
-                color = if (isError) primaryRed.copy(.2f) else Color.White,
+                brush = when {
+                    isError -> Brush.horizontalGradient(
+                        colors = listOf(
+                            primaryRed.copy(alpha = 0.25f),
+                            primaryRed.copy(alpha = 0.22f)
+                        )
+                    )
+
+                    isChecked -> Brush.horizontalGradient(
+                        colors = listOf(
+                            brightGreenSecondary.copy(alpha = 0.25f),
+                            brightGreenSecondary.copy(alpha = 0.20f)
+                        )
+                    )
+
+                    else -> Brush.linearGradient(
+                        listOf(Color.White, Color.White)
+                    )
+                },
                 shape = RoundedCornerShape(12.dp)
             )
-            .border(1.dp, color = if (isError) primaryRed else paleSkyBlue, shape = RoundedCornerShape(12.dp))
+            .border(
+                width = if (isChecked || isError) 2.dp else 1.dp, color = when {
+                    isError -> primaryRed
+                    isChecked -> brightGreenPrimary
+                    else -> brightAzure
+                }, shape = RoundedCornerShape(12.dp)
+            )
             .clickable(onClick = { onSelect() })
     ) {
         Checkbox(

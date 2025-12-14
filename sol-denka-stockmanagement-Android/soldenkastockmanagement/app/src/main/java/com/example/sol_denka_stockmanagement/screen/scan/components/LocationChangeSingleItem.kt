@@ -1,5 +1,7 @@
 package com.example.sol_denka_stockmanagement.screen.scan.components
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -8,16 +10,19 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxDefaults
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import com.example.sol_denka_stockmanagement.ui.theme.brightAzure
+import com.example.sol_denka_stockmanagement.ui.theme.brightGreenPrimary
 import com.example.sol_denka_stockmanagement.ui.theme.brightGreenSecondary
+import com.example.sol_denka_stockmanagement.ui.theme.paleSkyBlue
 
 @Composable
 fun LocationChangeSingleItem(
@@ -30,12 +35,26 @@ fun LocationChangeSingleItem(
     Row(
         modifier = Modifier
             .fillMaxWidth()
+            .background(
+                brush = if (isChecked) {
+                    Brush.horizontalGradient(
+                        colors = listOf(
+                            brightGreenSecondary.copy(alpha = 0.25f),
+                            brightGreenSecondary.copy(alpha = 0.20f)
+                        )
+                    )
+                } else {
+                    Brush.linearGradient(listOf(Color.White, Color.White))
+                },
+                shape = RoundedCornerShape(12.dp)
+            )
+            .border(width = if (isChecked) 2.dp else 1.dp, color = if (isChecked) brightGreenPrimary else paleSkyBlue, shape = RoundedCornerShape(12.dp))
             .clickable(onClick = { onClick() }),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         Column(
-            modifier = Modifier.padding(5.dp)
+            modifier = Modifier.padding(15.dp)
         ) {
             Text(text = itemName)
             Text(text = tag)
@@ -48,7 +67,5 @@ fun LocationChangeSingleItem(
             onCheckedChange = { onCheckedChange() }
         )
     }
-    Spacer(modifier = Modifier.height(10.dp))
-    HorizontalDivider(color = brightAzure)
     Spacer(modifier = Modifier.height(10.dp))
 }
