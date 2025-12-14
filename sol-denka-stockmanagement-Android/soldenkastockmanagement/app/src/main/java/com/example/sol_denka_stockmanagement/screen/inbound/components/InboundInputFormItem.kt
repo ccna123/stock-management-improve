@@ -27,6 +27,7 @@ import com.example.sol_denka_stockmanagement.constant.DataType
 import com.example.sol_denka_stockmanagement.constant.InboundInputField
 import com.example.sol_denka_stockmanagement.constant.PackingType
 import com.example.sol_denka_stockmanagement.constant.SelectTitle
+import com.example.sol_denka_stockmanagement.helper.validate.FilterNumber
 import com.example.sol_denka_stockmanagement.intent.ExpandIntent
 import com.example.sol_denka_stockmanagement.intent.InputIntent.ChangeLength
 import com.example.sol_denka_stockmanagement.intent.InputIntent.ChangeLocation
@@ -165,35 +166,29 @@ fun InboundInputForm(
                 isRequired = result.isRequired,
                 singleLine = result.fieldName != InboundInputField.MEMO.displayName,
                 onChange = { newValue ->
+                    val filteredValue = when (result.dataType) {
+                        DataType.NUMBER -> FilterNumber.filterNumber(newValue)
+                        else -> newValue
+                    }
                     when (result.fieldName) {
                         InboundInputField.WEIGHT.displayName -> appViewModel.onInputIntent(
-                            ChangeWeight(
-                                newValue
-                            )
+                            ChangeWeight(filteredValue)
                         )
 
                         InboundInputField.LENGTH.displayName -> appViewModel.onInputIntent(
-                            ChangeLength(
-                                newValue
-                            )
+                            ChangeLength(filteredValue)
                         )
 
                         InboundInputField.THICKNESS.displayName -> appViewModel.onInputIntent(
-                            ChangeThickness(
-                                newValue
-                            )
+                            ChangeThickness(filteredValue)
                         )
 
                         InboundInputField.WIDTH.displayName -> appViewModel.onInputIntent(
-                            ChangeWidth(
-                                newValue
-                            )
+                            ChangeWidth(filteredValue)
                         )
 
                         InboundInputField.SPECIFIC_GRAVITY.displayName -> appViewModel.onInputIntent(
-                            ChangeSpecificGravity(
-                                newValue
-                            )
+                            ChangeSpecificGravity(filteredValue)
                         )
 
                         InboundInputField.WINDER_INFO.displayName -> appViewModel.onInputIntent(
@@ -205,15 +200,11 @@ fun InboundInputForm(
                         )
 
                         InboundInputField.MEMO.displayName -> appViewModel.onInputIntent(
-                            ChangeMemo(
-                                newValue
-                            )
+                            ChangeMemo(newValue)
                         )
 
                         InboundInputField.LOT_NO.displayName -> appViewModel.onInputIntent(
-                            ChangeLotNo(
-                                newValue
-                            )
+                            ChangeLotNo(newValue)
                         )
                     }
                 }
