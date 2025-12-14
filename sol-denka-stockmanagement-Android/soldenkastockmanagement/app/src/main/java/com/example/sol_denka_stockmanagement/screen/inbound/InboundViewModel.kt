@@ -1,9 +1,11 @@
 package com.example.sol_denka_stockmanagement.screen.inbound
 
 import android.os.Build
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import com.example.sol_denka_stockmanagement.constant.generateIso8601JstTimestamp
 import com.example.sol_denka_stockmanagement.database.repository.inbound.InboundRepository
+import com.example.sol_denka_stockmanagement.database.repository.ledger.LedgerItemRepository
 import com.example.sol_denka_stockmanagement.database.repository.tag.TagMasterRepository
 import com.example.sol_denka_stockmanagement.model.csv.InboundResultCsvModel
 import com.example.sol_denka_stockmanagement.model.tag.TagMasterModel
@@ -16,6 +18,7 @@ import kotlinx.coroutines.withContext
 class InboundViewModel @Inject constructor(
     private val tagMasterRepository: TagMasterRepository,
     private val inboundRepository: InboundRepository,
+    private val ledgerItemRepository: LedgerItemRepository
 ) : ViewModel() {
 
     private val csvModels = mutableListOf<InboundResultCsvModel>()
@@ -38,7 +41,7 @@ class InboundViewModel @Inject constructor(
             val (itemTypeId, locationId) = tagMasterRepository.getItemTypeIdLocationIdByTagId(
                 rfidTag?.tagId ?: 0
             )
-            val winderId = 0
+            val winderId = ledgerItemRepository.getWinderIdByLedgerId(ledgerId = rfidTag?.ledgerItemId ?: 0)
             val model = InboundResultCsvModel(
                 tagId = rfidTag?.tagId ?: 0,
                 itemTypeId = itemTypeId,

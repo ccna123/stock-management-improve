@@ -16,6 +16,9 @@ interface LedgerItemDao: IDao<LedgerItemEntity> {
     @Query("SELECT * FROM ledgeritem")
     override fun get(): Flow<List<LedgerItemEntity>>
 
+    @Query("SELECT winder_id FROM LedgerItem WHERE ledger_item_id = :ledgerId ")
+    suspend fun getWinderIdByLedgerId(ledgerId: Int): Int
+
     @Insert(onConflict = REPLACE)
     override suspend fun insert(e: LedgerItemEntity): Long
 

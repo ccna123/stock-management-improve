@@ -40,7 +40,6 @@ import com.example.sol_denka_stockmanagement.constant.StatusCode
 import com.example.sol_denka_stockmanagement.constant.generateIso8601JstTimestamp
 import com.example.sol_denka_stockmanagement.helper.message_mapper.MessageMapper
 import com.example.sol_denka_stockmanagement.intent.InputIntent
-import com.example.sol_denka_stockmanagement.intent.InputIntent.ChangeOccurredAtTime
 import com.example.sol_denka_stockmanagement.intent.ShareIntent
 import com.example.sol_denka_stockmanagement.model.scan.ScanResultRowModel
 import com.example.sol_denka_stockmanagement.navigation.Screen
@@ -83,7 +82,7 @@ fun OutboundScreen(
         confirmText = stringResource(R.string.ok),
         cancelText = stringResource(R.string.cancel),
         onConfirm = { time ->
-            appViewModel.onInputIntent(ChangeOccurredAtTime(time))
+            appViewModel.onInputIntent(InputIntent.ChangeProcessedAtTime(time))
             appViewModel.onGeneralIntent(ShareIntent.ToggleTimePicker(false))
         },
         onDismissRequest = {
@@ -95,7 +94,7 @@ fun OutboundScreen(
         showDateDialog = generalState.showDatePicker,
         confirmText = stringResource(R.string.ok),
         cancelText = stringResource(R.string.cancel),
-        onConfirm = { date -> appViewModel.onInputIntent(InputIntent.ChangeOccurredAtDate(date)) },
+        onConfirm = { date -> appViewModel.onInputIntent(InputIntent.ChangeProcessedAtDate(date)) },
         onDismissRequest = { appViewModel.onGeneralIntent(ShareIntent.ToggleDatePicker(false)) }
     )
 
@@ -225,8 +224,8 @@ fun OutboundScreen(
                     ) {
                         InputFieldContainer(
                             modifier = Modifier.weight(1f),
-                            value = inputState.occurredAtDate,
-                            label = stringResource(R.string.occurred_at_date),
+                            value = inputState.processedAtDate,
+                            label = stringResource(R.string.processed_at_date),
                             isNumeric = false,
                             shape = RoundedCornerShape(13.dp),
                             readOnly = true,
@@ -251,8 +250,8 @@ fun OutboundScreen(
                         )
                         InputFieldContainer(
                             modifier = Modifier.weight(1f),
-                            value = inputState.occurredAtTime,
-                            label = stringResource(R.string.occurred_at_time),
+                            value = inputState.processedAtTime,
+                            label = stringResource(R.string.processed_at_time),
                             isNumeric = false,
                             shape = RoundedCornerShape(13.dp),
                             readOnly = true,

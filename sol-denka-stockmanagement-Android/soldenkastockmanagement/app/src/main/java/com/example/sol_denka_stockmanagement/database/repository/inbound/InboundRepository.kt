@@ -4,6 +4,7 @@ import android.os.Build
 import androidx.room.withTransaction
 import com.example.sol_denka_stockmanagement.constant.generateIso8601JstTimestamp
 import com.example.sol_denka_stockmanagement.database.AppDatabase
+import com.example.sol_denka_stockmanagement.database.repository.ledger.LedgerItemRepository
 import com.example.sol_denka_stockmanagement.database.repository.tag.TagMasterRepository
 import com.example.sol_denka_stockmanagement.model.inbound.InboundEventModel
 import com.example.sol_denka_stockmanagement.model.inbound.InboundSessionModel
@@ -17,6 +18,7 @@ class InboundRepository @Inject constructor(
     private val sessionRepo: InboundSessionRepository,
     private val eventRepo: InboundEventRepository,
     private val tagMasterRepository: TagMasterRepository,
+    private val ledgerItemRepository: LedgerItemRepository
 ) {
 
     suspend fun saveInboundToDb(
@@ -43,13 +45,13 @@ class InboundRepository @Inject constructor(
             val (itemTypeId, locationId) = tagMasterRepository.getItemTypeIdLocationIdByTagId(
                 rfidTag?.tagId ?: 0
             )
-            val winderId = 0
+            val winderId = ledgerItemRepository.getWinderIdByLedgerId(ledgerId = rfidTag?.ledgerItemId ?: 0)
             eventRepo.insert(
                 InboundEventModel(
                     inboundSessionId = sessionId.toInt(),
                     itemTypeId = itemTypeId,
                     locationId = locationId,
-                    winderId = winderId ?: 0,
+                    winderId = winderId,
                     tagId = rfidTag?.tagId ?: 0,
                     weight = weight,
                     width =  width,
