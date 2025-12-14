@@ -298,6 +298,12 @@ class AppViewModel @Inject constructor(
             is InputIntent.ChangeProcessedAtDate -> _inputState.update { it.copy(processedAtDate = intent.value) }
             is InputIntent.ChangeProcessedAtTime -> _inputState.update { it.copy(processedAtTime = intent.value) }
             is InputIntent.ChangeQuantity -> _inputState.update { it.copy(quantity = intent.value) }
+            is InputIntent.UpdateFieldErrors -> {
+                _inputState.update { it.copy(fieldErrors = intent.errors) }
+                viewModelScope.launch {
+                    _toastFlow.emit("必須項目を入力してください" to ToastType.ERROR)
+                }
+            }
         }
     }
 

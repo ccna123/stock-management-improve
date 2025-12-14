@@ -47,6 +47,7 @@ import com.example.sol_denka_stockmanagement.constant.SelectTitle
 import com.example.sol_denka_stockmanagement.constant.StatusCode
 import com.example.sol_denka_stockmanagement.constant.generateIso8601JstTimestamp
 import com.example.sol_denka_stockmanagement.helper.message_mapper.MessageMapper
+import com.example.sol_denka_stockmanagement.helper.validate.InputValidate
 import com.example.sol_denka_stockmanagement.intent.ExpandIntent
 import com.example.sol_denka_stockmanagement.intent.InputIntent
 import com.example.sol_denka_stockmanagement.intent.InputIntent.ChangeCategory
@@ -167,6 +168,14 @@ fun InboundScreen(
                 ),
                 canClick = inputState.category.isNotBlank() && inputState.itemInCategory.isNotBlank(),
                 onClick = {
+                    val errors = InputValidate.validateRequiredFields(
+                        formItems = inboundInputFormResults.filter { it.isVisible },
+                        inputState = inputState
+                    )
+                    if (errors.isNotEmpty()){
+                        appViewModel.onInputIntent(InputIntent.UpdateFieldErrors(errors))
+                        return@ButtonContainer
+                    }
                     scope.launch {
                         val result = inboundViewModel.saveInboundToDb(
                             rfidTag = rfidTagList.find { it.epc == lastInboundEpc },

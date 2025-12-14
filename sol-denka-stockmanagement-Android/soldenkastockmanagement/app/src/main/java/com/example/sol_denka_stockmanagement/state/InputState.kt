@@ -24,5 +24,6 @@ data class InputState(
     val width: String = "",
     val occurrenceReason: String = "",
     val specificGravity: String = "",
-    var fileTransferMethod: String = FileTransferMethod.WIFI.displayName
+    var fileTransferMethod: String = FileTransferMethod.WIFI.displayName,
+    val fieldErrors: Map<String, Boolean> = emptyMap()
 )

@@ -4,6 +4,7 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -160,6 +161,7 @@ fun InboundInputForm(
                     DataType.NUMBER -> true
                     DataType.DATETIME -> false
                 },
+                error = inputState.fieldErrors[result.fieldName] == true,
                 readOnly = false,
                 isDropDown = false,
                 enable = true,
@@ -213,7 +215,7 @@ fun InboundInputForm(
 
         ControlType.DROPDOWN -> {
             ExposedDropdownMenuBox(
-                modifier = Modifier.height(55.dp),
+                modifier = Modifier.height(IntrinsicSize.Min),
                 expanded = when (result.fieldName) {
                     InboundInputField.LOCATION.displayName -> expandState.locationExpanded
                     InboundInputField.PACKING_TYPE.displayName -> expandState.packingStyleExpanded
@@ -255,6 +257,11 @@ fun InboundInputForm(
                         InboundInputField.PACKING_TYPE.displayName -> SelectTitle.SelectPackingStyle.displayName
                         else -> ""
                     },
+                    label = when (result.fieldName) {
+                        InboundInputField.LOCATION.displayName -> SelectTitle.SelectLocation.displayName
+                        InboundInputField.PACKING_TYPE.displayName -> SelectTitle.SelectPackingStyle.displayName
+                        else -> ""
+                    },
                     isNumeric = false,
                     onChange = { newValue ->
                         when (result.fieldName) {
@@ -271,6 +278,8 @@ fun InboundInputForm(
                             else -> ""
                         }
                     },
+                    isRequired = result.isRequired,
+                    error = inputState.fieldErrors[result.fieldName] == true,
                     readOnly = true,
                     isDropDown = true,
                     enable = true,
@@ -417,7 +426,12 @@ fun InboundInputForm(
                     shape = RoundedCornerShape(13.dp),
                     readOnly = true,
                     isDropDown = false,
-                    enable = false,
+                    enable = true,
+                    error = when (result.fieldName) {
+                        InboundInputField.OCCURRED_AT.displayName -> inputState.fieldErrors["occurred_at_date"] == true
+                        InboundInputField.PROCESSED_AT.displayName -> inputState.fieldErrors["processed_at_date"] == true
+                        else -> false
+                    },
                     trailingIcon = {
                         Icon(
                             imageVector = Icons.Default.CalendarMonth,
@@ -463,7 +477,12 @@ fun InboundInputForm(
                     shape = RoundedCornerShape(13.dp),
                     readOnly = true,
                     isDropDown = false,
-                    enable = false,
+                    enable = true,
+                    error = when (result.fieldName) {
+                        InboundInputField.OCCURRED_AT.displayName -> inputState.fieldErrors["occurred_at_time"] == true
+                        InboundInputField.PROCESSED_AT.displayName -> inputState.fieldErrors["processed_at_time"] == true
+                        else -> false
+                    },
                     trailingIcon = {
                         Icon(
                             imageVector = Icons.Default.Timer,
