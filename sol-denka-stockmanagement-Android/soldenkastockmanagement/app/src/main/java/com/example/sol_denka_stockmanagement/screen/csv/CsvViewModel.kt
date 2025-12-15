@@ -5,7 +5,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.sol_denka_stockmanagement.helper.json.JsonFileManager
-import com.example.sol_denka_stockmanagement.helper.ProcessResult
+import com.example.sol_denka_stockmanagement.constant.ProcessResult
 import com.example.sol_denka_stockmanagement.helper.csv.CsvHelper
 import com.example.sol_denka_stockmanagement.helper.message_mapper.MessageMapper
 import com.example.sol_denka_stockmanagement.intent.CsvIntent

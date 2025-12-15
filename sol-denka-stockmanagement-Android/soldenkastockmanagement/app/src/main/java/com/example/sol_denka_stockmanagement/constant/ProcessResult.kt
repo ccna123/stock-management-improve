@@ -1,7 +1,4 @@
-package com.example.sol_denka_stockmanagement.helper
-
-import com.example.sol_denka_stockmanagement.constant.StatusCode
-
+package com.example.sol_denka_stockmanagement.constant
 
 sealed class ProcessResult{
     data class Success(val statusCode: StatusCode = StatusCode.OK) : ProcessResult()

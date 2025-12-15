@@ -15,7 +15,7 @@ import com.example.sol_denka_stockmanagement.database.repository.ledger.LedgerIt
 import com.example.sol_denka_stockmanagement.database.repository.location.LocationMasterRepository
 import com.example.sol_denka_stockmanagement.database.repository.tag.TagMasterRepository
 import com.example.sol_denka_stockmanagement.database.repository.field.ItemTypeFieldSettingMasterRepository
-import com.example.sol_denka_stockmanagement.helper.ProcessResult
+import com.example.sol_denka_stockmanagement.constant.ProcessResult
 import com.example.sol_denka_stockmanagement.model.csv.CsvFileInfoModel
 import com.jcraft.jsch.ChannelSftp
 import com.jcraft.jsch.JSch

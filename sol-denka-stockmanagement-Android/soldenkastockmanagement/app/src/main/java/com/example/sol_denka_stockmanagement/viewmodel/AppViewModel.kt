@@ -24,7 +24,7 @@ import com.example.sol_denka_stockmanagement.database.repository.item.ItemTypeRe
 import com.example.sol_denka_stockmanagement.database.repository.location.LocationMasterRepository
 import com.example.sol_denka_stockmanagement.database.repository.winder.WinderInfoRepository
 import com.example.sol_denka_stockmanagement.helper.NetworkConnectionObserver
-import com.example.sol_denka_stockmanagement.helper.ProcessResult
+import com.example.sol_denka_stockmanagement.constant.ProcessResult
 import com.example.sol_denka_stockmanagement.helper.controller.ReaderController
 import com.example.sol_denka_stockmanagement.helper.csv.CsvHelper
 import com.example.sol_denka_stockmanagement.helper.message_mapper.MessageMapper
