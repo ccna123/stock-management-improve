@@ -30,7 +30,6 @@ import com.example.sol_denka_stockmanagement.share.InputFieldContainer
 import com.example.sol_denka_stockmanagement.ui.theme.brightAzure
 import com.example.sol_denka_stockmanagement.ui.theme.brightGreenPrimary
 import com.example.sol_denka_stockmanagement.ui.theme.brightGreenSecondary
-import com.example.sol_denka_stockmanagement.ui.theme.paleSkyBlue
 import com.example.sol_denka_stockmanagement.ui.theme.primaryRed
 
 @OptIn(ExperimentalMaterial3Api::class)
