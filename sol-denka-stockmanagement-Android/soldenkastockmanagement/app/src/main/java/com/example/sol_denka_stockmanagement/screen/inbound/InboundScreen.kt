@@ -57,7 +57,7 @@ import com.example.sol_denka_stockmanagement.intent.InputIntent.ChangeOccurredAt
 import com.example.sol_denka_stockmanagement.intent.InputIntent.SearchKeyWord
 import com.example.sol_denka_stockmanagement.intent.ShareIntent
 import com.example.sol_denka_stockmanagement.navigation.Screen
-import com.example.sol_denka_stockmanagement.screen.inbound.components.InboundInputForm
+import com.example.sol_denka_stockmanagement.screen.inbound.components.InboundInputFormItem
 import com.example.sol_denka_stockmanagement.screen.inbound.components.ItemSearchBar
 import com.example.sol_denka_stockmanagement.screen.layout.Layout
 import com.example.sol_denka_stockmanagement.share.ButtonContainer
@@ -385,7 +385,7 @@ fun InboundScreen(
                     ),
                     key = { it.fieldName }
                 ) { result ->
-                    InboundInputForm(
+                    InboundInputFormItem(
                         result = result,
                         inputState = inputState,
                         appViewModel = appViewModel,

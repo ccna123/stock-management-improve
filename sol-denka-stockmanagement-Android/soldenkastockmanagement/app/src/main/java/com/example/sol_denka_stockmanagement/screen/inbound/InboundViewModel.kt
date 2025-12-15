@@ -1,7 +1,6 @@
 package com.example.sol_denka_stockmanagement.screen.inbound
 
 import android.os.Build
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import com.example.sol_denka_stockmanagement.constant.generateIso8601JstTimestamp
 import com.example.sol_denka_stockmanagement.database.repository.inbound.InboundRepository

@@ -54,7 +54,7 @@ import com.example.sol_denka_stockmanagement.viewmodel.AppViewModel
 @OptIn(ExperimentalMaterial3Api::class)
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @Composable
-fun InboundInputForm(
+fun InboundInputFormItem(
     result: InboundInputFormModel,
     locationMaster: List<LocationMasterModel>,
     winderMaster: List<WinderInfoModel>,
