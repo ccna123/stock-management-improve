@@ -20,29 +20,28 @@ class OutboundRepository @Inject constructor(
     private val tagMasterRepository: TagMasterRepository,
     private val processTypeRepository: ProcessTypeRepository
 ) {
-
-    suspend fun saveOutbound(
-        memo: String?,
-        processedAt: String,
-        registeredAt: String,
-        tags: List<TagMasterModel>
-    ): Int = db.withTransaction {
-
-        // 1. Insert session
-        val sessionId = sessionRepo.insert(
+    suspend fun createOutboundSession(): Int =
+        sessionRepo.insert(
             OutboundSessionModel(
                 deviceId = Build.ID,
                 executedAt = generateIso8601JstTimestamp()
             )
-        )
-        // 2. Insert all events
+        ).toInt()
+
+    suspend fun insertOutboundEvent(
+        sessionId: Int,
+        memo: String?,
+        processedAt: String,
+        registeredAt: String,
+        tags: List<TagMasterModel>
+    ) {
         tags.forEach { tag ->
             val ledgerId = tagMasterRepository.getLedgerIdByEpc(tag.epc)
             val processTypeId = processTypeRepository.getIdByName(tag.newFields.processType)
 
             eventRepo.insert(
                 OutBoundEventModel(
-                    outboundSessionId = sessionId.toInt(),
+                    outboundSessionId = sessionId,
                     ledgerItemId = ledgerId ?: 0,
                     processTypeId = processTypeId,
                     memo = memo,
@@ -51,6 +50,10 @@ class OutboundRepository @Inject constructor(
                 )
             )
         }
-        sessionId.toInt()
     }
+
+    suspend fun saveOutboundTransaction(
+        block: suspend () -> Unit
+    ) = db.withTransaction { block() }
 }
+

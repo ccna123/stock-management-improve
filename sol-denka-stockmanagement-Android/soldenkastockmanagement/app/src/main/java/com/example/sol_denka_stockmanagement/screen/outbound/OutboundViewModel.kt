@@ -54,12 +54,19 @@ class OutboundViewModel @Inject constructor(
         rfidTagList: List<TagMasterModel>
     ): Result<Int> {
         return try {
-            val sessionId = outboundRepository.saveOutbound(
-                memo = memo?.takeIf { it.isNotBlank() } ?: "",
-                processedAt = processedAt,
-                registeredAt = registeredAt,
-                tags = rfidTagList
-            )
+            var sessionId = 0
+            outboundRepository.saveOutboundTransaction {
+
+                sessionId = outboundRepository.createOutboundSession()
+
+                outboundRepository.insertOutboundEvent(
+                    sessionId = sessionId,
+                    memo = memo,
+                    processedAt = processedAt,
+                    registeredAt = registeredAt,
+                    tags = rfidTagList
+                )
+            }
             Result.success(sessionId)
         } catch (e: Exception) {
             Result.failure(e)
