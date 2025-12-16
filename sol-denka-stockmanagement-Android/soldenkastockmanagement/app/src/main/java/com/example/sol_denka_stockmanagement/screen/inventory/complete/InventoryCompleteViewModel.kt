@@ -127,11 +127,19 @@ class InventoryCompleteViewModel @Inject constructor(
 
     suspend fun saveInventoryResultToDb(memo: String, locationName: String): Result<Int> {
         return try {
-            val sessionId = inventoryCompleteRepository.saveInventoryResultToDb(
-                memo = memo,
-                locationName = locationName,
-                tagList = _finalTagList.value
-            )
+            var sessionId = 0
+            val locationId = locationMasterRepository.getLocationIdByName(locationName)
+            inventoryCompleteRepository.saveInventoryResultLocalTransaction {
+                sessionId = inventoryCompleteRepository.createInventorySession(
+                    locationId = locationId
+                )
+                inventoryCompleteRepository.insertInventoryResultLocal(
+                    sessionId = sessionId,
+                    memo = memo,
+                    tagList = _finalTagList.value
+                )
+            }
+
             Result.success(sessionId)
         } catch (e: Exception) {
             Log.e("TSS", "saveInventoryResultToDb: ${e.message}")
