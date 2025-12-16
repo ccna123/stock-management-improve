@@ -100,29 +100,28 @@ fun ScanScreen(
         scanViewModel.setEnableScan(true)
     }
 
-    if (showModalProcessMethod) {
-        ProcessModal(
-            processTypeList = processTypeMaster,
-            selectedCount = rfidTagList.count { it.newFields.isChecked },
-            chosenMethod = inputState.processMethod,
-            onChooseMethod = { method ->
-                appViewModel.onInputIntent(InputIntent.ChangeProcessMethod(method))
-            },
-            onDismissRequest = {
-                appViewModel.onGeneralIntent(
-                    ShareIntent.ShowModalProcessMethod(
-                        false
-                    )
+    ProcessModal(
+        showModalProcessMethod = showModalProcessMethod,
+        processTypeList = processTypeMaster,
+        selectedCount = rfidTagList.count { it.newFields.isChecked },
+        chosenMethod = inputState.processMethod,
+        onChooseMethod = { method ->
+            appViewModel.onInputIntent(InputIntent.ChangeProcessMethod(method))
+        },
+        onDismissRequest = {
+            appViewModel.onGeneralIntent(
+                ShareIntent.ShowModalProcessMethod(
+                    false
                 )
-            },
-            onApplyBulk = {
-                appViewModel.apply {
-                    onInputIntent(InputIntent.BulkApplyProcessMethod(checkedTags = displayTags.map { it.epc }))
-                    onGeneralIntent(ShareIntent.ShowModalProcessMethod(false))
-                }
+            )
+        },
+        onApplyBulk = {
+            appViewModel.apply {
+                onInputIntent(InputIntent.BulkApplyProcessMethod(checkedTags = displayTags.map { it.epc }))
+                onGeneralIntent(ShareIntent.ShowModalProcessMethod(false))
             }
-        )
-    }
+        }
+    )
 
     ConfirmDialog(
         showDialog = showClearTagConfirmDialog,
@@ -230,14 +229,14 @@ fun ScanScreen(
                         )
                     },
                     onClick = {
-                        when(prevScreenNameId){
+                        when (prevScreenNameId) {
                             Screen.Outbound.routeId -> {
                                 val checkedTags = rfidTagList.filter { it.newFields.isChecked }
-                                val missingProcess  = checkedTags.filter { tag ->
+                                val missingProcess = checkedTags.filter { tag ->
                                     val method = processMap[tag.epc]
                                     method.isNullOrEmpty()
                                 }
-                                if (missingProcess.isNotEmpty()){
+                                if (missingProcess.isNotEmpty()) {
                                     appViewModel.onGeneralIntent(
                                         ShareIntent.MarkOutboundProcessError(
                                             missingProcess.map { it.epc }
@@ -254,6 +253,7 @@ fun ScanScreen(
                                 appViewModel.onGeneralIntent(ShareIntent.ClearOutboundProcessError)
                                 onNavigate(Screen.Outbound)
                             }
+
                             Screen.LocationChange.routeId -> onNavigate(Screen.LocationChange)
                             Screen.Inbound.routeId -> onNavigate(Screen.Inbound)
                             else -> onNavigate(Screen.Home)

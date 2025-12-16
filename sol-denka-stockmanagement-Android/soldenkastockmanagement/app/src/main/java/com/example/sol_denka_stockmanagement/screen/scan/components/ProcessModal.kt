@@ -31,12 +31,14 @@ import com.example.sol_denka_stockmanagement.share.ButtonContainer
 @Composable
 fun ProcessModal(
     processTypeList: List<ProcessTypeModel>,
+    showModalProcessMethod: Boolean,
     selectedCount: Int,
     chosenMethod: String,
     onChooseMethod: (String) -> Unit,
     onDismissRequest: () -> Unit,
     onApplyBulk: () -> Unit
 ) {
+    if (showModalProcessMethod.not()) return
     AppDialog{
         Column(
             modifier = Modifier
