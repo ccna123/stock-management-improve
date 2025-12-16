@@ -15,6 +15,9 @@ interface WinderInfoDao: IDao<WinderInfoEntity> {
     @Query("SELECT * FROM WinderInfo")
     override fun get(): Flow<List<WinderInfoEntity>>
 
+    @Query("SELECT winder_id FROM WinderInfo WHERE winder_name = :winderName")
+    suspend fun getIdByName(winderName: String): Int?
+
     @Insert
     override suspend fun insert(e: WinderInfoEntity): Long
 

@@ -64,6 +64,7 @@ class InboundViewModel @Inject constructor(
         }
 
     suspend fun saveInboundToDb(
+        winder: String?,
         weight: String?,
         thickness: String?,
         width: String?,
@@ -79,6 +80,7 @@ class InboundViewModel @Inject constructor(
     ): Result<Int> {
         return try {
             val sessionId = inboundRepository.saveInboundToDb(
+                winder = winder?.takeIf { it.isNotBlank() },
                 weight = weight?.takeIf { it.isNotBlank() }?.toInt() ?: 0,
                 width = width?.takeIf { it.isNotBlank() }?.toInt() ?: 0,
                 length = length?.takeIf { it.isNotBlank() }?.toInt() ?: 0,

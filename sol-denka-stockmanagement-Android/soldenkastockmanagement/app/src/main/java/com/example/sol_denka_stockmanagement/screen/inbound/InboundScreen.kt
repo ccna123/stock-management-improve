@@ -180,6 +180,7 @@ fun InboundScreen(
                     scope.launch {
                         val result = inboundViewModel.saveInboundToDb(
                             rfidTag = rfidTagList.find { it.epc == lastInboundEpc },
+                            winder = inputState.winderInfo,
                             weight = inputState.weight,
                             width = inputState.width,
                             length = inputState.length,

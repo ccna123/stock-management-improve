@@ -83,6 +83,8 @@ class WinderInfoRepository @Inject constructor(
     fun get(): Flow<List<WinderInfoModel>> =
         dao.get().map { entityList -> entityList.map { it.toModel() } }
 
+    suspend fun getIdByName(winderName: String) = dao.getIdByName(winderName)
+
     suspend fun insert(model: WinderInfoModel) = dao.insert(model.toEntity())
     suspend fun update(model: WinderInfoModel) = dao.update(model.toEntity())
     suspend fun delete(model: WinderInfoModel) = dao.delete(model.toEntity())

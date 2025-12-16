@@ -6,6 +6,7 @@ import com.example.sol_denka_stockmanagement.constant.generateIso8601JstTimestam
 import com.example.sol_denka_stockmanagement.database.AppDatabase
 import com.example.sol_denka_stockmanagement.database.repository.ledger.LedgerItemRepository
 import com.example.sol_denka_stockmanagement.database.repository.tag.TagMasterRepository
+import com.example.sol_denka_stockmanagement.database.repository.winder.WinderInfoRepository
 import com.example.sol_denka_stockmanagement.model.inbound.InboundEventModel
 import com.example.sol_denka_stockmanagement.model.inbound.InboundSessionModel
 import com.example.sol_denka_stockmanagement.model.tag.TagMasterModel
@@ -18,10 +19,11 @@ class InboundRepository @Inject constructor(
     private val sessionRepo: InboundSessionRepository,
     private val eventRepo: InboundEventRepository,
     private val tagMasterRepository: TagMasterRepository,
-    private val ledgerItemRepository: LedgerItemRepository
+    private val winderInfoRepository: WinderInfoRepository
 ) {
 
     suspend fun saveInboundToDb(
+        winder: String?,
         weight: Int?,
         width: Int?,
         length: Int?,
@@ -45,7 +47,7 @@ class InboundRepository @Inject constructor(
             val (itemTypeId, locationId) = tagMasterRepository.getItemTypeIdLocationIdByTagId(
                 rfidTag?.tagId ?: 0
             )
-            val winderId = ledgerItemRepository.getWinderIdByLedgerId(ledgerId = rfidTag?.ledgerItemId ?: 0)
+            val winderId = winderInfoRepository.getIdByName(winderName = winder ?: "")
             eventRepo.insert(
                 InboundEventModel(
                     inboundSessionId = sessionId.toInt(),
