@@ -41,6 +41,20 @@ class ProcessTypeRepository @Inject constructor(
             createdAt = generateTimeStamp(),
             updatedAt = generateTimeStamp()
         ),
+        ProcessTypeModel(
+            processTypeId = 4,
+            processCode = ProcessMethod.DISCARD,
+            processName = ProcessMethod.DISCARD.displayName,
+            createdAt = generateTimeStamp(),
+            updatedAt = generateTimeStamp()
+        ),
+        ProcessTypeModel(
+            processTypeId = 5,
+            processCode = ProcessMethod.PROCESS,
+            processName = ProcessMethod.PROCESS.displayName,
+            createdAt = generateTimeStamp(),
+            updatedAt = generateTimeStamp()
+        ),
     )
 
     override suspend fun ensurePresetInserted() {

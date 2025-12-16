@@ -24,8 +24,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import com.example.sol_denka_stockmanagement.constant.ProcessMethod
 import com.example.sol_denka_stockmanagement.constant.SelectTitle
+import com.example.sol_denka_stockmanagement.model.process.ProcessTypeModel
 import com.example.sol_denka_stockmanagement.share.InputFieldContainer
 import com.example.sol_denka_stockmanagement.ui.theme.brightAzure
 import com.example.sol_denka_stockmanagement.ui.theme.brightGreenPrimary
@@ -35,6 +35,7 @@ import com.example.sol_denka_stockmanagement.ui.theme.primaryRed
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun OutboundSingleItem(
+    processTypeList: List<ProcessTypeModel>,
     tag: String,
     itemName: String,
     isChecked: Boolean,
@@ -76,7 +77,7 @@ fun OutboundSingleItem(
                 shape = RoundedCornerShape(12.dp)
             )
             .border(
-                width = if (isChecked || isError) 2.dp else 1.dp, color = when {
+                width = 1.dp, color = when {
                     isError -> primaryRed
                     isChecked -> brightGreenPrimary
                     else -> brightAzure
@@ -119,15 +120,14 @@ fun OutboundSingleItem(
                     expanded = isExpanded,
                     onDismissRequest = { onDismissRequest() }
                 ) {
-                    listOf(
-                        SelectTitle.SelectProcessMethod.displayName,
-                        ProcessMethod.USE.displayName,
-                        ProcessMethod.SALE.displayName,
-                        ProcessMethod.CRUSH.displayName,
-                    ).forEach { method ->
+                    DropdownMenuItem(
+                        text = { Text(text = SelectTitle.SelectProcessMethod.displayName) },
+                        onClick = { onClickDropDownMenuItem("") }
+                    )
+                    processTypeList.forEach { method ->
                         DropdownMenuItem(
-                            text = { Text(text = method) },
-                            onClick = { onClickDropDownMenuItem(method) }
+                            text = { Text(text = method.processName) },
+                            onClick = { onClickDropDownMenuItem(method.processName) }
                         )
                     }
                 }

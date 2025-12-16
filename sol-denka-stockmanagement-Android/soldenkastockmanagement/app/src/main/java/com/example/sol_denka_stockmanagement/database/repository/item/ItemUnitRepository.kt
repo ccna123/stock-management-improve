@@ -22,25 +22,49 @@ class ItemUnitRepository @Inject constructor(
     private val presetUnits = listOf(
         ItemUnitMasterModel(
             itemUnitId = 1,
-            itemUnitCode = ItemUnit.KG.displayName,
+            itemUnitCode = ItemUnit.KG.engName,
+            unitCategory = 1,
+            itemUnitName = ItemUnit.KG.jpName,
             createdAt = generateTimeStamp(),
             updatedAt = generateTimeStamp()
         ),
         ItemUnitMasterModel(
             itemUnitId = 2,
-            itemUnitCode = ItemUnit.TON.displayName,
+            itemUnitCode = ItemUnit.TON.engName,
+            unitCategory = 1,
+            itemUnitName = ItemUnit.TON.jpName,
             createdAt = generateTimeStamp(),
             updatedAt = generateTimeStamp()
         ),
         ItemUnitMasterModel(
             itemUnitId = 3,
-            itemUnitCode = ItemUnit.HON.displayName,
+            itemUnitCode = ItemUnit.HON.engName,
+            unitCategory = 2,
+            itemUnitName = ItemUnit.HON.jpName,
             createdAt = generateTimeStamp(),
             updatedAt = generateTimeStamp()
         ),
         ItemUnitMasterModel(
             itemUnitId = 4,
-            itemUnitCode = ItemUnit.MAI.displayName,
+            itemUnitCode = ItemUnit.MAI.engName,
+            unitCategory = 2,
+            itemUnitName = ItemUnit.MAI.jpName,
+            createdAt = generateTimeStamp(),
+            updatedAt = generateTimeStamp()
+        ),
+        ItemUnitMasterModel(
+            itemUnitId = 5,
+            itemUnitCode = ItemUnit.KAN.engName,
+            unitCategory = 2,
+            itemUnitName = ItemUnit.KAN.jpName,
+            createdAt = generateTimeStamp(),
+            updatedAt = generateTimeStamp()
+        ),
+        ItemUnitMasterModel(
+            itemUnitId = 6,
+            itemUnitCode = ItemUnit.TAI.engName,
+            unitCategory = 2,
+            itemUnitName = ItemUnit.TAI.jpName,
             createdAt = generateTimeStamp(),
             updatedAt = generateTimeStamp()
         ),

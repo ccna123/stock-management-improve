@@ -8,7 +8,9 @@ import java.time.format.DateTimeFormatter
 enum class ProcessMethod(val displayName: String) {
     USE("使用"),
     SALE("売却"),
-    CRUSH("粉砕")
+    CRUSH("粉砕"),
+    DISCARD("破棄"),
+    PROCESS("加工"),
 }
 
 
@@ -63,9 +65,9 @@ enum class InventoryResultCsvHeader {
     executed_at
 }
 enum class InventoryScanResult(val displayName: String) {
-    OK("正常"),
+    OK("正常一致"),
     SHORTAGE("在庫不足"),
-    OVERLOAD("在庫過多"),
+    OVERLOAD("在庫過剰"),
     WRONG_LOCATION("保管場所不一致")
 }
 
@@ -88,11 +90,13 @@ enum class InventoryResultType(val displayName: String) {
     FOUND_OVER_STOCK("過多"),
 }
 
-enum class ItemUnit(val displayName: String) {
-    KG("KG"),
-    TON("TON"),
-    MAI("MAI"),
-    HON("HON"),
+enum class ItemUnit(val engName: String, val jpName: String) {
+    KG("KG", "kg"),
+    TON("TON", "t"),
+    MAI("MAI", "枚"),
+    HON("HON","本"),
+    KAN("KAN", "缶"),
+    TAI("TAI", "袋"),
 }
 
 enum class FileTransferMethod(val displayName: String) {

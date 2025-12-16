@@ -23,6 +23,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.sol_denka_stockmanagement.model.tag.TagMasterModel
+import com.example.sol_denka_stockmanagement.ui.theme.brightAzure
 import com.example.sol_denka_stockmanagement.ui.theme.brightGreenSecondary
 import com.example.sol_denka_stockmanagement.ui.theme.primaryRed
 
@@ -39,10 +40,9 @@ fun ScannedTagDisplay(
         modifier = Modifier
             .border(
                 1.dp,
-                color = Color.LightGray,
+                color = brightAzure,
                 shape = RoundedCornerShape(10.dp)
             )
-//            .padding(10.dp)
             .fillMaxSize()
     ) {
         items(rfidTagList) { item ->

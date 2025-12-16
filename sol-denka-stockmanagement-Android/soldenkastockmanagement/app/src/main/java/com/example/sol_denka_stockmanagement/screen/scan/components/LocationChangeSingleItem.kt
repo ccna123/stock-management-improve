@@ -20,9 +20,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import com.example.sol_denka_stockmanagement.ui.theme.brightAzure
 import com.example.sol_denka_stockmanagement.ui.theme.brightGreenPrimary
 import com.example.sol_denka_stockmanagement.ui.theme.brightGreenSecondary
-import com.example.sol_denka_stockmanagement.ui.theme.paleSkyBlue
 
 @Composable
 fun LocationChangeSingleItem(
@@ -48,7 +48,9 @@ fun LocationChangeSingleItem(
                 },
                 shape = RoundedCornerShape(12.dp)
             )
-            .border(width = if (isChecked) 2.dp else 1.dp, color = if (isChecked) brightGreenPrimary else paleSkyBlue, shape = RoundedCornerShape(12.dp))
+            .border(
+                width = 1.dp, color = if (isChecked) brightGreenPrimary else brightAzure, shape = RoundedCornerShape(12.dp)
+            )
             .clickable(onClick = { onClick() }),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween

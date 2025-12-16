@@ -37,7 +37,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.sol_denka_stockmanagement.R
 import com.example.sol_denka_stockmanagement.constant.DialogType
 import com.example.sol_denka_stockmanagement.constant.ScanMode
-import com.example.sol_denka_stockmanagement.constant.SelectTitle
 import com.example.sol_denka_stockmanagement.constant.StatusCode
 import com.example.sol_denka_stockmanagement.helper.message_mapper.MessageMapper
 import com.example.sol_denka_stockmanagement.intent.ExpandIntent
@@ -72,20 +71,23 @@ fun ScanScreen(
     onNavigate: (Screen) -> Unit,
     onGoBack: () -> Unit,
 ) {
+    val scope = rememberCoroutineScope()
+
     val scannedTags by scanViewModel.scannedTags.collectAsStateWithLifecycle()
     val lastInboundEpc by scanViewModel.lastInboundEpc.collectAsStateWithLifecycle()
     val rfidTagList by scanViewModel.rfidTagList.collectAsStateWithLifecycle()
+
     val isPerformingInventory by appViewModel.isPerformingInventory.collectAsStateWithLifecycle()
-    val scope = rememberCoroutineScope()
     val expandedMap by appViewModel.perTagExpanded.collectAsStateWithLifecycle()
     val inputState by appViewModel.inputState.collectAsStateWithLifecycle()
+    val processTypeMaster by appViewModel.processTypeMaster.collectAsStateWithLifecycle()
     val outboundProcessErrorSet by appViewModel.outboundProcessErrorSet.collectAsStateWithLifecycle()
     val processMap by appViewModel.perTagProcessMethod.collectAsStateWithLifecycle()
+    val showModalProcessMethod by appViewModel.showModalProcessMethod.collectAsStateWithLifecycle()
+    val showClearTagConfirmDialog = appViewModel.showClearTagConfirmDialog.value
 
     val displayTags = rfidTagList.filter { it.epc in scannedTags }
 
-    val showModalProcessMethod by appViewModel.showModalProcessMethod.collectAsStateWithLifecycle()
-    val showClearTagConfirmDialog = appViewModel.showClearTagConfirmDialog.value
 
     LaunchedEffect(Unit) {
         val mode = when (prevScreenNameId) {
@@ -100,6 +102,7 @@ fun ScanScreen(
 
     if (showModalProcessMethod) {
         ProcessModal(
+            processTypeList = processTypeMaster,
             selectedCount = rfidTagList.count { it.newFields.isChecked },
             chosenMethod = inputState.processMethod,
             onChooseMethod = { method ->
@@ -364,6 +367,7 @@ fun ScanScreen(
                                 val isExpanded = expandedMap[tag.first] ?: false
                                 val value = processMap[tag.first] ?: ""
                                 OutboundSingleItem(
+                                    processTypeList = processTypeMaster,
                                     tag = rfidTagList.find { it.epc == tag.first }?.epc ?: "",
                                     itemName = rfidTagList.find { it.epc == tag.first }?.newFields?.itemName
                                         ?: "",
@@ -405,14 +409,10 @@ fun ScanScreen(
                                         )
                                     },
                                     onClickDropDownMenuItem = { method ->
-                                        val finalValue =
-                                            if (method == SelectTitle.SelectProcessMethod.displayName) ""
-                                            else method
-
                                         appViewModel.onGeneralIntent(
                                             ShareIntent.ChangePerTagProcessMethod(
-                                                tag.first,
-                                                finalValue
+                                                tag = tag.first,
+                                                method = method
                                             )
                                         )
 

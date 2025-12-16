@@ -5,11 +5,9 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -26,7 +24,6 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.sol_denka_stockmanagement.ui.theme.brightAzure
-import com.example.sol_denka_stockmanagement.ui.theme.skyBlue
 
 @Composable
 fun SingleTab(
@@ -44,7 +41,7 @@ fun SingleTab(
     )
 
     val borderColor by animateColorAsState(
-        targetValue = if (isSelected) Color.Transparent else Color.LightGray,
+        targetValue = if (isSelected) Color.Transparent else brightAzure,
         label = "tab-border"
     )
 

@@ -8,6 +8,8 @@ import androidx.room.PrimaryKey
 data class ItemUnitMasterEntity(
     @PrimaryKey@ColumnInfo(name = "item_unit_id") val itemUnitId: Int,
     @ColumnInfo(name = "item_unit_code") val itemUnitCode: String,
+    @ColumnInfo(name = "unit_category") val unitCategory: Int,
+    @ColumnInfo(name = "item_unit_name") val itemUnitName: String,
     @ColumnInfo(name = "created_at") val createdAt: String,
     @ColumnInfo(name = "updated_at") val updatedAt: String,
 )

@@ -23,12 +23,14 @@ import androidx.compose.ui.unit.sp
 import com.example.sol_denka_stockmanagement.R
 import com.example.sol_denka_stockmanagement.constant.ProcessMethod
 import com.example.sol_denka_stockmanagement.constant.SelectTitle
+import com.example.sol_denka_stockmanagement.model.process.ProcessTypeModel
 import com.example.sol_denka_stockmanagement.share.dialog.AppDialog
 import com.example.sol_denka_stockmanagement.share.ButtonContainer
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProcessModal(
+    processTypeList: List<ProcessTypeModel>,
     selectedCount: Int,
     chosenMethod: String,
     onChooseMethod: (String) -> Unit,
@@ -48,21 +50,17 @@ fun ProcessModal(
             Spacer(modifier = Modifier.height(10.dp))
             Text(text = stringResource(R.string.bulk_apply_item_number, selectedCount))
             Spacer(modifier = Modifier.height(10.dp))
-            listOf(
-                ProcessMethod.USE.displayName,
-                ProcessMethod.SALE.displayName,
-                ProcessMethod.CRUSH.displayName,
-            ).mapIndexed { index, method ->
+            processTypeList.mapIndexed { index, method ->
                 Column(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     ButtonContainer(
                         modifier = Modifier.fillMaxWidth(0.5f),
-                        buttonText = method,
-                        containerColor = if (method == chosenMethod) Color(0xFF43A047) else Color.LightGray,
+                        buttonText = method.processName,
+                        containerColor = if (method.processName == chosenMethod) Color(0xFF43A047) else Color.LightGray,
                         icon = {
-                            when (method) {
+                            when (method.processName) {
                                 ProcessMethod.USE.displayName -> Icon(
                                     painter = painterResource(R.drawable.recycle),
                                     contentDescription = null,
@@ -80,10 +78,22 @@ fun ProcessModal(
                                     contentDescription = null,
                                     modifier = Modifier.size(20.dp)
                                 )
+
+                                ProcessMethod.DISCARD.displayName -> Icon(
+                                    painter = painterResource(R.drawable.discard),
+                                    contentDescription = null,
+                                    modifier = Modifier.size(20.dp)
+                                )
+
+                                ProcessMethod.PROCESS.displayName -> Icon(
+                                    painter = painterResource(R.drawable.process),
+                                    contentDescription = null,
+                                    modifier = Modifier.size(20.dp)
+                                )
                             }
                         },
                         onClick = {
-                            onChooseMethod(method)
+                            onChooseMethod(method.processName)
                         }
                     )
                     Spacer(modifier = Modifier.height(10.dp))

@@ -25,6 +25,7 @@ import com.example.sol_denka_stockmanagement.database.repository.location.Locati
 import com.example.sol_denka_stockmanagement.database.repository.winder.WinderInfoRepository
 import com.example.sol_denka_stockmanagement.helper.NetworkConnectionObserver
 import com.example.sol_denka_stockmanagement.constant.ProcessResult
+import com.example.sol_denka_stockmanagement.database.repository.process.ProcessTypeRepository
 import com.example.sol_denka_stockmanagement.helper.controller.ReaderController
 import com.example.sol_denka_stockmanagement.helper.csv.CsvHelper
 import com.example.sol_denka_stockmanagement.helper.message_mapper.MessageMapper
@@ -37,6 +38,7 @@ import com.example.sol_denka_stockmanagement.model.inbound.InboundInputFormModel
 import com.example.sol_denka_stockmanagement.model.item.ItemCategoryModel
 import com.example.sol_denka_stockmanagement.model.item.ItemTypeMasterModel
 import com.example.sol_denka_stockmanagement.model.location.LocationMasterModel
+import com.example.sol_denka_stockmanagement.model.process.ProcessTypeModel
 import com.example.sol_denka_stockmanagement.model.reader.ReaderInfoModel
 import com.example.sol_denka_stockmanagement.model.winder.WinderInfoModel
 import com.example.sol_denka_stockmanagement.state.DialogState
@@ -71,6 +73,7 @@ class AppViewModel @Inject constructor(
     private val itemTypeFieldSettingMasterRepository: ItemTypeFieldSettingMasterRepository,
     private val itemCategoryRepository: ItemCategoryRepository,
     private val winderInfoRepository: WinderInfoRepository,
+    private val processTypeRepository: ProcessTypeRepository,
     private val presetRepositories: Set<@JvmSuppressWildcards IPresetRepo>,
     private val csvHelper: CsvHelper,
 ) : ViewModel() {
@@ -124,6 +127,9 @@ class AppViewModel @Inject constructor(
 
     private val _winderMaster = MutableStateFlow<List<WinderInfoModel>>(emptyList())
     val winderMaster = _winderMaster.asStateFlow()
+
+    private val _processTypeMaster = MutableStateFlow<List<ProcessTypeModel>>(emptyList())
+    val processTypeMaster = _processTypeMaster.asStateFlow()
 
     private val _outboundProcessErrorSet = MutableStateFlow<Set<String>>(emptySet())
     val outboundProcessErrorSet = _outboundProcessErrorSet.asStateFlow()
@@ -185,6 +191,12 @@ class AppViewModel @Inject constructor(
         viewModelScope.launch {
             winderInfoRepository.get().collect { winders ->
                 _winderMaster.value = winders
+            }
+        }
+
+        viewModelScope.launch {
+            processTypeRepository.get().collect { processTypes ->
+                _processTypeMaster.value = processTypes
             }
         }
 
