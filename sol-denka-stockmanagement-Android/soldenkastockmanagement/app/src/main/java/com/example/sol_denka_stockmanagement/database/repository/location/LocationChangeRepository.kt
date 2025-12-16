@@ -21,23 +21,26 @@ class LocationChangeRepository @Inject constructor(
     private val tagMasterRepository: TagMasterRepository,
 ) {
 
-    suspend fun saveLocationChangeToDb(
-        memo: String,
-        newLocation: String,
-        rfidTagList: List<TagMasterModel>
-    ): Int = db.withTransaction {
-        val sessionId = sessionRepo.insert(
+    suspend fun createLocationChangeSession(): Int =
+        sessionRepo.insert(
             LocationChangeSessionModel(
                 deviceId = Build.ID,
                 executedAt = generateIso8601JstTimestamp()
             )
-        )
+        ).toInt()
+
+    suspend fun insertLocationChangeEvent(
+        sessionId: Int,
+        memo: String,
+        newLocation: String,
+        rfidTagList: List<TagMasterModel>
+    ) {
         val newLocationId = locationMasterRepository.getLocationIdByName(newLocation)
         rfidTagList.forEach { row ->
             val ledgerId = tagMasterRepository.getLedgerIdByEpc(row.epc)
             locationChangeEventRepository.insert(
                 LocationChangeEventModel(
-                    locationChangeSessionId = sessionId.toInt(),
+                    locationChangeSessionId = sessionId,
                     ledgerItemId = ledgerId ?: 0,
                     locationId = newLocationId ?: 0,
                     memo = memo,
@@ -45,6 +48,9 @@ class LocationChangeRepository @Inject constructor(
                 )
             )
         }
-        sessionId.toInt()
     }
+
+    suspend fun saveLocationChangeTransaction(
+        block: suspend () -> Unit
+    ) = db.withTransaction { block() }
 }

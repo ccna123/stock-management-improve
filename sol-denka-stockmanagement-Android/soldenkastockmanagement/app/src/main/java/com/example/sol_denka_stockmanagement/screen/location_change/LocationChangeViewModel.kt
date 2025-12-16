@@ -57,14 +57,20 @@ class LocationChangeViewModel @Inject constructor(
         rfidTagList: List<TagMasterModel>
     ): Result<Int> {
         return try {
-            val sessionId = locationChangeRepository.saveLocationChangeToDb(
-                memo = memo,
-                newLocation = newLocation,
-                rfidTagList = rfidTagList
-            )
+            var sessionId = 0
+            locationChangeRepository.saveLocationChangeTransaction {
+
+                sessionId = locationChangeRepository.createLocationChangeSession()
+
+                locationChangeRepository.insertLocationChangeEvent(
+                    sessionId = sessionId,
+                    memo = memo,
+                    newLocation = newLocation,
+                    rfidTagList = rfidTagList
+                )
+            }
             Result.success(sessionId)
         } catch (e: Exception) {
-            Log.e("TSS", "saveLocationChangeToDb: ${e.message}")
             Result.failure(e)
         }
     }
