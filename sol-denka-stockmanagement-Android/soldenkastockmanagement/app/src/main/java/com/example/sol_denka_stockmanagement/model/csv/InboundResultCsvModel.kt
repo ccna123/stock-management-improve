@@ -47,7 +47,7 @@ data class InboundResultCsvModel(
         tagId.toString(),
         itemTypeId.toString(),
         locationId.toString(),
-        winderId.toString(),
+        winderId?.toString() ?: "",
         deviceId,
         weight,
         width,

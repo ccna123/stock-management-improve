@@ -4,8 +4,8 @@ import android.os.Build
 import androidx.lifecycle.ViewModel
 import com.example.sol_denka_stockmanagement.constant.generateIso8601JstTimestamp
 import com.example.sol_denka_stockmanagement.database.repository.inbound.InboundRepository
-import com.example.sol_denka_stockmanagement.database.repository.ledger.LedgerItemRepository
 import com.example.sol_denka_stockmanagement.database.repository.tag.TagMasterRepository
+import com.example.sol_denka_stockmanagement.database.repository.winder.WinderInfoRepository
 import com.example.sol_denka_stockmanagement.model.csv.InboundResultCsvModel
 import com.example.sol_denka_stockmanagement.model.tag.TagMasterModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -17,12 +17,13 @@ import kotlinx.coroutines.withContext
 class InboundViewModel @Inject constructor(
     private val tagMasterRepository: TagMasterRepository,
     private val inboundRepository: InboundRepository,
-    private val ledgerItemRepository: LedgerItemRepository
+    private val winderInfoRepository: WinderInfoRepository
 ) : ViewModel() {
 
     private val csvModels = mutableListOf<InboundResultCsvModel>()
 
     suspend fun generateCsvData(
+        winder: String?,
         weight: String,
         width: String,
         length: String,
@@ -40,7 +41,7 @@ class InboundViewModel @Inject constructor(
             val (itemTypeId, locationId) = tagMasterRepository.getItemTypeIdLocationIdByTagId(
                 rfidTag?.tagId ?: 0
             )
-            val winderId = ledgerItemRepository.getWinderIdByLedgerId(ledgerId = rfidTag?.ledgerItemId ?: 0)
+            val winderId = winderInfoRepository.getIdByName(winderName = winder ?: "")
             val model = InboundResultCsvModel(
                 tagId = rfidTag?.tagId ?: 0,
                 itemTypeId = itemTypeId,
@@ -79,22 +80,34 @@ class InboundViewModel @Inject constructor(
         rfidTag: TagMasterModel?
     ): Result<Int> {
         return try {
-            val sessionId = inboundRepository.saveInboundToDb(
-                winder = winder?.takeIf { it.isNotBlank() },
-                weight = weight?.takeIf { it.isNotBlank() }?.toInt() ?: 0,
-                width = width?.takeIf { it.isNotBlank() }?.toInt() ?: 0,
-                length = length?.takeIf { it.isNotBlank() }?.toInt() ?: 0,
-                thickness = thickness?.takeIf { it.isNotBlank() }?.toInt() ?: 0,
-                lotNo = lotNo?.takeIf { it.isNotBlank() },
-                occurrenceReason = occurrenceReason?.takeIf { it.isNotBlank() },
-                quantity = quantity?.takeIf { it.isNotBlank() }?.toInt() ?: 0,
-                memo = memo?.takeIf { it.isNotBlank() },
-                occurredAt = occurredAt?.takeIf { it.isNotBlank() },
-                processedAt = processedAt?.takeIf { it.isNotBlank() },
-                registeredAt = registeredAt,
-                rfidTag = rfidTag,
-            )
+            var sessionId = 0
+
+            inboundRepository.saveInboundTransaction {
+
+                // 1️⃣ create session
+                sessionId = inboundRepository.createInboundSession()
+                val winderId = winderInfoRepository.getIdByName(winderName = winder ?: "")
+
+                // 2️⃣ insert event (only if session OK)
+                inboundRepository.insertInboundEvent(
+                    sessionId = sessionId,
+                    winderId = winderId,
+                    weight = weight?.takeIf { it.isNotBlank() }?.toInt(),
+                    width = width?.takeIf { it.isNotBlank() }?.toInt(),
+                    length = length?.takeIf { it.isNotBlank() }?.toInt(),
+                    thickness = thickness?.takeIf { it.isNotBlank() }?.toInt(),
+                    lotNo = lotNo?.takeIf { it.isNotBlank() },
+                    occurrenceReason = occurrenceReason?.takeIf { it.isNotBlank() },
+                    quantity = quantity?.takeIf { it.isNotBlank() }?.toInt(),
+                    memo = memo?.takeIf { it.isNotBlank() },
+                    occurredAt = occurredAt?.takeIf { it.isNotBlank() },
+                    processedAt = processedAt?.takeIf { it.isNotBlank() },
+                    registeredAt = registeredAt,
+                    rfidTag = rfidTag
+                )
+            }
             Result.success(sessionId)
+
         } catch (e: Exception) {
             Result.failure(e)
         }

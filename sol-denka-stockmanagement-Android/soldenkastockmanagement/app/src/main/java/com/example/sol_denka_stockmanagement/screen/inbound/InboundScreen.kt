@@ -203,6 +203,7 @@ fun InboundScreen(
                             return@launch
                         }
                         val csvModels = inboundViewModel.generateCsvData(
+                            winder = inputState.winderInfo,
                             weight = inputState.weight,
                             width = inputState.width,
                             length = inputState.length,
