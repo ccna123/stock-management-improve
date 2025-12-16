@@ -71,30 +71,36 @@ class FieldMasterRepository @Inject constructor(
         ),
         FieldMasterModel(
             fieldId = 9,
+            fieldName = InboundInputField.QUANTITY.displayName,
+            dataType = DataType.TEXT,
+            controlType = ControlType.INPUT
+        ),
+        FieldMasterModel(
+            fieldId = 10,
             fieldName = InboundInputField.LOCATION.displayName,
             dataType = DataType.TEXT,
             controlType = ControlType.DROPDOWN
         ),
         FieldMasterModel(
-            fieldId = 10,
+            fieldId = 11,
             fieldName = InboundInputField.PACKING_TYPE.displayName,
             dataType = DataType.TEXT,
             controlType = ControlType.DROPDOWN
         ),
         FieldMasterModel(
-            fieldId = 11,
+            fieldId = 12,
             fieldName = InboundInputField.WINDER_INFO.displayName,
             dataType = DataType.TEXT,
             controlType = ControlType.DROPDOWN
         ),
         FieldMasterModel(
-            fieldId = 12,
+            fieldId = 13,
             fieldName = InboundInputField.OCCURRED_AT.displayName,
             dataType = DataType.DATETIME,
             controlType = ControlType.DATETIMEPICKER
         ),
         FieldMasterModel(
-            fieldId = 13,
+            fieldId = 14,
             fieldName = InboundInputField.PROCESSED_AT.displayName,
             dataType = DataType.DATETIME,
             controlType = ControlType.DATETIMEPICKER

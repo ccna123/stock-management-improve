@@ -209,7 +209,8 @@ enum class InboundInputField(val displayName: String){
     LOCATION("保管場所"),
     PACKING_TYPE("荷姿"),
     OCCURRED_AT("発生日時"),
-    PROCESSED_AT("処理日時")
+    PROCESSED_AT("処理日時"),
+    QUANTITY("数量"),
 }
 
 enum class DataType {

@@ -41,6 +41,7 @@ import com.example.sol_denka_stockmanagement.intent.InputIntent.ChangeThickness
 import com.example.sol_denka_stockmanagement.intent.InputIntent.ChangeWeight
 import com.example.sol_denka_stockmanagement.intent.InputIntent.ChangeWidth
 import com.example.sol_denka_stockmanagement.intent.InputIntent.ChangeWinderInfo
+import com.example.sol_denka_stockmanagement.intent.InputIntent.ChangeQuantity
 import com.example.sol_denka_stockmanagement.intent.ShareIntent
 import com.example.sol_denka_stockmanagement.model.inbound.InboundInputFormModel
 import com.example.sol_denka_stockmanagement.model.location.LocationMasterModel
@@ -78,6 +79,7 @@ fun InboundInputFormItem(
                     InboundInputField.OCCURRENCE_REASON.displayName -> inputState.occurrenceReason
                     InboundInputField.MEMO.displayName -> inputState.memo
                     InboundInputField.LOT_NO.displayName -> inputState.lotNo
+                    InboundInputField.QUANTITY.displayName -> inputState.quantity
                     else -> ""
                 },
                 label = when (result.fieldName) {
@@ -117,6 +119,10 @@ fun InboundInputFormItem(
                         R.string.lot_no
                     )
 
+                    InboundInputField.QUANTITY.displayName -> stringResource(
+                        R.string.quantity
+                    )
+
                     else -> ""
                 },
                 hintText = when (result.fieldName) {
@@ -154,6 +160,10 @@ fun InboundInputFormItem(
 
                     InboundInputField.LOT_NO.displayName -> stringResource(
                         R.string.lot_no_hint
+                    )
+
+                    InboundInputField.QUANTITY.displayName -> stringResource(
+                        R.string.quantity_hint
                     )
 
                     else -> ""
@@ -205,6 +215,10 @@ fun InboundInputFormItem(
 
                         InboundInputField.LOT_NO.displayName -> appViewModel.onInputIntent(
                             ChangeLotNo(newValue)
+                        )
+
+                        InboundInputField.QUANTITY.displayName -> appViewModel.onInputIntent(
+                            ChangeQuantity(newValue)
                         )
                     }
                 }

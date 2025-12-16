@@ -54,7 +54,7 @@
     <string name="drawer_radio_power">電波強度</string>
     <string name="material_name">資材名</string>
     <string name="epc">EPC</string>
-    <string name="quantity">数量</string>
+
 
     <string name="permission_title">ファイルアクセス権限の要求</string>
     <string name="permission_message">
@@ -119,6 +119,8 @@
     <string name="specific_gravity_hint">比重入力</string>
     <string name="occurrenceReason">発生理由</string>
     <string name="occurrenceReason_hint">発生理由入力</string>
+    <string name="quantity">数量</string>
+    <string name="quantity_hint">数量入力</string>
 
     <!-- 設定画面 -->
     <string name="setting_basic_title">基本設定</string>
