@@ -289,7 +289,7 @@ fun ScanScreen(
                     itemName = tag?.newFields?.itemName ?: "-",
                     itemCode = tag?.newFields?.itemCode ?: "-",
                     timeStamp = if (tag == null) "-" else LocalDateTime.now(ZoneId.of("Asia/Tokyo"))
-                        .format(DateTimeFormatter.ofPattern("HH:mm"))
+                        .format(DateTimeFormatter.ofPattern("HH:mm:ss"))
                 )
             } else {
                 Box(
