@@ -36,7 +36,7 @@ class InventoryCompleteRepository @Inject constructor(
         tagList: List<TagMasterModel>
     ) {
         tagList.forEach { tag ->
-            val ledgerId = tagMasterRepository.getLedgerIdByEpc(tag.epc)
+            val ledgerId = tagMasterRepository.getLedgerIdByTagId(tag.tagId)
             val inventoryResultTypeId =
                 inventoryResultTypeRepository.getInventoryResultTypeIdByCode(
                     tag.newFields.inventoryResultType.name

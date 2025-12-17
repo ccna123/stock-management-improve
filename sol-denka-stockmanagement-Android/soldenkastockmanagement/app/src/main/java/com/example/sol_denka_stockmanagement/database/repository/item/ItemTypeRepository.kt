@@ -21,6 +21,8 @@ class ItemTypeRepository @Inject constructor(
     suspend fun getItemTypeByCategoryId(categoryId: Int) =
         dao.getItemTypeByCategoryId(categoryId).map { it.toModel() }
 
+    suspend fun getItemTypeIdByItemName(itemName: String) = dao.getItemTypeIdByItemName(itemName)
+
     suspend fun insert(model: ItemTypeMasterModel) = dao.insert(model.toEntity())
     suspend fun insertAll(model: List<ItemTypeMasterModel>) =
         dao.insertAll(model.map { it.toEntity() })

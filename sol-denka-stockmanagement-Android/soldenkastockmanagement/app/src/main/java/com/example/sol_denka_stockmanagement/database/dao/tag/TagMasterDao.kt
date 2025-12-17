@@ -32,7 +32,7 @@ interface TagMasterDao : IDao<TagMasterEntity> {
     @Query(
         """
     SELECT * FROM tagmaster t
-    LEFT JOIN ledgeritem le ON le.ledger_item_id = t.ledger_item_id
+    LEFT JOIN ledgeritem le ON le.tag_id = t.tag_id
     WHERE le.location_id = :locationId AND le.is_in_stock = :isInStock
     """
     )
@@ -49,19 +49,19 @@ interface TagMasterDao : IDao<TagMasterEntity> {
                 IFNULL(it.item_type_code, '') AS itemCode,
                 IFNULL(lo.location_name, '') AS location
             FROM tagmaster AS t 
-            LEFT JOIN ledgeritem le ON le.ledger_item_id = t.ledger_item_id
+            LEFT JOIN ledgeritem le ON le.tag_id = t.tag_id
             LEFT JOIN locationmaster lo ON lo.location_id = le.location_id
             LEFT JOIN itemtypemaster it ON it.item_type_id = le.item_type_id
     """)
     suspend fun getFullInfo(): List<SingleTagInfoModel>
 
-    @Query("SELECT ledger_item_id FROM tagmaster WHERE epc = :epc")
-    suspend fun getLedgerIdByEpc(epc: String): Int
+    @Query("SELECT ledger_item_id FROM ledgeritem WHERE tag_id = :tagId")
+    suspend fun getLedgerIdByTagId(tagId: Int): Int
 
     @Query("""
         SELECT le.item_type_id
             FROM tagmaster t
-            LEFT JOIN ledgeritem le ON le.ledger_item_id = t.ledger_item_id
+            LEFT JOIN ledgeritem le ON le.tag_id = t.tag_id
             WHERE t.tag_id = :tagId
     """)
     suspend fun getItemTypeIdByTagId(tagId: Int): Long
@@ -69,7 +69,7 @@ interface TagMasterDao : IDao<TagMasterEntity> {
     @Query("""
         SELECT le.location_id
             FROM tagmaster t
-            LEFT JOIN ledgeritem le ON le.ledger_item_id = t.ledger_item_id
+            LEFT JOIN ledgeritem le ON le.tag_id = t.tag_id
             WHERE t.tag_id = :tagId
     """)
     suspend fun getLocationIdByTagId(tagId: Int): Long

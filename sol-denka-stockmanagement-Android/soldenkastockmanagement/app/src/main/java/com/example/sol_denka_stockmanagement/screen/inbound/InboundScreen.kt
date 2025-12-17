@@ -111,11 +111,11 @@ fun InboundScreen(
         cancelText = stringResource(R.string.cancel),
         onConfirm = { time ->
             when (generalState.inboundInputFieldDateTime) {
-                InboundInputField.OCCURRED_AT.code -> appViewModel.onInputIntent(
+                InboundInputField.OCCURRED_AT.displayName -> appViewModel.onInputIntent(
                     ChangeOccurredAtTime(time)
                 )
 
-                InboundInputField.PROCESSED_AT.code -> appViewModel.onInputIntent(
+                InboundInputField.PROCESSED_AT.displayName -> appViewModel.onInputIntent(
                     InputIntent.ChangeProcessedAtTime(time)
                 )
             }
@@ -132,11 +132,11 @@ fun InboundScreen(
         cancelText = stringResource(R.string.cancel),
         onConfirm = { date ->
             when (generalState.inboundInputFieldDateTime) {
-                InboundInputField.OCCURRED_AT.code -> appViewModel.onInputIntent(
+                InboundInputField.OCCURRED_AT.displayName -> appViewModel.onInputIntent(
                     ChangeOccurredAtDate(date)
                 )
 
-                InboundInputField.PROCESSED_AT.code -> appViewModel.onInputIntent(
+                InboundInputField.PROCESSED_AT.displayName -> appViewModel.onInputIntent(
                     InputIntent.ChangeProcessedAtDate(date)
                 )
             }
@@ -180,6 +180,8 @@ fun InboundScreen(
                     scope.launch {
                         val result = inboundViewModel.saveInboundToDb(
                             rfidTag = rfidTagList.find { it.epc == lastInboundEpc },
+                            itemInCategory = inputState.itemInCategory,
+                            location = inputState.location,
                             winder = inputState.winder,
                             weight = inputState.weight,
                             width = inputState.width,
@@ -203,6 +205,8 @@ fun InboundScreen(
                             return@launch
                         }
                         val csvModels = inboundViewModel.generateCsvData(
+                            itemInCategory = inputState.itemInCategory,
+                            location = inputState.location,
                             winder = inputState.winder,
                             weight = inputState.weight,
                             width = inputState.width,

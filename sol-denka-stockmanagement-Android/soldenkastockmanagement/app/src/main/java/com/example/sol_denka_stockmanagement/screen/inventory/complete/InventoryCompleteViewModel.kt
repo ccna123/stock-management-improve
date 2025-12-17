@@ -105,7 +105,7 @@ class InventoryCompleteViewModel @Inject constructor(
 
             val locationId = locationMasterRepository.getLocationIdByName(locationName)
             _finalTagList.value.forEach { tag ->
-                val ledgerId = tag.ledgerItemId
+                val ledgerId = tagMasterRepository.getLedgerIdByTagId(tag.tagId)
                 val inventoryResultTypeId =
                     inventoryResultTypeRepository.getInventoryResultTypeIdByCode(
                         tag.newFields.inventoryResultType.name

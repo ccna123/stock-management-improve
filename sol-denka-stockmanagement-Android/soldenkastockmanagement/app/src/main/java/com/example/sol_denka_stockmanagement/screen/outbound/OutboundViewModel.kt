@@ -32,10 +32,10 @@ class OutboundViewModel @Inject constructor(
 
             rfidTagList.forEach { tag ->
                 val processTypeId = processTypeRepository.getIdByName(tag.newFields.processType)
-                val (tagId, ledgerId) = tagMasterRepository.getTagIdLedgerIdByEpc(tag.epc)
+                val ledgerId = tagMasterRepository.getLedgerIdByTagId(tag.tagId)
                 val model = OutboundResultCsvModel(
                     ledgerItemId = ledgerId ?: 0,
-                    tagId = tagId,
+                    tagId = tag.tagId,
                     processTypeId = processTypeId,
                     deviceId = Build.ID,
                     memo = memo,

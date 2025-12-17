@@ -36,8 +36,8 @@ class LocationChangeRepository @Inject constructor(
         rfidTagList: List<TagMasterModel>
     ) {
         val newLocationId = locationMasterRepository.getLocationIdByName(newLocation)
-        rfidTagList.forEach { row ->
-            val ledgerId = tagMasterRepository.getLedgerIdByEpc(row.epc)
+        rfidTagList.forEach { tag ->
+            val ledgerId = tagMasterRepository.getLedgerIdByTagId(tag.tagId)
             locationChangeEventRepository.insert(
                 LocationChangeEventModel(
                     locationChangeSessionId = sessionId,

@@ -36,7 +36,7 @@ class OutboundRepository @Inject constructor(
         tags: List<TagMasterModel>
     ) {
         tags.forEach { tag ->
-            val ledgerId = tagMasterRepository.getLedgerIdByEpc(tag.epc)
+            val ledgerId = tagMasterRepository.getLedgerIdByTagId(tag.tagId)
             val processTypeId = processTypeRepository.getIdByName(tag.newFields.processType)
 
             eventRepo.insert(

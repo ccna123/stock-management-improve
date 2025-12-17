@@ -32,8 +32,8 @@ class LocationChangeViewModel @Inject constructor(
             try {
                 csvModels.clear()
                 val newLocationId = locationMasterRepository.getLocationIdByName(newLocation)
-                rfidTagList.forEach { row ->
-                    val ledgerId = tagMasterRepository.getLedgerIdByEpc(row.epc)
+                rfidTagList.forEach { tag ->
+                    val ledgerId = tagMasterRepository.getLedgerIdByTagId(tag.tagId)
                     val model = LocationChangeResultCsvModel(
                         ledgerItemId = ledgerId ?: 0,
                         locationId = newLocationId ?: 0,

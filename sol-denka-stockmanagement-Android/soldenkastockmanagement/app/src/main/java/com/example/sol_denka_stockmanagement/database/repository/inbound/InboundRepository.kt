@@ -4,7 +4,6 @@ import android.os.Build
 import androidx.room.withTransaction
 import com.example.sol_denka_stockmanagement.constant.generateIso8601JstTimestamp
 import com.example.sol_denka_stockmanagement.database.AppDatabase
-import com.example.sol_denka_stockmanagement.database.repository.tag.TagMasterRepository
 import com.example.sol_denka_stockmanagement.model.inbound.InboundEventModel
 import com.example.sol_denka_stockmanagement.model.inbound.InboundSessionModel
 import com.example.sol_denka_stockmanagement.model.tag.TagMasterModel
@@ -16,7 +15,6 @@ class InboundRepository @Inject constructor(
     private val db: AppDatabase,
     private val sessionRepo: InboundSessionRepository,
     private val eventRepo: InboundEventRepository,
-    private val tagMasterRepository: TagMasterRepository,
 ) {
 
     suspend fun createInboundSession(): Int =
@@ -30,6 +28,8 @@ class InboundRepository @Inject constructor(
     suspend fun insertInboundEvent(
         sessionId: Int,
         winderId: Int?,
+        locationId: Int?,
+        itemTypeId: Int,
         weight: Int?,
         width: Int?,
         length: Int?,
@@ -43,9 +43,6 @@ class InboundRepository @Inject constructor(
         registeredAt: String,
         rfidTag: TagMasterModel?
     ) {
-        val (itemTypeId, locationId) = tagMasterRepository.getItemTypeIdLocationIdByTagId(
-            rfidTag?.tagId ?: 0
-        )
         eventRepo.insert(
             InboundEventModel(
                 inboundSessionId = sessionId,

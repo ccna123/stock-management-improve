@@ -21,8 +21,7 @@ class TagMasterImporter(
             .map { p ->
                 TagMasterModel(
                     tagId = p[0].toInt(),
-                    ledgerItemId = p[1].ifBlank { null }?.toIntOrNull(),
-                    epc = p[2],
+                    epc = p[1],
                     newFields = AdditionalFieldsModel(
                         tagStatus = TagStatus.UNPROCESSED,
                         inventoryResultType = InventoryResultType.UNKNOWN,

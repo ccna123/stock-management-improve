@@ -8,7 +8,7 @@ import com.example.sol_denka_stockmanagement.constant.generateTimeStamp
 data class InboundResultCsvModel(
     val tagId: Int,
     val itemTypeId: Int,
-    val locationId: Int,
+    val locationId: Int?,
     val winderId: Int?,
     val deviceId: String,
     val weight: String,
@@ -46,7 +46,7 @@ data class InboundResultCsvModel(
     override fun toRow(): List<String> = listOf(
         tagId.toString(),
         itemTypeId.toString(),
-        locationId.toString(),
+        locationId?.toString() ?: "",
         winderId?.toString() ?: "",
         deviceId,
         weight,

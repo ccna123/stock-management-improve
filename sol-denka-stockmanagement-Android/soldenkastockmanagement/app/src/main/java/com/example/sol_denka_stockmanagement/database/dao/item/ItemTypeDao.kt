@@ -38,4 +38,7 @@ interface ItemTypeDao: IDao<ItemTypeMasterEntity> {
         WHERE (:categoryId = 0 OR category.item_category_id = :categoryId)
     """)
     suspend fun getItemTypeByCategoryId(categoryId: Int): List<ItemTypeMasterEntity>
+
+    @Query("SELECT item_type_id FROM ItemTypeMaster WHERE item_type_name = :itemName")
+    suspend fun getItemTypeIdByItemName(itemName: String): Int
 }

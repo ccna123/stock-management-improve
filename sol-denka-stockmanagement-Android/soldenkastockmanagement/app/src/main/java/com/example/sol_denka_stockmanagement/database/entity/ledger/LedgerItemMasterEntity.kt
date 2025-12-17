@@ -44,6 +44,7 @@ data class LedgerItemEntity(
     @ColumnInfo(name = "item_type_id") val itemTypeId: Int,
     @ColumnInfo(name = "location_id") val locationId: Int,
     @ColumnInfo(name = "winder_id") val winderInfoId: Int?,
+    @ColumnInfo(name = "tag_id") val tagId: Int?,
     @ColumnInfo(name = "is_in_stock") val isInStock: Boolean,
     @ColumnInfo(name = "weight") val weight: Int?,
     @ColumnInfo(name = "width") val width: Int?,

@@ -26,13 +26,8 @@ class TagMasterRepository @Inject constructor(
     suspend fun getTagsByLocationAndStock(locationId: Int, isInStock: Boolean) =
         dao.getTagsByLocationAndStock(locationId, isInStock).map { it.toModel() }
 
-    suspend fun getTagIdLedgerIdByEpc(epc: String): Pair<Int, Int?>{
-        val t = dao.getTagIdLedgerIdByEpc(epc)
-        return Pair(t.tagId, t.ledgerItemId)
-    }
-
-    suspend fun getLedgerIdByEpc(epc: String): Int?{
-        return dao.getLedgerIdByEpc(epc)
+    suspend fun getLedgerIdByTagId(tagId: Int): Int?{
+        return dao.getLedgerIdByTagId(tagId)
     }
 
 
