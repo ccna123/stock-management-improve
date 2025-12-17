@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.sol_denka_stockmanagement.constant.ScanMode
 import com.example.sol_denka_stockmanagement.constant.TagStatus
+import com.example.sol_denka_stockmanagement.database.repository.ledger.LedgerItemRepository
 import com.example.sol_denka_stockmanagement.database.repository.tag.TagMasterRepository
 import com.example.sol_denka_stockmanagement.helper.controller.ReaderController
 import com.example.sol_denka_stockmanagement.helper.controller.TagController
@@ -15,6 +16,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -23,6 +27,7 @@ import javax.inject.Inject
 class ScanViewModel @Inject constructor(
     private val readerController: ReaderController,
     private val tagController: TagController,
+    private val ledgerItemRepository: LedgerItemRepository,
     private val tagMasterRepository: TagMasterRepository
 ) : ViewModel() {
 
@@ -48,12 +53,20 @@ class ScanViewModel @Inject constructor(
 
     init {
 
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
 
-            tagMasterRepository.get().collect { tagList ->
-                val fullInfoList = tagMasterRepository.getFullInfo()
+            val tagFlow = tagMasterRepository.get()
+
+            val fullInfoFlow = ledgerItemRepository.get()
+                .map { tagMasterRepository.getFullInfo() } // fullInfo list
+                .distinctUntilChanged()
+
+            combine(tagFlow, fullInfoFlow) { tagList, fullInfoList ->
                 val infoMap = fullInfoList.associateBy { it.epc }
-                val enriched = tagList.map { tag ->
+                val prevMap = _rfidTagList.value.associateBy { it.epc }
+
+                tagList.map { tag ->
+                    val prev = prevMap[tag.epc]
                     val info = infoMap[tag.epc]
 
                     tag.copy(
@@ -61,12 +74,16 @@ class ScanViewModel @Inject constructor(
                             itemName = info?.itemName ?: "",
                             itemCode = info?.itemCode ?: "",
                             location = info?.location ?: "",
-                            tagStatus = TagStatus.UNPROCESSED,
-                            rssi = -100f
+
+                            tagStatus = prev?.newFields?.tagStatus ?: TagStatus.UNPROCESSED,
+                            rssi = prev?.newFields?.rssi ?: -100f,
+                            isChecked = prev?.newFields?.isChecked ?: false,
+                            processType = prev?.newFields?.processType ?: ""
                         )
                     )
                 }
-                _rfidTagList.value = enriched
+            }.collect { merged ->
+                _rfidTagList.value = merged
             }
         }
         // 1) always collect scanMode
