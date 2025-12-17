@@ -7,7 +7,6 @@ import com.example.sol_denka_stockmanagement.constant.generateIso8601JstTimestam
 import com.example.sol_denka_stockmanagement.database.repository.inbound.InboundRepository
 import com.example.sol_denka_stockmanagement.database.repository.item.ItemTypeRepository
 import com.example.sol_denka_stockmanagement.database.repository.location.LocationMasterRepository
-import com.example.sol_denka_stockmanagement.database.repository.tag.TagMasterRepository
 import com.example.sol_denka_stockmanagement.database.repository.winder.WinderInfoRepository
 import com.example.sol_denka_stockmanagement.model.csv.InboundResultCsvModel
 import com.example.sol_denka_stockmanagement.model.tag.TagMasterModel
@@ -96,11 +95,6 @@ class InboundViewModel @Inject constructor(
                 val winderId = winderInfoRepository.getIdByName(winderName = winder ?: "")
                 val itemTypeId = itemTypeRepository.getItemTypeIdByItemName(itemName = itemInCategory)
                 val locationId = locationMasterRepository.getLocationIdByName(locationName = location)
-
-                Log.e("TSS", "winderId:  $winderId", )
-                Log.e("TSS", "sessionId:  $sessionId", )
-                Log.e("TSS", "itemTypeId:  $itemTypeId", )
-                Log.e("TSS", "locationId:  $locationId", )
 
                 // 2️⃣ insert event (only if session OK)
                 inboundRepository.insertInboundEvent(
