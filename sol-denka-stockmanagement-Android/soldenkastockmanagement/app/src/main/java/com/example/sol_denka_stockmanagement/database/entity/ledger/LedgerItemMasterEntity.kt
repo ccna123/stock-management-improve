@@ -7,6 +7,7 @@ import androidx.room.Index
 import androidx.room.PrimaryKey
 import com.example.sol_denka_stockmanagement.database.entity.item.ItemTypeMasterEntity
 import com.example.sol_denka_stockmanagement.database.entity.location.LocationMasterEntity
+import com.example.sol_denka_stockmanagement.database.entity.tag.TagMasterEntity
 import com.example.sol_denka_stockmanagement.database.entity.winder.WinderInfoEntity
 
 @Entity(
@@ -31,12 +32,20 @@ import com.example.sol_denka_stockmanagement.database.entity.winder.WinderInfoEn
             childColumns = ["winder_id"],
             onUpdate = ForeignKey.CASCADE,
             onDelete = ForeignKey.CASCADE
+        ),
+        ForeignKey(
+            entity = TagMasterEntity::class,
+            parentColumns = ["tag_id"],
+            childColumns = ["tag_id"],
+            onUpdate = ForeignKey.CASCADE,
+            onDelete = ForeignKey.SET_NULL
         )
     ],
     indices = [
         Index(value = ["item_type_id"]),
         Index(value = ["location_id"]),
         Index(value = ["winder_id"]),
+        Index(value = ["tag_id"]),
     ]
 )
 data class LedgerItemEntity(
