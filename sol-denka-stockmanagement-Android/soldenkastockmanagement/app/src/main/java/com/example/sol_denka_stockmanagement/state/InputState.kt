@@ -12,7 +12,7 @@ data class InputState(
     val memo: String = "",
     val category: String = "",
     val processMethod: String = ProcessMethod.USE.displayName,
-    val winderInfo: String = "",
+    val winder: String = "",
     val weight: String = "",
     val lotNo: String = "",
     val quantity: String = "",

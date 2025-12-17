@@ -40,13 +40,13 @@ object InputValidate {
                             InboundInputField.THICKNESS.code -> inputState.thickness
                             InboundInputField.WIDTH.code -> inputState.width
                             InboundInputField.SPECIFIC_GRAVITY.code -> inputState.specificGravity
-                            InboundInputField.WINDER.code -> inputState.winderInfo
+                            InboundInputField.WINDER.code -> inputState.winder
                             InboundInputField.OCCURRENCE_REASON.code -> inputState.occurrenceReason
                             InboundInputField.MEMO.code -> inputState.memo
                             InboundInputField.LOT_NO.code -> inputState.lotNo
                             InboundInputField.LOCATION.code -> inputState.location
                             InboundInputField.PACKING_TYPE.code -> inputState.packingType
-                            InboundInputField.WINDER.code -> inputState.winderInfo
+                            InboundInputField.WINDER.code -> inputState.winder
                             InboundInputField.QUANTITY.code -> inputState.quantity
                             else -> ""
                         }

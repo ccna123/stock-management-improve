@@ -19,7 +19,8 @@ interface ItemTypeFieldSettingMasterDao: IDao<ItemTypeFieldSettingMasterEntity> 
 
     @Query("""
         SELECT 
-        f.fieldName AS fieldName, 
+        f.field_name AS fieldName, 
+        f.field_code AS fieldCode,
         f.control_type AS controlType,  
         f.data_type AS dataType, 
         s.is_required AS isRequired, 

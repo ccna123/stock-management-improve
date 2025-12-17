@@ -254,7 +254,7 @@ class AppViewModel @Inject constructor(
                 _inputState.update { it.copy(length = intent.value) }
 
             is InputIntent.ChangeWinderInfo ->
-                _inputState.update { it.copy(winderInfo = intent.value) }
+                _inputState.update { it.copy(winder = intent.value) }
 
             is InputIntent.ChangeThickness ->
                 _inputState.update { it.copy(thickness = intent.value) }
@@ -590,7 +590,7 @@ class AppViewModel @Inject constructor(
                 length = "",
                 thickness = "",
                 grade = "",
-                winderInfo = "",
+                winder = "",
                 memo = "",
                 location = "",
                 processMethod = "",
