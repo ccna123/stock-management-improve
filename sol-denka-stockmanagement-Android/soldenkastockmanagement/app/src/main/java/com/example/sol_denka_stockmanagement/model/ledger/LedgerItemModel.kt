@@ -12,12 +12,14 @@ data class LedgerItemModel(
     val width: Int?,
     val length: Int?,
     val thickness: Int?,
-    val lotNo: Int?,
+    val lotNo: String?,
     val occurrenceReason: String?,
     val quantity: Int?,
     val memo: String?,
     val occurredAt: String?,
     val processedAt: String?,
+    val registeredAt: String,
+    val updatedAt: String,
 )
 
 fun LedgerItemEntity.toModel() = LedgerItemModel(
@@ -35,7 +37,9 @@ fun LedgerItemEntity.toModel() = LedgerItemModel(
     occurrenceReason = occurrenceReason,
     memo = memo,
     occurredAt = occurredAt,
-    processedAt = processedAt
+    processedAt = processedAt,
+    registeredAt = registeredAt,
+    updatedAt = updatedAt
 )
 
 fun LedgerItemModel.toEntity() = LedgerItemEntity(
@@ -53,5 +57,7 @@ fun LedgerItemModel.toEntity() = LedgerItemEntity(
     occurrenceReason = occurrenceReason,
     memo = memo,
     occurredAt = occurredAt,
-    processedAt = processedAt
+    processedAt = processedAt,
+    registeredAt = registeredAt,
+    updatedAt = updatedAt
 )

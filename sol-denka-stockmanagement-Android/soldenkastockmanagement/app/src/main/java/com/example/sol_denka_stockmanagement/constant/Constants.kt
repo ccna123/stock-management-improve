@@ -196,20 +196,21 @@ enum class Category(val displayName: String){
     INTERMEDIATE_PRODUCT("中間品"),
 }
 
-enum class InboundInputField(val displayName: String){
-    WEIGHT("重量"),
-    LENGTH("長さ"),
-    WIDTH("巾"),
-    THICKNESS("厚み"),
-    SPECIFIC_GRAVITY("比重"),
-    LOT_NO("Lot No"),
-    WINDER_INFO("巻き取り機情報"),
-    OCCURRENCE_REASON("発生理由"),
-    MEMO("備考"),
-    LOCATION("保管場所"),
-    PACKING_TYPE("荷姿"),
-    OCCURRED_AT("発生日時"),
-    PROCESSED_AT("処理日時")
+enum class InboundInputField(val displayName: String, val code: String){
+    WEIGHT("重量", "Weight"),
+    LENGTH("長さ", "Length"),
+    WIDTH("巾", "Width"),
+    THICKNESS("厚み", "Thickness"),
+    SPECIFIC_GRAVITY("比重", "SpecificGravity"),
+    LOT_NO("Lot No", "LotNo"),
+    WINDER("巻き取り機", "Winder"),
+    OCCURRENCE_REASON("発生理由", "OccurrenceReason"),
+    MEMO("備考", "Memo"),
+    LOCATION("保管場所", "Location"),
+    PACKING_TYPE("荷姿", "PackingType"),
+    OCCURRED_AT("発生日時", "OccurredAt"),
+    PROCESSED_AT("処理日時", "ProcessedAt"),
+    QUANTITY("数量", "Quantity"),
 }
 
 enum class DataType {

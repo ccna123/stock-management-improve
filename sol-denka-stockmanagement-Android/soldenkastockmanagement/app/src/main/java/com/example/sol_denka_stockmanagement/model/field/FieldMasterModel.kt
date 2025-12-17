@@ -7,6 +7,7 @@ import com.example.sol_denka_stockmanagement.database.entity.field.FieldMasterEn
 data class FieldMasterModel(
     val fieldId: Int = 0,
     val fieldName: String,
+    val fieldCode: String,
     val dataType: DataType,
     val controlType: ControlType
 )
@@ -14,6 +15,7 @@ data class FieldMasterModel(
 fun FieldMasterEntity.toModel() = FieldMasterModel(
     fieldId = fieldId,
     fieldName = fieldName,
+    fieldCode = fieldCode,
     dataType = dataType,
     controlType = controlType
 )
@@ -21,6 +23,7 @@ fun FieldMasterEntity.toModel() = FieldMasterModel(
 fun FieldMasterModel.toEntity() = FieldMasterEntity(
     fieldId = fieldId,
     fieldName = fieldName,
+    fieldCode = fieldCode,
     dataType = dataType,
     controlType = controlType
 )

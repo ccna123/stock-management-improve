@@ -5,6 +5,7 @@ import com.example.sol_denka_stockmanagement.constant.DataType
 
 data class InboundInputFormModel(
     val fieldName: String,
+    val fieldCode: String,
     val controlType: ControlType,
     val dataType: DataType,
     val isRequired: Boolean,

@@ -38,12 +38,14 @@ class LedgerItemMasterImporter(
                     width = parseNullableInt(p[6]),
                     length = parseNullableInt(p[7]),
                     thickness = parseNullableInt(p[8]),
-                    lotNo = parseNullableInt(p[9]),
+                    lotNo = p[9],
                     occurrenceReason = p[10].ifBlank { null },
                     quantity = parseNullableInt(p[11]),
                     memo = p[12],
                     occurredAt = p[13],
                     processedAt = p[14],
+                    registeredAt = p[15],
+                    updatedAt = p[16]
                 )
             }
 

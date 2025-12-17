@@ -24,78 +24,98 @@ class FieldMasterRepository @Inject constructor(
         FieldMasterModel(
             fieldId = 1,
             fieldName = InboundInputField.WEIGHT.displayName,
+            fieldCode = InboundInputField.WEIGHT.code,
             dataType = DataType.NUMBER,
             controlType = ControlType.INPUT
         ),FieldMasterModel(
             fieldId = 2,
             fieldName = InboundInputField.LENGTH.displayName,
+            fieldCode = InboundInputField.LENGTH.code,
             dataType = DataType.NUMBER,
             controlType = ControlType.INPUT
         ),
         FieldMasterModel(
             fieldId = 3,
             fieldName = InboundInputField.SPECIFIC_GRAVITY.displayName,
+            fieldCode = InboundInputField.SPECIFIC_GRAVITY.code,
             dataType = DataType.NUMBER,
             controlType = ControlType.INPUT
         ),
         FieldMasterModel(
             fieldId = 4,
             fieldName = InboundInputField.WIDTH.displayName,
+            fieldCode = InboundInputField.WIDTH.code,
             dataType = DataType.NUMBER,
             controlType = ControlType.INPUT
         ),
         FieldMasterModel(
             fieldId = 5,
             fieldName = InboundInputField.THICKNESS.displayName,
+            fieldCode = InboundInputField.THICKNESS.code,
             dataType = DataType.NUMBER,
             controlType = ControlType.INPUT
         ),
         FieldMasterModel(
             fieldId = 6,
             fieldName = InboundInputField.LOT_NO.displayName,
-            dataType = DataType.NUMBER,
+            fieldCode = InboundInputField.LOT_NO.code,
+            dataType = DataType.TEXT,
             controlType = ControlType.INPUT
         ),
 
         FieldMasterModel(
             fieldId = 7,
             fieldName = InboundInputField.OCCURRENCE_REASON.displayName,
+            fieldCode = InboundInputField.OCCURRENCE_REASON.code,
             dataType = DataType.TEXT,
             controlType = ControlType.INPUT
         ),
         FieldMasterModel(
             fieldId = 8,
             fieldName = InboundInputField.MEMO.displayName,
+            fieldCode = InboundInputField.MEMO.code,
             dataType = DataType.TEXT,
             controlType = ControlType.INPUT
         ),
         FieldMasterModel(
             fieldId = 9,
-            fieldName = InboundInputField.LOCATION.displayName,
-            dataType = DataType.TEXT,
-            controlType = ControlType.DROPDOWN
+            fieldName = InboundInputField.QUANTITY.displayName,
+            fieldCode = InboundInputField.QUANTITY.code,
+            dataType = DataType.NUMBER,
+            controlType = ControlType.INPUT
         ),
         FieldMasterModel(
             fieldId = 10,
-            fieldName = InboundInputField.PACKING_TYPE.displayName,
+            fieldName = InboundInputField.LOCATION.displayName,
+            fieldCode = InboundInputField.LOCATION.code,
             dataType = DataType.TEXT,
             controlType = ControlType.DROPDOWN
         ),
         FieldMasterModel(
             fieldId = 11,
-            fieldName = InboundInputField.WINDER_INFO.displayName,
+            fieldName = InboundInputField.PACKING_TYPE.displayName,
+            fieldCode = InboundInputField.PACKING_TYPE.code,
             dataType = DataType.TEXT,
             controlType = ControlType.DROPDOWN
         ),
         FieldMasterModel(
             fieldId = 12,
+            fieldName = InboundInputField.WINDER.displayName,
+            fieldCode = InboundInputField.WINDER.code,
+            dataType = DataType.TEXT,
+            controlType = ControlType.DROPDOWN
+        ),
+        FieldMasterModel(
+            fieldId = 13,
             fieldName = InboundInputField.OCCURRED_AT.displayName,
+            fieldCode = InboundInputField.OCCURRED_AT.code,
             dataType = DataType.DATETIME,
             controlType = ControlType.DATETIMEPICKER
         ),
         FieldMasterModel(
-            fieldId = 13,
+            fieldId = 14,
             fieldName = InboundInputField.PROCESSED_AT.displayName,
+            fieldCode = InboundInputField.PROCESSED_AT.code,
             dataType = DataType.DATETIME,
             controlType = ControlType.DATETIMEPICKER
         ),

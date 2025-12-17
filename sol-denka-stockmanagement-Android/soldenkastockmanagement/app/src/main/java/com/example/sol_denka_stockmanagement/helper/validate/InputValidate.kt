@@ -14,8 +14,8 @@ object InputValidate {
         formItems
             .filter { it.isRequired }
             .forEach { item ->
-                when (item.fieldName) {
-                    InboundInputField.OCCURRED_AT.displayName -> {
+                when (item.fieldCode) {
+                    InboundInputField.OCCURRED_AT.code -> {
                         if (inputState.occurredAtDate.isBlank()) {
                             errors["occurred_at_date"] = true
                         }
@@ -24,7 +24,7 @@ object InputValidate {
                         }
                     }
 
-                    InboundInputField.PROCESSED_AT.displayName -> {
+                    InboundInputField.PROCESSED_AT.code -> {
                         if (inputState.processedAtDate.isBlank()) {
                             errors["processed_at_date"] = true
                         }
@@ -34,19 +34,20 @@ object InputValidate {
                     }
 
                     else -> {
-                        val value = when (item.fieldName) {
-                            InboundInputField.WEIGHT.displayName -> inputState.weight
-                            InboundInputField.LENGTH.displayName -> inputState.length
-                            InboundInputField.THICKNESS.displayName -> inputState.thickness
-                            InboundInputField.WIDTH.displayName -> inputState.width
-                            InboundInputField.SPECIFIC_GRAVITY.displayName -> inputState.specificGravity
-                            InboundInputField.WINDER_INFO.displayName -> inputState.winderInfo
-                            InboundInputField.OCCURRENCE_REASON.displayName -> inputState.occurrenceReason
-                            InboundInputField.MEMO.displayName -> inputState.memo
-                            InboundInputField.LOT_NO.displayName -> inputState.lotNo
-                            InboundInputField.LOCATION.displayName -> inputState.location
-                            InboundInputField.PACKING_TYPE.displayName -> inputState.packingType
-                            InboundInputField.WINDER_INFO.displayName -> inputState.winderInfo
+                        val value = when (item.fieldCode) {
+                            InboundInputField.WEIGHT.code -> inputState.weight
+                            InboundInputField.LENGTH.code -> inputState.length
+                            InboundInputField.THICKNESS.code -> inputState.thickness
+                            InboundInputField.WIDTH.code -> inputState.width
+                            InboundInputField.SPECIFIC_GRAVITY.code -> inputState.specificGravity
+                            InboundInputField.WINDER.code -> inputState.winderInfo
+                            InboundInputField.OCCURRENCE_REASON.code -> inputState.occurrenceReason
+                            InboundInputField.MEMO.code -> inputState.memo
+                            InboundInputField.LOT_NO.code -> inputState.lotNo
+                            InboundInputField.LOCATION.code -> inputState.location
+                            InboundInputField.PACKING_TYPE.code -> inputState.packingType
+                            InboundInputField.WINDER.code -> inputState.winderInfo
+                            InboundInputField.QUANTITY.code -> inputState.quantity
                             else -> ""
                         }
                         if (value.isBlank()) {

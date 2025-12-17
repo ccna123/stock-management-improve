@@ -49,10 +49,12 @@ data class LedgerItemEntity(
     @ColumnInfo(name = "width") val width: Int?,
     @ColumnInfo(name = "length") val length: Int?,
     @ColumnInfo(name = "thickness") val thickness: Int?,
-    @ColumnInfo(name = "lot_no") val lotNo: Int?,
+    @ColumnInfo(name = "lot_no") val lotNo: String?,
     @ColumnInfo(name = "occurrence_reason") val occurrenceReason: String?,
     @ColumnInfo(name = "quantity") val quantity: Int?,
     @ColumnInfo(name = "memo") val memo: String?,
     @ColumnInfo(name = "occurred_at") val occurredAt: String?,
     @ColumnInfo(name = "processed_at") val processedAt: String?,
+    @ColumnInfo(name = "registered_at") val registeredAt: String,
+    @ColumnInfo(name = "updated_at") val updatedAt: String,
 )
