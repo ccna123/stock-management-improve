@@ -75,6 +75,7 @@ class ScanViewModel @Inject constructor(
                         newFields = tag.newFields.copy(
 
                             hasLeger = tag.tagId in mappedSet,
+                            isInStock = info?.isInStock ?: false,
 
                             itemName = info?.itemName ?: "",
                             itemCode = info?.itemCode ?: "",

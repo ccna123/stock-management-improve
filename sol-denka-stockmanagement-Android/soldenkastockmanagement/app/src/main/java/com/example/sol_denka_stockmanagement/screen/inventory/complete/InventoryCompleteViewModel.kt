@@ -50,39 +50,28 @@ class InventoryCompleteViewModel @Inject constructor(
 
     fun computeResult(rfidTagList: List<TagMasterModel>, locationName: String) {
         viewModelScope.launch {
-            val currentLocationId =
-                locationMasterRepository.getLocationIdByName(locationName = locationName)
-                    ?: 0
-            val matchLocationScannedTags =
-                rfidTagList.filter { it.newFields.tagStatus == TagStatus.PROCESSED && it.newFields.location == locationName }.map { it.epc }
-                    .toSet()
 
-            val notMatchLocationScannedTags =
-                rfidTagList.filter { it.newFields.tagStatus == TagStatus.PROCESSED && it.newFields.location != locationName }.map { it.epc }
-                    .toSet()
-
-            val tagsInStock = tagMasterRepository.getTagsByLocationAndStock(
-                locationId = currentLocationId,
-                isInStock = true
-            ).map { it.epc }.toList()
+            val newList =
+                rfidTagList.map { tag ->
+                    val wrongLocation =
+                        tag.newFields.tagStatus == TagStatus.PROCESSED && tag.newFields.location != locationName
+                    val shortage =
+                        tag.newFields.tagStatus != TagStatus.PROCESSED && tag.newFields.isInStock && tag.newFields.location == locationName
+                    val over =
+                        tag.newFields.tagStatus == TagStatus.PROCESSED && tag.newFields.isInStock.not() && tag.newFields.location == locationName
+                    val ok =
+                        tag.newFields.tagStatus == TagStatus.PROCESSED && tag.newFields.isInStock && tag.newFields.location == locationName
 
 
-            val newList = rfidTagList.filter { it.newFields.tagStatus == TagStatus.PROCESSED }.map { tag ->
-                val wrongLocation = notMatchLocationScannedTags.contains(tag.epc)
-                val shortage = tag.epc in tagsInStock && tag.epc !in matchLocationScannedTags
-                val over = tag.epc !in tagsInStock && tag.epc in matchLocationScannedTags
-                val ok = tag.epc in tagsInStock && tag.epc in matchLocationScannedTags
-
-
-                val resultType = when {
-                    wrongLocation -> InventoryResultType.FOUND_WRONG_LOCATION
-                    shortage -> InventoryResultType.NOT_FOUND
-                    over -> InventoryResultType.FOUND_OVER_STOCK
-                    ok -> InventoryResultType.FOUND_OK
-                    else -> InventoryResultType.UNKNOWN
+                    val resultType = when {
+                        wrongLocation -> InventoryResultType.FOUND_WRONG_LOCATION
+                        shortage -> InventoryResultType.NOT_FOUND
+                        over -> InventoryResultType.FOUND_OVER_STOCK
+                        ok -> InventoryResultType.FOUND_OK
+                        else -> InventoryResultType.UNKNOWN
+                    }
+                    tag.copy(newFields = tag.newFields.copy(inventoryResultType = resultType))
                 }
-                tag.copy(newFields = tag.newFields.copy(inventoryResultType = resultType))
-            }
             _wrongLocationCount.value =
                 newList.count { it.newFields.inventoryResultType == InventoryResultType.FOUND_WRONG_LOCATION }
             _shortageCount.value =

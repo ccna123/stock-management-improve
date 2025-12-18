@@ -5,5 +5,6 @@ data class SingleTagInfoModel(
     val epc: String,
     val itemName: String,
     val itemCode: String,
-    val location: String
+    val location: String,
+    val isInStock: Boolean
 )

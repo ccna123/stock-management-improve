@@ -12,7 +12,8 @@ data class AdditionalFieldsModel(
     val location: String,
     val processType: String,
     val isChecked: Boolean,
-    val hasLeger: Boolean
+    val hasLeger: Boolean,
+    val isInStock: Boolean
 
 
 ){
@@ -26,7 +27,8 @@ data class AdditionalFieldsModel(
             location = "",
             processType = "",
             isChecked = false,
-            hasLeger = false
+            hasLeger = false,
+            isInStock = false
         )
     }
 }

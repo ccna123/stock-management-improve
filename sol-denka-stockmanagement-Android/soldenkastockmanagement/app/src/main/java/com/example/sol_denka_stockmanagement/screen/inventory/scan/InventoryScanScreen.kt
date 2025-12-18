@@ -1,7 +1,6 @@
 package com.example.sol_denka_stockmanagement.screen.inventory.scan
 
 import android.os.Build
-import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.fadeIn
@@ -90,9 +89,6 @@ fun InventoryScanScreen(
     val showRadioPowerChangeDialog = appViewModel.showRadioPowerChangeDialog.value
     val isPerformingInventory by appViewModel.isPerformingInventory.collectAsStateWithLifecycle()
     val scope = rememberCoroutineScope()
-
-    Log.e("TSS", "rfidTagList: ${rfidTagList.count { it.newFields.hasLeger && it.newFields.location == inputState.location && it.newFields.tagStatus == TagStatus.UNPROCESSED }}", )
-    Log.e("TSS", "has ledger: ${rfidTagList.filter { it.newFields.hasLeger && it.newFields.location == inputState.location && it.newFields.tagStatus == TagStatus.UNPROCESSED }.map { it.epc }}", )
 
     LaunchedEffect(Unit) {
         scanViewModel.apply {

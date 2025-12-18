@@ -31,7 +31,8 @@ class TagMasterImporter(
                         location = "",
                         processType = "",
                         isChecked = false,
-                        hasLeger = false
+                        hasLeger = false,
+                        isInStock = false
                     )
                 )
             }
