@@ -290,14 +290,15 @@ fun CsvImportScreen(
                         }
                     } else {
                         csvFiles.takeIf { it.isNotEmpty() }?.forEachIndexed { index, file ->
+                            val isSelectedFile = importFileSelectedIndex == index
                             SingleCsvFile(
                                 csvFileName = file.fileName,
                                 csvFileSize = file.fileSize,
-                                isSelected = importFileSelectedIndex == index,
-                                showProgress = showProgress,
-                                progress = importProgress,
-                                isCompleted = importResultStatus is ProcessResult.Success,
-                                isError = importResultStatus is ProcessResult.Failure,
+                                isSelected = isSelectedFile,
+                                showProgress = showProgress && isSelectedFile,
+                                progress = if (isSelectedFile) importProgress else 0f,
+                                isCompleted = isSelectedFile && importResultStatus is ProcessResult.Success,
+                                isError = isSelectedFile && importResultStatus is ProcessResult.Failure,
                                 modifier = Modifier
                                     .padding(10.dp),
                                 onChoose = {

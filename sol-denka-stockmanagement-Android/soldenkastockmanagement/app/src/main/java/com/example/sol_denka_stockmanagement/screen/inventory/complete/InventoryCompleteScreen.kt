@@ -85,7 +85,7 @@ fun InventoryCompleteScreen(
 
     LaunchedEffect(rfidTagList) {
         inventoryCompleteViewModel.computeResult(
-            rfidTagList = rfidTagList,
+            rfidTagList = rfidTagList.filter { it.newFields.hasLeger },
             locationName = inputState.location
         )
     }

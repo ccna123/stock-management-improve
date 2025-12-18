@@ -72,6 +72,10 @@ class CsvViewModel @Inject constructor(
             is CsvIntent.ToggleFileSelect -> {
                 _importFileSelectedIndex.value = intent.fileIndex
                 _importFileSelectedName.value = intent.fileName
+
+                _importResultStatus.value = null
+                _importProgress.value = 0f
+                _showProgress.value = false
             }
 
             is CsvIntent.ResetFileSelect -> {

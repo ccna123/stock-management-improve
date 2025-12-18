@@ -38,6 +38,7 @@ import com.example.sol_denka_stockmanagement.R
 import com.example.sol_denka_stockmanagement.constant.DialogType
 import com.example.sol_denka_stockmanagement.constant.ScanMode
 import com.example.sol_denka_stockmanagement.constant.StatusCode
+import com.example.sol_denka_stockmanagement.constant.TagStatus
 import com.example.sol_denka_stockmanagement.helper.message_mapper.MessageMapper
 import com.example.sol_denka_stockmanagement.intent.ExpandIntent
 import com.example.sol_denka_stockmanagement.intent.InputIntent
@@ -86,7 +87,7 @@ fun ScanScreen(
     val showModalProcessMethod by appViewModel.showModalProcessMethod.collectAsStateWithLifecycle()
     val showClearTagConfirmDialog = appViewModel.showClearTagConfirmDialog.value
 
-    val displayTags = rfidTagList.filter { it.epc in scannedTags }
+    val displayTags = rfidTagList.filter { it.epc in scannedTags && it.newFields.hasLeger }
 
 
     LaunchedEffect(Unit) {
@@ -265,7 +266,7 @@ fun ScanScreen(
         },
         onBackArrowClick = {
             if (isPerformingInventory.not()) {
-                if (scannedTags.isNotEmpty() || lastInboundEpc?.isNotEmpty() == true) {
+                if (rfidTagList.any { it.newFields.tagStatus == TagStatus.PROCESSED } || lastInboundEpc?.isNotEmpty() == true) {
                     appViewModel.onGeneralIntent(ShareIntent.ToggleClearTagConfirmDialog)
                 } else {
                     scanViewModel.apply {
@@ -286,8 +287,8 @@ fun ScanScreen(
                 val tag = rfidTagList.find { it.epc == lastInboundEpc }
                 InboundScanTagCard(
                     epc = tag?.epc ?: "-",
-                    itemName = tag?.newFields?.itemName ?: "-",
-                    itemCode = tag?.newFields?.itemCode ?: "-",
+                    itemName = tag?.newFields?.itemName?.ifBlank { "-" } ?: "-",
+                    itemCode = tag?.newFields?.itemCode?.ifBlank { "-" } ?: "-",
                     timeStamp = if (tag == null) "-" else LocalDateTime.now(ZoneId.of("Asia/Tokyo"))
                         .format(DateTimeFormatter.ofPattern("HH:mm:ss"))
                 )
@@ -316,14 +317,14 @@ fun ScanScreen(
                             Text(text = stringResource(R.string.scan_tag_list_item))
                             ButtonContainer(
                                 modifier = Modifier.width(120.dp),
-                                buttonText = if (displayTags.isNotEmpty() && displayTags.all { it.newFields.isChecked }) stringResource(
+                                buttonText = if (displayTags.all { it.newFields.isChecked }) stringResource(
                                     R.string.select_all_remove
                                 ) else stringResource(
                                     R.string.select_all
                                 ),
                                 shape = RoundedCornerShape(10.dp),
                                 containerColor = if (displayTags.all { it.newFields.isChecked }) Color.Red else brightAzure,
-                                canClick = scannedTags.isNotEmpty() && isPerformingInventory.not(),
+                                canClick = displayTags.isNotEmpty() && isPerformingInventory.not(),
                                 onClick = {
                                     scanViewModel.toggleCheckAll(
                                         targetEpcs = scannedTags.keys,
@@ -361,27 +362,27 @@ fun ScanScreen(
                 }
                 Spacer(modifier = Modifier.height(25.dp))
                 LazyColumn {
-                    items(scannedTags.toList(), key = { tag -> tag }) { tag ->
+                    items(displayTags, key = { tag -> tag.epc }) { tag ->
                         when (prevScreenNameId) {
                             Screen.Outbound.routeId -> {
-                                val isExpanded = expandedMap[tag.first] ?: false
-                                val value = processMap[tag.first] ?: ""
+                                val isExpanded = expandedMap[tag.epc] ?: false
+                                val value = processMap[tag.epc] ?: ""
                                 OutboundSingleItem(
                                     processTypeList = processTypeMaster,
-                                    tag = rfidTagList.find { it.epc == tag.first }?.epc ?: "",
-                                    itemName = rfidTagList.find { it.epc == tag.first }?.newFields?.itemName
+                                    tag = rfidTagList.find { it.epc == tag.epc }?.epc ?: "",
+                                    itemName = rfidTagList.find { it.epc == tag.epc }?.newFields?.itemName
                                         ?: "",
-                                    isChecked = rfidTagList.find { it.epc == tag.first }?.newFields?.isChecked
+                                    isChecked = rfidTagList.find { it.epc == tag.epc }?.newFields?.isChecked
                                         ?: false,
-                                    isError = outboundProcessErrorSet.contains(tag.first),
+                                    isError = outboundProcessErrorSet.contains(tag.epc),
                                     onSelect = {
                                         if (isPerformingInventory.not()) {
-                                            scanViewModel.toggleCheck(tag.first)
+                                            scanViewModel.toggleCheck(tag.epc)
                                         }
                                     },
                                     onCheckedChange = {
                                         if (isPerformingInventory.not()) {
-                                            scanViewModel.toggleCheck(tag.first)
+                                            scanViewModel.toggleCheck(tag.epc)
                                         }
                                     },
                                     isExpanded = isExpanded,
@@ -390,20 +391,20 @@ fun ScanScreen(
                                         if (isPerformingInventory.not()) {
                                             appViewModel.onExpandIntent(
                                                 ExpandIntent.TogglePerTagProcessExpanded(
-                                                    tag.first
+                                                    tag.epc
                                                 )
                                             )
                                         }
                                     },
                                     onDismissRequest = {
                                         appViewModel.onExpandIntent(
-                                            ExpandIntent.CloseProcessExpanded(tag.first)
+                                            ExpandIntent.CloseProcessExpanded(tag.epc)
                                         )
                                     },
                                     onValueChange = { newValue ->
                                         appViewModel.onGeneralIntent(
                                             ShareIntent.ChangePerTagProcessMethod(
-                                                tag = tag.first,
+                                                tag = tag.epc,
                                                 method = newValue
                                             )
                                         )
@@ -411,13 +412,13 @@ fun ScanScreen(
                                     onClickDropDownMenuItem = { method ->
                                         appViewModel.onGeneralIntent(
                                             ShareIntent.ChangePerTagProcessMethod(
-                                                tag = tag.first,
+                                                tag = tag.epc,
                                                 method = method
                                             )
                                         )
 
                                         appViewModel.onExpandIntent(
-                                            ExpandIntent.CloseProcessExpanded(tag.first)
+                                            ExpandIntent.CloseProcessExpanded(tag.epc)
                                         )
                                     }
                                 )
@@ -425,19 +426,19 @@ fun ScanScreen(
 
                             Screen.LocationChange.routeId -> {
                                 LocationChangeSingleItem(
-                                    tag = rfidTagList.find { it.epc == tag.first }?.epc ?: "",
-                                    itemName = rfidTagList.find { it.epc == tag.first }?.newFields?.itemName
+                                    tag = rfidTagList.find { it.epc == tag.epc }?.epc ?: "",
+                                    itemName = rfidTagList.find { it.epc == tag.epc }?.newFields?.itemName
                                         ?: "",
-                                    isChecked = rfidTagList.find { it.epc == tag.first }?.newFields?.isChecked
+                                    isChecked = rfidTagList.find { it.epc == tag.epc }?.newFields?.isChecked
                                         ?: false,
                                     onCheckedChange = {
                                         if (isPerformingInventory.not()) {
-                                            scanViewModel.toggleCheck(tag.first)
+                                            scanViewModel.toggleCheck(tag.epc)
                                         }
                                     },
                                     onClick = {
                                         if (isPerformingInventory.not()) {
-                                            scanViewModel.toggleCheck(tag.first)
+                                            scanViewModel.toggleCheck(tag.epc)
                                         }
                                     }
                                 )

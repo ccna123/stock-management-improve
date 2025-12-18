@@ -56,12 +56,14 @@ class ScanViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
 
             val tagFlow = tagMasterRepository.get()
+            val mappedTagIdFlow = ledgerItemRepository.getMappedTagIdsFlow()
 
             val fullInfoFlow = ledgerItemRepository.get()
                 .map { tagMasterRepository.getFullInfo() } // fullInfo list
                 .distinctUntilChanged()
 
-            combine(tagFlow, fullInfoFlow) { tagList, fullInfoList ->
+            combine(tagFlow, mappedTagIdFlow,  fullInfoFlow) { tagList, mappedTagIds, fullInfoList ->
+                val mappedSet = mappedTagIds.toSet()
                 val infoMap = fullInfoList.associateBy { it.epc }
                 val prevMap = _rfidTagList.value.associateBy { it.epc }
 
@@ -71,6 +73,9 @@ class ScanViewModel @Inject constructor(
 
                     tag.copy(
                         newFields = tag.newFields.copy(
+
+                            hasLeger = tag.tagId in mappedSet,
+
                             itemName = info?.itemName ?: "",
                             itemCode = info?.itemCode ?: "",
                             location = info?.location ?: "",

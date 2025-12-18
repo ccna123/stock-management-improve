@@ -19,6 +19,13 @@ interface LedgerItemDao: IDao<LedgerItemEntity> {
     @Query("SELECT winder_id FROM LedgerItem WHERE ledger_item_id = :ledgerId ")
     suspend fun getWinderIdByLedgerId(ledgerId: Int): Int
 
+    @Query("""
+        SELECT DISTINCT tag_id
+        FROM LedgerItem
+        WHERE tag_id IS NOT NULL
+    """)
+    fun getMappedTagIdsFlow(): Flow<List<Int>>
+
     @Insert(onConflict = REPLACE)
     override suspend fun insert(e: LedgerItemEntity): Long
 

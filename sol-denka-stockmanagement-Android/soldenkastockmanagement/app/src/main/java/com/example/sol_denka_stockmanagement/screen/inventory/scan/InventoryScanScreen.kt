@@ -1,6 +1,7 @@
 package com.example.sol_denka_stockmanagement.screen.inventory.scan
 
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.fadeIn
@@ -89,6 +90,9 @@ fun InventoryScanScreen(
     val showRadioPowerChangeDialog = appViewModel.showRadioPowerChangeDialog.value
     val isPerformingInventory by appViewModel.isPerformingInventory.collectAsStateWithLifecycle()
     val scope = rememberCoroutineScope()
+
+    Log.e("TSS", "rfidTagList: ${rfidTagList.count { it.newFields.hasLeger && it.newFields.location == inputState.location && it.newFields.tagStatus == TagStatus.UNPROCESSED }}", )
+    Log.e("TSS", "has ledger: ${rfidTagList.filter { it.newFields.hasLeger && it.newFields.location == inputState.location && it.newFields.tagStatus == TagStatus.UNPROCESSED }.map { it.epc }}", )
 
     LaunchedEffect(Unit) {
         scanViewModel.apply {
@@ -405,11 +409,16 @@ fun InventoryScanScreen(
 
                         val displayList = when (tab) {
                             Tab.Left -> {
-                                val matchLocation = rfidTagList.filter { it.newFields.tagStatus == TagStatus.UNPROCESSED && it.newFields.location == inputState.location }
-                                val unMatchLocation = rfidTagList.filter { it.newFields.tagStatus == TagStatus.PROCESSED && it.newFields.location != inputState.location }
-                                rfidTagList.filter { matchLocation.contains(it) || unMatchLocation.contains(it) }
+                                val matchLocation =
+                                    rfidTagList.filter { it.newFields.hasLeger && it.newFields.tagStatus == TagStatus.UNPROCESSED && it.newFields.location == inputState.location }
+                                val unMatchLocation =
+                                    rfidTagList.filter { it.newFields.hasLeger && it.newFields.tagStatus == TagStatus.PROCESSED && it.newFields.location != inputState.location }
+                                rfidTagList.filter {
+                                    matchLocation.contains(it) || unMatchLocation.contains(it)
+                                }
                             }
-                            Tab.Right -> rfidTagList.filter { it.newFields.tagStatus == TagStatus.PROCESSED && it.newFields.location == inputState.location }
+
+                            Tab.Right -> rfidTagList.filter { it.newFields.hasLeger && it.newFields.tagStatus == TagStatus.PROCESSED && it.newFields.location == inputState.location }
                         }
 
                         ScannedTagDisplay(
@@ -422,7 +431,7 @@ fun InventoryScanScreen(
                                 }
                             },
                             onLongClick = { item ->
-                                if (isPerformingInventory.not()){
+                                if (isPerformingInventory.not()) {
                                     appViewModel.apply {
                                         onGeneralIntent(ShareIntent.ToggleSelectionMode(true))
                                         scanViewModel.toggleCheck(item)

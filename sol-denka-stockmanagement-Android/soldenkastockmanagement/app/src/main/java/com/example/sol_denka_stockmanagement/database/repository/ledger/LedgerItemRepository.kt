@@ -17,7 +17,7 @@ class LedgerItemRepository @Inject constructor(
         entityList.map { it.toModel() }
     }
 
-    suspend fun getWinderIdByLedgerId(ledgerId: Int): Int = dao.getWinderIdByLedgerId(ledgerId)
+    fun getMappedTagIdsFlow() = dao.getMappedTagIdsFlow()
 
     suspend fun insert(model: LedgerItemModel) = dao.insert(model.toEntity())
     suspend fun insertAll(model: List<LedgerItemModel>) = dao.insertAll(model.map { it.toEntity() })
