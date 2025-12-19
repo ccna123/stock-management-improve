@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 import javax.inject.Singleton
+import kotlin.collections.map
 
 @Singleton
 class TagMasterRepository @Inject constructor(
@@ -18,23 +19,14 @@ class TagMasterRepository @Inject constructor(
 
     suspend fun getFullInfo() = dao.getFullInfo()
 
-    suspend fun getItemTypeIdLocationIdByTagId(tagId: Int): Pair<Int, Int>{
-        val itemTypeId = dao.getItemTypeIdByTagId(tagId).toInt()
-        val locationId = dao.getLocationIdByTagId(tagId).toInt()
-        return Pair(itemTypeId, locationId)
-    }
-    suspend fun getTagsByLocationAndStock(locationId: Int, isInStock: Boolean) =
-        dao.getTagsByLocationAndStock(locationId, isInStock).map { it.toModel() }
-
     suspend fun getLedgerIdByTagId(tagId: Int): Int?{
         return dao.getLedgerIdByTagId(tagId)
     }
-
-
     suspend fun insert(model: TagMasterModel) = dao.insert(model.toEntity())
-    suspend fun insertAll(models: List<TagMasterModel>) =
-        dao.insertAll(models.map { it.toEntity() })
-
     suspend fun update(model: TagMasterModel) = dao.update(model.toEntity())
     suspend fun delete(model: TagMasterModel) = dao.delete(model.toEntity())
+
+    suspend fun replaceAll(models: List<TagMasterModel>) {
+        dao.replaceAll(models.map { it.toEntity() })
+    }
 }

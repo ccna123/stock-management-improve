@@ -3,13 +3,6 @@ package com.example.sol_denka_stockmanagement.helper.csv
 import com.example.sol_denka_stockmanagement.app_interface.ICsvImport
 import com.example.sol_denka_stockmanagement.database.repository.field.ItemTypeFieldSettingMasterRepository
 import com.example.sol_denka_stockmanagement.model.field.ItemTypeFieldSettingMasterModel
-import kotlin.collections.drop
-import kotlin.collections.filter
-import kotlin.collections.map
-import kotlin.text.isNotEmpty
-import kotlin.text.split
-import kotlin.text.toInt
-import kotlin.text.trim
 
 class ItemTypeFieldSettingMasterImporter(
     private val repository: ItemTypeFieldSettingMasterRepository
@@ -31,6 +24,6 @@ class ItemTypeFieldSettingMasterImporter(
                 )
             }
 
-        repository.insertAll(entities)
+        repository.replaceAll(entities)
     }
 }

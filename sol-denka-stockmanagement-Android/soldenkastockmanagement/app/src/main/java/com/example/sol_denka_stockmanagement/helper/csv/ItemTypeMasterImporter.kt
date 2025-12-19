@@ -3,6 +3,7 @@ package com.example.sol_denka_stockmanagement.helper.csv
 import com.example.sol_denka_stockmanagement.app_interface.ICsvImport
 import com.example.sol_denka_stockmanagement.database.repository.item.ItemTypeRepository
 import com.example.sol_denka_stockmanagement.model.item.ItemTypeMasterModel
+import com.example.sol_denka_stockmanagement.util.toNullIfBlank
 
 class ItemTypeMasterImporter(
     private val repository: ItemTypeRepository
@@ -19,16 +20,17 @@ class ItemTypeMasterImporter(
             .map { p ->
                 ItemTypeMasterModel(
                     itemTypeId = p[0].toInt(),
-                    itemTypeCode = p[1],
+                    itemTypeCode = p[1].toNullIfBlank(),
                     itemTypeName = p[2],
-                    itemUnitId = p[3].toInt(),
-                    itemCategoryId = p[4].toInt(),
-                    specificGravity = p[5],
-                    grade = p[6],
-                    packingType = p[7],
+                    itemCountUnitId = p[3].toIntOrNull(),
+                    itemWeightUnitId = p[4].toIntOrNull(),
+                    itemCategoryId = p[5].toInt(),
+                    specificGravity = p[6].toNullIfBlank(),
+                    grade = p[7].toNullIfBlank(),
+                    packingType = p[8].toNullIfBlank(),
                 )
             }
 
-        repository.insertAll(entities)
+        repository.replaceAll(entities)
     }
 }

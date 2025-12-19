@@ -5,6 +5,7 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy.Companion.REPLACE
 import androidx.room.Query
+import androidx.room.Transaction
 import androidx.room.Update
 import com.example.sol_denka_stockmanagement.app_interface.IDao
 import com.example.sol_denka_stockmanagement.database.entity.location.LocationMasterEntity
@@ -28,6 +29,15 @@ interface LocationDao : IDao<LocationMasterEntity> {
     @Delete
     override suspend fun delete(e: LocationMasterEntity)
 
+    @Query("DELETE FROM LocationMaster")
+    suspend fun deleteAll()
+
     @Query("SELECT location_id FROM LocationMaster WHERE location_name = :locationName")
     suspend fun getLocationIdByName(locationName: String): Int?
+
+    @Transaction
+    suspend fun replaceAll(e: List<LocationMasterEntity>){
+        deleteAll()
+        insertAll(e)
+    }
 }

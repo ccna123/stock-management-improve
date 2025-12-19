@@ -4,9 +4,10 @@ import com.example.sol_denka_stockmanagement.database.entity.item.ItemTypeMaster
 
 data class ItemTypeMasterModel(
     val itemTypeId: Int,
-    val itemUnitId: Int,
+    val itemCountUnitId: Int?,
+    val itemWeightUnitId: Int?,
     val itemCategoryId: Int,
-    val itemTypeCode: String,
+    val itemTypeCode: String?,
     val itemTypeName: String,
     val packingType: String?,
     val grade: String?,
@@ -15,7 +16,8 @@ data class ItemTypeMasterModel(
 
 fun ItemTypeMasterEntity.toModel() = ItemTypeMasterModel(
     itemTypeId = itemTypeId,
-    itemUnitId = itemUnitId,
+    itemCountUnitId = itemCountUnitId,
+    itemWeightUnitId = itemWeightUnitId,
     itemCategoryId = itemCategoryId,
     itemTypeCode = itemTypeCode,
     itemTypeName = itemTypeName,
@@ -26,7 +28,8 @@ fun ItemTypeMasterEntity.toModel() = ItemTypeMasterModel(
 
 fun ItemTypeMasterModel.toEntity() = ItemTypeMasterEntity(
     itemTypeId = itemTypeId,
-    itemUnitId = itemUnitId,
+    itemCountUnitId = itemCountUnitId,
+    itemWeightUnitId = itemWeightUnitId,
     itemCategoryId = itemCategoryId,
     itemTypeCode = itemTypeCode,
     itemTypeName = itemTypeName,

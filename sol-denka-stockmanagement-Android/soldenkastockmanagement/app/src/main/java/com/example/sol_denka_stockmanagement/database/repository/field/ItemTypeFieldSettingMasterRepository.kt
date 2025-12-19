@@ -20,7 +20,7 @@ class ItemTypeFieldSettingMasterRepository @Inject constructor(
     }
     suspend fun getFieldForItemTypeByItemTypeId(id: Int) = dao.getFieldForItemTypeByItemTypeId(id)
     suspend fun insert(model: ItemTypeFieldSettingMasterModel) = dao.insert(model.toEntity())
-    suspend fun insertAll(model: List<ItemTypeFieldSettingMasterModel>) = dao.insertAll(model.map { it.toEntity() })
     suspend fun update(model: ItemTypeFieldSettingMasterModel) = dao.update(model.toEntity())
     suspend fun delete(model: ItemTypeFieldSettingMasterModel) = dao.delete(model.toEntity())
+    suspend fun replaceAll(models: List<ItemTypeFieldSettingMasterModel>) = dao.replaceAll(models.map { it.toEntity() })
 }

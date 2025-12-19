@@ -5,6 +5,7 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy.Companion.REPLACE
 import androidx.room.Query
+import androidx.room.Transaction
 import androidx.room.Update
 import com.example.sol_denka_stockmanagement.app_interface.IDao
 import com.example.sol_denka_stockmanagement.database.entity.tag.TagMasterEntity
@@ -29,6 +30,9 @@ interface TagMasterDao : IDao<TagMasterEntity> {
     @Delete
     override suspend fun delete(e: TagMasterEntity)
 
+    @Query("DELETE FROM tagmaster")
+    suspend fun deleteAll()
+
     @Query(
         """
     SELECT * FROM tagmaster t
@@ -45,7 +49,6 @@ interface TagMasterDao : IDao<TagMasterEntity> {
         SELECT 
                 t.tag_id AS tagId, 
                 t.epc , 
-                le.is_in_stock AS isInStock,
                 IFNULL(it.item_type_name, '') AS itemName,
                 IFNULL(it.item_type_code, '') AS itemCode,
                 IFNULL(lo.location_name, '') AS location
@@ -74,5 +77,11 @@ interface TagMasterDao : IDao<TagMasterEntity> {
             WHERE t.tag_id = :tagId
     """)
     suspend fun getLocationIdByTagId(tagId: Int): Long
+
+    @Transaction
+    suspend fun replaceAll(e: List<TagMasterEntity>){
+        deleteAll()
+        insertAll(e)
+    }
 
 }

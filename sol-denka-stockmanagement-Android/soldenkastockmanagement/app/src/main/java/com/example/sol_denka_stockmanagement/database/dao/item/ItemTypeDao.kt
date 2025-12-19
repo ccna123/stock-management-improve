@@ -5,6 +5,7 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy.Companion.REPLACE
 import androidx.room.Query
+import androidx.room.Transaction
 import androidx.room.Update
 import com.example.sol_denka_stockmanagement.app_interface.IDao
 import com.example.sol_denka_stockmanagement.database.entity.item.ItemTypeMasterEntity
@@ -28,6 +29,9 @@ interface ItemTypeDao: IDao<ItemTypeMasterEntity> {
     @Delete
     override suspend fun delete(e: ItemTypeMasterEntity)
 
+    @Query("DELETE FROM ItemTypeMaster")
+    suspend fun deleteAll()
+
     @Query("SELECT * FROM ItemTypeMaster WHERE item_type_name LIKE '%' || :keyword || '%'")
     suspend fun findByName(keyword: String): List<ItemTypeMasterEntity>?
 
@@ -41,4 +45,10 @@ interface ItemTypeDao: IDao<ItemTypeMasterEntity> {
 
     @Query("SELECT item_type_id FROM ItemTypeMaster WHERE item_type_name = :itemName")
     suspend fun getItemTypeIdByItemName(itemName: String): Int
+
+    @Transaction
+    suspend fun replaceAll(e: List<ItemTypeMasterEntity>){
+        deleteAll()
+        insertAll(e)
+    }
 }

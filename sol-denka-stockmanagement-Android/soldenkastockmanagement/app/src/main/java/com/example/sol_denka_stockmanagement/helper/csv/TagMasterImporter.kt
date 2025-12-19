@@ -36,7 +36,6 @@ class TagMasterImporter(
                     )
                 )
             }
-
-        repository.insertAll(entities)
+        repository.replaceAll(entities)
     }
 }

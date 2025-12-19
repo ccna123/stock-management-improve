@@ -20,7 +20,7 @@ interface ItemTypeFieldSettingMasterDao: IDao<ItemTypeFieldSettingMasterEntity> 
     @Query("""
         SELECT 
         f.field_name AS fieldName, 
-        f.field_code AS fieldCode,
+        f.field_code AS fieldCode, 
         f.control_type AS controlType,  
         f.data_type AS dataType, 
         s.is_required AS isRequired, 
@@ -44,4 +44,12 @@ interface ItemTypeFieldSettingMasterDao: IDao<ItemTypeFieldSettingMasterEntity> 
 
     @Delete
     override suspend fun delete(e: ItemTypeFieldSettingMasterEntity)
+
+    @Query("DELETE FROM ItemTypeFieldSettingMaster")
+    suspend fun deleteAll()
+
+    suspend fun replaceAll(e: List<ItemTypeFieldSettingMasterEntity>){
+        deleteAll()
+        insertAll(e)
+    }
 }

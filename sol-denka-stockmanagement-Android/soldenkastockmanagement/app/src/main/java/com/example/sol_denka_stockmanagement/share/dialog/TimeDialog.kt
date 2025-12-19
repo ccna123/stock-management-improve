@@ -36,7 +36,7 @@ fun TimeDialog(
         confirmButton = {
             TextButton(
                 onClick = {
-                    val timeStr = String.format(Locale.US, "%02d:%02d", state.hour, state.minute)
+                    val timeStr = String.format(Locale.US, "%02d:%02d:00", state.hour, state.minute)
                     onConfirm(timeStr)
                 }
             ) {

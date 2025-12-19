@@ -24,9 +24,9 @@ class ItemTypeRepository @Inject constructor(
     suspend fun getItemTypeIdByItemName(itemName: String) = dao.getItemTypeIdByItemName(itemName)
 
     suspend fun insert(model: ItemTypeMasterModel) = dao.insert(model.toEntity())
-    suspend fun insertAll(model: List<ItemTypeMasterModel>) =
-        dao.insertAll(model.map { it.toEntity() })
-
     suspend fun update(model: ItemTypeMasterModel) = dao.update(model.toEntity())
     suspend fun delete(model: ItemTypeMasterModel) = dao.delete(model.toEntity())
+    suspend fun replaceAll(models: List<ItemTypeMasterModel>) {
+        dao.replaceAll(models.map { it.toEntity() })
+    }
 }

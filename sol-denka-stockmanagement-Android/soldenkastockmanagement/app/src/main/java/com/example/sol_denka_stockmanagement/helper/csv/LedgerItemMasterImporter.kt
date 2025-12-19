@@ -6,7 +6,7 @@ import com.example.sol_denka_stockmanagement.model.ledger.LedgerItemModel
 
 class LedgerItemMasterImporter(
     private val repository: LedgerItemRepository
-): ICsvImport {
+) : ICsvImport {
 
     private fun parseNullableInt(v: String?): Int? {
         if (v == null) return null
@@ -50,6 +50,6 @@ class LedgerItemMasterImporter(
                 )
             }
 
-        repository.insertAll(entities)
+        repository.replaceAll(entities)
     }
 }
