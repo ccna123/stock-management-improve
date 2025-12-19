@@ -98,9 +98,9 @@
     <string name="grade_hint">グレード入力</string>
     <string name="grade">グレード</string>
     <string name="thickness_hint">厚み入力</string>
-    <string name="thickness">厚み</string>
+    <string name="thickness">厚み(mm)</string>
     <string name="length_hint">長さ入力</string>
-    <string name="length">長さ</string>
+    <string name="length">長さ(m)</string>
     <string name="winderInfo_hint">巻き取り機情報入力</string>
     <string name="winderInfo">巻き取り機情報</string>
     <string name="storage_area_hint">保管場所入力</string>
@@ -113,7 +113,7 @@
     <string name="storage_area_change">保管場所変更</string>
     <string name="item">品目</string>
     <string name="item_hint">品目入力</string>
-    <string name="width">巾</string>
+    <string name="width">巾(mm)</string>
     <string name="width_hint">巾入力</string>
     <string name="specific_gravity">比重</string>
     <string name="specific_gravity_hint">比重入力</string>
