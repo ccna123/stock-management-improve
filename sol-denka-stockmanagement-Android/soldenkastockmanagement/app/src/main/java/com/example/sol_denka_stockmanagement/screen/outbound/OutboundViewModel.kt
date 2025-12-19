@@ -23,7 +23,7 @@ class OutboundViewModel @Inject constructor(
 
     suspend fun generateCsvData(
         memo: String,
-        processedAt: String,
+        processedAt: String?,
         registeredAt: String,
         rfidTagList: List<TagMasterModel>
     ): List<OutboundResultCsvModel> =
@@ -49,7 +49,7 @@ class OutboundViewModel @Inject constructor(
 
     suspend fun saveOutboundToDb(
         memo: String?,
-        processedAt: String,
+        processedAt: String?,
         registeredAt: String,
         rfidTagList: List<TagMasterModel>
     ): Result<Int> {

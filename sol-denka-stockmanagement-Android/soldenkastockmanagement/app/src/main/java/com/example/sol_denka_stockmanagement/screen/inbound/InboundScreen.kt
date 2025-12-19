@@ -1,7 +1,6 @@
 package com.example.sol_denka_stockmanagement.screen.inbound
 
 import android.os.Build
-import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border

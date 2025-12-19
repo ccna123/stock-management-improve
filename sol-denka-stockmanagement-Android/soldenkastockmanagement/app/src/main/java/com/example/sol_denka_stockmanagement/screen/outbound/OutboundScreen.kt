@@ -121,10 +121,18 @@ fun OutboundScreen(
                     )
                 },
                 onClick = {
+
+                    val processedAt =
+                        if (inputState.processedAtDate.isEmpty() || inputState.processedAtTime.isEmpty())
+                        {
+                            null
+                        } else {
+                            "${inputState.processedAtDate}T${inputState.processedAtTime}"
+                        }
                     scope.launch {
                         val result = outboundViewModel.saveOutboundToDb(
                             memo = inputState.memo,
-                            processedAt = "${inputState.processedAtDate}_${inputState.processedAtTime}",
+                            processedAt = processedAt,
                             registeredAt = generateIso8601JstTimestamp(),
                             rfidTagList = rfidTagList.filter { it.newFields.isChecked }
                         )
@@ -140,7 +148,7 @@ fun OutboundScreen(
                         val csvModels =
                             outboundViewModel.generateCsvData(
                                 memo = inputState.memo,
-                                processedAt = "${inputState.processedAtDate}_${inputState.processedAtTime}",
+                                processedAt = processedAt,
                                 registeredAt = generateIso8601JstTimestamp(),
                                 rfidTagList = rfidTagList.filter { it.newFields.isChecked }
                             )

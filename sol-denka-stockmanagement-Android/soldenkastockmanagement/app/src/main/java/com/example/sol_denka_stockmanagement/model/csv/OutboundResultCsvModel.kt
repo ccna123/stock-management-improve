@@ -10,8 +10,8 @@ data class OutboundResultCsvModel(
     val tagId: Int,
     val processTypeId: Int,
     val deviceId: String,
-    val memo: String,
-    val processedAt: String,
+    val memo: String?,
+    val processedAt: String?,
     val registeredAt: String,
 
     ) : ICsvExport {
@@ -30,8 +30,8 @@ data class OutboundResultCsvModel(
         tagId.toString(),
         processTypeId.toString(),
         deviceId,
-        memo,
-        processedAt,
+        memo ?: "",
+        processedAt ?:"",
         registeredAt
     )
 

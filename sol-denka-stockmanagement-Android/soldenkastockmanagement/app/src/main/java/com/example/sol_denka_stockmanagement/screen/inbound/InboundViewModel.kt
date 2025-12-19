@@ -105,12 +105,12 @@ class InboundViewModel @Inject constructor(
                     width = width?.takeIf { it.isNotBlank() }?.toInt(),
                     length = length?.takeIf { it.isNotBlank() }?.toInt(),
                     thickness = thickness?.takeIf { it.isNotBlank() }?.toInt(),
-                    lotNo = lotNo?.takeIf { it.isNotBlank() },
-                    occurrenceReason = occurrenceReason?.takeIf { it.isNotBlank() },
+                    lotNo = lotNo,
+                    occurrenceReason = occurrenceReason,
                     quantity = quantity?.takeIf { it.isNotBlank() }?.toInt(),
-                    memo = memo?.takeIf { it.isNotBlank() },
-                    occurredAt = occurredAt?.takeIf { it.isNotBlank() },
-                    processedAt = processedAt?.takeIf { it.isNotBlank() },
+                    memo = memo,
+                    occurredAt = occurredAt,
+                    processedAt = processedAt,
                     registeredAt = registeredAt,
                     rfidTag = rfidTag
                 )

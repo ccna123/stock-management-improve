@@ -31,7 +31,7 @@ class OutboundRepository @Inject constructor(
     suspend fun insertOutboundEvent(
         sessionId: Int,
         memo: String?,
-        processedAt: String,
+        processedAt: String?,
         registeredAt: String,
         tags: List<TagMasterModel>
     ) {
