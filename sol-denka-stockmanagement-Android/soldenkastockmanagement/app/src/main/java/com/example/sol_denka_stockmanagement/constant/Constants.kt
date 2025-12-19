@@ -64,6 +64,7 @@ enum class InventoryResultCsvHeader {
     scanned_at,
     executed_at
 }
+
 enum class InventoryScanResult(val displayName: String) {
     OK("正常一致"),
     SHORTAGE("在庫不足"),
@@ -94,7 +95,7 @@ enum class ItemUnit(val engName: String, val jpName: String) {
     KG("KG", "kg"),
     TON("TON", "t"),
     MAI("MAI", "枚"),
-    HON("HON","本"),
+    HON("HON", "本"),
     KAN("KAN", "缶"),
     TAI("TAI", "袋"),
 }
@@ -111,7 +112,7 @@ enum class ConnectionState {
     CONNECTED
 }
 
-enum class DialogType{
+enum class DialogType {
     CONFIRM,
     SAVE_CSV_SUCCESS_FAILED_SFTP,
     SAVE_CSV_SEND_SFTP_SUCCESS,
@@ -119,21 +120,22 @@ enum class DialogType{
 
 }
 
-enum class StatusCode(val code: Int) {
-    OK(200),
-    DOWNLOAD_SFTP_OK(201),
-    IMPORT_OK(202),
-    EXPORT_OK(203),
-    FILE_NOT_FOUND(404),
-    FILE_EMPTY(405),
-    FOLDER_NOT_FOUND(406),
-    WRITE_ERROR(407),
-    EMPTY_DATA(408),
-    PERMISSION_DENIED(409),
-    FAILED(500),
-    CSV_IMPORTER_NOT_FOUND(501),
-    FILE_CREATED_FAILED(502),
-    PROCESS_NOT_CHOSEN(503),
+enum class StatusCode() {
+    OK,
+    DOWNLOAD_SFTP_OK,
+    IMPORT_OK,
+    EXPORT_OK,
+    FILE_NOT_FOUND,
+    FILE_EMPTY,
+    FOLDER_NOT_FOUND,
+    WRITE_ERROR,
+    EMPTY_DATA,
+    PERMISSION_DENIED,
+    FAILED,
+    CSV_IMPORTER_NOT_FOUND,
+    FILE_CREATED_FAILED,
+    PROCESS_NOT_CHOSEN,
+    CANCEL
 }
 
 enum class TagStatus {
@@ -188,7 +190,7 @@ enum class ScanMode {
     SEARCH
 }
 
-enum class Category(val displayName: String){
+enum class Category(val displayName: String) {
     SUB_MATERIAL("副資材"),
     SUB_RAW_MATERIAL("副原料"),
     NON_STANDARD_ITEM("格外品"),
@@ -196,7 +198,7 @@ enum class Category(val displayName: String){
     INTERMEDIATE_PRODUCT("中間品"),
 }
 
-enum class InboundInputField(val displayName: String, val code: String){
+enum class InboundInputField(val displayName: String, val code: String) {
     WEIGHT("重量", "Weight"),
     LENGTH("長さ", "Length"),
     WIDTH("巾", "Width"),
@@ -219,7 +221,7 @@ enum class DataType {
     DATETIME
 }
 
-enum class ControlType{
+enum class ControlType {
     INPUT,
     DROPDOWN,
     DATETIMEPICKER

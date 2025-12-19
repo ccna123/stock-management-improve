@@ -17,6 +17,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.CalendarMonth
+import androidx.compose.material.icons.filled.Cancel
 import androidx.compose.material.icons.filled.Timer
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -107,84 +108,119 @@ fun OutboundScreen(
         prevScreenNameId = Screen.Outbound.routeId, // for scan screen to navigate back,
         hasBottomBar = true,
         bottomButton = {
-            ButtonContainer(
-                modifier = Modifier.shadow(
-                    elevation = 13.dp, clip = true, ambientColor = Color.Gray.copy(alpha = 0.5f),
-                    spotColor = Color.DarkGray.copy(alpha = 0.7f)
-                ),
-                icon = {
-                    Icon(
-                        painter = painterResource(R.drawable.register),
-                        contentDescription = null,
-                        tint = Color.White,
-                        modifier = Modifier.size(20.dp)
-                    )
-                },
-                onClick = {
-
-                    val processedAt =
-                        if (inputState.processedAtDate.isEmpty() || inputState.processedAtTime.isEmpty())
-                        {
-                            null
-                        } else {
-                            "${inputState.processedAtDate}T${inputState.processedAtTime}"
-                        }
-                    scope.launch {
-                        val result = outboundViewModel.saveOutboundToDb(
-                            memo = inputState.memo,
-                            processedAt = processedAt,
-                            registeredAt = generateIso8601JstTimestamp(),
-                            rfidTagList = rfidTagList.filter { it.newFields.isChecked }
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(10.dp)
+            ) {
+                ButtonContainer(
+                    buttonText = stringResource(R.string.cancel),
+                    containerColor = Color.Red,
+                    icon = {
+                        Icon(
+                            imageVector = Icons.Default.Cancel,
+                            contentDescription = null,
+                            tint = Color.White,
+                            modifier = Modifier.size(20.dp)
                         )
-                        result.exceptionOrNull()?.let { e ->
-                            appViewModel.onGeneralIntent(
-                                ShareIntent.ShowDialog(
-                                    type = DialogType.ERROR,
-                                    message = MessageMapper.toMessage(StatusCode.FAILED)
-                                )
+                    },
+                    modifier = Modifier
+                        .weight(1f)
+                        .shadow(
+                            elevation = 13.dp,
+                            clip = true,
+                            ambientColor = Color.Gray.copy(alpha = 0.5f),
+                            spotColor = Color.DarkGray.copy(alpha = 0.7f)
+                        ),
+                    onClick = {
+                        appViewModel.onGeneralIntent(
+                            ShareIntent.ShowDialog(
+                                type = DialogType.CONFIRM,
+                                message = MessageMapper.toMessage(StatusCode.CANCEL)
                             )
-                            return@launch
-                        }
-                        val csvModels =
-                            outboundViewModel.generateCsvData(
+                        )
+                    }
+                )
+                ButtonContainer(
+                    buttonText = stringResource(R.string.register),
+                    modifier = Modifier
+                        .weight(1f)
+                        .shadow(
+                            elevation = 13.dp,
+                            clip = true,
+                            ambientColor = Color.Gray.copy(alpha = 0.5f),
+                            spotColor = Color.DarkGray.copy(alpha = 0.7f)
+                        ),
+                    icon = {
+                        Icon(
+                            painter = painterResource(R.drawable.register),
+                            contentDescription = null,
+                            tint = Color.White,
+                            modifier = Modifier.size(20.dp)
+                        )
+                    },
+                    onClick = {
+
+                        val processedAt =
+                            if (inputState.processedAtDate.isEmpty() || inputState.processedAtTime.isEmpty()) {
+                                null
+                            } else {
+                                "${inputState.processedAtDate}T${inputState.processedAtTime}"
+                            }
+                        scope.launch {
+                            val result = outboundViewModel.saveOutboundToDb(
                                 memo = inputState.memo,
                                 processedAt = processedAt,
                                 registeredAt = generateIso8601JstTimestamp(),
                                 rfidTagList = rfidTagList.filter { it.newFields.isChecked }
                             )
-                        val saveResult = appViewModel.saveScanResultToCsv(
-                            data = csvModels,
-                            direction = CsvHistoryDirection.EXPORT,
-                            taskCode = CsvTaskType.OUT,
-                        )
-                        saveResult
-                            .onSuccess {
-                                // SAVE CSV success
-                                // Now check network and send SFTP
-                                if (isNetworkConnected) {
-                                    //sftp send
-                                } else {
-                                    appViewModel.onGeneralIntent(
-                                        ShareIntent.ShowDialog(
-                                            type = DialogType.SAVE_CSV_SUCCESS_FAILED_SFTP,
-                                            message = MessageMapper.toMessage(StatusCode.EXPORT_OK)
-                                        )
-                                    )
-                                }
-                            }
-                            .onFailure { throwable ->
-                                val code = StatusCode.valueOf(throwable.message!!)
+                            result.exceptionOrNull()?.let { e ->
                                 appViewModel.onGeneralIntent(
                                     ShareIntent.ShowDialog(
                                         type = DialogType.ERROR,
-                                        message = MessageMapper.toMessage(code)
+                                        message = MessageMapper.toMessage(StatusCode.FAILED)
                                     )
                                 )
+                                return@launch
                             }
+                            val csvModels =
+                                outboundViewModel.generateCsvData(
+                                    memo = inputState.memo,
+                                    processedAt = processedAt,
+                                    registeredAt = generateIso8601JstTimestamp(),
+                                    rfidTagList = rfidTagList.filter { it.newFields.isChecked }
+                                )
+                            val saveResult = appViewModel.saveScanResultToCsv(
+                                data = csvModels,
+                                direction = CsvHistoryDirection.EXPORT,
+                                taskCode = CsvTaskType.OUT,
+                            )
+                            saveResult
+                                .onSuccess {
+                                    // SAVE CSV success
+                                    // Now check network and send SFTP
+                                    if (isNetworkConnected) {
+                                        //sftp send
+                                    } else {
+                                        appViewModel.onGeneralIntent(
+                                            ShareIntent.ShowDialog(
+                                                type = DialogType.SAVE_CSV_SUCCESS_FAILED_SFTP,
+                                                message = MessageMapper.toMessage(StatusCode.EXPORT_OK)
+                                            )
+                                        )
+                                    }
+                                }
+                                .onFailure { throwable ->
+                                    val code = StatusCode.valueOf(throwable.message!!)
+                                    appViewModel.onGeneralIntent(
+                                        ShareIntent.ShowDialog(
+                                            type = DialogType.ERROR,
+                                            message = MessageMapper.toMessage(code)
+                                        )
+                                    )
+                                }
+                        }
                     }
-                },
-                buttonText = stringResource(R.string.register),
-            )
+                )
+            }
         },
         onBackArrowClick = {
             onGoBack()

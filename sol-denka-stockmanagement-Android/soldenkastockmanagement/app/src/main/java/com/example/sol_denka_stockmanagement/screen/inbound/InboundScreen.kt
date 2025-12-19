@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -19,6 +20,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Cancel
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuAnchorType
@@ -154,120 +156,154 @@ fun InboundScreen(
         prevScreenNameId = Screen.Inbound.routeId, // for scan screen to navigate back,
         hasBottomBar = true,
         bottomButton = {
-            ButtonContainer(
-                icon = {
-                    Icon(
-                        painter = painterResource(R.drawable.register),
-                        contentDescription = null,
-                        tint = Color.White,
-                        modifier = Modifier.size(20.dp)
-                    )
-                },
-                modifier = Modifier.shadow(
-                    elevation = 13.dp, clip = true, ambientColor = Color.Gray.copy(alpha = 0.5f),
-                    spotColor = Color.DarkGray.copy(alpha = 0.7f)
-                ),
-                canClick = inputState.category.isNotBlank() && inputState.itemInCategory.isNotBlank(),
-                onClick = {
-                    val errors = InputValidate.validateRequiredFields(
-                        formItems = inboundInputFormResults.filter { it.isVisible },
-                        inputState = inputState
-                    )
-                    if (errors.isNotEmpty()){
-                        appViewModel.onInputIntent(InputIntent.UpdateFieldErrors(errors))
-                        return@ButtonContainer
-                    }
-                    val occurredAt =
-                        if (inputState.occurredAtDate.isEmpty() || inputState.occurredAtTime.isEmpty())
-                        {
-                            null
-                        } else {
-                            "${inputState.occurredAtDate}T${inputState.occurredAtTime}"
-                        }
-
-                    val processedAt =
-                        if (inputState.processedAtDate.isEmpty() || inputState.processedAtTime.isEmpty())
-                        {
-                            null
-                        } else {
-                            "${inputState.processedAtDate}T${inputState.processedAtTime}"
-                        }
-                    scope.launch {
-                        val result = inboundViewModel.saveInboundToDb(
-                            rfidTag = rfidTagList.find { it.epc == lastInboundEpc },
-                            itemInCategory = inputState.itemInCategory,
-                            location = inputState.location,
-                            winder = inputState.winder,
-                            weight = inputState.weight,
-                            width = inputState.width,
-                            length = inputState.length,
-                            thickness = inputState.thickness,
-                            lotNo = inputState.lotNo,
-                            occurrenceReason = inputState.occurrenceReason,
-                            quantity = inputState.quantity,
-                            memo = inputState.memo,
-                            occurredAt = occurredAt,
-                            processedAt = processedAt,
-                            registeredAt = generateIso8601JstTimestamp()
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(10.dp)
+            ) {
+                ButtonContainer(
+                    buttonText = stringResource(R.string.cancel),
+                    containerColor = Color.Red,
+                    icon = {
+                        Icon(
+                            imageVector = Icons.Default.Cancel,
+                            contentDescription = null,
+                            tint = Color.White,
+                            modifier = Modifier.size(20.dp)
                         )
-                        result.exceptionOrNull()?.let { e ->
-                            appViewModel.onGeneralIntent(
-                                ShareIntent.ShowDialog(
-                                    type = DialogType.ERROR,
-                                    message = MessageMapper.toMessage(StatusCode.FAILED)
-                                )
+                    },
+                    modifier = Modifier
+                        .weight(1f)
+                        .shadow(
+                            elevation = 13.dp,
+                            clip = true,
+                            ambientColor = Color.Gray.copy(alpha = 0.5f),
+                            spotColor = Color.DarkGray.copy(alpha = 0.7f)
+                        ),
+                    onClick = {
+                        appViewModel.onGeneralIntent(
+                            ShareIntent.ShowDialog(
+                                type = DialogType.CONFIRM,
+                                message = MessageMapper.toMessage(StatusCode.CANCEL)
                             )
-                            return@launch
+                        )
+                    }
+                )
+                ButtonContainer(
+                    buttonText = stringResource(R.string.register),
+                    icon = {
+                        Icon(
+                            painter = painterResource(R.drawable.register),
+                            contentDescription = null,
+                            tint = Color.White,
+                            modifier = Modifier.size(20.dp)
+                        )
+                    },
+                    modifier = Modifier
+                        .weight(1f)
+                        .shadow(
+                            elevation = 13.dp,
+                            clip = true,
+                            ambientColor = Color.Gray.copy(alpha = 0.5f),
+                            spotColor = Color.DarkGray.copy(alpha = 0.7f)
+                        ),
+                    canClick = inputState.category.isNotBlank() && inputState.itemInCategory.isNotBlank(),
+                    onClick = {
+                        val errors = InputValidate.validateRequiredFields(
+                            formItems = inboundInputFormResults.filter { it.isVisible },
+                            inputState = inputState
+                        )
+                        if (errors.isNotEmpty()) {
+                            appViewModel.onInputIntent(InputIntent.UpdateFieldErrors(errors))
+                            return@ButtonContainer
                         }
-                        val csvModels = inboundViewModel.generateCsvData(
-                            itemInCategory = inputState.itemInCategory,
-                            location = inputState.location,
-                            winder = inputState.winder,
-                            weight = inputState.weight,
-                            width = inputState.width,
-                            length = inputState.length,
-                            thickness = inputState.thickness,
-                            lotNo = inputState.lotNo,
-                            occurrenceReason = inputState.occurrenceReason,
-                            quantity = inputState.quantity,
-                            memo = inputState.memo,
-                            occurredAt = occurredAt,
-                            processedAt = processedAt,
-                            rfidTag = rfidTagList.find { it.epc == lastInboundEpc },
-                        )
-                        val saveResult = appViewModel.saveScanResultToCsv(
-                            data = csvModels,
-                            direction = CsvHistoryDirection.EXPORT,
-                            taskCode = CsvTaskType.IN,
-                        )
-                        saveResult
-                            .onSuccess {
-                                // SAVE CSV success
-                                // Now check network and send SFTP
-                                if (isNetworkConnected) {
-                                    //sftp send
-                                } else {
-                                    appViewModel.onGeneralIntent(
-                                        ShareIntent.ShowDialog(
-                                            type = DialogType.SAVE_CSV_SUCCESS_FAILED_SFTP,
-                                            message = MessageMapper.toMessage(StatusCode.EXPORT_OK)
-                                        )
-                                    )
-                                }
+                        val occurredAt =
+                            if (inputState.occurredAtDate.isEmpty() || inputState.occurredAtTime.isEmpty()) {
+                                null
+                            } else {
+                                "${inputState.occurredAtDate}T${inputState.occurredAtTime}"
                             }
-                            .onFailure { throwable ->
-                                val code = StatusCode.valueOf(throwable.message!!)
+
+                        val processedAt =
+                            if (inputState.processedAtDate.isEmpty() || inputState.processedAtTime.isEmpty()) {
+                                null
+                            } else {
+                                "${inputState.processedAtDate}T${inputState.processedAtTime}"
+                            }
+                        scope.launch {
+                            val result = inboundViewModel.saveInboundToDb(
+                                rfidTag = rfidTagList.find { it.epc == lastInboundEpc },
+                                itemInCategory = inputState.itemInCategory,
+                                location = inputState.location,
+                                winder = inputState.winder,
+                                weight = inputState.weight,
+                                width = inputState.width,
+                                length = inputState.length,
+                                thickness = inputState.thickness,
+                                lotNo = inputState.lotNo,
+                                occurrenceReason = inputState.occurrenceReason,
+                                quantity = inputState.quantity,
+                                memo = inputState.memo,
+                                occurredAt = occurredAt,
+                                processedAt = processedAt,
+                                registeredAt = generateIso8601JstTimestamp()
+                            )
+                            result.exceptionOrNull()?.let { e ->
                                 appViewModel.onGeneralIntent(
                                     ShareIntent.ShowDialog(
                                         type = DialogType.ERROR,
-                                        message = MessageMapper.toMessage(code)
+                                        message = MessageMapper.toMessage(StatusCode.FAILED)
                                     )
                                 )
+                                return@launch
                             }
+                            val csvModels = inboundViewModel.generateCsvData(
+                                itemInCategory = inputState.itemInCategory,
+                                location = inputState.location,
+                                winder = inputState.winder,
+                                weight = inputState.weight,
+                                width = inputState.width,
+                                length = inputState.length,
+                                thickness = inputState.thickness,
+                                lotNo = inputState.lotNo,
+                                occurrenceReason = inputState.occurrenceReason,
+                                quantity = inputState.quantity,
+                                memo = inputState.memo,
+                                occurredAt = occurredAt,
+                                processedAt = processedAt,
+                                rfidTag = rfidTagList.find { it.epc == lastInboundEpc },
+                            )
+                            val saveResult = appViewModel.saveScanResultToCsv(
+                                data = csvModels,
+                                direction = CsvHistoryDirection.EXPORT,
+                                taskCode = CsvTaskType.IN,
+                            )
+                            saveResult
+                                .onSuccess {
+                                    // SAVE CSV success
+                                    // Now check network and send SFTP
+                                    if (isNetworkConnected) {
+                                        //sftp send
+                                    } else {
+                                        appViewModel.onGeneralIntent(
+                                            ShareIntent.ShowDialog(
+                                                type = DialogType.SAVE_CSV_SUCCESS_FAILED_SFTP,
+                                                message = MessageMapper.toMessage(StatusCode.EXPORT_OK)
+                                            )
+                                        )
+                                    }
+                                }
+                                .onFailure { throwable ->
+                                    val code = StatusCode.valueOf(throwable.message!!)
+                                    appViewModel.onGeneralIntent(
+                                        ShareIntent.ShowDialog(
+                                            type = DialogType.ERROR,
+                                            message = MessageMapper.toMessage(code)
+                                        )
+                                    )
+                                }
+                        }
                     }
-                },
-                buttonText = stringResource(R.string.register),
-            )
+                )
+            }
         },
         onBackArrowClick = {
             onGoBack()

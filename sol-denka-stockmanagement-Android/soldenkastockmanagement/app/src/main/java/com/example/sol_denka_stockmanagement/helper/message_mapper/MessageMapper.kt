@@ -41,6 +41,7 @@ object MessageMapper {
 
             StatusCode.IMPORT_OK -> "取り込み成功しました。"
             StatusCode.EXPORT_OK -> "CSV ファイルの保存は正常に完了しましたが、\n送信処理でエラーが発生しました。再度送信をお試しください。"
+            StatusCode.CANCEL -> "登録作業をキャンセルし、\nホーム画面に戻ってもよろしいですか？"
         }
     }
 }
