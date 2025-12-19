@@ -49,6 +49,7 @@ interface TagMasterDao : IDao<TagMasterEntity> {
         SELECT 
                 t.tag_id AS tagId, 
                 t.epc , 
+                le.is_in_stock AS isInStock,
                 IFNULL(it.item_type_name, '') AS itemName,
                 IFNULL(it.item_type_code, '') AS itemCode,
                 IFNULL(lo.location_name, '') AS location

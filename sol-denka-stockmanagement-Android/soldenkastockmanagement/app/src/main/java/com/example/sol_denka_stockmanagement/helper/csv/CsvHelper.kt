@@ -451,7 +451,7 @@ class CsvHelper @Inject constructor(
                 val progress = (count.toFloat() / total).coerceIn(0f, 1f)
                 onProgress(progress)
             }
-
+            importer.finish()
             onProgress(1f)
             ProcessResult.Success(statusCode = StatusCode.IMPORT_OK)
 

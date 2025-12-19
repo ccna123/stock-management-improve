@@ -19,8 +19,8 @@ data class InboundResultCsvModel(
     val occurrenceReason: String,
     val quantity: String,
     val memo: String,
-    val occurredAt: String,
-    val processedAt: String,
+    val occurredAt: String?,
+    val processedAt: String?,
     val registeredAt: String,
 
     ) : ICsvExport {
@@ -57,8 +57,8 @@ data class InboundResultCsvModel(
         occurrenceReason,
         quantity,
         memo,
-        occurredAt,
-        processedAt,
+        occurredAt ?: "",
+        processedAt ?: "",
         registeredAt
     )
 

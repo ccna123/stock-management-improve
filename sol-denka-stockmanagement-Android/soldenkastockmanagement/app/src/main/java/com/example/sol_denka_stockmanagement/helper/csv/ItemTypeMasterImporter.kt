@@ -7,8 +7,9 @@ import com.example.sol_denka_stockmanagement.util.toNullIfBlank
 
 class ItemTypeMasterImporter(
     private val repository: ItemTypeRepository
-): ICsvImport {
+) : ICsvImport {
 
+    private val buffer = mutableListOf<ItemTypeMasterModel>()
     override suspend fun import(csvLines: List<String>) {
         if (csvLines.isEmpty()) return
 
@@ -30,7 +31,13 @@ class ItemTypeMasterImporter(
                     packingType = p[8].toNullIfBlank(),
                 )
             }
+        buffer.addAll(entities)
+    }
 
-        repository.replaceAll(entities)
+    override suspend fun finish() {
+        if (buffer.isEmpty()) return
+
+        repository.replaceAll(buffer)
+        buffer.clear()
     }
 }

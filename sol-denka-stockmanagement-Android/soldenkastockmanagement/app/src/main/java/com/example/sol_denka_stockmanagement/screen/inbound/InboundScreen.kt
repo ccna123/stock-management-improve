@@ -1,6 +1,7 @@
 package com.example.sol_denka_stockmanagement.screen.inbound
 
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -111,11 +112,11 @@ fun InboundScreen(
         cancelText = stringResource(R.string.cancel),
         onConfirm = { time ->
             when (generalState.inboundInputFieldDateTime) {
-                InboundInputField.OCCURRED_AT.displayName -> appViewModel.onInputIntent(
+                InboundInputField.OCCURRED_AT.code -> appViewModel.onInputIntent(
                     ChangeOccurredAtTime(time)
                 )
 
-                InboundInputField.PROCESSED_AT.displayName -> appViewModel.onInputIntent(
+                InboundInputField.PROCESSED_AT.code -> appViewModel.onInputIntent(
                     InputIntent.ChangeProcessedAtTime(time)
                 )
             }
@@ -132,11 +133,11 @@ fun InboundScreen(
         cancelText = stringResource(R.string.cancel),
         onConfirm = { date ->
             when (generalState.inboundInputFieldDateTime) {
-                InboundInputField.OCCURRED_AT.displayName -> appViewModel.onInputIntent(
+                InboundInputField.OCCURRED_AT.code -> appViewModel.onInputIntent(
                     ChangeOccurredAtDate(date)
                 )
 
-                InboundInputField.PROCESSED_AT.displayName -> appViewModel.onInputIntent(
+                InboundInputField.PROCESSED_AT.code -> appViewModel.onInputIntent(
                     InputIntent.ChangeProcessedAtDate(date)
                 )
             }
@@ -177,6 +178,21 @@ fun InboundScreen(
                         appViewModel.onInputIntent(InputIntent.UpdateFieldErrors(errors))
                         return@ButtonContainer
                     }
+                    val occurredAt =
+                        if (inputState.occurredAtDate.isEmpty() || inputState.occurredAtTime.isEmpty())
+                        {
+                            null
+                        } else {
+                            "${inputState.occurredAtDate}T${inputState.occurredAtTime}"
+                        }
+
+                    val processedAt =
+                        if (inputState.processedAtDate.isEmpty() || inputState.processedAtTime.isEmpty())
+                        {
+                            null
+                        } else {
+                            "${inputState.processedAtDate}T${inputState.processedAtTime}"
+                        }
                     scope.launch {
                         val result = inboundViewModel.saveInboundToDb(
                             rfidTag = rfidTagList.find { it.epc == lastInboundEpc },
@@ -191,8 +207,8 @@ fun InboundScreen(
                             occurrenceReason = inputState.occurrenceReason,
                             quantity = inputState.quantity,
                             memo = inputState.memo,
-                            occurredAt = "${inputState.occurredAtDate}_${inputState.occurredAtTime}",
-                            processedAt = "${inputState.processedAtDate}_${inputState.processedAtTime}",
+                            occurredAt = occurredAt,
+                            processedAt = processedAt,
                             registeredAt = generateIso8601JstTimestamp()
                         )
                         result.exceptionOrNull()?.let { e ->
@@ -216,8 +232,8 @@ fun InboundScreen(
                             occurrenceReason = inputState.occurrenceReason,
                             quantity = inputState.quantity,
                             memo = inputState.memo,
-                            occurredAt = "${inputState.occurredAtDate}_${inputState.occurredAtTime}",
-                            processedAt = "${inputState.processedAtDate}_${inputState.processedAtTime}",
+                            occurredAt = occurredAt,
+                            processedAt = processedAt,
                             rfidTag = rfidTagList.find { it.epc == lastInboundEpc },
                         )
                         val saveResult = appViewModel.saveScanResultToCsv(

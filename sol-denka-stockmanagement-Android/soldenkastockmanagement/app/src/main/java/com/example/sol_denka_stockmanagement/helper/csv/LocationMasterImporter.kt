@@ -6,7 +6,8 @@ import com.example.sol_denka_stockmanagement.model.location.LocationMasterModel
 
 class LocationMasterImporter(
     private val repository: LocationMasterRepository
-): ICsvImport {
+) : ICsvImport {
+    private val buffer = mutableListOf<LocationMasterModel>()
 
     override suspend fun import(csvLines: List<String>) {
         if (csvLines.isEmpty()) return
@@ -26,6 +27,13 @@ class LocationMasterImporter(
                     locationName = p[2],
                 )
             }
-        repository.replaceAll(entities)
+        buffer.addAll(entities)
+    }
+
+    override suspend fun finish() {
+        if (buffer.isEmpty()) return
+
+        repository.replaceAll(buffer)
+        buffer.clear()
     }
 }

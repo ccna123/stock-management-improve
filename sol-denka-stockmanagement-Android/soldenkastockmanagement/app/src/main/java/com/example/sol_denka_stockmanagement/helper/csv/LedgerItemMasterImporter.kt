@@ -8,6 +8,8 @@ class LedgerItemMasterImporter(
     private val repository: LedgerItemRepository
 ) : ICsvImport {
 
+    private val buffer = mutableListOf<LedgerItemModel>()
+
     private fun parseNullableInt(v: String?): Int? {
         if (v == null) return null
         if (v.isBlank()) return null
@@ -49,7 +51,13 @@ class LedgerItemMasterImporter(
                     updatedAt = p[17]
                 )
             }
+        buffer.addAll(entities)
+    }
 
-        repository.replaceAll(entities)
+    override suspend fun finish() {
+        if (buffer.isEmpty()) return
+
+        repository.replaceAll(buffer)
+        buffer.clear()
     }
 }

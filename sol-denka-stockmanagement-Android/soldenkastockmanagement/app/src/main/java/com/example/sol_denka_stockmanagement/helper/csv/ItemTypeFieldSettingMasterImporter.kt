@@ -6,7 +6,10 @@ import com.example.sol_denka_stockmanagement.model.field.ItemTypeFieldSettingMas
 
 class ItemTypeFieldSettingMasterImporter(
     private val repository: ItemTypeFieldSettingMasterRepository
-): ICsvImport {
+) : ICsvImport {
+
+    private val buffer = mutableListOf<ItemTypeFieldSettingMasterModel>()
+
     override suspend fun import(csvLines: List<String>) {
         if (csvLines.isEmpty()) return
 
@@ -24,6 +27,14 @@ class ItemTypeFieldSettingMasterImporter(
                 )
             }
 
-        repository.replaceAll(entities)
+        buffer.addAll(entities)
+    }
+
+    override suspend fun finish() {
+        if (buffer.isEmpty()) return
+
+        repository.replaceAll(buffer)
+        buffer.clear()
     }
 }
+

@@ -435,8 +435,8 @@ class AppViewModel @Inject constructor(
                     it.copy(
                         showTimePicker = intent.showTimePicker,
                         inboundInputFieldDateTime = when (intent.field) {
-                            InboundInputField.OCCURRED_AT.displayName -> InboundInputField.OCCURRED_AT.displayName
-                            InboundInputField.PROCESSED_AT.displayName -> InboundInputField.PROCESSED_AT.displayName
+                            InboundInputField.OCCURRED_AT.code -> InboundInputField.OCCURRED_AT.code
+                            InboundInputField.PROCESSED_AT.code -> InboundInputField.PROCESSED_AT.code
                             else -> ""
                         }
                     )
@@ -448,8 +448,8 @@ class AppViewModel @Inject constructor(
                     it.copy(
                         showDatePicker = intent.showDatePicker,
                         inboundInputFieldDateTime = when (intent.field) {
-                            InboundInputField.OCCURRED_AT.displayName -> InboundInputField.OCCURRED_AT.displayName
-                            InboundInputField.PROCESSED_AT.displayName -> InboundInputField.PROCESSED_AT.displayName
+                            InboundInputField.OCCURRED_AT.code -> InboundInputField.OCCURRED_AT.code
+                            InboundInputField.PROCESSED_AT.code -> InboundInputField.PROCESSED_AT.code
                             else -> ""
                         }
                     )

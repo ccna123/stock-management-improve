@@ -9,7 +9,10 @@ import com.example.sol_denka_stockmanagement.model.tag.TagMasterModel
 
 class TagMasterImporter(
     private val repository: TagMasterRepository
-): ICsvImport {
+) : ICsvImport {
+
+    private val buffer = mutableListOf<TagMasterModel>()
+
     override suspend fun import(csvLines: List<String>) {
         if (csvLines.isEmpty()) return
 
@@ -36,6 +39,13 @@ class TagMasterImporter(
                     )
                 )
             }
-        repository.replaceAll(entities)
+        buffer.addAll(entities)
+    }
+
+    override suspend fun finish() {
+        if (buffer.isEmpty()) return
+
+        repository.replaceAll(buffer)
+        buffer.clear()
     }
 }

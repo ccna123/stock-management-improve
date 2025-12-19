@@ -495,7 +495,7 @@ fun InboundInputFormItem(
                     enable = true,
                     error = when (result.fieldCode) {
                         InboundInputField.OCCURRED_AT.code -> inputState.fieldErrors["occurred_at_date"] == true
-                        InboundInputField.PROCESSED_AT.displayName -> inputState.fieldErrors["processed_at_date"] == true
+                        InboundInputField.PROCESSED_AT.code -> inputState.fieldErrors["processed_at_date"] == true
                         else -> false
                     },
                     trailingIcon = {
