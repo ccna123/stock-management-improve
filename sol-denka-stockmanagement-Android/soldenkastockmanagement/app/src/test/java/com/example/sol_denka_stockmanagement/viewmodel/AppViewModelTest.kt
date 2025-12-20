@@ -510,9 +510,26 @@ class AppViewModelTest {
     }
 
     @Test
-    fun `onInputIntent   ChangeCategory with ID 0`() {
+    fun `onInputIntent   ChangeCategory with ID 0`() = runTest {
         // Verify that changing category with ID 0 clears `searchResults`, `inputState.category`, `itemInCategory`, and `inboundInputFormResults`.
-        // TODO implement test
+        viewModel.onInputIntent(
+            ChangeCategory(
+                categoryId = 10,
+                value = Category.SUB_MATERIAL.displayName
+            )
+        )
+        advanceUntilIdle()
+        viewModel.onInputIntent(
+            ChangeCategory(
+                categoryId = 0,
+                value = ""
+            )
+        )
+
+        assertEquals("", viewModel.inputState.value.category)
+        assertEquals("", viewModel.inputState.value.itemInCategory)
+        assertTrue(viewModel.searchResults.value.isEmpty())
+        assertTrue(viewModel.inboundInputFormResults.value.isEmpty())
     }
 
     @Test
