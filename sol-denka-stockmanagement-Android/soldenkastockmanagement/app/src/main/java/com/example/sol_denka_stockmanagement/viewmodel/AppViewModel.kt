@@ -307,12 +307,8 @@ class AppViewModel @Inject constructor(
                 _inputState.update { it.copy(itemInCategory = intent.itemName) }
                 resetInboundInputForm()
                 viewModelScope.launch {
-                    val result =
-                        itemTypeFieldSettingMasterRepository.getFieldForItemTypeByItemTypeId(intent.itemId)
-                    if (result.isEmpty()) {
-                        return@launch
-                    }
-                    _inboundInputFormResults.value = result
+                    _inboundInputFormResults.value =
+                    itemTypeFieldSettingMasterRepository.getFieldForItemTypeByItemTypeId(intent.itemId)
                 }
             }
 

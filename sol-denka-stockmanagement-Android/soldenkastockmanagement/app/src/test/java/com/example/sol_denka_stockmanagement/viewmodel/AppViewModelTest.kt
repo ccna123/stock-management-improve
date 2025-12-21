@@ -6,6 +6,8 @@ import com.example.sol_denka_stockmanagement.MainDispatcherRule
 import com.example.sol_denka_stockmanagement.app_interface.IPresetRepo
 import com.example.sol_denka_stockmanagement.constant.Category
 import com.example.sol_denka_stockmanagement.constant.ConnectionState
+import com.example.sol_denka_stockmanagement.constant.ControlType
+import com.example.sol_denka_stockmanagement.constant.DataType
 import com.example.sol_denka_stockmanagement.constant.InboundInputField
 import com.example.sol_denka_stockmanagement.constant.PackingType
 import com.example.sol_denka_stockmanagement.constant.ProcessMethod
@@ -23,10 +25,13 @@ import com.example.sol_denka_stockmanagement.helper.NetworkConnectionObserver
 import com.example.sol_denka_stockmanagement.helper.controller.ReaderController
 import com.example.sol_denka_stockmanagement.helper.csv.CsvHelper
 import com.example.sol_denka_stockmanagement.helper.toast.ToastType
+import com.example.sol_denka_stockmanagement.intent.InputIntent
 import com.example.sol_denka_stockmanagement.intent.InputIntent.ChangeCategory
 import com.example.sol_denka_stockmanagement.intent.InputIntent.UpdateFieldErrors
 import com.example.sol_denka_stockmanagement.intent.InputIntent.ChangeLocation
 import com.example.sol_denka_stockmanagement.intent.InputIntent.ChangeProcessMethod
+import com.example.sol_denka_stockmanagement.intent.InputIntent.ChangeItemInCategory
+import com.example.sol_denka_stockmanagement.model.inbound.InboundInputFormModel
 import com.example.sol_denka_stockmanagement.model.item.ItemCategoryModel
 import com.example.sol_denka_stockmanagement.model.item.ItemTypeMasterModel
 import com.example.sol_denka_stockmanagement.model.location.LocationMasterModel
@@ -533,9 +538,54 @@ class AppViewModelTest {
     }
 
     @Test
-    fun `onInputIntent   ChangeItemInCategory`() {
+    fun `onInputIntent   ChangeItemInCategory`() = runTest {
         // Verify that this intent updates the state and triggers a repository call to get the form fields for the selected item.
-        // TODO implement test
+        val itemId = 100
+        val itemName = "Item"
+
+        viewModel.onInputIntent(InputIntent.ChangeWidth("10"))
+        viewModel.onInputIntent(InputIntent.ChangeGrade("A"))
+        viewModel.onInputIntent(InputIntent.ChangeLength("10"))
+
+        assertEquals("10", viewModel.inputState.value.width)
+        assertEquals("A", viewModel.inputState.value.grade)
+        assertEquals("10", viewModel.inputState.value.length)
+
+        val fakeFields = listOf(
+            InboundInputFormModel(
+                fieldName = "field name 1",
+                fieldCode = "field code 1",
+                controlType = ControlType.INPUT,
+                dataType = DataType.TEXT,
+                isRequired = true,
+                isVisible = true
+            ),
+            InboundInputFormModel(
+                fieldName = "field name 2",
+                fieldCode = "field code 2",
+                controlType = ControlType.INPUT,
+                dataType = DataType.TEXT,
+                isRequired = true,
+                isVisible = true
+            ),
+        )
+        coEvery { fieldSettingRepo.getFieldForItemTypeByItemTypeId(itemId) } returns fakeFields
+
+        viewModel.onInputIntent(
+            ChangeItemInCategory(
+                itemId = itemId,
+                itemName = itemName
+            )
+        )
+        advanceUntilIdle()
+
+        val state = viewModel.inputState.value
+        assertEquals("", state.width)
+        assertEquals("", state.grade)
+        assertEquals("", state.length)
+        assertEquals(itemName, state.itemInCategory)
+        assertEquals(fakeFields, viewModel.inboundInputFormResults.value)
+
     }
 
     @Test
