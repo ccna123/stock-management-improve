@@ -11,6 +11,7 @@ import com.example.sol_denka_stockmanagement.constant.DataType
 import com.example.sol_denka_stockmanagement.constant.InboundInputField
 import com.example.sol_denka_stockmanagement.constant.PackingType
 import com.example.sol_denka_stockmanagement.constant.ProcessMethod
+import com.example.sol_denka_stockmanagement.constant.Tab
 import com.example.sol_denka_stockmanagement.constant.WinderType
 import com.example.sol_denka_stockmanagement.constant.generateTimeStamp
 import com.example.sol_denka_stockmanagement.database.repository.csv.CsvHistoryRepository
@@ -31,6 +32,7 @@ import com.example.sol_denka_stockmanagement.intent.InputIntent.UpdateFieldError
 import com.example.sol_denka_stockmanagement.intent.InputIntent.ChangeLocation
 import com.example.sol_denka_stockmanagement.intent.InputIntent.ChangeProcessMethod
 import com.example.sol_denka_stockmanagement.intent.InputIntent.ChangeItemInCategory
+import com.example.sol_denka_stockmanagement.intent.ShareIntent
 import com.example.sol_denka_stockmanagement.model.inbound.InboundInputFormModel
 import com.example.sol_denka_stockmanagement.model.item.ItemCategoryModel
 import com.example.sol_denka_stockmanagement.model.item.ItemTypeMasterModel
@@ -49,6 +51,7 @@ import com.example.sol_denka_stockmanagement.state.InputState
 import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.verify
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -531,10 +534,17 @@ class AppViewModelTest {
             )
         )
 
-        assertEquals("", viewModel.inputState.value.category)
-        assertEquals("", viewModel.inputState.value.itemInCategory)
-        assertTrue(viewModel.searchResults.value.isEmpty())
-        assertTrue(viewModel.inboundInputFormResults.value.isEmpty())
+        assertEquals("", viewModel.inputState.value.category, "category should be reset")
+        assertEquals(
+            "",
+            viewModel.inputState.value.itemInCategory,
+            "itemInCategory should be reset"
+        )
+        assertTrue(viewModel.searchResults.value.isEmpty(), "searchResults should be reset")
+        assertTrue(
+            viewModel.inboundInputFormResults.value.isEmpty(),
+            "inboundInputFormResults should be reset"
+        )
     }
 
     @Test
@@ -547,9 +557,17 @@ class AppViewModelTest {
         viewModel.onInputIntent(InputIntent.ChangeGrade("A"))
         viewModel.onInputIntent(InputIntent.ChangeLength("10"))
 
-        assertEquals("10", viewModel.inputState.value.width)
-        assertEquals("A", viewModel.inputState.value.grade)
-        assertEquals("10", viewModel.inputState.value.length)
+        assertEquals(
+            "10",
+            viewModel.inputState.value.width,
+            "width should be updated with 10 input"
+        )
+        assertEquals("A", viewModel.inputState.value.grade, "grade should be updated with A input")
+        assertEquals(
+            "10",
+            viewModel.inputState.value.length,
+            "length should be updated with 10 input"
+        )
 
         val fakeFields = listOf(
             InboundInputFormModel(
@@ -580,24 +598,100 @@ class AppViewModelTest {
         advanceUntilIdle()
 
         val state = viewModel.inputState.value
-        assertEquals("", state.width)
-        assertEquals("", state.grade)
-        assertEquals("", state.length)
-        assertEquals(itemName, state.itemInCategory)
-        assertEquals(fakeFields, viewModel.inboundInputFormResults.value)
+        assertEquals("", state.width, "width should be reset")
+        assertEquals("", state.grade, "grade should be reset")
+        assertEquals("", state.length, "length should be reset")
+        assertEquals(itemName, state.itemInCategory, "item name should be updated")
+        assertEquals(
+            fakeFields,
+            viewModel.inboundInputFormResults.value,
+            "inboundInputFormResults should be updated"
+        )
 
     }
 
     @Test
-    fun `onInputIntent   ChangeItemInCategory with no fields`() {
+    fun `onInputIntent   ChangeItemInCategory with no fields`() = runTest {
         // Verify that if an item has no associated fields, `inboundInputFormResults` remains empty.
-        // TODO implement test
+        val initialFields = listOf(
+            InboundInputFormModel(
+                fieldName = "field name 1",
+                fieldCode = "field code 1",
+                controlType = ControlType.INPUT,
+                dataType = DataType.TEXT,
+                isRequired = true,
+                isVisible = true
+            )
+        )
+
+        coEvery {
+            fieldSettingRepo.getFieldForItemTypeByItemTypeId(1)
+        } returns initialFields
+
+        viewModel.onInputIntent(
+            InputIntent.ChangeItemInCategory(
+                itemId = 1,
+                itemName = "Item with fields"
+            )
+        )
+
+        advanceUntilIdle()
+
+        // precondition verify
+        assertEquals(
+            initialFields, viewModel.inboundInputFormResults.value,
+            "Expected inboundInputFormResults to be populated with initial fields"
+        )
+
+        coEvery {
+            fieldSettingRepo.getFieldForItemTypeByItemTypeId(100)
+        } returns emptyList()
+
+        viewModel.onInputIntent(
+            InputIntent.ChangeItemInCategory(
+                itemId = 100,
+                itemName = "Item without fields"
+            )
+        )
+
+        advanceUntilIdle()
+
+        assertTrue(
+            viewModel.inboundInputFormResults.value.isEmpty(),
+            "Expected inboundInputFormResults to be empty when item has no fields"
+        )
+
     }
 
     @Test
     fun `onInputIntent   BulkApplyProcessMethod`() {
         // Test that the selected process method is applied to all checked tags in `perTagProcessMethod`.
-        // TODO implement test
+        val chosenMethod = ProcessMethod.DISCARD.displayName
+        viewModel.onInputIntent(ChangeProcessMethod(chosenMethod))
+        assertEquals(
+            chosenMethod,
+            viewModel.inputState.value.processMethod,
+            "processMethod should be updated to $chosenMethod"
+        )
+
+        val checkTags = listOf(
+            "800000",
+            "800001",
+            "800002",
+        )
+
+        viewModel.onInputIntent(InputIntent.BulkApplyProcessMethod(checkTags))
+
+        val result = viewModel.perTagProcessMethod.value
+        assertEquals(3, result.size, "Expected 3 entries in perTagProcessMethod")
+
+        checkTags.forEach { epc ->
+            assertEquals(
+                chosenMethod,
+                result[epc],
+                "Expected $epc to have processMethod set to $chosenMethod"
+            )
+        }
     }
 
     @Test
@@ -609,25 +703,67 @@ class AppViewModelTest {
     @Test
     fun `onGeneralIntent   ChangeTab`() {
         // Verify that the `tab` property in `generalState` is updated correctly.
-        // TODO implement test
+        assertEquals(Tab.Left, viewModel.generalState.value.tab, "tab initial value should be Left")
+
+        viewModel.onGeneralIntent(ShareIntent.ChangeTab(Tab.Right))
+
+        assertEquals(Tab.Right, viewModel.generalState.value.tab, "tab should be updated to Right")
     }
 
     @Test
     fun `onGeneralIntent   ToggleFoundTag add new tag`() {
         // Verify that a new tag is added to the `foundTags` list in `generalState`.
-        // TODO implement test
+        assertTrue(
+            viewModel.generalState.value.foundTags.isEmpty(),
+            "foundTags should be empty initially"
+        )
+
+        viewModel.onGeneralIntent(ShareIntent.ToggleFoundTag("800000"))
+
+        val foundTags = viewModel.generalState.value.foundTags
+        assertEquals(1, foundTags.size, "foundTags should have 1 item")
     }
 
     @Test
     fun `onGeneralIntent   ToggleFoundTag remove existing tag`() {
         // Verify that an existing tag is removed from the `foundTags` list in `generalState`.
-        // TODO implement test
+        val tag = "800000"
+
+        viewModel.onGeneralIntent(ShareIntent.ToggleFoundTag(tag))
+
+        assertEquals(
+            listOf(tag),
+            viewModel.generalState.value.foundTags,
+            "foundTags should contain tag after first toggle"
+        )
+
+        // ===== act: toggle 2 times -> remove =====
+        viewModel.onGeneralIntent(ShareIntent.ToggleFoundTag(tag))
+
+        // ===== assert: tag remove =====
+        assertTrue(
+            viewModel.generalState.value.foundTags.isEmpty(),
+            "foundTags should be empty after removing existing tag"
+        )
     }
 
     @Test
     fun `onGeneralIntent   ClearFoundTag`() {
         // Verify that the `foundTags` list in `generalState` is cleared.
-        // TODO implement test
+        listOf("800", "811", "822").forEach { epc ->
+            viewModel.onGeneralIntent(ShareIntent.ToggleFoundTag(epc))
+        }
+        assertEquals(
+            3,
+            viewModel.generalState.value.foundTags.size,
+            "foundTags should have 3 items initially"
+        )
+
+        viewModel.onGeneralIntent(ShareIntent.ClearFoundTag)
+        assertTrue(
+            viewModel.generalState.value.foundTags.isEmpty(),
+            "foundTags should be empty after clearing"
+        )
     }
 
     @Test
