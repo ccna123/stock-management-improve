@@ -109,9 +109,6 @@ dependencies {
     //datastore
     implementation(libs.androidx.datastore.preferences)
 
-    // For all .aar files in the Zebra directory
-    implementation(fileTree("libs/Zebra") { include("*.aar") })
-
     //navigation 3
     implementation(libs.androidx.navigation3.ui)
     implementation(libs.androidx.navigation3.runtime)
