@@ -817,13 +817,27 @@ class AppViewModelTest {
     @Test
     fun `onGeneralIntent   MarkOutboundProcessError`() {
         // Verify that the EPCs are correctly added to the `outboundProcessErrorSet`.
-        // TODO implement test
+        assertTrue(viewModel.outboundProcessErrorSet.value.isEmpty(), "outboundProcessErrorSet should be empty initially")
+        val setEpcs = listOf("800000", "800001", "800002")
+        viewModel.onGeneralIntent(ShareIntent.MarkOutboundProcessError(setEpcs))
+
+        val result = viewModel.outboundProcessErrorSet.value
+        assertEquals(3, result.size, "outboundProcessErrorSet should have 3 items")
+
     }
 
     @Test
     fun `onGeneralIntent   ClearOutboundProcessError`() {
         // Verify that `outboundProcessErrorSet` is cleared.
-        // TODO implement test
+        assertTrue(viewModel.outboundProcessErrorSet.value.isEmpty(), "outboundProcessErrorSet should be empty initially")
+        val setEpcs = listOf("800000", "800001", "800002")
+        viewModel.onGeneralIntent(ShareIntent.MarkOutboundProcessError(setEpcs))
+
+        val result = viewModel.outboundProcessErrorSet.value
+        assertEquals(3, result.size, "outboundProcessErrorSet should have 3 items")
+
+        viewModel.onGeneralIntent(ShareIntent.ClearOutboundProcessError)
+        assertTrue(viewModel.outboundProcessErrorSet.value.isEmpty(), "outboundProcessErrorSet should be empty after clearing")
     }
 
     @Test
