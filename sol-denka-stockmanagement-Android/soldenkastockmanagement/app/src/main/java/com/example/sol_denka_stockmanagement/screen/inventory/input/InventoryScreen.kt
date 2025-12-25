@@ -171,10 +171,10 @@ fun InventoryScreen(
                         )
                         locationMaster.forEach { location ->
                             DropdownMenuItem(
-                                text = { Text(text = location.locationName ?: "") },
+                                text = { Text(text = location.locationName) },
                                 onClick = {
                                     appViewModel.apply {
-                                        onInputIntent(InputIntent.ChangeLocation(if (location.locationName == SelectTitle.SelectLocation.displayName) "" else location.locationName ?: ""))
+                                        onInputIntent(InputIntent.ChangeLocation(if (location.locationName == SelectTitle.SelectLocation.displayName) "" else location.locationName))
                                         onExpandIntent(ExpandIntent.ToggleLocationExpanded)
                                     }
                                 }
