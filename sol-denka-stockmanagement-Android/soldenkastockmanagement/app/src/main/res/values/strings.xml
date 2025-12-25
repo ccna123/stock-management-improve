@@ -93,6 +93,9 @@
     <string name="no_csv_file_found">CSVファイルが見つかりません。</string>
     <string name="csv_export_title">以下の内容でCSVファイルを出力します</string>
     <string name="choose_time">時刻を選択</string>
+    <string name="stock_status">在庫状況</string>
+    <string name="in_stock">在庫あり</string>
+    <string name="not_in_stock">在庫なし</string>
 
     <!-- 入力-->
     <string name="grade_hint">グレード入力</string>
