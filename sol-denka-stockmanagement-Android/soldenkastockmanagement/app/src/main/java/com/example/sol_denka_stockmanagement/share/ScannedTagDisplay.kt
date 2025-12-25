@@ -51,7 +51,8 @@ fun ScannedTagDisplay(
                 horizontalArrangement = Arrangement.spacedBy(10.dp),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(color = if (item.newFields.location != location) primaryRed.copy(alpha = .2f) else Color.Unspecified)
+                    .padding(8.dp)
+                    .background(color = if (item.newFields.location != location) primaryRed.copy(alpha = .2f) else Color.Unspecified, shape = RoundedCornerShape(13.dp))
                     .combinedClickable(
                         onClick = {
                             onClick(item.epc)
