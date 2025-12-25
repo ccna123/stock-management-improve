@@ -7,6 +7,7 @@ import com.example.sol_denka_stockmanagement.database.repository.inventory.Inven
 import com.example.sol_denka_stockmanagement.database.repository.item.ItemCategoryRepository
 import com.example.sol_denka_stockmanagement.database.repository.item.ItemUnitRepository
 import com.example.sol_denka_stockmanagement.database.repository.process.ProcessTypeRepository
+import com.example.sol_denka_stockmanagement.database.repository.tag.TagStatusMasterRepository
 import com.example.sol_denka_stockmanagement.database.repository.winder.WinderInfoRepository
 import dagger.Binds
 import dagger.Module
@@ -60,6 +61,12 @@ abstract class RepoModule {
     @IntoSet
     abstract fun bindFieldMasterRepo(
         repo: FieldMasterRepository
+    ): IPresetRepo
+
+    @Binds
+    @IntoSet
+    abstract fun bindTagStatusMasterRepo(
+        repo: TagStatusMasterRepository
     ): IPresetRepo
 
 }

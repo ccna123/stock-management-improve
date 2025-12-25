@@ -2,7 +2,7 @@ package com.example.sol_denka_stockmanagement.database.repository.tag
 
 import android.util.Log
 import com.example.sol_denka_stockmanagement.app_interface.IPresetRepo
-import com.example.sol_denka_stockmanagement.constant.TagScanStatus
+import com.example.sol_denka_stockmanagement.constant.TagStatus
 import com.example.sol_denka_stockmanagement.constant.generateTimeStamp
 import com.example.sol_denka_stockmanagement.database.dao.tag.TagStatusMasterDao
 import com.example.sol_denka_stockmanagement.model.tag.TagStatusMasterModel
@@ -13,8 +13,6 @@ import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 import javax.inject.Singleton
-import kotlin.collections.forEach
-import kotlin.collections.map
 
 @Singleton
 class TagStatusMasterRepository @Inject constructor(
@@ -24,29 +22,29 @@ class TagStatusMasterRepository @Inject constructor(
     val presetUnits = listOf(
         TagStatusMasterModel(
             tagStatusId = 1,
-            statusCode = TagScanStatus.UNASSIGNED.statusCode,
-            statusName = TagScanStatus.UNASSIGNED.statusName,
+            statusCode = TagStatus.UNASSIGNED.statusCode,
+            statusName = TagStatus.UNASSIGNED.statusName,
             createdAt = generateTimeStamp(),
             updatedAt = generateTimeStamp()
         ),
         TagStatusMasterModel(
             tagStatusId = 2,
-            statusCode = TagScanStatus.ATTACHED.statusCode,
-            statusName = TagScanStatus.ATTACHED.statusName,
+            statusCode = TagStatus.ATTACHED.statusCode,
+            statusName = TagStatus.ATTACHED.statusName,
             createdAt = generateTimeStamp(),
             updatedAt = generateTimeStamp()
         ),
         TagStatusMasterModel(
             tagStatusId = 3,
-            statusCode = TagScanStatus.DETACHED.statusCode,
-            statusName = TagScanStatus.DETACHED.statusName,
+            statusCode = TagStatus.DETACHED.statusCode,
+            statusName = TagStatus.DETACHED.statusName,
             createdAt = generateTimeStamp(),
             updatedAt = generateTimeStamp()
         ),
         TagStatusMasterModel(
             tagStatusId = 4,
-            statusCode = TagScanStatus.DISABLED.statusCode,
-            statusName = TagScanStatus.DISABLED.statusName,
+            statusCode = TagStatus.DISABLED.statusCode,
+            statusName = TagStatus.DISABLED.statusName,
             createdAt = generateTimeStamp(),
             updatedAt = generateTimeStamp()
         )
