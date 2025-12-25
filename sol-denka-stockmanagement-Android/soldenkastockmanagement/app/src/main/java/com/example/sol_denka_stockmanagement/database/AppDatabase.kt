@@ -23,6 +23,7 @@ import com.example.sol_denka_stockmanagement.database.dao.tag.TagMasterDao
 import com.example.sol_denka_stockmanagement.database.dao.outbound.OutboundEventDao
 import com.example.sol_denka_stockmanagement.database.dao.outbound.OutboundSessionDao
 import com.example.sol_denka_stockmanagement.database.dao.process.ProcessTypeDao
+import com.example.sol_denka_stockmanagement.database.dao.tag.TagStatusMasterDao
 import com.example.sol_denka_stockmanagement.database.dao.winder.WinderInfoDao
 import com.example.sol_denka_stockmanagement.database.entity.csv.CsvHistoryEntity
 import com.example.sol_denka_stockmanagement.database.entity.csv.CsvTaskTypeEntity
@@ -44,6 +45,7 @@ import com.example.sol_denka_stockmanagement.database.entity.tag.TagMasterEntity
 import com.example.sol_denka_stockmanagement.database.entity.outbound.OutBoundEventEntity
 import com.example.sol_denka_stockmanagement.database.entity.outbound.OutboundSessionEntity
 import com.example.sol_denka_stockmanagement.database.entity.process.ProcessTypeEntity
+import com.example.sol_denka_stockmanagement.database.entity.tag.TagStatusMasterEntity
 import com.example.sol_denka_stockmanagement.database.entity.winder.WinderInfoEntity
 
 @Database(
@@ -67,7 +69,9 @@ import com.example.sol_denka_stockmanagement.database.entity.winder.WinderInfoEn
         ItemCategoryEntity::class,
 
         LedgerItemEntity::class,
+
         TagMasterEntity::class,
+        TagStatusMasterEntity::class,
 
         OutBoundEventEntity::class,
         OutboundSessionEntity::class,
@@ -79,7 +83,7 @@ import com.example.sol_denka_stockmanagement.database.entity.winder.WinderInfoEn
 
         WinderInfoEntity::class
     ],
-    version = 22
+    version = 23
 )
 abstract class AppDatabase : RoomDatabase() {
 
@@ -112,6 +116,7 @@ abstract class AppDatabase : RoomDatabase() {
 
     // Tag
     abstract fun tagDao(): TagMasterDao
+    abstract fun tagStatusDao(): TagStatusMasterDao
 
     // Outbound
     abstract fun outboundEventDao(): OutboundEventDao

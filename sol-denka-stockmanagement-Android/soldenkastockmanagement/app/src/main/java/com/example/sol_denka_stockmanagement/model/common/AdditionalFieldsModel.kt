@@ -1,10 +1,10 @@
 package com.example.sol_denka_stockmanagement.model.common
 
 import com.example.sol_denka_stockmanagement.constant.InventoryResultType
-import com.example.sol_denka_stockmanagement.constant.TagStatus
+import com.example.sol_denka_stockmanagement.constant.TagScanStatus
 
 data class AdditionalFieldsModel(
-    var tagStatus: TagStatus,
+    var tagScanStatus: TagScanStatus,
     var inventoryResultType: InventoryResultType,
     val rssi: Float,
     val itemName: String,
@@ -19,7 +19,7 @@ data class AdditionalFieldsModel(
 ){
     companion object {
         fun default() = AdditionalFieldsModel(
-            tagStatus = TagStatus.UNPROCESSED,
+            tagScanStatus = TagScanStatus.UNPROCESSED,
             inventoryResultType = InventoryResultType.UNKNOWN,
             rssi = -100f,
             itemName = "",

@@ -5,7 +5,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.sol_denka_stockmanagement.constant.InventoryResultType
-import com.example.sol_denka_stockmanagement.constant.TagStatus
+import com.example.sol_denka_stockmanagement.constant.TagScanStatus
 import com.example.sol_denka_stockmanagement.constant.generateIso8601JstTimestamp
 import com.example.sol_denka_stockmanagement.database.repository.inventory.InventoryCompleteRepository
 import com.example.sol_denka_stockmanagement.database.repository.inventory.InventoryResultTypeRepository
@@ -54,13 +54,13 @@ class InventoryCompleteViewModel @Inject constructor(
             val newList =
                 rfidTagList.map { tag ->
                     val wrongLocation =
-                        tag.newFields.tagStatus == TagStatus.PROCESSED && tag.newFields.location != locationName
+                        tag.newFields.tagScanStatus == TagScanStatus.PROCESSED && tag.newFields.location != locationName
                     val shortage =
-                        tag.newFields.tagStatus != TagStatus.PROCESSED && tag.newFields.isInStock && tag.newFields.location == locationName
+                        tag.newFields.tagScanStatus != TagScanStatus.PROCESSED && tag.newFields.isInStock && tag.newFields.location == locationName
                     val over =
-                        tag.newFields.tagStatus == TagStatus.PROCESSED && tag.newFields.isInStock.not() && tag.newFields.location == locationName
+                        tag.newFields.tagScanStatus == TagScanStatus.PROCESSED && tag.newFields.isInStock.not() && tag.newFields.location == locationName
                     val ok =
-                        tag.newFields.tagStatus == TagStatus.PROCESSED && tag.newFields.isInStock && tag.newFields.location == locationName
+                        tag.newFields.tagScanStatus == TagScanStatus.PROCESSED && tag.newFields.isInStock && tag.newFields.location == locationName
 
 
                     val resultType = when {

@@ -53,7 +53,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.sol_denka_stockmanagement.R
 import com.example.sol_denka_stockmanagement.constant.ScanMode
 import com.example.sol_denka_stockmanagement.constant.Tab
-import com.example.sol_denka_stockmanagement.constant.TagStatus
+import com.example.sol_denka_stockmanagement.constant.TagScanStatus
 import com.example.sol_denka_stockmanagement.intent.SettingIntent
 import com.example.sol_denka_stockmanagement.intent.ShareIntent
 import com.example.sol_denka_stockmanagement.navigation.Screen
@@ -192,7 +192,7 @@ fun InventoryScanScreen(
                     buttonHeight = 35.dp,
                     buttonText = stringResource(R.string.finish_inventory),
                     buttonTextSize = 19,
-                    canClick = isPerformingInventory.not() && rfidTagList.count { it.newFields.tagStatus == TagStatus.PROCESSED } > 0,
+                    canClick = isPerformingInventory.not() && rfidTagList.count { it.newFields.tagScanStatus == TagScanStatus.PROCESSED } > 0,
                     icon = {
                         Icon(
                             imageVector = Icons.Default.CheckCircle,
@@ -371,7 +371,7 @@ fun InventoryScanScreen(
                     ) {
                         Text(text = stringResource(R.string.process_status), fontSize = 26.sp)
                         Text(
-                            text = "${rfidTagList.count { it.newFields.tagStatus == TagStatus.PROCESSED && it.newFields.location == inputState.location }}/${rfidTagList.count { it.newFields.location == inputState.location }}",
+                            text = "${rfidTagList.count { it.newFields.tagScanStatus == TagScanStatus.PROCESSED && it.newFields.location == inputState.location }}/${rfidTagList.count { it.newFields.location == inputState.location }}",
                             fontSize = 26.sp
                         )
                     }
@@ -406,15 +406,15 @@ fun InventoryScanScreen(
                         val displayList = when (tab) {
                             Tab.Left -> {
                                 val matchLocation =
-                                    rfidTagList.filter { it.newFields.hasLeger && it.newFields.tagStatus == TagStatus.UNPROCESSED && it.newFields.location == inputState.location }
+                                    rfidTagList.filter { it.newFields.hasLeger && it.newFields.tagScanStatus == TagScanStatus.UNPROCESSED && it.newFields.location == inputState.location }
                                 val unMatchLocation =
-                                    rfidTagList.filter { it.newFields.hasLeger && it.newFields.tagStatus == TagStatus.PROCESSED && it.newFields.location != inputState.location }
+                                    rfidTagList.filter { it.newFields.hasLeger && it.newFields.tagScanStatus == TagScanStatus.PROCESSED && it.newFields.location != inputState.location }
                                 rfidTagList.filter {
                                     matchLocation.contains(it) || unMatchLocation.contains(it)
                                 }
                             }
 
-                            Tab.Right -> rfidTagList.filter { it.newFields.hasLeger && it.newFields.tagStatus == TagStatus.PROCESSED && it.newFields.location == inputState.location }
+                            Tab.Right -> rfidTagList.filter { it.newFields.hasLeger && it.newFields.tagScanStatus == TagScanStatus.PROCESSED && it.newFields.location == inputState.location }
                         }
 
                         ScannedTagDisplay(

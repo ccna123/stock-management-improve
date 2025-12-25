@@ -38,7 +38,7 @@ import com.example.sol_denka_stockmanagement.R
 import com.example.sol_denka_stockmanagement.constant.DialogType
 import com.example.sol_denka_stockmanagement.constant.ScanMode
 import com.example.sol_denka_stockmanagement.constant.StatusCode
-import com.example.sol_denka_stockmanagement.constant.TagStatus
+import com.example.sol_denka_stockmanagement.constant.TagScanStatus
 import com.example.sol_denka_stockmanagement.helper.message_mapper.MessageMapper
 import com.example.sol_denka_stockmanagement.intent.ExpandIntent
 import com.example.sol_denka_stockmanagement.intent.InputIntent
@@ -266,7 +266,7 @@ fun ScanScreen(
         },
         onBackArrowClick = {
             if (isPerformingInventory.not()) {
-                if (rfidTagList.any { it.newFields.tagStatus == TagStatus.PROCESSED } || lastInboundEpc?.isNotEmpty() == true) {
+                if (rfidTagList.any { it.newFields.tagScanStatus == TagScanStatus.PROCESSED } || lastInboundEpc?.isNotEmpty() == true) {
                     appViewModel.onGeneralIntent(ShareIntent.ToggleClearTagConfirmDialog)
                 } else {
                     scanViewModel.apply {

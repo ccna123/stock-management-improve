@@ -2,7 +2,7 @@ package com.example.sol_denka_stockmanagement.helper.csv
 
 import com.example.sol_denka_stockmanagement.app_interface.ICsvImport
 import com.example.sol_denka_stockmanagement.constant.InventoryResultType
-import com.example.sol_denka_stockmanagement.constant.TagStatus
+import com.example.sol_denka_stockmanagement.constant.TagScanStatus
 import com.example.sol_denka_stockmanagement.database.repository.tag.TagMasterRepository
 import com.example.sol_denka_stockmanagement.model.common.AdditionalFieldsModel
 import com.example.sol_denka_stockmanagement.model.tag.TagMasterModel
@@ -26,7 +26,7 @@ class TagMasterImporter(
                     tagId = p[0].toInt(),
                     epc = p[1],
                     newFields = AdditionalFieldsModel(
-                        tagStatus = TagStatus.UNPROCESSED,
+                        tagScanStatus = TagScanStatus.UNPROCESSED,
                         inventoryResultType = InventoryResultType.UNKNOWN,
                         rssi = -100f,
                         itemName = "",

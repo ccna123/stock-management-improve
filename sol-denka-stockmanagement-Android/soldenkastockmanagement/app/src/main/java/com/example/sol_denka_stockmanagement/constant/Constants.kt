@@ -138,7 +138,7 @@ enum class StatusCode() {
     CANCEL
 }
 
-enum class TagStatus {
+enum class TagScanStatus {
     PROCESSED,
     UNPROCESSED
 }
@@ -236,6 +236,13 @@ enum class WinderType(val displayName: String) {
     MACHINE_4_LINE_1("4号機No.1"),
     MACHINE_4_LINE_2("4号機No.2"),
     OTHERS("その他")
+}
+
+enum class TagStatus(val statusName: String, val statusCode: String){
+    UNASSIGNED("未使用", "UNASSIGNED"),
+    ATTACHED("紐づけ済み", "ATTACHED"),
+    DETACHED("紐づけ解除済み", "DETACHED"),
+    DISABLED("無効", "DISABLED"),
 }
 
 

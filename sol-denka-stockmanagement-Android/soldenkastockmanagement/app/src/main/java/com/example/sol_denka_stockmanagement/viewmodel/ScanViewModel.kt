@@ -5,7 +5,7 @@ import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.sol_denka_stockmanagement.constant.ScanMode
-import com.example.sol_denka_stockmanagement.constant.TagStatus
+import com.example.sol_denka_stockmanagement.constant.TagScanStatus
 import com.example.sol_denka_stockmanagement.database.repository.ledger.LedgerItemRepository
 import com.example.sol_denka_stockmanagement.database.repository.tag.TagMasterRepository
 import com.example.sol_denka_stockmanagement.helper.controller.ReaderController
@@ -81,7 +81,7 @@ class ScanViewModel @Inject constructor(
                             itemCode = info?.itemCode ?: "",
                             location = info?.location ?: "",
 
-                            tagStatus = prev?.newFields?.tagStatus ?: TagStatus.UNPROCESSED,
+                            tagScanStatus = prev?.newFields?.tagScanStatus ?: TagScanStatus.UNPROCESSED,
                             rssi = prev?.newFields?.rssi ?: -100f,
                             isChecked = prev?.newFields?.isChecked ?: false,
                             processType = prev?.newFields?.processType ?: ""
@@ -121,10 +121,10 @@ class ScanViewModel @Inject constructor(
                         inventoryJob = viewModelScope.launch(Dispatchers.IO) {
                             tagController.statusMap.collect { status ->
                                 val updated = _rfidTagList.value.map { item ->
-                                    val s = status[item.epc] ?: TagStatus.UNPROCESSED
+                                    val s = status[item.epc] ?: TagScanStatus.UNPROCESSED
                                     item.copy(
                                         newFields = item.newFields.copy(
-                                            tagStatus = s
+                                            tagScanStatus = s
                                         )
                                     )
                                 }
@@ -136,7 +136,7 @@ class ScanViewModel @Inject constructor(
                         processJob = viewModelScope.launch(Dispatchers.IO) {
                             scannedTags.collect { scanned ->
                                 scanned.keys.forEach { epc ->
-                                    updateTagStatus(epc, TagStatus.PROCESSED)
+                                    updateTagStatus(epc, TagScanStatus.PROCESSED)
                                 }
                             }
                         }
@@ -186,7 +186,7 @@ class ScanViewModel @Inject constructor(
 
     fun setEnableScan(enabled: Boolean) = readerController.setScanEnabled(enabled)
 
-    fun updateTagStatus(epc: String, status: TagStatus) {
+    fun updateTagStatus(epc: String, status: TagScanStatus) {
         tagController.updateTagStatus(epc, status)
     }
 

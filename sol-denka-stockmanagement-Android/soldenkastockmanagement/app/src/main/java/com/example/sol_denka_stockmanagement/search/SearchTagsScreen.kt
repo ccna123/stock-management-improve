@@ -41,7 +41,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.sol_denka_stockmanagement.R
 import com.example.sol_denka_stockmanagement.constant.ScanMode
-import com.example.sol_denka_stockmanagement.constant.TagStatus
+import com.example.sol_denka_stockmanagement.constant.TagScanStatus
 import com.example.sol_denka_stockmanagement.helper.TagDistanceCalculate
 import com.example.sol_denka_stockmanagement.intent.SettingIntent
 import com.example.sol_denka_stockmanagement.intent.ShareIntent
@@ -160,7 +160,7 @@ fun SearchTagsScreen(
                         generalState.foundTags.forEach { foundTag ->
                             scanViewModel.updateTagStatus(
                                 epc = foundTag,
-                                status = TagStatus.PROCESSED
+                                status = TagScanStatus.PROCESSED
                             )
                         }
                         scanViewModel.clearScannedTag()

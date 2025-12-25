@@ -29,7 +29,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.sol_denka_stockmanagement.R
 import com.example.sol_denka_stockmanagement.constant.SelectTitle
-import com.example.sol_denka_stockmanagement.constant.TagStatus
+import com.example.sol_denka_stockmanagement.constant.TagScanStatus
 import com.example.sol_denka_stockmanagement.intent.ExpandIntent
 import com.example.sol_denka_stockmanagement.intent.InputIntent
 import com.example.sol_denka_stockmanagement.intent.ShareIntent
@@ -116,7 +116,7 @@ fun InventoryScreen(
             )
         },
         onBackArrowClick = {
-            if (rfidTagList.count { it.newFields.tagStatus == TagStatus.PROCESSED } > 0) {
+            if (rfidTagList.count { it.newFields.tagScanStatus == TagScanStatus.PROCESSED } > 0) {
                 appViewModel.onGeneralIntent(ShareIntent.ToggleClearTagConfirmDialog)
             } else {
                 onGoBack()
