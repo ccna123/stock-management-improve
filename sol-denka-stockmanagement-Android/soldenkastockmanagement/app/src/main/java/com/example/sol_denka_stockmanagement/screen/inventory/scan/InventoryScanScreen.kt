@@ -38,6 +38,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
@@ -96,9 +97,15 @@ fun InventoryScanScreen(
             setScanMode(ScanMode.INVENTORY_SCAN)
             resetIsCheckedField()
         }
-        appViewModel.apply {
-            onGeneralIntent(
-                ShareIntent.ToggleSelectionMode(false),
+        appViewModel.onGeneralIntent(
+            ShareIntent.ToggleSelectionMode(false),
+        )
+    }
+
+    DisposableEffect (Unit){
+        onDispose {
+            appViewModel.onGeneralIntent(
+                ShareIntent.ChangeTab(Tab.Left),
             )
         }
     }
