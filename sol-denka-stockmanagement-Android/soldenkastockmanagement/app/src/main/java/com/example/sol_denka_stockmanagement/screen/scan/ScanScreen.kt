@@ -317,7 +317,7 @@ fun ScanScreen(
                             Text(text = stringResource(R.string.scan_tag_list_item))
                             ButtonContainer(
                                 modifier = Modifier.width(120.dp),
-                                buttonText = if (displayTags.all { it.newFields.isChecked }) stringResource(
+                                buttonText = if (displayTags.isNotEmpty() && displayTags.all { it.newFields.isChecked }) stringResource(
                                     R.string.select_all_remove
                                 ) else stringResource(
                                     R.string.select_all
