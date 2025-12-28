@@ -4,7 +4,6 @@ import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.runtime.mutableStateOf
-import com.example.sol_denka_stockmanagement.app_interface.IDeviceManager
 import com.example.sol_denka_stockmanagement.constant.ConnectionState
 import com.example.sol_denka_stockmanagement.model.reader.ReaderInfoModel
 import com.example.sol_denka_stockmanagement.model.common.TagInfoModel
@@ -34,7 +33,7 @@ import javax.inject.Singleton
 @OptIn(DelicateCoroutinesApi::class)
 @Singleton
 class ReaderController @Inject constructor(
-) : IDeviceManager {
+) {
     private var fakeReader: FakeReader? = null
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
@@ -203,51 +202,51 @@ class ReaderController @Inject constructor(
         }
     }
 
-    override suspend fun disconnect() {
+    suspend fun disconnect() {
         fakeReader?.disconnect()
     }
 
-    override fun cleanup() {
+    fun cleanup() {
         fakeReader = null
     }
 
 
-    override fun setEventListener(listener: (DeviceEvent) -> Unit) {
+    fun setEventListener(listener: (DeviceEvent) -> Unit) {
         fakeReader?.setEventListener(listener)
     }
 
-    override fun setSession(session: FakeSession): Boolean {
+    fun setSession(session: FakeSession): Boolean {
         return fakeReader?.setSession(session) == true
     }
 
-    override fun setTagAccessFlag(flag: FakeInventoryState): Boolean {
+    fun setTagAccessFlag(flag: FakeInventoryState): Boolean {
         return fakeReader?.setTagAccessFlag(flag) == true
     }
 
-    override fun setChannel(channel: List<FakeChannel>): Boolean {
+    fun setChannel(channel: List<FakeChannel>): Boolean {
         return fakeReader?.setChannel(channel) == true
     }
 
-    override fun setRadioPower(radioPower: Int): Boolean {
+    fun setRadioPower(radioPower: Int): Boolean {
         return fakeReader?.setRadioPower(radioPower) == true
     }
 
-    override fun setBuzzerVolume(buzzerVolume: FakeBeeperVolume): Boolean {
+    fun setBuzzerVolume(buzzerVolume: FakeBeeperVolume): Boolean {
         return fakeReader?.setBuzzerVolume(buzzerVolume) == true
     }
 
-    override fun setTagPopulation(population: Short): Boolean {
+    fun setTagPopulation(population: Short): Boolean {
         return fakeReader?.setTagPopulation(population) == true
     }
 
-    override suspend fun startInventory() {
+    suspend fun startInventory() {
         _isPerformingInventory.update { true }
         scope.launch {
             fakeReader?.startInventory()
         }
     }
 
-    override suspend fun stopInventory() {
+    suspend fun stopInventory() {
         _isPerformingInventory.update { false }
         scope.launch {
             resetRssi()
