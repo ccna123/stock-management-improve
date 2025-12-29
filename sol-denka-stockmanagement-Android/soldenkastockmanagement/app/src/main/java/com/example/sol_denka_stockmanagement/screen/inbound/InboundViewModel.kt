@@ -1,6 +1,7 @@
 package com.example.sol_denka_stockmanagement.screen.inbound
 
 import android.os.Build
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import com.example.sol_denka_stockmanagement.constant.generateIso8601JstTimestamp
 import com.example.sol_denka_stockmanagement.database.repository.inbound.InboundRepository
@@ -41,30 +42,35 @@ class InboundViewModel @Inject constructor(
         rfidTag: TagMasterModel?
     ): List<InboundResultCsvModel> =
         withContext(Dispatchers.IO) {
-            csvModels.clear()
-            val itemTypeId = itemTypeRepository.getItemTypeIdByItemName(itemName = itemInCategory)
-            val locationId = locationMasterRepository.getLocationIdByName(locationName = location)
-            val winderId = winderInfoRepository.getIdByName(winderName = winder ?: "")
-            val model = InboundResultCsvModel(
-                tagId = rfidTag?.tagId ?: 0,
-                itemTypeId = itemTypeId,
-                locationId = locationId,
-                winderId = winderId,
-                deviceId = Build.ID,
-                weight = weight,
-                width = width,
-                length = length,
-                thickness = thickness,
-                lotNo = lotNo,
-                occurrenceReason = occurrenceReason,
-                quantity = quantity,
-                memo = memo,
-                occurredAt = occurredAt,
-                processedAt = processedAt,
-                registeredAt = generateIso8601JstTimestamp()
-            )
-            csvModels.add(model)
-            csvModels.toList()
+            try {
+                csvModels.clear()
+                val itemTypeId = itemTypeRepository.getItemTypeIdByItemName(itemName = itemInCategory)
+                val locationId = locationMasterRepository.getLocationIdByName(locationName = location)
+                val winderId = winderInfoRepository.getIdByName(winderName = winder ?: "")
+                val model = InboundResultCsvModel(
+                    tagId = rfidTag?.tagId ?: 0,
+                    itemTypeId = itemTypeId,
+                    locationId = locationId,
+                    winderId = winderId,
+                    deviceId = Build.ID,
+                    weight = weight,
+                    width = width,
+                    length = length,
+                    thickness = thickness,
+                    lotNo = lotNo,
+                    occurrenceReason = occurrenceReason,
+                    quantity = quantity,
+                    memo = memo,
+                    occurredAt = occurredAt,
+                    processedAt = processedAt,
+                    registeredAt = generateIso8601JstTimestamp()
+                )
+                csvModels.add(model)
+                csvModels.toList()
+            }catch (e: Exception){
+                Log.e("TSS", "generateCsvData: ${e.message}")
+                emptyList()
+            }
         }
 
     suspend fun saveInboundToDb(

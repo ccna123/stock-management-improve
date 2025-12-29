@@ -1,6 +1,7 @@
 package com.example.sol_denka_stockmanagement.screen.outbound
 
 import android.os.Build
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import com.example.sol_denka_stockmanagement.database.repository.outbound.OutboundRepository
 import com.example.sol_denka_stockmanagement.database.repository.process.ProcessTypeRepository
@@ -11,6 +12,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import kotlin.collections.emptyList
 
 @HiltViewModel
 class OutboundViewModel @Inject constructor(
@@ -28,23 +30,27 @@ class OutboundViewModel @Inject constructor(
         rfidTagList: List<TagMasterModel>
     ): List<OutboundResultCsvModel> =
         withContext(Dispatchers.IO) {
-            csvModels.clear()
-
-            rfidTagList.forEach { tag ->
-                val processTypeId = processTypeRepository.getIdByName(tag.newFields.processType)
-                val ledgerId = tagMasterRepository.getLedgerIdByTagId(tag.tagId)
-                val model = OutboundResultCsvModel(
-                    ledgerItemId = ledgerId ?: 0,
-                    tagId = tag.tagId,
-                    processTypeId = processTypeId,
-                    deviceId = Build.ID,
-                    memo = memo,
-                    processedAt = processedAt,
-                    registeredAt = registeredAt
-                )
-                csvModels.add(model)
+            try {
+                csvModels.clear()
+                rfidTagList.forEach { tag ->
+                    val processTypeId = processTypeRepository.getIdByName(tag.newFields.processType)
+                    val ledgerId = tagMasterRepository.getLedgerIdByTagId(tag.tagId)
+                    val model = OutboundResultCsvModel(
+                        ledgerItemId = ledgerId ?: 0,
+                        tagId = tag.tagId,
+                        processTypeId = processTypeId,
+                        deviceId = Build.ID,
+                        memo = memo,
+                        processedAt = processedAt,
+                        registeredAt = registeredAt
+                    )
+                    csvModels.add(model)
+                }
+                csvModels.toList()
+            }catch (e: Exception){
+                Log.e("TSS", "generateCsvData: ${e.message}")
+                emptyList()
             }
-            csvModels.toList()
         }
 
     suspend fun saveOutboundToDb(

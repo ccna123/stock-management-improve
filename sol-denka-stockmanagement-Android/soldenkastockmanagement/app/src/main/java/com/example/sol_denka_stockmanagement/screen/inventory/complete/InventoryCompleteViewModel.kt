@@ -90,28 +90,32 @@ class InventoryCompleteViewModel @Inject constructor(
         locationName: String
     ): List<InventoryResultCsvModel> =
         withContext(Dispatchers.IO) {
-            csvModels.clear()
-
-            val locationId = locationMasterRepository.getLocationIdByName(locationName)
-            _finalTagList.value.forEach { tag ->
-                val ledgerId = tagMasterRepository.getLedgerIdByTagId(tag.tagId)
-                val inventoryResultTypeId =
-                    inventoryResultTypeRepository.getInventoryResultTypeIdByCode(
-                        tag.newFields.inventoryResultType.name
+            try {
+                csvModels.clear()
+                val locationId = locationMasterRepository.getLocationIdByName(locationName)
+                _finalTagList.value.forEach { tag ->
+                    val ledgerId = tagMasterRepository.getLedgerIdByTagId(tag.tagId)
+                    val inventoryResultTypeId =
+                        inventoryResultTypeRepository.getInventoryResultTypeIdByCode(
+                            tag.newFields.inventoryResultType.name
+                        )
+                    val model = InventoryResultCsvModel(
+                        locationId = locationId ?: 0,
+                        inventoryResultTypeId = inventoryResultTypeId,
+                        ledgerItemId = ledgerId ?: 0,
+                        tagId = tag.tagId,
+                        deviceId = Build.ID,
+                        memo = memo,
+                        scannedAt = if (inventoryResultTypeId == 3) "" else generateIso8601JstTimestamp(),
+                        executedAt = generateIso8601JstTimestamp()
                     )
-                val model = InventoryResultCsvModel(
-                    locationId = locationId ?: 0,
-                    inventoryResultTypeId = inventoryResultTypeId,
-                    ledgerItemId = ledgerId ?: 0,
-                    tagId = tag.tagId,
-                    deviceId = Build.ID,
-                    memo = memo,
-                    scannedAt = if (inventoryResultTypeId == 3) "" else generateIso8601JstTimestamp(),
-                    executedAt = generateIso8601JstTimestamp()
-                )
-                csvModels.add(model)
+                    csvModels.add(model)
+                }
+                csvModels.toList()
+            }catch (e: Exception){
+                Log.e("TSS", "generateCsvData: ${e.message}")
+                emptyList()
             }
-            csvModels.toList()
         }
 
     suspend fun saveInventoryResultToDb(memo: String, locationName: String): Result<Int> {
