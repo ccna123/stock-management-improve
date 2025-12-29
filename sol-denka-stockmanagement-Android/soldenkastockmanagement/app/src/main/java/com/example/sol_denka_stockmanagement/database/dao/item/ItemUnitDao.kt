@@ -6,22 +6,21 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy.Companion.REPLACE
 import androidx.room.Query
 import androidx.room.Update
-import com.example.sol_denka_stockmanagement.app_interface.IDao
 import com.example.sol_denka_stockmanagement.database.entity.item.ItemUnitMasterEntity
 import kotlinx.coroutines.flow.Flow
 
 @Dao
-interface ItemUnitDao: IDao<ItemUnitMasterEntity> {
+interface ItemUnitDao {
 
     @Query("SELECT * FROM ItemUnitMaster")
-    override fun get(): Flow<List<ItemUnitMasterEntity>>
+    fun get(): Flow<List<ItemUnitMasterEntity>>
 
     @Insert(onConflict = REPLACE)
-    override suspend fun insert(e: ItemUnitMasterEntity): Long
+    suspend fun insert(e: ItemUnitMasterEntity): Long
 
     @Update
-    override suspend fun update(e: ItemUnitMasterEntity)
+    suspend fun update(e: ItemUnitMasterEntity)
 
     @Delete
-    override suspend fun delete(e: ItemUnitMasterEntity)
+    suspend fun delete(e: ItemUnitMasterEntity)
 }

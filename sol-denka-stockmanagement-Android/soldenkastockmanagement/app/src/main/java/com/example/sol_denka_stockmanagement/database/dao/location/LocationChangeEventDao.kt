@@ -5,22 +5,21 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
-import com.example.sol_denka_stockmanagement.app_interface.IDao
 import com.example.sol_denka_stockmanagement.database.entity.location.LocationChangeEventEntity
 import kotlinx.coroutines.flow.Flow
 
 @Dao
-interface LocationChangeEventDao: IDao<LocationChangeEventEntity> {
+interface LocationChangeEventDao {
 
     @Query("SELECT * FROM LocationChangeEvent")
-    override fun get(): Flow<List<LocationChangeEventEntity>>
+    fun get(): Flow<List<LocationChangeEventEntity>>
 
     @Insert
-    override suspend fun insert(e: LocationChangeEventEntity): Long
+    suspend fun insert(e: LocationChangeEventEntity): Long
 
     @Update
-    override suspend fun update(e: LocationChangeEventEntity)
+    suspend fun update(e: LocationChangeEventEntity)
 
     @Delete
-    override suspend fun delete(e: LocationChangeEventEntity)
+    suspend fun delete(e: LocationChangeEventEntity)
 }

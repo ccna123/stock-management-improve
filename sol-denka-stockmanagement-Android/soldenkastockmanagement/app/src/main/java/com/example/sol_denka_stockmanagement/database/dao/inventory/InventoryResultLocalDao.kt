@@ -5,22 +5,21 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
-import com.example.sol_denka_stockmanagement.app_interface.IDao
 import com.example.sol_denka_stockmanagement.database.entity.inventory.InventoryResultLocalEntity
 import kotlinx.coroutines.flow.Flow
 
 @Dao
-interface InventoryResultLocalDao: IDao<InventoryResultLocalEntity> {
+interface InventoryResultLocalDao {
 
     @Query("SELECT * FROM InventoryResultLocal")
-    override fun get(): Flow<List<InventoryResultLocalEntity>>
+    fun get(): Flow<List<InventoryResultLocalEntity>>
 
     @Insert
-    override suspend fun insert(e: InventoryResultLocalEntity): Long
+    suspend fun insert(e: InventoryResultLocalEntity): Long
 
     @Update
-    override suspend fun update(e: InventoryResultLocalEntity)
+    suspend fun update(e: InventoryResultLocalEntity)
 
     @Delete
-    override suspend fun delete(e: InventoryResultLocalEntity)
+    suspend fun delete(e: InventoryResultLocalEntity)
 }

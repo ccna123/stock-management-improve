@@ -5,25 +5,24 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
-import com.example.sol_denka_stockmanagement.app_interface.IDao
 import com.example.sol_denka_stockmanagement.database.entity.winder.WinderInfoEntity
 import kotlinx.coroutines.flow.Flow
 
 @Dao
-interface WinderInfoDao: IDao<WinderInfoEntity> {
+interface WinderInfoDao {
 
     @Query("SELECT * FROM WinderInfo")
-    override fun get(): Flow<List<WinderInfoEntity>>
+    fun get(): Flow<List<WinderInfoEntity>>
 
     @Query("SELECT winder_id FROM WinderInfo WHERE winder_name = :winderName")
     suspend fun getIdByName(winderName: String): Int?
 
     @Insert
-    override suspend fun insert(e: WinderInfoEntity): Long
+    suspend fun insert(e: WinderInfoEntity): Long
 
     @Update
-    override suspend fun update(e: WinderInfoEntity)
+    suspend fun update(e: WinderInfoEntity)
 
     @Delete
-    override suspend fun delete(e: WinderInfoEntity)
+    suspend fun delete(e: WinderInfoEntity)
 }

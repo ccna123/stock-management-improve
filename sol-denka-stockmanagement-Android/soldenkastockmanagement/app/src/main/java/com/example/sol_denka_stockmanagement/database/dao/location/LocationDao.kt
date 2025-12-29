@@ -7,27 +7,26 @@ import androidx.room.OnConflictStrategy.Companion.REPLACE
 import androidx.room.Query
 import androidx.room.Transaction
 import androidx.room.Update
-import com.example.sol_denka_stockmanagement.app_interface.IDao
 import com.example.sol_denka_stockmanagement.database.entity.location.LocationMasterEntity
 import kotlinx.coroutines.flow.Flow
 
 @Dao
-interface LocationDao : IDao<LocationMasterEntity> {
+interface LocationDao {
 
     @Query("SELECT * FROM LocationMaster")
-    override fun get(): Flow<List<LocationMasterEntity>>
+    fun get(): Flow<List<LocationMasterEntity>>
 
     @Insert(onConflict = REPLACE)
-    override suspend fun insert(e: LocationMasterEntity): Long
+    suspend fun insert(e: LocationMasterEntity): Long
 
     @Insert(onConflict = REPLACE)
     suspend fun insertAll(e: List<LocationMasterEntity>)
 
     @Update
-    override suspend fun update(e: LocationMasterEntity)
+    suspend fun update(e: LocationMasterEntity)
 
     @Delete
-    override suspend fun delete(e: LocationMasterEntity)
+    suspend fun delete(e: LocationMasterEntity)
 
     @Query("DELETE FROM LocationMaster")
     suspend fun deleteAll()
@@ -36,7 +35,7 @@ interface LocationDao : IDao<LocationMasterEntity> {
     suspend fun getLocationIdByName(locationName: String): Int?
 
     @Transaction
-    suspend fun replaceAll(e: List<LocationMasterEntity>){
+    suspend fun replaceAll(e: List<LocationMasterEntity>) {
         deleteAll()
         insertAll(e)
     }

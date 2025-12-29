@@ -6,25 +6,24 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy.Companion.REPLACE
 import androidx.room.Query
 import androidx.room.Update
-import com.example.sol_denka_stockmanagement.app_interface.IDao
 import com.example.sol_denka_stockmanagement.database.entity.process.ProcessTypeEntity
 import kotlinx.coroutines.flow.Flow
 
 @Dao
-interface ProcessTypeDao: IDao<ProcessTypeEntity> {
+interface ProcessTypeDao {
 
     @Query("SELECT * FROM ProcessType")
-    override fun get(): Flow<List<ProcessTypeEntity>>
+    fun get(): Flow<List<ProcessTypeEntity>>
 
     @Query("SELECT process_type_id FROM ProcessType WHERE process_name LIKE '%' || :processTypeName || '%'")
     suspend fun getIdByName(processTypeName: String): Int
 
     @Insert(onConflict = REPLACE)
-    override suspend fun insert(e: ProcessTypeEntity): Long
+    suspend fun insert(e: ProcessTypeEntity): Long
 
     @Update
-    override suspend fun update(e: ProcessTypeEntity)
+    suspend fun update(e: ProcessTypeEntity)
 
     @Delete
-    override suspend fun delete(e: ProcessTypeEntity)
+    suspend fun delete(e: ProcessTypeEntity)
 }

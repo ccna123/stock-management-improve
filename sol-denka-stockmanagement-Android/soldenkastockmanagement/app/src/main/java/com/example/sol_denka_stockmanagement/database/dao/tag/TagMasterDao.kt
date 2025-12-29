@@ -7,28 +7,27 @@ import androidx.room.OnConflictStrategy.Companion.REPLACE
 import androidx.room.Query
 import androidx.room.Transaction
 import androidx.room.Update
-import com.example.sol_denka_stockmanagement.app_interface.IDao
 import com.example.sol_denka_stockmanagement.database.entity.tag.TagMasterEntity
 import com.example.sol_denka_stockmanagement.model.tag.SingleTagInfoModel
 import kotlinx.coroutines.flow.Flow
 
 @Dao
-interface TagMasterDao : IDao<TagMasterEntity> {
+interface TagMasterDao {
 
     @Query("SELECT * FROM TagMaster")
-    override fun get(): Flow<List<TagMasterEntity>>
+    fun get(): Flow<List<TagMasterEntity>>
 
     @Insert(onConflict = REPLACE)
-    override suspend fun insert(e: TagMasterEntity): Long
+    suspend fun insert(e: TagMasterEntity): Long
 
     @Insert(onConflict = REPLACE)
     suspend fun insertAll(e: List<TagMasterEntity>)
 
     @Update
-    override suspend fun update(e: TagMasterEntity)
+    suspend fun update(e: TagMasterEntity)
 
     @Delete
-    override suspend fun delete(e: TagMasterEntity)
+    suspend fun delete(e: TagMasterEntity)
 
     @Query("DELETE FROM tagmaster")
     suspend fun deleteAll()
@@ -40,12 +39,16 @@ interface TagMasterDao : IDao<TagMasterEntity> {
     WHERE le.location_id = :locationId AND le.is_in_stock = :isInStock
     """
     )
-    suspend fun getTagsByLocationAndStock(locationId: Int, isInStock: Boolean): List<TagMasterEntity>
+    suspend fun getTagsByLocationAndStock(
+        locationId: Int,
+        isInStock: Boolean
+    ): List<TagMasterEntity>
 
     @Query("SELECT * FROM tagmaster WHERE epc = :epc")
     suspend fun getTagIdLedgerIdByEpc(epc: String): TagMasterEntity
 
-    @Query("""
+    @Query(
+        """
         SELECT 
                 t.tag_id AS tagId, 
                 t.epc , 
@@ -57,30 +60,35 @@ interface TagMasterDao : IDao<TagMasterEntity> {
             LEFT JOIN ledgeritem le ON le.tag_id = t.tag_id
             LEFT JOIN locationmaster lo ON lo.location_id = le.location_id
             LEFT JOIN itemtypemaster it ON it.item_type_id = le.item_type_id
-    """)
+    """
+    )
     suspend fun getFullInfo(): List<SingleTagInfoModel>
 
     @Query("SELECT ledger_item_id FROM ledgeritem WHERE tag_id = :tagId")
     suspend fun getLedgerIdByTagId(tagId: Int): Int
 
-    @Query("""
+    @Query(
+        """
         SELECT le.item_type_id
             FROM tagmaster t
             LEFT JOIN ledgeritem le ON le.tag_id = t.tag_id
             WHERE t.tag_id = :tagId
-    """)
+    """
+    )
     suspend fun getItemTypeIdByTagId(tagId: Int): Long
 
-    @Query("""
+    @Query(
+        """
         SELECT le.location_id
             FROM tagmaster t
             LEFT JOIN ledgeritem le ON le.tag_id = t.tag_id
             WHERE t.tag_id = :tagId
-    """)
+    """
+    )
     suspend fun getLocationIdByTagId(tagId: Int): Long
 
     @Transaction
-    suspend fun replaceAll(e: List<TagMasterEntity>){
+    suspend fun replaceAll(e: List<TagMasterEntity>) {
         deleteAll()
         insertAll(e)
     }

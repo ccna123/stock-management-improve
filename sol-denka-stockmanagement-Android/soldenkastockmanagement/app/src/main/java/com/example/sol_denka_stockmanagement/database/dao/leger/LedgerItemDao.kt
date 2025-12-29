@@ -7,43 +7,44 @@ import androidx.room.OnConflictStrategy.Companion.REPLACE
 import androidx.room.Query
 import androidx.room.Transaction
 import androidx.room.Update
-import com.example.sol_denka_stockmanagement.app_interface.IDao
 import com.example.sol_denka_stockmanagement.database.entity.ledger.LedgerItemEntity
 import kotlinx.coroutines.flow.Flow
 
 @Dao
-interface LedgerItemDao: IDao<LedgerItemEntity> {
+interface LedgerItemDao {
 
     @Query("SELECT * FROM ledgeritem")
-    override fun get(): Flow<List<LedgerItemEntity>>
+    fun get(): Flow<List<LedgerItemEntity>>
 
     @Query("SELECT winder_id FROM LedgerItem WHERE ledger_item_id = :ledgerId ")
     suspend fun getWinderIdByLedgerId(ledgerId: Int): Int
 
-    @Query("""
+    @Query(
+        """
         SELECT DISTINCT tag_id
         FROM LedgerItem
         WHERE tag_id IS NOT NULL
-    """)
+    """
+    )
     fun getMappedTagIdsFlow(): Flow<List<Int>>
 
     @Insert(onConflict = REPLACE)
-    override suspend fun insert(e: LedgerItemEntity): Long
+    suspend fun insert(e: LedgerItemEntity): Long
 
     @Insert(onConflict = REPLACE)
     suspend fun insertAll(e: List<LedgerItemEntity>)
 
     @Update
-    override suspend fun update(e: LedgerItemEntity)
+    suspend fun update(e: LedgerItemEntity)
 
     @Delete
-    override suspend fun delete(e: LedgerItemEntity)
+    suspend fun delete(e: LedgerItemEntity)
 
     @Query("DELETE FROM ledgeritem")
     suspend fun deleteAll()
 
     @Transaction
-    suspend fun replaceAll(e: List<LedgerItemEntity>){
+    suspend fun replaceAll(e: List<LedgerItemEntity>) {
         deleteAll()
         insertAll(e)
     }

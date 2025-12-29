@@ -5,22 +5,21 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
-import com.example.sol_denka_stockmanagement.app_interface.IDao
 import com.example.sol_denka_stockmanagement.database.entity.field.FieldMasterEntity
 import kotlinx.coroutines.flow.Flow
 
 @Dao
-interface FieldMasterDao: IDao<FieldMasterEntity> {
+interface FieldMasterDao {
 
     @Query("SELECT * FROM FieldMaster")
-    override fun get(): Flow<List<FieldMasterEntity>>
+    fun get(): Flow<List<FieldMasterEntity>>
 
     @Insert
-    override suspend fun insert(e: FieldMasterEntity): Long
+    suspend fun insert(e: FieldMasterEntity): Long
 
     @Update
-    override suspend fun update(e: FieldMasterEntity)
+    suspend fun update(e: FieldMasterEntity)
 
     @Delete
-    override suspend fun delete(e: FieldMasterEntity)
+    suspend fun delete(e: FieldMasterEntity)
 }
