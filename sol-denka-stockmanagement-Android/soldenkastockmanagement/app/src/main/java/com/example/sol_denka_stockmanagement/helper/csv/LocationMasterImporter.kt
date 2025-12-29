@@ -12,14 +12,12 @@ class LocationMasterImporter(
             .map { it.trim() } // remove whitespace at start and end
             .filter { it.isNotEmpty() } // skip blank row or empty value
             .map { line -> line.split(",") }
-            .filter { p ->
-                p.size == 3 && p.any { col -> col.isNotBlank() } // guarantee number of columns
-            }
             .map { p ->
                 LocationMasterModel(
                     locationId = p[0].toInt(),
                     locationCode = p[1],
                     locationName = p[2],
+                    memo = p[3]
                 )
             }
     }
