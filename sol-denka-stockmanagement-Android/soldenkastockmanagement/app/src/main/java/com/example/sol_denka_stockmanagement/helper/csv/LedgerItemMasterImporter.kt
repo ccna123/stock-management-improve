@@ -1,14 +1,11 @@
 package com.example.sol_denka_stockmanagement.helper.csv
 
-import com.example.sol_denka_stockmanagement.app_interface.ICsvImport
 import com.example.sol_denka_stockmanagement.database.repository.ledger.LedgerItemRepository
 import com.example.sol_denka_stockmanagement.model.ledger.LedgerItemModel
 
 class LedgerItemMasterImporter(
     private val repository: LedgerItemRepository
-) : ICsvImport {
-
-    private val buffer = mutableListOf<LedgerItemModel>()
+) : CsvImporter<LedgerItemModel>() {
 
     private fun parseNullableInt(v: String?): Int? {
         if (v == null) return null
@@ -21,11 +18,8 @@ class LedgerItemMasterImporter(
         return v == "1" || v.equals("true", ignoreCase = true)
     }
 
-    override suspend fun import(csvLines: List<String>) {
-        if (csvLines.isEmpty()) return
-
-        val entities = csvLines
-            .drop(1)
+    override fun parse(lines: List<String>): List<LedgerItemModel> {
+        return lines
             .map { it.trim() }
             .filter { it.isNotEmpty() }
             .map { line -> line.split(",") }
@@ -51,13 +45,9 @@ class LedgerItemMasterImporter(
                     updatedAt = p[17]
                 )
             }
-        buffer.addAll(entities)
     }
 
-    override suspend fun finish() {
-        if (buffer.isEmpty()) return
-
-        repository.replaceAll(buffer)
-        buffer.clear()
+    override suspend fun persist(entities: List<LedgerItemModel>) {
+        repository.replaceAll(entities)
     }
 }

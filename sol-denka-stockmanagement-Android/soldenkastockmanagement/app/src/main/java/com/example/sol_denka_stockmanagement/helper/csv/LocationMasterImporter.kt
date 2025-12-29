@@ -1,19 +1,14 @@
 package com.example.sol_denka_stockmanagement.helper.csv
 
-import com.example.sol_denka_stockmanagement.app_interface.ICsvImport
 import com.example.sol_denka_stockmanagement.database.repository.location.LocationMasterRepository
 import com.example.sol_denka_stockmanagement.model.location.LocationMasterModel
 
 class LocationMasterImporter(
     private val repository: LocationMasterRepository
-) : ICsvImport {
-    private val buffer = mutableListOf<LocationMasterModel>()
+) : CsvImporter<LocationMasterModel>() {
 
-    override suspend fun import(csvLines: List<String>) {
-        if (csvLines.isEmpty()) return
-
-        val entities = csvLines
-            .drop(1) // skip header
+    override fun parse(lines: List<String>): List<LocationMasterModel> {
+        return lines
             .map { it.trim() } // remove whitespace at start and end
             .filter { it.isNotEmpty() } // skip blank row or empty value
             .map { line -> line.split(",") }
@@ -27,13 +22,9 @@ class LocationMasterImporter(
                     locationName = p[2],
                 )
             }
-        buffer.addAll(entities)
     }
 
-    override suspend fun finish() {
-        if (buffer.isEmpty()) return
-
+    override suspend fun persist(entities: List<LocationMasterModel>) {
         repository.replaceAll(buffer)
-        buffer.clear()
     }
 }

@@ -7,7 +7,6 @@ import android.os.Environment
 import android.provider.MediaStore
 import android.util.Log
 import com.example.sol_denka_stockmanagement.app_interface.ICsvExport
-import com.example.sol_denka_stockmanagement.app_interface.ICsvImport
 import com.example.sol_denka_stockmanagement.constant.CsvType
 import com.example.sol_denka_stockmanagement.constant.StatusCode
 import com.example.sol_denka_stockmanagement.database.repository.item.ItemTypeRepository
@@ -444,8 +443,8 @@ class CsvHelper @Inject constructor(
             val total = maxOf(1, lines.size)
             var count = 0
 
-            lines.chunked(20).forEach { chunk ->
-                importer.import(chunk)
+            lines.drop(1).chunked(50).forEach { chunk ->
+                importer.importChunk(chunk)
                 count += chunk.size
 
                 val progress = (count.toFloat() / total).coerceIn(0f, 1f)
@@ -464,7 +463,7 @@ class CsvHelper @Inject constructor(
     }
 
 
-    private fun getImporter(csvType: String): ICsvImport? {
+    private fun getImporter(csvType: String): CsvImporter<*>? {
         return when (csvType) {
             CsvType.LocationMaster.displayName -> LocationMasterImporter(repository = locationMasterRepository)
             CsvType.LedgerMaster.displayName -> LedgerItemMasterImporter(repository = ledgerItemRepository)

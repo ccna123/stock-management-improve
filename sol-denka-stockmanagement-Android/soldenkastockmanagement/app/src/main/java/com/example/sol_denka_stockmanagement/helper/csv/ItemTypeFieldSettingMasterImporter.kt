@@ -1,20 +1,14 @@
 package com.example.sol_denka_stockmanagement.helper.csv
 
-import com.example.sol_denka_stockmanagement.app_interface.ICsvImport
 import com.example.sol_denka_stockmanagement.database.repository.field.ItemTypeFieldSettingMasterRepository
 import com.example.sol_denka_stockmanagement.model.field.ItemTypeFieldSettingMasterModel
 
 class ItemTypeFieldSettingMasterImporter(
     private val repository: ItemTypeFieldSettingMasterRepository
-) : ICsvImport {
+) : CsvImporter<ItemTypeFieldSettingMasterModel>() {
 
-    private val buffer = mutableListOf<ItemTypeFieldSettingMasterModel>()
-
-    override suspend fun import(csvLines: List<String>) {
-        if (csvLines.isEmpty()) return
-
-        val entities = csvLines
-            .drop(1)
+    override fun parse(lines: List<String>): List<ItemTypeFieldSettingMasterModel> {
+        return lines
             .map { it.trim() }
             .filter { it.isNotEmpty() }
             .map { line -> line.split(",") }
@@ -26,15 +20,10 @@ class ItemTypeFieldSettingMasterImporter(
                     isVisible = p[3] == "1"
                 )
             }
-
-        buffer.addAll(entities)
     }
 
-    override suspend fun finish() {
-        if (buffer.isEmpty()) return
-
+    override suspend fun persist(entities: List<ItemTypeFieldSettingMasterModel>) {
         repository.replaceAll(buffer)
-        buffer.clear()
     }
 }
 
