@@ -1,22 +1,31 @@
 package com.example.sol_denka_stockmanagement.helper.csv
 
-sealed class CsvImporter<T> {
+abstract class CsvImporter<T> {
 
     protected val buffer = mutableListOf<T>()
+    abstract val requiredHeaders: Set<String>
 
-    protected abstract fun parse(lines: List<String>): List<T>
-
+    protected abstract fun mapRow(row: CsvRow): T
     protected abstract suspend fun persist(entities: List<T>)
 
-    suspend fun importChunk(lines: List<String>) {
+    fun importChunk(headers: List<String>, lines: List<String>) {
         if (lines.isEmpty()) return
-        val entities = parse(lines)
+
+        val entities = lines
+            .filter { it.isNotBlank() }
+            .map { line ->
+                val values = line.split(",")
+                val rowMap = headers.zip(values).toMap()
+                mapRow(CsvRow(rowMap))
+            }
+
         buffer.addAll(entities)
     }
 
-    suspend fun finish(){
+    suspend fun finish() {
         if (buffer.isEmpty()) return
         persist(buffer)
         buffer.clear()
     }
 }
+

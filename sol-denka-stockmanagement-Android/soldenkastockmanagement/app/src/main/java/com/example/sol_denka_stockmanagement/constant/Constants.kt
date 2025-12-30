@@ -54,17 +54,6 @@ enum class CsvTaskType(val displayNameJp: String) {
     OTHER("その他"),
 }
 
-enum class InventoryResultCsvHeader {
-    location_id,
-    inventory_result_type_id,
-    ledger_item_id,
-    tag_id,
-    device_id,
-    memo,
-    scanned_at,
-    executed_at
-}
-
 enum class InventoryScanResult(val displayName: String) {
     OK("正常一致"),
     SHORTAGE("在庫不足"),
@@ -142,45 +131,6 @@ enum class TagScanStatus {
     PROCESSED,
     UNPROCESSED
 }
-
-enum class InboundResultCsvHeader {
-    tag_id,
-    item_type_id,
-    winder_id,
-    location_id,
-    device_id,
-    weight,
-    thickness,
-    width,
-    length,
-    quantity,
-    occurrence_reason,
-    lot_no,
-    memo,
-    occurred_at,
-    processed_at,
-    registerd_at
-}
-
-enum class OutboundResultCsvHeader {
-    ledger_item_id,
-    tag_id,
-    process_type_id,
-    device_id,
-    memo,
-    processed_at,
-    registerd_at
-}
-
-enum class LocationChangeResultCsvHeader {
-    ledger_item_id,
-    location_id,
-    device_id,
-    memo,
-    scanned_at,
-    executed_at
-}
-
 enum class ScanMode {
     NONE,
     INBOUND,

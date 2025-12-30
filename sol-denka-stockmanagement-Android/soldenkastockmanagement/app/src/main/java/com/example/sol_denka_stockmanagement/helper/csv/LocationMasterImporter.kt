@@ -7,22 +7,23 @@ class LocationMasterImporter(
     private val repository: LocationMasterRepository
 ) : CsvImporter<LocationMasterModel>() {
 
-    override fun parse(lines: List<String>): List<LocationMasterModel> {
-        return lines
-            .map { it.trim() } // remove whitespace at start and end
-            .filter { it.isNotEmpty() } // skip blank row or empty value
-            .map { line -> line.split(",") }
-            .map { p ->
-                LocationMasterModel(
-                    locationId = p[0].toInt(),
-                    locationCode = p[1],
-                    locationName = p[2],
-                    memo = p[3]
-                )
-            }
+    override val requiredHeaders = setOf(
+        "location_id",
+        "location_code",
+        "location_name",
+        "memo"
+    )
+
+    override fun mapRow(row: CsvRow): LocationMasterModel {
+        return LocationMasterModel(
+            locationId = row.int("location_id")!!,
+            locationCode = row.string("location_code"),
+            locationName = row.string("location_name")!!,
+            memo = row.string("memo")
+        )
     }
 
     override suspend fun persist(entities: List<LocationMasterModel>) {
-        repository.replaceAll(buffer)
+        repository.replaceAll(entities)
     }
 }

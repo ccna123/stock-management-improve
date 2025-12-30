@@ -7,23 +7,25 @@ class ItemTypeFieldSettingMasterImporter(
     private val repository: ItemTypeFieldSettingMasterRepository
 ) : CsvImporter<ItemTypeFieldSettingMasterModel>() {
 
-    override fun parse(lines: List<String>): List<ItemTypeFieldSettingMasterModel> {
-        return lines
-            .map { it.trim() }
-            .filter { it.isNotEmpty() }
-            .map { line -> line.split(",") }
-            .map { p ->
-                ItemTypeFieldSettingMasterModel(
-                    itemTypeId = p[0].toInt(),
-                    fieldId = p[1].toInt(),
-                    isRequired = p[2] == "1",
-                    isVisible = p[3] == "1"
-                )
-            }
+    override val requiredHeaders = setOf(
+        "item_type_id",
+        "field_id",
+        "is_required",
+        "is_visible"
+    )
+
+    override fun mapRow(row: CsvRow): ItemTypeFieldSettingMasterModel {
+        return ItemTypeFieldSettingMasterModel(
+            itemTypeId = row.int("item_type_id")!!,
+            fieldId = row.int("field_id")!!,
+            isRequired = row.boolean("is_required"),
+            isVisible = row.boolean("is_visible")
+        )
     }
 
     override suspend fun persist(entities: List<ItemTypeFieldSettingMasterModel>) {
-        repository.replaceAll(buffer)
+        repository.replaceAll(entities)
     }
 }
+
 

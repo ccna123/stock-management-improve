@@ -2,7 +2,6 @@ package com.example.sol_denka_stockmanagement.model.csv
 
 import com.example.sol_denka_stockmanagement.app_interface.ICsvExport
 import com.example.sol_denka_stockmanagement.constant.CsvType
-import com.example.sol_denka_stockmanagement.constant.InventoryResultCsvHeader
 import com.example.sol_denka_stockmanagement.constant.generateTimeStamp
 
 data class InventoryResultCsvModel(
@@ -17,14 +16,14 @@ data class InventoryResultCsvModel(
 
     ) : ICsvExport {
     override fun toHeader(): List<String> = listOf(
-        InventoryResultCsvHeader.location_id.name,
-        InventoryResultCsvHeader.inventory_result_type_id.name,
-        InventoryResultCsvHeader.ledger_item_id.name,
-        InventoryResultCsvHeader.tag_id.name,
-        InventoryResultCsvHeader.device_id.name,
-        InventoryResultCsvHeader.memo.name,
-        InventoryResultCsvHeader.scanned_at.name,
-        InventoryResultCsvHeader.executed_at.name
+        "location_id",
+        "inventory_result_type_id",
+        "ledger_item_id",
+        "tag_id",
+        "device_id",
+        "memo",
+        "scanned_at",
+        "executed_at"
     )
 
     override fun toRow(): List<String> = listOf(

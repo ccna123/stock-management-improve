@@ -334,7 +334,7 @@ class CsvHelper @Inject constructor(
             )
             if (!localBaseDir.exists()) localBaseDir.mkdirs()
 
-            csvFiles.forEachIndexed { index, entry ->
+            csvFiles.forEach { entry ->
                 val remoteFile = "$remoteDir/${entry.filename}"
                 val localFile = File(localBaseDir, entry.filename)
 
@@ -443,8 +443,19 @@ class CsvHelper @Inject constructor(
             val total = maxOf(1, lines.size)
             var count = 0
 
+            val headerLine = lines.first()
+            val headers = headerLine.split(",").map { it.trim() }
+
+            val missing = importer.requiredHeaders - headers.toSet()
+            if (missing.isNotEmpty()) {
+                return@withContext ProcessResult.Failure(
+                    statusCode = StatusCode.FAILED,
+                    rawMessage = "CSV missing required headers: $missing"
+                )
+            }
+
             lines.drop(1).chunked(50).forEach { chunk ->
-                importer.importChunk(chunk)
+                importer.importChunk(headers = headers, lines = chunk)
                 count += chunk.size
 
                 val progress = (count.toFloat() / total).coerceIn(0f, 1f)
