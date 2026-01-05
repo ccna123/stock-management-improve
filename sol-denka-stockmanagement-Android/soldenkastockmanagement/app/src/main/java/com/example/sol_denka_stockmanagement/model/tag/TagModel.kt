@@ -7,6 +7,7 @@ data class TagMasterModel(
     val tagId: Int,
     val tagStatusId: Int,
     val epc: String,
+    val memo: String?,
     val newFields: AdditionalFieldsModel = AdditionalFieldsModel.default()
 )
 
@@ -14,11 +15,13 @@ fun TagMasterEntity.toModel() = TagMasterModel(
     tagId = tagId,
     epc = epc,
     tagStatusId = tagStatusId,
+    memo =  memo,
     newFields = AdditionalFieldsModel.default()
 )
 
 fun TagMasterModel.toEntity() = TagMasterEntity(
     tagId = tagId,
     epc = epc,
-    tagStatusId = tagStatusId
+    tagStatusId = tagStatusId,
+    memo = memo
 )

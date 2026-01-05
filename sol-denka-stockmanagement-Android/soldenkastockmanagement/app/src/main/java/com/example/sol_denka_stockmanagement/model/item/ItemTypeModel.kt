@@ -12,6 +12,7 @@ data class ItemTypeMasterModel(
     val packingType: String?,
     val grade: String?,
     val specificGravity: String?,
+    val memo: String?,
 )
 
 fun ItemTypeMasterEntity.toModel() = ItemTypeMasterModel(
@@ -24,6 +25,7 @@ fun ItemTypeMasterEntity.toModel() = ItemTypeMasterModel(
     packingType = packingType,
     specificGravity = specificGravity,
     grade = grade,
+    memo = memo
 )
 
 fun ItemTypeMasterModel.toEntity() = ItemTypeMasterEntity(
@@ -36,4 +38,5 @@ fun ItemTypeMasterModel.toEntity() = ItemTypeMasterEntity(
     packingType = packingType,
     specificGravity = specificGravity,
     grade = grade,
+    memo = memo
 )

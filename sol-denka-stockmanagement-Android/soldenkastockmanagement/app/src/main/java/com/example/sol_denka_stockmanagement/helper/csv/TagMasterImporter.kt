@@ -16,7 +16,8 @@ class TagMasterImporter(
     override val requiredHeaders = setOf(
         "tag_id",
         "tag_status_id",
-        "epc"
+        "epc",
+        "memo"
     )
 
     override fun mapRow(row: CsvRow): TagMasterModel {
@@ -24,6 +25,7 @@ class TagMasterImporter(
             tagId = row.int("tag_id")!!,
             tagStatusId = row.int("tag_status_id")!!,
             epc = row.string("epc")!!,
+            memo = row.string("memo")!!,
             newFields = AdditionalFieldsModel(
                 tagScanStatus = TagScanStatus.UNPROCESSED,
                 inventoryResultType = InventoryResultType.UNKNOWN,

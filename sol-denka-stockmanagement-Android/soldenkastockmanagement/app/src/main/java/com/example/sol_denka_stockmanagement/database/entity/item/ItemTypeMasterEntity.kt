@@ -46,4 +46,5 @@ data class ItemTypeMasterEntity(
     @ColumnInfo(name = "packing_type") val packingType: String?,
     @ColumnInfo(name = "specific_gravity") val specificGravity: String?,
     @ColumnInfo(name = "grade") val grade: String?,
+    @ColumnInfo(name = "memo") val memo: String?,
 )

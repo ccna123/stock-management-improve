@@ -23,4 +23,5 @@ data class TagMasterEntity(
     @PrimaryKey @ColumnInfo(name = "tag_id") val tagId: Int,
     @ColumnInfo(name = "tag_status_id") val tagStatusId: Int,
     @ColumnInfo(name = "epc") val epc: String,
+    @ColumnInfo(name = "memo") val memo: String?,
 )

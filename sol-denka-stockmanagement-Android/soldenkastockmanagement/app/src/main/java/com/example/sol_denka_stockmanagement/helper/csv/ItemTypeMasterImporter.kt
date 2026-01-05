@@ -19,7 +19,8 @@ class ItemTypeMasterImporter(
         "item_category_id",
         "specific_gravity",
         "grade",
-        "packing_type"
+        "packing_type",
+        "memo"
     )
 
     override fun mapRow(row: CsvRow): ItemTypeMasterModel {
@@ -32,7 +33,8 @@ class ItemTypeMasterImporter(
             itemCategoryId = row.int("item_category_id")!!,
             specificGravity = row.string("specific_gravity"),
             grade = row.string("grade"),
-            packingType = row.string("packing_type")
+            packingType = row.string("packing_type"),
+            memo = row.string("memo"),
         )
     }
 
