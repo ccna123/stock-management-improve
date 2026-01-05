@@ -1,13 +1,16 @@
 package com.example.sol_denka_stockmanagement.helper.csv
 
+import androidx.room.withTransaction
 import com.example.sol_denka_stockmanagement.constant.InventoryResultType
 import com.example.sol_denka_stockmanagement.constant.TagScanStatus
+import com.example.sol_denka_stockmanagement.database.AppDatabase
 import com.example.sol_denka_stockmanagement.database.repository.tag.TagMasterRepository
 import com.example.sol_denka_stockmanagement.model.common.AdditionalFieldsModel
 import com.example.sol_denka_stockmanagement.model.tag.TagMasterModel
 
 class TagMasterImporter(
-    private val repository: TagMasterRepository
+    private val repository: TagMasterRepository,
+    private val db: AppDatabase
 ) : CsvImporter<TagMasterModel>() {
 
     override val requiredHeaders = setOf(
@@ -36,7 +39,11 @@ class TagMasterImporter(
         )
     }
 
-    override suspend fun persist(entities: List<TagMasterModel>) {
+    override suspend fun withTransaction(block: suspend () -> Unit) {
+        db.withTransaction { block() }
+    }
+
+    override suspend fun replaceAllWithNewData(entities: List<TagMasterModel>) {
         repository.replaceAll(entities)
     }
 }

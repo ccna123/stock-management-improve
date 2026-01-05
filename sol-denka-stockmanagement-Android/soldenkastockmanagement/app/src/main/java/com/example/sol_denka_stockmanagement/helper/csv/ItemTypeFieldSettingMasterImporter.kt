@@ -1,10 +1,13 @@
 package com.example.sol_denka_stockmanagement.helper.csv
 
+import androidx.room.withTransaction
+import com.example.sol_denka_stockmanagement.database.AppDatabase
 import com.example.sol_denka_stockmanagement.database.repository.field.ItemTypeFieldSettingMasterRepository
 import com.example.sol_denka_stockmanagement.model.field.ItemTypeFieldSettingMasterModel
 
 class ItemTypeFieldSettingMasterImporter(
-    private val repository: ItemTypeFieldSettingMasterRepository
+    private val repository: ItemTypeFieldSettingMasterRepository,
+    private val db: AppDatabase
 ) : CsvImporter<ItemTypeFieldSettingMasterModel>() {
 
     override val requiredHeaders = setOf(
@@ -23,7 +26,11 @@ class ItemTypeFieldSettingMasterImporter(
         )
     }
 
-    override suspend fun persist(entities: List<ItemTypeFieldSettingMasterModel>) {
+    override suspend fun withTransaction(block: suspend () -> Unit) {
+        db.withTransaction { block() }
+    }
+
+    override suspend fun replaceAllWithNewData(entities: List<ItemTypeFieldSettingMasterModel>) {
         repository.replaceAll(entities)
     }
 }

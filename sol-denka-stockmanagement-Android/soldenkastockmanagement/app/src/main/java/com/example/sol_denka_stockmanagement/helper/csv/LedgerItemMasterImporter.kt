@@ -1,10 +1,13 @@
 package com.example.sol_denka_stockmanagement.helper.csv
 
+import androidx.room.withTransaction
+import com.example.sol_denka_stockmanagement.database.AppDatabase
 import com.example.sol_denka_stockmanagement.database.repository.ledger.LedgerItemRepository
 import com.example.sol_denka_stockmanagement.model.ledger.LedgerItemModel
 
 class LedgerItemMasterImporter(
-    private val repository: LedgerItemRepository
+    private val repository: LedgerItemRepository,
+    private val db: AppDatabase
 ) : CsvImporter<LedgerItemModel>() {
 
     override val requiredHeaders = setOf(
@@ -18,14 +21,14 @@ class LedgerItemMasterImporter(
         "width",
         "length",
         "thickness",
-        "lotNo",
-        "occurrenceReason",
+        "lot_no",
+        "occurrence_reason",
         "quantity",
         "memo",
-        "occurredAt",
-        "processedAt",
-        "registeredAt",
-        "updatedAt"
+        "occurred_at",
+        "processed_at",
+        "registered_at",
+        "updated_at"
     )
 
     override fun mapRow(row: CsvRow): LedgerItemModel {
@@ -51,7 +54,11 @@ class LedgerItemMasterImporter(
         )
     }
 
-    override suspend fun persist(entities: List<LedgerItemModel>) {
+    override suspend fun withTransaction(block: suspend () -> Unit) {
+        db.withTransaction { block() }
+    }
+
+    override suspend fun replaceAllWithNewData(entities: List<LedgerItemModel>) {
         repository.replaceAll(entities)
     }
 }

@@ -6,7 +6,14 @@ abstract class CsvImporter<T> {
     abstract val requiredHeaders: Set<String>
 
     protected abstract fun mapRow(row: CsvRow): T
-    protected abstract suspend fun persist(entities: List<T>)
+    protected abstract suspend fun replaceAllWithNewData(entities: List<T>)
+    protected abstract suspend fun withTransaction(block: suspend () -> Unit)
+
+    suspend fun importAll(headers: List<String>, lines: List<String>) {
+        withTransaction {
+            importChunk(headers, lines)
+        }
+    }
 
     fun importChunk(headers: List<String>, lines: List<String>) {
         if (lines.isEmpty()) return
@@ -24,7 +31,7 @@ abstract class CsvImporter<T> {
 
     suspend fun finish() {
         if (buffer.isEmpty()) return
-        persist(buffer)
+        replaceAllWithNewData(buffer)
         buffer.clear()
     }
 }

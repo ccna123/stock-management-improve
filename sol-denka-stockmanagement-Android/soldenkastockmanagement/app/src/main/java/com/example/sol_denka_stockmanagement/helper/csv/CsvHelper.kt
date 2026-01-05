@@ -15,6 +15,7 @@ import com.example.sol_denka_stockmanagement.database.repository.location.Locati
 import com.example.sol_denka_stockmanagement.database.repository.tag.TagMasterRepository
 import com.example.sol_denka_stockmanagement.database.repository.field.ItemTypeFieldSettingMasterRepository
 import com.example.sol_denka_stockmanagement.constant.ProcessResult
+import com.example.sol_denka_stockmanagement.database.AppDatabase
 import com.example.sol_denka_stockmanagement.model.csv.CsvFileInfoModel
 import com.jcraft.jsch.ChannelSftp
 import com.jcraft.jsch.JSch
@@ -35,7 +36,8 @@ class CsvHelper @Inject constructor(
     private val ledgerItemRepository: LedgerItemRepository,
     private val itemTypeRepository: ItemTypeRepository,
     private val tagMasterRepository: TagMasterRepository,
-    private val itemTypeFieldSettingMasterRepository: ItemTypeFieldSettingMasterRepository
+    private val itemTypeFieldSettingMasterRepository: ItemTypeFieldSettingMasterRepository,
+    private val db: AppDatabase
 ) {
     companion object {
         private const val ROOT_FOLDER = "DenkaStockManagement"
@@ -456,8 +458,8 @@ class CsvHelper @Inject constructor(
                 )
             }
 
-            lines.drop(1).chunked(50).forEach { chunk ->
-                importer.importChunk(headers = headers, lines = chunk)
+            lines.drop(1).chunked(1).forEach { chunk ->
+                importer.importAll(headers = headers, lines = chunk)
                 count += chunk.size
 
                 val progress = (count.toFloat() / total).coerceIn(0f, 1f)
@@ -478,11 +480,11 @@ class CsvHelper @Inject constructor(
 
     private fun getImporter(csvType: String): CsvImporter<*>? {
         return when (csvType) {
-            CsvType.LocationMaster.displayName -> LocationMasterImporter(repository = locationMasterRepository)
-            CsvType.LedgerMaster.displayName -> LedgerItemMasterImporter(repository = ledgerItemRepository)
-            CsvType.ItemTypeMaster.displayName -> ItemTypeMasterImporter(repository = itemTypeRepository)
-            CsvType.TagMaster.displayName -> TagMasterImporter(repository = tagMasterRepository)
-            CsvType.ItemTypeFieldSettingMaster.displayName -> ItemTypeFieldSettingMasterImporter(repository = itemTypeFieldSettingMasterRepository)
+            CsvType.LocationMaster.displayName -> LocationMasterImporter(repository = locationMasterRepository, db = db)
+            CsvType.LedgerMaster.displayName -> LedgerItemMasterImporter(repository = ledgerItemRepository, db = db)
+            CsvType.ItemTypeMaster.displayName -> ItemTypeMasterImporter(repository = itemTypeRepository, db = db)
+            CsvType.TagMaster.displayName -> TagMasterImporter(repository = tagMasterRepository, db = db)
+            CsvType.ItemTypeFieldSettingMaster.displayName -> ItemTypeFieldSettingMasterImporter(repository = itemTypeFieldSettingMasterRepository, db = db)
             else -> null
         }
     }
