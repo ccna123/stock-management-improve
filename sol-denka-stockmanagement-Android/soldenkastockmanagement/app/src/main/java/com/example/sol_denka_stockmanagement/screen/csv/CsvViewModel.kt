@@ -179,7 +179,7 @@ class CsvViewModel @Inject constructor(
 
             if (result is ProcessResult.Failure) {
                 val msg = result.rawMessage
-                    ?: MessageMapper.toMessage(result.statusCode)
+                    ?: MessageMapper.toMessage(result.statusCode, result.params)
                 showProcessResultDialog(msg)
             }
         }

@@ -3,7 +3,7 @@ package com.example.sol_denka_stockmanagement.helper.message_mapper
 import com.example.sol_denka_stockmanagement.constant.StatusCode
 
 object MessageMapper {
-    fun toMessage(code: StatusCode): String {
+    fun toMessage(code: StatusCode, params: Map<String, Any>? = null): String {
         return when (code) {
 
             StatusCode.OK,
@@ -42,6 +42,15 @@ object MessageMapper {
             StatusCode.IMPORT_OK -> "取り込み成功しました。"
             StatusCode.EXPORT_OK -> "CSV ファイルの保存は正常に完了しましたが、\n送信処理でエラーが発生しました。再度送信をお試しください。"
             StatusCode.CANCEL -> "登録作業をキャンセルし、\nホーム画面に戻ってもよろしいですか？"
+            StatusCode.MISSING_COLUMN -> {
+                val missing = params?.get("missing_headers") as? List<*>
+                if (!missing.isNullOrEmpty()) {
+                    "CSVに不足している必須カラムがあります：\n" +
+                            missing.joinToString(", ")
+                } else {
+                    "エラーが発生しました。"
+                }
+            }
         }
     }
 }

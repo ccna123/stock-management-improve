@@ -449,8 +449,10 @@ class CsvHelper @Inject constructor(
             val missing = importer.requiredHeaders - headers.toSet()
             if (missing.isNotEmpty()) {
                 return@withContext ProcessResult.Failure(
-                    statusCode = StatusCode.FAILED,
-                    rawMessage = "CSV missing required headers: $missing"
+                    statusCode = StatusCode.MISSING_COLUMN,
+                    params = mapOf(
+                        "missing_headers" to missing.toList()
+                    )
                 )
             }
 

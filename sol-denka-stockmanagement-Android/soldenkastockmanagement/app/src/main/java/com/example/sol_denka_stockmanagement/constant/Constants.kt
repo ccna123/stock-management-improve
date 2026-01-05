@@ -124,7 +124,8 @@ enum class StatusCode() {
     CSV_IMPORTER_NOT_FOUND,
     FILE_CREATED_FAILED,
     PROCESS_NOT_CHOSEN,
-    CANCEL
+    CANCEL,
+    MISSING_COLUMN
 }
 
 enum class TagScanStatus {
