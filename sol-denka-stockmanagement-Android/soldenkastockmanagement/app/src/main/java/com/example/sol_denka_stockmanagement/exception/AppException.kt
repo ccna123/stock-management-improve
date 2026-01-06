@@ -24,10 +24,6 @@ class FileEmptyException : AppException(
     statusCode = StatusCode.FILE_EMPTY
 )
 
-class FileNotFoundException : AppException(
-    statusCode = StatusCode.FILE_EMPTY
-)
-
 class CsvImporterNotFoundException : AppException(
     statusCode = StatusCode.CSV_IMPORTER_NOT_FOUND
 )
