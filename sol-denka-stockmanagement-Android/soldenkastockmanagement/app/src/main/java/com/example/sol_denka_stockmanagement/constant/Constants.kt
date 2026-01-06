@@ -125,7 +125,8 @@ enum class StatusCode() {
     FILE_CREATED_FAILED,
     PROCESS_NOT_CHOSEN,
     CANCEL,
-    MISSING_COLUMN
+    MISSING_COLUMN,
+    SQLITE_CONSTRAINT_ERROR,
 }
 
 enum class TagScanStatus {

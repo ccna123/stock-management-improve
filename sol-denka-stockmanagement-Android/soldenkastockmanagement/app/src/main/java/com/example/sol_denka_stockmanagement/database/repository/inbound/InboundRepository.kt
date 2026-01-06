@@ -28,7 +28,7 @@ class InboundRepository @Inject constructor(
     suspend fun insertInboundEvent(
         sessionId: Int,
         winderId: Int?,
-        locationId: Int?,
+        locationId: Int,
         itemTypeId: Int,
         weight: Int?,
         width: Int?,

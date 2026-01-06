@@ -25,7 +25,7 @@ class TagMasterImporter(
             tagId = row.int("tag_id")!!,
             tagStatusId = row.int("tag_status_id")!!,
             epc = row.string("epc")!!,
-            memo = row.string("memo")!!,
+            memo = row.string("memo") ?: "",
             newFields = AdditionalFieldsModel(
                 tagScanStatus = TagScanStatus.UNPROCESSED,
                 inventoryResultType = InventoryResultType.UNKNOWN,

@@ -2,6 +2,7 @@ package com.example.sol_denka_stockmanagement.helper.csv
 
 import android.content.ContentValues
 import android.content.Context
+import android.database.sqlite.SQLiteConstraintException
 import android.os.Build
 import android.os.Environment
 import android.provider.MediaStore
@@ -469,7 +470,16 @@ class CsvHelper @Inject constructor(
             onProgress(1f)
             ProcessResult.Success(statusCode = StatusCode.IMPORT_OK)
 
-        } catch (e: Exception) {
+        }
+        catch (e: SQLiteConstraintException) {
+            Log.e("TSS", "❌ SQLite constraint error", e)
+
+            ProcessResult.Failure(
+                statusCode = StatusCode.SQLITE_CONSTRAINT_ERROR,
+            )
+        }
+        catch (e: Exception) {
+            Log.e("TSS", "import error: $e " )
             ProcessResult.Failure(
                 statusCode = StatusCode.FAILED,
                 rawMessage = e.message ?: "Unknown error"

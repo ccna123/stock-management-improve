@@ -42,7 +42,7 @@ class LedgerItemMasterImporter(
             weight = row.int("weight"),
             width = row.int("width"),
             length = row.int("length"),
-            thickness = row.int("thickness"),
+            thickness = row.decimal3("thickness"),
             lotNo = row.string("lot_no"),
             occurrenceReason = row.string("occurrence_reason"),
             quantity = row.int("quantity"),

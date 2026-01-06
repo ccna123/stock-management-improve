@@ -52,7 +52,7 @@ data class InboundEventEntity(
     @PrimaryKey(autoGenerate = true) @ColumnInfo(name = "inbound_event_id") val inboundEventId: Int = 0,
     @ColumnInfo(name = "inbound_session_id") val inboundSessionId: Int,
     @ColumnInfo(name = "item_type_id") val itemTypeId: Int,
-    @ColumnInfo(name = "location_id") val locationId: Int?,
+    @ColumnInfo(name = "location_id") val locationId: Int,
     @ColumnInfo(name = "winder_id") val winderId: Int?,
     @ColumnInfo(name = "tag_id") val tagId: Int,
     @ColumnInfo(name = "weight") val weight: Int?,

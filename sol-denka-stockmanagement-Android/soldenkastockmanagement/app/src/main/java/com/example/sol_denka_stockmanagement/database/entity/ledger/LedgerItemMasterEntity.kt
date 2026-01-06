@@ -5,10 +5,13 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
+import androidx.room.TypeConverters
+import com.example.sol_denka_stockmanagement.database.converter.BigDecimalConverter
 import com.example.sol_denka_stockmanagement.database.entity.item.ItemTypeMasterEntity
 import com.example.sol_denka_stockmanagement.database.entity.location.LocationMasterEntity
 import com.example.sol_denka_stockmanagement.database.entity.tag.TagMasterEntity
 import com.example.sol_denka_stockmanagement.database.entity.winder.WinderInfoEntity
+import java.math.BigDecimal
 
 @Entity(
     tableName = "LedgerItem", foreignKeys = [
@@ -46,8 +49,9 @@ import com.example.sol_denka_stockmanagement.database.entity.winder.WinderInfoEn
         Index(value = ["location_id"]),
         Index(value = ["winder_id"]),
         Index(value = ["tag_id"]),
-    ]
+    ],
 )
+@TypeConverters(BigDecimalConverter::class)
 data class LedgerItemEntity(
     @PrimaryKey @ColumnInfo(name = "ledger_item_id") val ledgerItemId: Int,
     @ColumnInfo(name = "item_type_id") val itemTypeId: Int,
@@ -58,7 +62,7 @@ data class LedgerItemEntity(
     @ColumnInfo(name = "weight") val weight: Int?,
     @ColumnInfo(name = "width") val width: Int?,
     @ColumnInfo(name = "length") val length: Int?,
-    @ColumnInfo(name = "thickness") val thickness: Int?,
+    @ColumnInfo(name = "thickness") val thickness: BigDecimal?,
     @ColumnInfo(name = "lot_no") val lotNo: String?,
     @ColumnInfo(name = "occurrence_reason") val occurrenceReason: String?,
     @ColumnInfo(name = "quantity") val quantity: Int?,

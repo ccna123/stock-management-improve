@@ -37,6 +37,8 @@ object MessageMapper {
             StatusCode.FAILED ->
                 "エラーが発生しました。"
 
+            StatusCode.SQLITE_CONSTRAINT_ERROR -> "外部キーエラー"
+
             StatusCode.PROCESS_NOT_CHOSEN -> "チェック済みのタグに処理方法を選択してください。"
 
             StatusCode.IMPORT_OK -> "取り込み成功しました。"
