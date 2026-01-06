@@ -2,6 +2,7 @@ package com.example.sol_denka_stockmanagement.viewmodel
 
 import android.content.Context
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
@@ -26,6 +27,7 @@ import com.example.sol_denka_stockmanagement.database.repository.winder.WinderIn
 import com.example.sol_denka_stockmanagement.helper.NetworkConnectionObserver
 import com.example.sol_denka_stockmanagement.constant.ProcessResult
 import com.example.sol_denka_stockmanagement.database.repository.process.ProcessTypeRepository
+import com.example.sol_denka_stockmanagement.exception.AppException
 import com.example.sol_denka_stockmanagement.helper.controller.ReaderController
 import com.example.sol_denka_stockmanagement.helper.csv.CsvHelper
 import com.example.sol_denka_stockmanagement.helper.message_mapper.MessageMapper
@@ -222,15 +224,6 @@ class AppViewModel @Inject constructor(
             }
         }
     }
-
-    fun showProgressDialog() {
-        showFileProgressDialog.value = true
-    }
-
-    fun hideProgressDialog() {
-        showFileProgressDialog.value = false
-    }
-
 
     fun onInputIntent(intent: InputIntent) {
         when (intent) {
@@ -519,64 +512,68 @@ class AppViewModel @Inject constructor(
         taskCode: CsvTaskType,
         direction: CsvHistoryDirection,
         data: List<ICsvExport>
-    ): Result<StatusCode> {
-        val rows = data     // ALWAYS List<ICsvExport>
-        if (rows.isEmpty()) {
+    ): Boolean {
+        if (data.isEmpty()) {
             _isFileWorking.value = false
             _dialogState.value = Error(
                 message = MessageMapper.toMessage(StatusCode.EMPTY_DATA)
             )
-            return Result.failure(Exception(StatusCode.EMPTY_DATA.name))
+            return false
         }
-        val first =
-            rows.first()   // fetch 1st row to present other row for csvType and file name
+
+        val rows = data
+        val first = rows.first()
 
         _isFileWorking.value = true
         _progress.value = 0f
 
-        val saveCsvResult = csvHelper.saveCsv(
-            context = context,
-            csvType = first.toCsvType(),
-            fileName = first.toCsvName(),
-            rows = rows,
-            onProgress = { p -> _progress.value = p },
-        )
+        return try {
+            csvHelper.saveCsv(
+                context = context,
+                csvType = first.toCsvType(),
+                fileName = first.toCsvName(),
+                rows = rows,
+                onProgress = { p -> _progress.value = p },
+            )
 
-        val csvTaskTypeId = csvTaskTypeRepository.getIdByTaskCode(taskCode.name)
-        val csvHistorySaveResult = csvTaskTypeId.let {
+            val csvTaskTypeId =
+                csvTaskTypeRepository.getIdByTaskCode(taskCode.name)
+
             csvHistoryRepository.insert(
                 CsvHistoryModel(
                     csvTaskTypeId = csvTaskTypeId,
                     fileName = first.toCsvName(),
                     direction = direction,
-                    result = when (saveCsvResult) {
-                        is ProcessResult.Success -> CsvHistoryResult.SUCCESS
-                        is ProcessResult.Failure -> CsvHistoryResult.FAILURE
-                    },
+                    result = CsvHistoryResult.SUCCESS,
                     recordNum = rows.size,
-                    errorMessage = when (saveCsvResult) {
-                        is ProcessResult.Failure -> MessageMapper.toMessage(
-                            saveCsvResult.statusCode
-                        )
-
-                        is ProcessResult.Success -> ""
-                    },
+                    errorMessage = "",
                     executedAt = generateIso8601JstTimestamp()
                 )
             )
-        }
 
-        return when (saveCsvResult) {
-            is ProcessResult.Success ->
-                if (csvHistorySaveResult > 0)
-                    Result.success(StatusCode.OK)
-                else
-                    Result.failure(Exception(StatusCode.FAILED.name))
+            true   // ✅ OK
 
-            is ProcessResult.Failure ->
-                Result.failure(Exception(saveCsvResult.statusCode.name))
+        } catch (e: AppException) {
+
+            _dialogState.value = Error(
+                message = MessageMapper.toMessage(e.statusCode, e.params)
+            )
+
+            false
+
+        } catch (e: Exception) {
+            _dialogState.value = Error(
+                message = MessageMapper.toMessage(StatusCode.FAILED)
+            )
+
+            false
+
+        } finally {
+            _isFileWorking.value = false
         }
     }
+
+
 
     private fun resetInboundInputForm() {
         _inputState.update {

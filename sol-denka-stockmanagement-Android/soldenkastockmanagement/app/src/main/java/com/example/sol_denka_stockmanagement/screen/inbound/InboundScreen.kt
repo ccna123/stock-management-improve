@@ -1,6 +1,7 @@
 package com.example.sol_denka_stockmanagement.screen.inbound
 
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -276,30 +277,25 @@ fun InboundScreen(
                                 direction = CsvHistoryDirection.EXPORT,
                                 taskCode = CsvTaskType.IN,
                             )
-                            saveResult
-                                .onSuccess {
-                                    // SAVE CSV success
-                                    // Now check network and send SFTP
-                                    if (isNetworkConnected) {
-                                        //sftp send
-                                    } else {
-                                        appViewModel.onGeneralIntent(
-                                            ShareIntent.ShowDialog(
-                                                type = DialogType.SAVE_CSV_SUCCESS_FAILED_SFTP,
-                                                message = MessageMapper.toMessage(StatusCode.EXPORT_OK)
-                                            )
-                                        )
-                                    }
-                                }
-                                .onFailure { throwable ->
-                                    val code = StatusCode.valueOf(throwable.message!!)
+                            if (saveResult) {
+                                if (isNetworkConnected) {
+                                    //sftp send
+                                } else {
                                     appViewModel.onGeneralIntent(
                                         ShareIntent.ShowDialog(
-                                            type = DialogType.ERROR,
-                                            message = MessageMapper.toMessage(code)
+                                            type = DialogType.SAVE_CSV_SUCCESS_FAILED_SFTP,
+                                            message = MessageMapper.toMessage(StatusCode.EXPORT_OK)
                                         )
                                     )
                                 }
+                            } else {
+                                appViewModel.onGeneralIntent(
+                                    ShareIntent.ShowDialog(
+                                        type = DialogType.SAVE_CSV_SUCCESS_FAILED_SFTP,
+                                        message = MessageMapper.toMessage(StatusCode.EXPORT_OK)
+                                    )
+                                )
+                            }
                         }
                     }
                 )

@@ -9,14 +9,21 @@ import android.provider.MediaStore
 import android.util.Log
 import com.example.sol_denka_stockmanagement.app_interface.ICsvExport
 import com.example.sol_denka_stockmanagement.constant.CsvType
+import com.example.sol_denka_stockmanagement.constant.ProcessResult
 import com.example.sol_denka_stockmanagement.constant.StatusCode
+import com.example.sol_denka_stockmanagement.database.AppDatabase
+import com.example.sol_denka_stockmanagement.database.repository.field.ItemTypeFieldSettingMasterRepository
 import com.example.sol_denka_stockmanagement.database.repository.item.ItemTypeRepository
 import com.example.sol_denka_stockmanagement.database.repository.ledger.LedgerItemRepository
 import com.example.sol_denka_stockmanagement.database.repository.location.LocationMasterRepository
 import com.example.sol_denka_stockmanagement.database.repository.tag.TagMasterRepository
-import com.example.sol_denka_stockmanagement.database.repository.field.ItemTypeFieldSettingMasterRepository
-import com.example.sol_denka_stockmanagement.constant.ProcessResult
-import com.example.sol_denka_stockmanagement.database.AppDatabase
+import com.example.sol_denka_stockmanagement.exception.CsvFileCreateException
+import com.example.sol_denka_stockmanagement.exception.CsvImporterNotFoundException
+import com.example.sol_denka_stockmanagement.exception.CsvWriteException
+import com.example.sol_denka_stockmanagement.exception.FileEmptyException
+import com.example.sol_denka_stockmanagement.exception.FolderNotFoundException
+import com.example.sol_denka_stockmanagement.exception.MissingColumnException
+import com.example.sol_denka_stockmanagement.exception.SqliteConstraintAppException
 import com.example.sol_denka_stockmanagement.model.csv.CsvFileInfoModel
 import com.jcraft.jsch.ChannelSftp
 import com.jcraft.jsch.JSch
@@ -410,38 +417,19 @@ class CsvHelper @Inject constructor(
         csvType: String,
         fileName: String,
         onProgress: (Float) -> Unit
-    ): ProcessResult = withContext(Dispatchers.IO) {
-        try {
-            val files = listCsvFiles(csvType)
-            if (files.isEmpty()) {
-                return@withContext ProcessResult.Failure(
-                    statusCode = StatusCode.FILE_NOT_FOUND,
-                )
-            }
+    ) = withContext(Dispatchers.IO) {
+        val files = listCsvFiles(csvType)
+        val fileInfo = files.find { it.fileName == fileName }
 
-            val fileInfo = files.find { it.fileName == fileName }
-                ?: return@withContext ProcessResult.Failure(
-                    statusCode = StatusCode.FILE_NOT_FOUND,
-                )
-
+        fileInfo?.let {
             val fileObj = File(fileInfo.filePath, fileInfo.fileName)
-            if (!fileObj.exists()) {
-                return@withContext ProcessResult.Failure(
-                    statusCode = StatusCode.FILE_NOT_FOUND,
-                )
-            }
-
             val lines = fileObj.readLines(Charsets.UTF_8)
             if (lines.isEmpty()) {
-                return@withContext ProcessResult.Failure(
-                    statusCode = StatusCode.FILE_EMPTY,
-                )
+                throw FileEmptyException()
             }
 
             val importer = getImporter(csvType)
-                ?: return@withContext ProcessResult.Failure(
-                    statusCode = StatusCode.CSV_IMPORTER_NOT_FOUND,
-                )
+                ?: throw CsvImporterNotFoundException()
 
             val total = maxOf(1, lines.size)
             var count = 0
@@ -451,50 +439,49 @@ class CsvHelper @Inject constructor(
 
             val missing = importer.requiredHeaders - headers.toSet()
             if (missing.isNotEmpty()) {
-                return@withContext ProcessResult.Failure(
-                    statusCode = StatusCode.MISSING_COLUMN,
-                    params = mapOf(
-                        "missing_headers" to missing.toList()
-                    )
-                )
+                throw MissingColumnException(missing.toList())
             }
 
-            lines.drop(1).chunked(1).forEach { chunk ->
-                importer.importAll(headers = headers, lines = chunk)
-                count += chunk.size
-
-                val progress = (count.toFloat() / total).coerceIn(0f, 1f)
-                onProgress(progress)
+            try {
+                lines.drop(1).chunked(50).forEach { chunk ->
+                    importer.importAll(headers = headers, lines = chunk)
+                    count += chunk.size
+                    onProgress((count.toFloat() / total).coerceIn(0f, 1f))
+                }
+                importer.finish()
+                onProgress(1f)
+            } catch (_: SQLiteConstraintException) {
+                throw SqliteConstraintAppException()
             }
-            importer.finish()
-            onProgress(1f)
-            ProcessResult.Success(statusCode = StatusCode.IMPORT_OK)
-
-        }
-        catch (e: SQLiteConstraintException) {
-            Log.e("TSS", "❌ SQLite constraint error", e)
-
-            ProcessResult.Failure(
-                statusCode = StatusCode.SQLITE_CONSTRAINT_ERROR,
-            )
-        }
-        catch (e: Exception) {
-            Log.e("TSS", "import error: $e " )
-            ProcessResult.Failure(
-                statusCode = StatusCode.FAILED,
-                rawMessage = e.message ?: "Unknown error"
-            )
         }
     }
-
-
     private fun getImporter(csvType: String): CsvImporter<*>? {
         return when (csvType) {
-            CsvType.LocationMaster.displayName -> LocationMasterImporter(repository = locationMasterRepository, db = db)
-            CsvType.LedgerMaster.displayName -> LedgerItemMasterImporter(repository = ledgerItemRepository, db = db)
-            CsvType.ItemTypeMaster.displayName -> ItemTypeMasterImporter(repository = itemTypeRepository, db = db)
-            CsvType.TagMaster.displayName -> TagMasterImporter(repository = tagMasterRepository, db = db)
-            CsvType.ItemTypeFieldSettingMaster.displayName -> ItemTypeFieldSettingMasterImporter(repository = itemTypeFieldSettingMasterRepository, db = db)
+            CsvType.LocationMaster.displayName -> LocationMasterImporter(
+                repository = locationMasterRepository,
+                db = db
+            )
+
+            CsvType.LedgerMaster.displayName -> LedgerItemMasterImporter(
+                repository = ledgerItemRepository,
+                db = db
+            )
+
+            CsvType.ItemTypeMaster.displayName -> ItemTypeMasterImporter(
+                repository = itemTypeRepository,
+                db = db
+            )
+
+            CsvType.TagMaster.displayName -> TagMasterImporter(
+                repository = tagMasterRepository,
+                db = db
+            )
+
+            CsvType.ItemTypeFieldSettingMaster.displayName -> ItemTypeFieldSettingMasterImporter(
+                repository = itemTypeFieldSettingMasterRepository,
+                db = db
+            )
+
             else -> null
         }
     }
@@ -506,91 +493,73 @@ class CsvHelper @Inject constructor(
         fileName: String,
         rows: List<T>,
         onProgress: (Float) -> Unit,
-    ): ProcessResult = withContext(Dispatchers.IO) {
-        try {
-            if (rows.isEmpty()) {
-                return@withContext ProcessResult.Failure(
-                    statusCode = StatusCode.EMPTY_DATA,
-                )
-            }
-
-            val resolver = context.contentResolver
-            val externalUri = MediaStore.Files.getContentUri("external")
-
-            // map csvType -> local folder (Export/InventoryResult, Export/StockEvent, ...)
-            val (_, localFolder) = mapCsvTypeToFolders(csvType)
-                ?: return@withContext ProcessResult.Failure(
-                    statusCode = StatusCode.FOLDER_NOT_FOUND,
-                )
-
-            val relativePath =
-                Environment.DIRECTORY_DOWNLOADS + "/$ROOT_FOLDER/$localFolder/"
-
-            // Remove file that has same name
-            resolver.delete(
-                externalUri,
-                "${MediaStore.MediaColumns.RELATIVE_PATH}=? AND ${MediaStore.MediaColumns.DISPLAY_NAME}=?",
-                arrayOf(relativePath, fileName)
-            )
-
-            // Get header from first row
-            val headerLine = rows.first().toHeader().joinToString(",")
-
-            // Build data
-            val dataLines = rows.joinToString("\n") { it.toRow().joinToString(",") }
-
-            // Content assemble
-            val fullContent = buildString {
-                append(headerLine)
-                append("\r\n")
-                append(dataLines)
-                append("\r\n")
-            }
-
-            val values = ContentValues().apply {
-                put(MediaStore.MediaColumns.DISPLAY_NAME, fileName)
-                put(MediaStore.MediaColumns.MIME_TYPE, "text/csv")
-                put(MediaStore.MediaColumns.RELATIVE_PATH, relativePath)
-            }
-
-            val uri = resolver.insert(externalUri, values)
-                ?: return@withContext ProcessResult.Failure(
-                    statusCode = StatusCode.FILE_CREATED_FAILED,
-                )
-
-            val bytes = fullContent.toByteArray()
-            val totalBytes = bytes.size.takeIf { it > 0 } ?: 1
-            var written = 0
-
-            resolver.openOutputStream(uri)?.use { output ->
-                val bufferSize = 4096
-                var offset = 0
-
-                while (offset < bytes.size) {
-                    val count = minOf(bufferSize, bytes.size - offset)
-                    output.write(bytes, offset, count)
-                    offset += count
-                    written += count
-
-                    val progress = (written.toFloat() / totalBytes).coerceIn(0f, 1f)
-                    onProgress(progress)
-                }
-                output.flush()
-            } ?: return@withContext ProcessResult.Failure(
-                statusCode = StatusCode.WRITE_ERROR,
-            )
-
-            Log.i("TSS", "✅ CSV saved: $relativePath$fileName")
-            onProgress(1f)
-
-            ProcessResult.Success(statusCode = StatusCode.OK)
-
-        } catch (e: Exception) {
-            Log.e("TSS", "❌ saveCsv error: ${e.message}", e)
-            ProcessResult.Failure(
-                statusCode = StatusCode.FAILED,
-                rawMessage = e.message ?: "Unknown"
-            )
+    ) = withContext(Dispatchers.IO) {
+        if (rows.isEmpty()) {
+            throw FileEmptyException()
         }
+
+        val resolver = context.contentResolver
+        val externalUri = MediaStore.Files.getContentUri("external")
+
+        // map csvType -> local folder (Export/InventoryResult, Export/StockEvent, ...)
+        val (_, localFolder) = mapCsvTypeToFolders(csvType)
+            ?: throw FolderNotFoundException()
+
+        val relativePath =
+            Environment.DIRECTORY_DOWNLOADS + "/$ROOT_FOLDER/$localFolder/"
+
+        // Remove file that has same name
+        resolver.delete(
+            externalUri,
+            "${MediaStore.MediaColumns.RELATIVE_PATH}=? AND ${MediaStore.MediaColumns.DISPLAY_NAME}=?",
+            arrayOf(relativePath, fileName)
+        )
+
+        // Get header from first row
+        val headerLine = rows.first().toHeader().joinToString(",")
+
+        // Build data
+        val dataLines = rows.joinToString("\n") { it.toRow().joinToString(",") }
+
+        // Content assemble
+        val fullContent = buildString {
+            append(headerLine)
+            append("\r\n")
+            append(dataLines)
+            append("\r\n")
+        }
+
+        val values = ContentValues().apply {
+            put(MediaStore.MediaColumns.DISPLAY_NAME, fileName)
+            put(MediaStore.MediaColumns.MIME_TYPE, "text/csv")
+            put(MediaStore.MediaColumns.RELATIVE_PATH, relativePath)
+        }
+
+        val uri = resolver.insert(externalUri, values)
+            ?: throw CsvFileCreateException()
+
+        val bytes = fullContent.toByteArray()
+        val totalBytes = bytes.size.takeIf { it > 0 } ?: 1
+        var written = 0
+
+        resolver.openOutputStream(uri)?.use { output ->
+            val bufferSize = 4096
+            var offset = 0
+
+            while (offset < bytes.size) {
+                val count = minOf(bufferSize, bytes.size - offset)
+                output.write(bytes, offset, count)
+                offset += count
+                written += count
+
+                val progress = (written.toFloat() / totalBytes).coerceIn(0f, 1f)
+                onProgress(progress)
+            }
+            output.flush()
+        } ?: throw CsvWriteException()
+
+        Log.i("TSS", "✅ CSV saved: $relativePath$fileName")
+        onProgress(1f)
+
     }
 }

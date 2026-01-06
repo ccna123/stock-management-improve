@@ -51,7 +51,7 @@ object InputValidate {
                             else -> ""
                         }
                         if (value.isBlank()) {
-                            errors[item.fieldName] = true
+                            errors[item.fieldCode] = true
                         }
                     }
                 }

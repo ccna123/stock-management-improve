@@ -6,6 +6,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.sol_denka_stockmanagement.helper.json.JsonFileManager
 import com.example.sol_denka_stockmanagement.constant.ProcessResult
+import com.example.sol_denka_stockmanagement.constant.StatusCode
+import com.example.sol_denka_stockmanagement.exception.AppException
 import com.example.sol_denka_stockmanagement.helper.csv.CsvHelper
 import com.example.sol_denka_stockmanagement.helper.message_mapper.MessageMapper
 import com.example.sol_denka_stockmanagement.intent.CsvIntent
@@ -41,7 +43,6 @@ class CsvViewModel @Inject constructor(
     val showProgress = _showProgress.asStateFlow()
 
     private val _isImporting = MutableStateFlow(false)
-    val isImporting = _isImporting.asStateFlow()
 
     private val _isExporting = MutableStateFlow(false)
     val isExporting = _isExporting.asStateFlow()
@@ -161,31 +162,43 @@ class CsvViewModel @Inject constructor(
         }
     }
 
-    suspend fun importMaster() {
-        return withContext(Dispatchers.IO) {
-            _isImporting.value = true
-            _importProgress.value = 0f
+    fun importMaster() {
+        viewModelScope.launch {
+            try {
+                _isImporting.value = true
+                _importProgress.value = 0f
 
-            val result = helper.import(
-                csvType = _csvType.value,
-                fileName = importFileSelectedName.value,
-                onProgress = { p ->
-                    _importProgress.value = p
-                }
-            )
+                helper.import(
+                    csvType = _csvType.value,
+                    fileName = importFileSelectedName.value,
+                    onProgress = { _importProgress.value = it }
+                )
 
-            _isImporting.value = false
-            _importResultStatus.value = result
+                _isImporting.value = false
+                _importResultStatus.value = ProcessResult.Success()
 
-            if (result is ProcessResult.Failure) {
-                val msg = result.rawMessage
-                    ?: MessageMapper.toMessage(result.statusCode, result.params)
+            } catch (e: AppException) {
+                Log.e("TSS", "importMaster error: $e " )
+                val msg = MessageMapper.toMessage(
+                    e.statusCode,
+                    e.params
+                )
                 showProcessResultDialog(msg)
+                _importResultStatus.value = ProcessResult.Failure(statusCode = StatusCode.FAILED, rawMessage = msg)
+
+            } catch (e: Exception) {
+                Log.e("TSS", "importMaster error: $e " )
+                showProcessResultDialog(
+                    MessageMapper.toMessage(StatusCode.FAILED)
+
+                )
+                _importResultStatus.value = ProcessResult.Failure(statusCode = StatusCode.FAILED)
+            } finally {
+                _isImporting.value = false
+
             }
         }
     }
-
-
     private fun updateFileProgress(index: Int, progress: Float) {
         _csvFiles.update { current ->
             current.toMutableList().apply {

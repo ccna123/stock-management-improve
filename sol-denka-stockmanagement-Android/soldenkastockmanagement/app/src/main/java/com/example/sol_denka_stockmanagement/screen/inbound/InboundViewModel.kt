@@ -124,6 +124,7 @@ class InboundViewModel @Inject constructor(
             Result.success(sessionId)
 
         } catch (e: Exception) {
+            Log.e("TSS", "saveInboundToDb: ${e.message}")
             Result.failure(e)
         }
     }

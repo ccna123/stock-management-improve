@@ -42,8 +42,8 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.sol_denka_stockmanagement.R
 import com.example.sol_denka_stockmanagement.constant.CsvType
-import com.example.sol_denka_stockmanagement.constant.SelectTitle
 import com.example.sol_denka_stockmanagement.constant.ProcessResult
+import com.example.sol_denka_stockmanagement.constant.SelectTitle
 import com.example.sol_denka_stockmanagement.intent.CsvIntent
 import com.example.sol_denka_stockmanagement.intent.ExpandIntent
 import com.example.sol_denka_stockmanagement.intent.ShareIntent
@@ -56,7 +56,6 @@ import com.example.sol_denka_stockmanagement.share.InputFieldContainer
 import com.example.sol_denka_stockmanagement.share.dialog.AppDialog
 import com.example.sol_denka_stockmanagement.share.dialog.NetworkDialog
 import com.example.sol_denka_stockmanagement.ui.theme.brightAzure
-import com.example.sol_denka_stockmanagement.ui.theme.brightGreenPrimary
 import com.example.sol_denka_stockmanagement.ui.theme.paleSkyBlue
 import com.example.sol_denka_stockmanagement.viewmodel.AppViewModel
 import kotlinx.coroutines.launch
@@ -121,7 +120,7 @@ fun CsvImportScreen(
                     textAlign = TextAlign.Center,
                     color = when (importResultStatus) {
                         is ProcessResult.Failure -> Color.Red
-                        is ProcessResult.Success -> brightGreenPrimary
+                        is ProcessResult.Success -> brightAzure
                         null -> Color.Unspecified
                     }
                 )

@@ -193,30 +193,25 @@ fun OutboundScreen(
                                 direction = CsvHistoryDirection.EXPORT,
                                 taskCode = CsvTaskType.OUT,
                             )
-                            saveResult
-                                .onSuccess {
-                                    // SAVE CSV success
-                                    // Now check network and send SFTP
-                                    if (isNetworkConnected) {
-                                        //sftp send
-                                    } else {
-                                        appViewModel.onGeneralIntent(
-                                            ShareIntent.ShowDialog(
-                                                type = DialogType.SAVE_CSV_SUCCESS_FAILED_SFTP,
-                                                message = MessageMapper.toMessage(StatusCode.EXPORT_OK)
-                                            )
-                                        )
-                                    }
-                                }
-                                .onFailure { throwable ->
-                                    val code = StatusCode.valueOf(throwable.message!!)
+                            if (saveResult) {
+                                if (isNetworkConnected) {
+                                    //sftp send
+                                } else {
                                     appViewModel.onGeneralIntent(
                                         ShareIntent.ShowDialog(
-                                            type = DialogType.ERROR,
-                                            message = MessageMapper.toMessage(code)
+                                            type = DialogType.SAVE_CSV_SUCCESS_FAILED_SFTP,
+                                            message = MessageMapper.toMessage(StatusCode.EXPORT_OK)
                                         )
                                     )
                                 }
+                            } else {
+                                appViewModel.onGeneralIntent(
+                                    ShareIntent.ShowDialog(
+                                        type = DialogType.SAVE_CSV_SUCCESS_FAILED_SFTP,
+                                        message = MessageMapper.toMessage(StatusCode.EXPORT_OK)
+                                    )
+                                )
+                            }
                         }
                     }
                 )

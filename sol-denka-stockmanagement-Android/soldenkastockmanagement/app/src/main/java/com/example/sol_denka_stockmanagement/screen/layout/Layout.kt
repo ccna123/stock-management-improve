@@ -123,15 +123,13 @@ fun Layout(
 
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val focusManager = LocalFocusManager.current
-    val showFileProgressBar = appViewModel?.showFileProgressDialog?.value
+    val showFileProgressBar = appViewModel?.showFileProgressDialog?.value ?: remember {
+        mutableStateOf(false)
+    }
     val showConnectingDialog =
         appViewModel?.showConnectingDialog?.collectAsStateWithLifecycle()?.value ?: remember {
             mutableStateOf(false)
         }
-    val progress by (appViewModel?.progress ?: MutableStateFlow(0f)).collectAsStateWithLifecycle()
-    val isFileWorking by (appViewModel?.isFileWorking
-        ?: MutableStateFlow(false)).collectAsStateWithLifecycle()
-
     val isPerformingInventory by (appViewModel?.isPerformingInventory
         ?: MutableStateFlow(false)).collectAsStateWithLifecycle()
 
@@ -223,74 +221,7 @@ fun Layout(
                 )
             )
         }
-
         DialogState.Hidden -> Unit
-    }
-
-    if (showFileProgressBar == true) {
-        AppDialog {
-            Column(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Text(
-                    text = when (prevScreenNameId) {
-                        Screen.CsvImport.routeId -> if (isFileWorking) "CSVファイル取り込み中" else "CSVファイル取り込みに成功しました"
-                        Screen.CsvExport.routeId -> if (isFileWorking) "CSVファイル出力中" else "CSVファイル出力に成功しました"
-
-                        in listOf(
-                            Screen.Inbound.routeId,
-                            Screen.Outbound.routeId,
-                            Screen.InventoryComplete.routeId
-                        ) -> if (isFileWorking) "CSVファイル出力中" else "CSVファイルの出力\nWindowsアプリへの送信に成功しました"
-
-                        else -> ""
-                    },
-                    textAlign = TextAlign.Center,
-                    color = if (isFileWorking) Color.Black else brightGreenPrimary
-                )
-                Spacer(Modifier.height(12.dp))
-                LinearProgressIndicator(
-                    progress = {
-                        progress
-                    },
-                    modifier = Modifier
-                        .height(6.dp),
-                )
-                Text("${(progress * 100).toInt()}%")
-                Spacer(Modifier.height(12.dp))
-                if (!isFileWorking && progress >= 1f) {
-                    ButtonContainer(
-                        shape = RoundedCornerShape(10.dp),
-                        buttonTextSize = 20,
-                        onClick = {
-                            appViewModel.hideProgressDialog()
-                            when (prevScreenNameId) {
-                                in listOf(
-                                    Screen.Inbound.routeId,
-                                    Screen.Outbound.routeId,
-                                    Screen.InventoryComplete.routeId
-                                ) -> onNavigate?.invoke(Screen.Home)
-                            }
-                        },
-                        buttonText = when (prevScreenNameId) {
-                            in listOf(
-                                Screen.CsvImport.routeId,
-                                Screen.CsvExport.routeId
-                            ) -> "閉じる"
-
-                            in listOf(
-                                Screen.Inbound.routeId,
-                                Screen.Outbound.routeId,
-                                Screen.InventoryComplete.routeId
-                            ) -> "Homeへ戻る"
-
-                            else -> ""
-                        },
-                    )
-                }
-            }
-        }
     }
 
     if (showConnectingDialog == true) {

@@ -156,30 +156,25 @@ fun LocationChangeScreen(
                                 direction = CsvHistoryDirection.EXPORT,
                                 taskCode = CsvTaskType.LOCATION_CHANGE,
                             )
-                            saveResult
-                                .onSuccess {
-                                    // SAVE CSV success
-                                    // Now check network and send SFTP
-                                    if (isNetworkConnected) {
-                                        //sftp send
-                                    } else {
-                                        appViewModel.onGeneralIntent(
-                                            ShareIntent.ShowDialog(
-                                                type = DialogType.SAVE_CSV_SUCCESS_FAILED_SFTP,
-                                                message = MessageMapper.toMessage(StatusCode.EXPORT_OK)
-                                            )
-                                        )
-                                    }
-                                }
-                                .onFailure { throwable ->
-                                    val code = StatusCode.valueOf(throwable.message!!)
+                            if (saveResult) {
+                                if (isNetworkConnected) {
+                                    //sftp send
+                                } else {
                                     appViewModel.onGeneralIntent(
                                         ShareIntent.ShowDialog(
-                                            type = DialogType.ERROR,
-                                            message = MessageMapper.toMessage(code)
+                                            type = DialogType.SAVE_CSV_SUCCESS_FAILED_SFTP,
+                                            message = MessageMapper.toMessage(StatusCode.EXPORT_OK)
                                         )
                                     )
                                 }
+                            } else {
+                                appViewModel.onGeneralIntent(
+                                    ShareIntent.ShowDialog(
+                                        type = DialogType.SAVE_CSV_SUCCESS_FAILED_SFTP,
+                                        message = MessageMapper.toMessage(StatusCode.EXPORT_OK)
+                                    )
+                                )
+                            }
                         }
                     },
                 )
@@ -234,6 +229,7 @@ fun LocationChangeScreen(
                             value = if (inputState.location == SelectTitle.SelectLocation.displayName) "" else inputState.location,
                             hintText = SelectTitle.SelectLocation.displayName,
                             isNumeric = false,
+                            label = SelectTitle.SelectLocation.displayName,
                             onChange = { newValue ->
                                 appViewModel.onInputIntent(
                                     InputIntent.ChangeLocation(
@@ -244,6 +240,7 @@ fun LocationChangeScreen(
                             readOnly = true,
                             isDropDown = true,
                             enable = true,
+                            isRequired = true,
                             onEnterPressed = {}
                         )
                         ExposedDropdownMenu(
