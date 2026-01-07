@@ -16,7 +16,6 @@ import kotlin.collections.forEach
 class LocationChangeRepository @Inject constructor(
     private val db: AppDatabase,
     private val sessionRepo: LocationChangeSessionRepository,
-    private val locationMasterRepository: LocationMasterRepository,
     private val locationChangeEventRepository: LocationChangeEventRepository,
     private val tagMasterRepository: TagMasterRepository,
 ) {

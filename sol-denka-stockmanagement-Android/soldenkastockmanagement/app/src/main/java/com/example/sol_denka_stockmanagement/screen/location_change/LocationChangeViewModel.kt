@@ -5,7 +5,6 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import com.example.sol_denka_stockmanagement.constant.generateIso8601JstTimestamp
 import com.example.sol_denka_stockmanagement.database.repository.location.LocationChangeRepository
-import com.example.sol_denka_stockmanagement.database.repository.location.LocationMasterRepository
 import com.example.sol_denka_stockmanagement.database.repository.tag.TagMasterRepository
 import com.example.sol_denka_stockmanagement.model.csv.LocationChangeResultCsvModel
 import com.example.sol_denka_stockmanagement.model.tag.TagMasterModel
@@ -17,7 +16,6 @@ import kotlinx.coroutines.withContext
 @HiltViewModel
 class LocationChangeViewModel @Inject constructor(
     private val tagMasterRepository: TagMasterRepository,
-    private val locationMasterRepository: LocationMasterRepository,
     private val locationChangeRepository: LocationChangeRepository
 ) : ViewModel() {
 

@@ -8,6 +8,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -52,53 +55,20 @@ fun ProcessModal(
             Spacer(modifier = Modifier.height(10.dp))
             Text(text = stringResource(R.string.bulk_apply_item_number, selectedCount))
             Spacer(modifier = Modifier.height(10.dp))
-            processTypeList.mapIndexed { index, method ->
-                Column(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    ButtonContainer(
-                        modifier = Modifier.fillMaxWidth(0.5f),
-                        buttonText = method.processName,
-                        containerColor = if (method.processName == chosenMethod) Color(0xFF43A047) else Color.LightGray,
-                        icon = {
-                            when (method.processName) {
-                                ProcessMethod.USE.displayName -> Icon(
-                                    painter = painterResource(R.drawable.recycle),
-                                    contentDescription = null,
-                                    modifier = Modifier.size(20.dp)
-                                )
-
-                                ProcessMethod.SALE.displayName -> Icon(
-                                    painter = painterResource(R.drawable.money),
-                                    contentDescription = null,
-                                    modifier = Modifier.size(20.dp)
-                                )
-
-                                ProcessMethod.CRUSH.displayName -> Icon(
-                                    painter = painterResource(R.drawable.burn),
-                                    contentDescription = null,
-                                    modifier = Modifier.size(20.dp)
-                                )
-
-                                ProcessMethod.DISCARD.displayName -> Icon(
-                                    painter = painterResource(R.drawable.discard),
-                                    contentDescription = null,
-                                    modifier = Modifier.size(20.dp)
-                                )
-
-                                ProcessMethod.PROCESS.displayName -> Icon(
-                                    painter = painterResource(R.drawable.process),
-                                    contentDescription = null,
-                                    modifier = Modifier.size(20.dp)
-                                )
-                            }
-                        },
-                        onClick = {
-                            onChooseMethod(method.processName)
-                        }
+            LazyVerticalGrid(
+                columns = GridCells.Fixed(2),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp),
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                items(processTypeList) { method ->
+                    ProcessGridItem(
+                        method = method,
+                        isSelected = method.processName == chosenMethod,
+                        onClick = { onChooseMethod(method.processName) }
                     )
-                    Spacer(modifier = Modifier.height(10.dp))
                 }
             }
             Row(
