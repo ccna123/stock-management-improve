@@ -7,6 +7,7 @@ import com.example.sol_denka_stockmanagement.database.AppDatabase
 import com.example.sol_denka_stockmanagement.model.inbound.InboundEventModel
 import com.example.sol_denka_stockmanagement.model.inbound.InboundSessionModel
 import com.example.sol_denka_stockmanagement.model.tag.TagMasterModel
+import java.util.UUID
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -50,6 +51,7 @@ class InboundRepository @Inject constructor(
                 locationId = locationId,
                 winderId = winderId,
                 tagId = rfidTag?.tagId ?: 0,
+                sourceEventId = UUID.randomUUID().toString(),
                 weight = weight,
                 width = width,
                 length = length,

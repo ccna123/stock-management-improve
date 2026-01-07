@@ -4,6 +4,7 @@ import com.example.sol_denka_stockmanagement.database.entity.inventory.Inventory
 
 data class InventorySessionModel(
     val inventorySessionId: Int = 0,
+    val inventorySessionUuid: String,
     val locationId: Int,
     val isExported: Boolean,
     val deviceId: String,
@@ -12,6 +13,7 @@ data class InventorySessionModel(
 
 fun InventorySessionEntity.toModel() = InventorySessionModel(
     inventorySessionId = inventorySessionId,
+    inventorySessionUuid = inventorySessionUuid,
     locationId = locationId,
     isExported = isExported,
     deviceId = deviceId,
@@ -20,6 +22,7 @@ fun InventorySessionEntity.toModel() = InventorySessionModel(
 
 fun InventorySessionModel.toEntity() = InventorySessionEntity(
     inventorySessionId = inventorySessionId,
+    inventorySessionUuid = inventorySessionUuid,
     locationId = locationId,
     isExported = isExported,
     deviceId = deviceId,

@@ -55,6 +55,7 @@ data class InboundEventEntity(
     @ColumnInfo(name = "location_id") val locationId: Int,
     @ColumnInfo(name = "winder_id") val winderId: Int?,
     @ColumnInfo(name = "tag_id") val tagId: Int,
+    @ColumnInfo(name = "source_event_id") val sourceEventId: String?,
     @ColumnInfo(name = "weight") val weight: Int?,
     @ColumnInfo(name = "width") val width: Int?,
     @ColumnInfo(name = "length") val length: Int?,

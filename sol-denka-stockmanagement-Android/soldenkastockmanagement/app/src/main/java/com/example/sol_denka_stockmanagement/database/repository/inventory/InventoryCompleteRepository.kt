@@ -1,7 +1,6 @@
 package com.example.sol_denka_stockmanagement.database.repository.inventory
 
 import android.os.Build
-import android.util.Log
 import androidx.room.withTransaction
 import com.example.sol_denka_stockmanagement.constant.generateIso8601JstTimestamp
 import com.example.sol_denka_stockmanagement.database.AppDatabase
@@ -9,6 +8,7 @@ import com.example.sol_denka_stockmanagement.database.repository.tag.TagMasterRe
 import com.example.sol_denka_stockmanagement.model.inventory.InventoryResultLocalModel
 import com.example.sol_denka_stockmanagement.model.inventory.InventorySessionModel
 import com.example.sol_denka_stockmanagement.model.tag.TagMasterModel
+import java.util.UUID
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -24,6 +24,7 @@ class InventoryCompleteRepository @Inject constructor(
     suspend fun createInventorySession(locationId: Int?): Int =
         inventorySessionRepository.insert(
             InventorySessionModel(
+                inventorySessionUuid = UUID.randomUUID().toString(),
                 deviceId = Build.ID,
                 isExported = false,
                 locationId = locationId ?: 0,
