@@ -70,7 +70,6 @@ class InventoryCompleteViewModel @Inject constructor(
                     }
                     tag.copy(newFields = tag.newFields.copy(inventoryResultType = resultType))
                 }
-            Log.e("TSS", "newList: $newList" )
             _wrongLocationCount.value =
                 newList.count { it.newFields.inventoryResultType == InventoryResultType.FOUND_WRONG_LOCATION }
             _shortageCount.value =
@@ -80,7 +79,7 @@ class InventoryCompleteViewModel @Inject constructor(
             _okCount.value =
                 newList.count { it.newFields.inventoryResultType == InventoryResultType.FOUND_OK }
 
-            _finalTagList.value = newList
+            _finalTagList.value = newList.filter { it.newFields.inventoryResultType != InventoryResultType.UNKNOWN }
         }
     }
 
