@@ -39,6 +39,8 @@ fun InputFieldContainer(
     enable: Boolean,
     label: String? = null,
     iconColor: Color = brightAzure,
+    borderColor: Color = brightAzure,
+    containerColor: Color = Color.Transparent,
     isDropDown: Boolean,
     readOnly: Boolean,
     singleLine: Boolean = true,
@@ -65,10 +67,10 @@ fun InputFieldContainer(
         placeholder = { Text(text = hintText, color = Color.Gray, fontSize = 16.sp) },
         interactionSource = textFieldInteractionSource,
         colors = OutlinedTextFieldDefaults.colors(
-            focusedBorderColor = if (error == true) Color.Red else brightAzure,
-            unfocusedBorderColor = if (error == true) Color.Red else brightAzure,
-            focusedContainerColor = Color.Transparent,
-            unfocusedContainerColor = Color.Transparent,
+            focusedBorderColor = if (error == true) Color.Red else borderColor,
+            unfocusedBorderColor = if (error == true) Color.Red else borderColor,
+            focusedContainerColor = containerColor,
+            unfocusedContainerColor = containerColor,
             disabledContainerColor = Color.White,
             disabledBorderColor = brightAzure,
             disabledTextColor = Color.Black

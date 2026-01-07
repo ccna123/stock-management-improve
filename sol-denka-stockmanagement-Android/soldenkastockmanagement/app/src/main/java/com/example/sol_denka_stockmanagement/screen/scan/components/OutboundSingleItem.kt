@@ -108,6 +108,8 @@ fun OutboundSingleItem(
                             enabled = true
                         ),
                     value = value,
+                    borderColor = if (isChecked) Color.Transparent else brightAzure,
+                    containerColor = if (isChecked) Color.White else Color.Transparent,
                     isNumeric = false,
                     hintText = SelectTitle.SelectProcessMethod.displayName,
                     onChange = { newValue -> onValueChange(newValue) },
