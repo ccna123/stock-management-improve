@@ -2,7 +2,6 @@ package com.example.sol_denka_stockmanagement.viewmodel
 
 import android.content.Context
 import android.os.Build
-import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
@@ -25,7 +24,6 @@ import com.example.sol_denka_stockmanagement.database.repository.item.ItemTypeRe
 import com.example.sol_denka_stockmanagement.database.repository.location.LocationMasterRepository
 import com.example.sol_denka_stockmanagement.database.repository.winder.WinderInfoRepository
 import com.example.sol_denka_stockmanagement.helper.NetworkConnectionObserver
-import com.example.sol_denka_stockmanagement.constant.ProcessResult
 import com.example.sol_denka_stockmanagement.database.repository.process.ProcessTypeRepository
 import com.example.sol_denka_stockmanagement.exception.AppException
 import com.example.sol_denka_stockmanagement.helper.controller.ReaderController
@@ -246,7 +244,7 @@ class AppViewModel @Inject constructor(
             is InputIntent.ChangeLength ->
                 _inputState.update { it.copy(length = intent.value) }
 
-            is InputIntent.ChangeWinderInfo ->
+            is InputIntent.ChangeWinderType ->
                 _inputState.update { it.copy(winder = intent.value) }
 
             is InputIntent.ChangeThickness ->
@@ -583,9 +581,9 @@ class AppViewModel @Inject constructor(
                 length = "",
                 thickness = "",
                 grade = "",
-                winder = "",
+                winder = null,
                 memo = "",
-                location = "",
+                location = null,
                 processMethod = "",
                 weight = "",
                 lotNo = "",

@@ -9,7 +9,6 @@ import com.example.sol_denka_stockmanagement.constant.TagScanStatus
 import com.example.sol_denka_stockmanagement.constant.generateIso8601JstTimestamp
 import com.example.sol_denka_stockmanagement.database.repository.inventory.InventoryCompleteRepository
 import com.example.sol_denka_stockmanagement.database.repository.inventory.InventoryResultTypeRepository
-import com.example.sol_denka_stockmanagement.database.repository.location.LocationMasterRepository
 import com.example.sol_denka_stockmanagement.database.repository.tag.TagMasterRepository
 import com.example.sol_denka_stockmanagement.model.csv.InventoryResultCsvModel
 import com.example.sol_denka_stockmanagement.model.tag.TagMasterModel
@@ -26,7 +25,6 @@ import javax.inject.Inject
 @HiltViewModel
 class InventoryCompleteViewModel @Inject constructor(
     private val tagMasterRepository: TagMasterRepository,
-    private val locationMasterRepository: LocationMasterRepository,
     private val inventoryResultTypeRepository: InventoryResultTypeRepository,
     private val inventoryCompleteRepository: InventoryCompleteRepository
 ) : ViewModel() {
@@ -72,6 +70,7 @@ class InventoryCompleteViewModel @Inject constructor(
                     }
                     tag.copy(newFields = tag.newFields.copy(inventoryResultType = resultType))
                 }
+            Log.e("TSS", "newList: $newList" )
             _wrongLocationCount.value =
                 newList.count { it.newFields.inventoryResultType == InventoryResultType.FOUND_WRONG_LOCATION }
             _shortageCount.value =
@@ -87,12 +86,11 @@ class InventoryCompleteViewModel @Inject constructor(
 
     suspend fun generateCsvData(
         memo: String,
-        locationName: String
+        locationId: Int
     ): List<InventoryResultCsvModel> =
         withContext(Dispatchers.IO) {
             try {
                 csvModels.clear()
-                val locationId = locationMasterRepository.getLocationIdByName(locationName)
                 _finalTagList.value.forEach { tag ->
                     val ledgerId = tagMasterRepository.getLedgerIdByTagId(tag.tagId)
                     val inventoryResultTypeId =
@@ -100,7 +98,7 @@ class InventoryCompleteViewModel @Inject constructor(
                             tag.newFields.inventoryResultType.name
                         )
                     val model = InventoryResultCsvModel(
-                        locationId = locationId ?: 0,
+                        locationId = locationId,
                         inventoryResultTypeId = inventoryResultTypeId,
                         ledgerItemId = ledgerId ?: 0,
                         tagId = tag.tagId,
@@ -118,10 +116,9 @@ class InventoryCompleteViewModel @Inject constructor(
             }
         }
 
-    suspend fun saveInventoryResultToDb(memo: String, locationName: String): Result<Int> {
+    suspend fun saveInventoryResultToDb(memo: String, locationId: Int): Result<Int> {
         return try {
             var sessionId = 0
-            val locationId = locationMasterRepository.getLocationIdByName(locationName)
             inventoryCompleteRepository.saveInventoryResultLocalTransaction {
                 sessionId = inventoryCompleteRepository.createInventorySession(
                     locationId = locationId

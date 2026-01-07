@@ -32,6 +32,19 @@ object InputValidate {
                             errors["processed_at_time"] = true
                         }
                     }
+                    InboundInputField.LOCATION.code -> {
+                        // 🔥 LOCATION: check NULL, not isBlank
+                        if (inputState.location == null) {
+                            errors[item.fieldCode] = true
+                        }
+                    }
+
+                    InboundInputField.WINDER.code -> {
+                        // 🔥 WINDER: check NULL, not isBlank
+                        if (inputState.winder == null) {
+                            errors[item.fieldCode] = true
+                        }
+                    }
 
                     else -> {
                         val value = when (item.fieldCode) {
@@ -40,13 +53,10 @@ object InputValidate {
                             InboundInputField.THICKNESS.code -> inputState.thickness
                             InboundInputField.WIDTH.code -> inputState.width
                             InboundInputField.SPECIFIC_GRAVITY.code -> inputState.specificGravity
-                            InboundInputField.WINDER.code -> inputState.winder
                             InboundInputField.OCCURRENCE_REASON.code -> inputState.occurrenceReason
                             InboundInputField.MEMO.code -> inputState.memo
                             InboundInputField.LOT_NO.code -> inputState.lotNo
-                            InboundInputField.LOCATION.code -> inputState.location
                             InboundInputField.PACKING_TYPE.code -> inputState.packingType
-                            InboundInputField.WINDER.code -> inputState.winder
                             InboundInputField.QUANTITY.code -> inputState.quantity
                             else -> ""
                         }

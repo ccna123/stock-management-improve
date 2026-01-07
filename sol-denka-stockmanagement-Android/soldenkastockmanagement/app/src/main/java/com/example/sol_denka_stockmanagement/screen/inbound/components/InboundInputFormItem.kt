@@ -30,18 +30,7 @@ import com.example.sol_denka_stockmanagement.constant.PackingType
 import com.example.sol_denka_stockmanagement.constant.SelectTitle
 import com.example.sol_denka_stockmanagement.helper.validate.FilterNumber
 import com.example.sol_denka_stockmanagement.intent.ExpandIntent
-import com.example.sol_denka_stockmanagement.intent.InputIntent.ChangeLength
-import com.example.sol_denka_stockmanagement.intent.InputIntent.ChangeLocation
-import com.example.sol_denka_stockmanagement.intent.InputIntent.ChangeLotNo
-import com.example.sol_denka_stockmanagement.intent.InputIntent.ChangeMemo
-import com.example.sol_denka_stockmanagement.intent.InputIntent.ChangeMissRollReason
-import com.example.sol_denka_stockmanagement.intent.InputIntent.ChangePackingType
-import com.example.sol_denka_stockmanagement.intent.InputIntent.ChangeSpecificGravity
-import com.example.sol_denka_stockmanagement.intent.InputIntent.ChangeThickness
-import com.example.sol_denka_stockmanagement.intent.InputIntent.ChangeWeight
-import com.example.sol_denka_stockmanagement.intent.InputIntent.ChangeWidth
-import com.example.sol_denka_stockmanagement.intent.InputIntent.ChangeWinderInfo
-import com.example.sol_denka_stockmanagement.intent.InputIntent.ChangeQuantity
+import com.example.sol_denka_stockmanagement.intent.InputIntent.*
 import com.example.sol_denka_stockmanagement.intent.ShareIntent
 import com.example.sol_denka_stockmanagement.model.inbound.InboundInputFormModel
 import com.example.sol_denka_stockmanagement.model.location.LocationMasterModel
@@ -64,6 +53,8 @@ fun InboundInputFormItem(
     appViewModel: AppViewModel
 ) {
     when (result.controlType) {
+
+        /* ================= INPUT ================= */
         ControlType.INPUT -> {
             InputFieldContainer(
                 modifier = Modifier
@@ -75,7 +66,6 @@ fun InboundInputFormItem(
                     InboundInputField.THICKNESS.code -> inputState.thickness
                     InboundInputField.WIDTH.code -> inputState.width
                     InboundInputField.SPECIFIC_GRAVITY.code -> inputState.specificGravity
-                    InboundInputField.WINDER.code -> inputState.winder
                     InboundInputField.OCCURRENCE_REASON.code -> inputState.occurrenceReason
                     InboundInputField.MEMO.code -> inputState.memo
                     InboundInputField.LOT_NO.code -> inputState.lotNo
@@ -180,51 +170,63 @@ fun InboundInputFormItem(
                 isRequired = result.isRequired,
                 singleLine = result.fieldCode != InboundInputField.MEMO.code,
                 onChange = { newValue ->
-                    val filteredValue = when (result.dataType) {
-                        DataType.NUMBER -> FilterNumber.filterNumber(newValue)
-                        else -> newValue
-                    }
+                    val filtered = if (result.dataType == DataType.NUMBER)
+                        FilterNumber.filterNumber(newValue) else newValue
+
                     when (result.fieldCode) {
                         InboundInputField.WEIGHT.code -> appViewModel.onInputIntent(
-                            ChangeWeight(filteredValue)
+                            ChangeWeight(
+                                filtered
+                            )
                         )
 
                         InboundInputField.LENGTH.code -> appViewModel.onInputIntent(
-                            ChangeLength(filteredValue)
+                            ChangeLength(
+                                filtered
+                            )
                         )
 
                         InboundInputField.THICKNESS.code -> appViewModel.onInputIntent(
-                            ChangeThickness(filteredValue)
+                            ChangeThickness(filtered)
                         )
 
                         InboundInputField.WIDTH.code -> appViewModel.onInputIntent(
-                            ChangeWidth(filteredValue)
+                            ChangeWidth(
+                                filtered
+                            )
                         )
 
                         InboundInputField.SPECIFIC_GRAVITY.code -> appViewModel.onInputIntent(
-                            ChangeSpecificGravity(filteredValue)
+                            ChangeSpecificGravity(filtered)
                         )
 
                         InboundInputField.OCCURRENCE_REASON.code -> appViewModel.onInputIntent(
-                            ChangeMissRollReason(newValue)
+                            ChangeMissRollReason(filtered)
                         )
 
                         InboundInputField.MEMO.code -> appViewModel.onInputIntent(
-                            ChangeMemo(newValue)
+                            ChangeMemo(
+                                filtered
+                            )
                         )
 
                         InboundInputField.LOT_NO.code -> appViewModel.onInputIntent(
-                            ChangeLotNo(newValue)
+                            ChangeLotNo(
+                                filtered
+                            )
                         )
 
                         InboundInputField.QUANTITY.code -> appViewModel.onInputIntent(
-                            ChangeQuantity(newValue)
+                            ChangeQuantity(
+                                filtered
+                            )
                         )
                     }
                 }
             )
         }
 
+        /* ================= DROPDOWN ================= */
         ControlType.DROPDOWN -> {
             ExposedDropdownMenuBox(
                 modifier = Modifier.height(IntrinsicSize.Min),
@@ -236,29 +238,19 @@ fun InboundInputFormItem(
                 },
                 onExpandedChange = {
                     when (result.fieldCode) {
-                        InboundInputField.LOCATION.code -> {
-                            appViewModel.onExpandIntent(
-                                ExpandIntent.ToggleLocationExpanded
-                            )
-                        }
+                        InboundInputField.LOCATION.code ->
+                            appViewModel.onExpandIntent(ExpandIntent.ToggleLocationExpanded)
 
-                        InboundInputField.PACKING_TYPE.code -> {
-                            appViewModel.onExpandIntent(
-                                ExpandIntent.TogglePackingTypeExpanded
-                            )
-                        }
+                        InboundInputField.PACKING_TYPE.code ->
+                            appViewModel.onExpandIntent(ExpandIntent.TogglePackingTypeExpanded)
 
-                        InboundInputField.WINDER.code -> {
-                            appViewModel.onExpandIntent(
-                                ExpandIntent.ToggleWinderExpanded
-                            )
-                        }
-
-                        else -> false
+                        InboundInputField.WINDER.code ->
+                            appViewModel.onExpandIntent(ExpandIntent.ToggleWinderExpanded)
                     }
-
                 }
             ) {
+
+                /* ---------- FIELD ---------- */
                 InputFieldContainer(
                     modifier = Modifier
                         .menuAnchor(
@@ -267,45 +259,31 @@ fun InboundInputFormItem(
                         )
                         .fillMaxWidth(),
                     value = when (result.fieldCode) {
-                        InboundInputField.LOCATION.code -> if (inputState.location == SelectTitle.SelectLocation.displayName) "" else inputState.location
-                        InboundInputField.PACKING_TYPE.code -> if (inputState.packingType == SelectTitle.SelectPackingStyle.displayName) "" else inputState.packingType
-                        InboundInputField.WINDER.code -> if (inputState.winder == SelectTitle.SelectWinder.displayName) "" else inputState.winder
+                        InboundInputField.LOCATION.code ->
+                            inputState.location?.locationName ?: ""
+
+                        InboundInputField.PACKING_TYPE.code ->
+                            inputState.packingType
+
+                        InboundInputField.WINDER.code ->
+                            inputState.winder?.winderName ?: ""
+
                         else -> ""
                     },
                     hintText = when (result.fieldCode) {
                         InboundInputField.LOCATION.code -> SelectTitle.SelectLocation.displayName
-                        InboundInputField.PACKING_TYPE.code -> SelectTitle.SelectPackingStyle.displayName
+                        InboundInputField.PACKING_TYPE.code -> SelectTitle.SelectPackingType.displayName
                         InboundInputField.WINDER.code -> SelectTitle.SelectWinder.displayName
                         else -> ""
                     },
                     label = when (result.fieldCode) {
                         InboundInputField.LOCATION.code -> SelectTitle.SelectLocation.displayName
-                        InboundInputField.PACKING_TYPE.code -> SelectTitle.SelectPackingStyle.displayName
+                        InboundInputField.PACKING_TYPE.code -> SelectTitle.SelectPackingType.displayName
                         InboundInputField.WINDER.code -> SelectTitle.SelectWinder.displayName
                         else -> ""
                     },
                     isNumeric = false,
-                    onChange = { newValue ->
-                        when (result.fieldCode) {
-                            InboundInputField.LOCATION.code -> appViewModel.onInputIntent(
-                                ChangeLocation(newValue)
-                            )
-
-                            InboundInputField.PACKING_TYPE.code -> appViewModel.onInputIntent(
-                                ChangePackingType(
-                                    newValue
-                                )
-                            )
-
-                            InboundInputField.WINDER.code -> appViewModel.onInputIntent(
-                                ChangeWinderInfo(
-                                    newValue
-                                )
-                            )
-
-                            else -> ""
-                        }
-                    },
+                    onChange = { /* readOnly */ },
                     isRequired = result.isRequired,
                     error = inputState.fieldErrors[result.fieldCode] == true,
                     readOnly = true,
@@ -313,6 +291,8 @@ fun InboundInputFormItem(
                     enable = true,
                     onEnterPressed = {}
                 )
+
+                /* ---------- MENU ---------- */
                 ExposedDropdownMenu(
                     expanded = when (result.fieldCode) {
                         InboundInputField.LOCATION.code -> expandState.locationExpanded
@@ -322,252 +302,153 @@ fun InboundInputFormItem(
                     },
                     onDismissRequest = {
                         when (result.fieldCode) {
-                            InboundInputField.LOCATION.code -> appViewModel.onExpandIntent(
-                                ExpandIntent.ToggleLocationExpanded
-                            )
+                            InboundInputField.LOCATION.code ->
+                                appViewModel.onExpandIntent(ExpandIntent.ToggleLocationExpanded)
 
-                            InboundInputField.PACKING_TYPE.code -> appViewModel.onExpandIntent(
-                                ExpandIntent.TogglePackingTypeExpanded
-                            )
+                            InboundInputField.PACKING_TYPE.code ->
+                                appViewModel.onExpandIntent(ExpandIntent.TogglePackingTypeExpanded)
 
-                            InboundInputField.WINDER.code -> appViewModel.onExpandIntent(
-                                ExpandIntent.ToggleWinderExpanded
-                            )
-
-                            else -> ""
+                            InboundInputField.WINDER.code ->
+                                appViewModel.onExpandIntent(ExpandIntent.ToggleWinderExpanded)
                         }
                     }
                 ) {
-                    DropdownMenuItem(
-                        text = {
-                            Text(
-                                text = when (result.fieldCode) {
-                                    InboundInputField.LOCATION.code -> SelectTitle.SelectLocation.displayName
-                                    InboundInputField.PACKING_TYPE.code -> SelectTitle.SelectPackingStyle.displayName
-                                    InboundInputField.WINDER.code -> SelectTitle.SelectWinder.displayName
-                                    else -> ""
+                    /* ===== SELECT (NULL) ===== */
+                    if (result.fieldCode == InboundInputField.LOCATION.code) {
+                        DropdownMenuItem(
+                            text = { Text(SelectTitle.SelectLocation.displayName) },
+                            onClick = {
+                                appViewModel.apply {
+                                    onInputIntent(ChangeLocation(null))
+                                    onExpandIntent(ExpandIntent.ToggleLocationExpanded)
                                 }
-                            )
-                        },
-                        onClick = {
-                            when (result.fieldCode) {
-                                InboundInputField.LOCATION.code -> {
+                            }
+                        )
+
+                        locationMaster.forEach { location ->
+                            DropdownMenuItem(
+                                text = { Text(location.locationName) },
+                                onClick = {
                                     appViewModel.apply {
-                                        onInputIntent(
-                                            ChangeLocation(
-                                                ""
-                                            )
-                                        )
+                                        onInputIntent(ChangeLocation(location))
                                         onExpandIntent(ExpandIntent.ToggleLocationExpanded)
                                     }
                                 }
+                            )
+                        }
+                    }
+                    if (result.fieldCode == InboundInputField.PACKING_TYPE.code) {
+                        DropdownMenuItem(
+                            text = { Text(SelectTitle.SelectPackingType.displayName) },
+                            onClick = {
+                                appViewModel.apply {
+                                    onInputIntent(ChangePackingType(""))
+                                    onExpandIntent(ExpandIntent.TogglePackingTypeExpanded)
+                                }
+                            }
+                        )
 
-                                InboundInputField.PACKING_TYPE.code -> {
+                        listOf(
+                            PackingType.PAPER_BAG_25KG.displayName,
+                            PackingType.FLEXIBLE_CONTAINER_1T.displayName
+                        ).forEach { packing ->
+                            DropdownMenuItem(
+                                text = { Text(packing) },
+                                onClick = {
                                     appViewModel.apply {
-                                        onInputIntent(
-                                            ChangePackingType(
-                                                ""
-                                            )
-                                        )
+                                        onInputIntent(ChangePackingType(packing))
                                         onExpandIntent(ExpandIntent.TogglePackingTypeExpanded)
                                     }
                                 }
+                            )
+                        }
+                    }
 
-                                InboundInputField.WINDER.code -> {
+                    if (result.fieldCode == InboundInputField.WINDER.code) {
+
+                        DropdownMenuItem(
+                            text = { Text(SelectTitle.SelectWinder.displayName) },
+                            onClick = {
+                                appViewModel.apply {
+                                    onInputIntent(ChangeWinderType(null))
+                                    onExpandIntent(ExpandIntent.ToggleWinderExpanded)
+                                }
+                            }
+                        )
+
+                        winderMaster.forEach { winder ->
+                            DropdownMenuItem(
+                                text = { Text(winder.winderName) },
+                                onClick = {
                                     appViewModel.apply {
-                                        onInputIntent(
-                                            ChangeWinderInfo(
-                                                ""
-                                            )
-                                        )
+                                        onInputIntent(ChangeWinderType(winder))
                                         onExpandIntent(ExpandIntent.ToggleWinderExpanded)
                                     }
                                 }
-
-                                else -> ""
-                            }
-                        }
-                    )
-                    when (result.fieldCode) {
-                        InboundInputField.LOCATION.code -> {
-                            locationMaster.forEach { location ->
-                                DropdownMenuItem(
-                                    text = {
-                                        Text(
-                                            text = location.locationName
-                                        )
-                                    },
-                                    onClick = {
-                                        appViewModel.apply {
-                                            onInputIntent(
-                                                ChangeLocation(
-                                                    if (location.locationName == SelectTitle.SelectLocation.displayName) "" else location.locationName
-                                                )
-                                            )
-                                            onExpandIntent(
-                                                ExpandIntent.ToggleLocationExpanded
-                                            )
-                                        }
-                                    }
-                                )
-                            }
-                        }
-
-                        InboundInputField.PACKING_TYPE.code -> {
-                            listOf(
-                                PackingType.PAPER_BAG_25KG.displayName,
-                                PackingType.FLEXIBLE_CONTAINER_1T.displayName
-                            ).forEach { packingStyle ->
-                                DropdownMenuItem(
-                                    text = {
-                                        Text(text = packingStyle)
-                                    },
-                                    onClick = {
-                                        appViewModel.apply {
-                                            onInputIntent(
-                                                ChangePackingType(
-                                                    if (inputState.packingType == SelectTitle.SelectPackingStyle.displayName) "" else packingStyle
-                                                )
-                                            )
-                                            onExpandIntent(
-                                                ExpandIntent.TogglePackingTypeExpanded
-                                            )
-                                        }
-                                    }
-                                )
-                            }
-                        }
-                        InboundInputField.WINDER.code -> {
-                            winderMaster.forEach { winder ->
-                                DropdownMenuItem(
-                                    text = {
-                                        Text(text = winder.winderName)
-                                    },
-                                    onClick = {
-                                        appViewModel.apply {
-                                            onInputIntent(
-                                                ChangeWinderInfo(
-                                                    if (inputState.winder == SelectTitle.SelectWinder.displayName) "" else winder.winderName
-                                                )
-                                            )
-                                            onExpandIntent(
-                                                ExpandIntent.ToggleWinderExpanded
-                                            )
-                                        }
-                                    }
-                                )
-                            }
+                            )
                         }
                     }
                 }
             }
         }
 
+        /* ================= DATETIME ================= */
         ControlType.DATETIMEPICKER -> {
             Row(
-                modifier = Modifier
-                    .fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(10.dp),
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(10.dp)
             ) {
                 InputFieldContainer(
                     modifier = Modifier.weight(1f),
-                    value = when (result.fieldCode) {
-                        InboundInputField.OCCURRED_AT.code -> inputState.occurredAtDate
-                        InboundInputField.PROCESSED_AT.code -> inputState.processedAtDate
-                        else -> ""
-                    },
-                    label = when (result.fieldCode) {
-                        InboundInputField.OCCURRED_AT.code -> stringResource(
-                            R.string.occurred_at_date
-                        )
-
-                        InboundInputField.PROCESSED_AT.code -> stringResource(
-                            R.string.processed_at_date
-                        )
-
-                        else -> ""
-                    },
+                    value = inputState.occurredAtDate,
+                    label = stringResource(R.string.occurred_at_date),
                     isRequired = result.isRequired,
                     isNumeric = false,
                     shape = RoundedCornerShape(13.dp),
                     readOnly = true,
                     isDropDown = false,
                     enable = true,
-                    error = when (result.fieldCode) {
-                        InboundInputField.OCCURRED_AT.code -> inputState.fieldErrors["occurred_at_date"] == true
-                        InboundInputField.PROCESSED_AT.code -> inputState.fieldErrors["processed_at_date"] == true
-                        else -> false
-                    },
+                    error = inputState.fieldErrors["occurred_at_date"] == true,
                     trailingIcon = {
                         Icon(
                             imageVector = Icons.Default.CalendarMonth,
                             contentDescription = null,
                             tint = brightAzure,
-                            modifier = Modifier.clickable(
-                                onClick = {
-                                    appViewModel.onGeneralIntent(
-                                        ShareIntent.ToggleDatePicker(
-                                            field = when (result.fieldCode) {
-                                                InboundInputField.OCCURRED_AT.code -> InboundInputField.OCCURRED_AT.code
-                                                InboundInputField.PROCESSED_AT.code -> InboundInputField.PROCESSED_AT.code
-                                                else -> ""
-                                            },
-                                            showDatePicker = true
-                                        )
+                            modifier = Modifier.clickable {
+                                appViewModel.onGeneralIntent(
+                                    ShareIntent.ToggleDatePicker(
+                                        field = InboundInputField.OCCURRED_AT.code,
+                                        showDatePicker = true
                                     )
-                                }
-                            )
+                                )
+                            }
                         )
                     }
                 )
                 InputFieldContainer(
                     modifier = Modifier.weight(1f),
-                    value = when (result.fieldCode) {
-                        InboundInputField.OCCURRED_AT.code -> inputState.occurredAtTime
-                        InboundInputField.PROCESSED_AT.code -> inputState.processedAtTime
-                        else -> ""
-                    },
-                    label = when (result.fieldCode) {
-                        InboundInputField.OCCURRED_AT.code -> stringResource(
-                            R.string.occurred_at_time
-                        )
-
-                        InboundInputField.PROCESSED_AT.code -> stringResource(
-                            R.string.processed_at_time
-                        )
-
-                        else -> ""
-                    },
+                    value = inputState.occurredAtTime,
+                    label = stringResource(R.string.occurred_at_time),
                     isRequired = result.isRequired,
                     isNumeric = false,
                     shape = RoundedCornerShape(13.dp),
                     readOnly = true,
                     isDropDown = false,
                     enable = true,
-                    error = when (result.fieldCode) {
-                        InboundInputField.OCCURRED_AT.code -> inputState.fieldErrors["occurred_at_time"] == true
-                        InboundInputField.PROCESSED_AT.code -> inputState.fieldErrors["processed_at_time"] == true
-                        else -> false
-                    },
+                    error = inputState.fieldErrors["occurred_at_time"] == true,
                     trailingIcon = {
                         Icon(
                             imageVector = Icons.Default.Timer,
                             contentDescription = null,
                             tint = brightAzure,
-                            modifier = Modifier.clickable(
-                                onClick = {
-                                    appViewModel.onGeneralIntent(
-                                        ShareIntent.ToggleTimePicker(
-                                            field = when (result.fieldCode) {
-                                                InboundInputField.OCCURRED_AT.code -> InboundInputField.OCCURRED_AT.code
-                                                InboundInputField.PROCESSED_AT.code -> InboundInputField.PROCESSED_AT.code
-                                                else -> ""
-                                            },
-                                            showTimePicker = true
-                                        )
+                            modifier = Modifier.clickable {
+                                appViewModel.onGeneralIntent(
+                                    ShareIntent.ToggleTimePicker(
+                                        field = InboundInputField.OCCURRED_AT.code,
+                                        showTimePicker = true
                                     )
-                                }
-                            )
+                                )
+                            }
                         )
                     }
                 )

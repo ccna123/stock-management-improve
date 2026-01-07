@@ -86,7 +86,7 @@ fun InventoryCompleteScreen(
     LaunchedEffect(rfidTagList) {
         inventoryCompleteViewModel.computeResult(
             rfidTagList = rfidTagList.filter { it.newFields.hasLeger },
-            locationName = inputState.location
+            locationName = inputState.location?.locationName ?: ""
         )
     }
 
@@ -146,7 +146,7 @@ fun InventoryCompleteScreen(
                     scope.launch {
                         val result = inventoryCompleteViewModel.saveInventoryResultToDb(
                             memo = inputState.memo,
-                            locationName = inputState.location,
+                            locationId = inputState.location?.locationId ?: 0,
                         )
                         result.exceptionOrNull()?.let { e ->
                             appViewModel.onGeneralIntent(
@@ -160,7 +160,7 @@ fun InventoryCompleteScreen(
                         val csvModels =
                             inventoryCompleteViewModel.generateCsvData(
                                 memo = inputState.memo,
-                                locationName = inputState.location,
+                                locationId = inputState.location?.locationId ?: 0,
                             )
                         val saveResult = appViewModel.saveScanResultToCsv(
                             data = csvModels,

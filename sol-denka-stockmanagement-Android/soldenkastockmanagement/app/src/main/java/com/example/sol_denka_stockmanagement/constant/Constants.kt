@@ -28,7 +28,7 @@ enum class SelectTitle(val displayName: String) {
     SelectLocation("保管場所選択"),
     SelectCsvType("CSVファイル種類選択"),
     SelectProcessMethod("処理方法選択"),
-    SelectPackingStyle("荷姿選択"),
+    SelectPackingType("荷姿選択"),
     SelectCategory("区分選択"),
     SelectWinder("巻き取り機選択"),
 }

@@ -1,6 +1,7 @@
 package com.example.sol_denka_stockmanagement.database.repository.inventory
 
 import android.os.Build
+import android.util.Log
 import androidx.room.withTransaction
 import com.example.sol_denka_stockmanagement.constant.generateIso8601JstTimestamp
 import com.example.sol_denka_stockmanagement.database.AppDatabase

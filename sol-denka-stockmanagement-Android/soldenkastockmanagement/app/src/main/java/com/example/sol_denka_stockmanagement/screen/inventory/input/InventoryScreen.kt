@@ -108,7 +108,7 @@ fun InventoryScreen(
                         modifier = Modifier.size(20.dp)
                     )
                 },
-                canClick = inputState.location.isNotEmpty(),
+                canClick = inputState.location != null,
                 onClick = {
                     onNavigate(Screen.InventoryScan(Screen.Inventory.routeId))
                 },
@@ -141,15 +141,11 @@ fun InventoryScreen(
                                 enabled = true
                             )
                             .fillMaxWidth(),
-                        value = if (inputState.location == SelectTitle.SelectLocation.displayName) "" else inputState.location,
+                        value = if (inputState.location?.locationName == SelectTitle.SelectLocation.displayName) "" else inputState.location?.locationName
+                            ?: "",
                         hintText = SelectTitle.SelectLocation.displayName,
                         isNumeric = false,
-                        onChange = { newValue ->
-                            appViewModel.onInputIntent(
-                                InputIntent.ChangeLocation(
-                                    newValue
-                                )
-                            )
+                        onChange = {
                         },
                         readOnly = true,
                         isDropDown = true,
@@ -164,19 +160,21 @@ fun InventoryScreen(
                             text = { Text(text = SelectTitle.SelectLocation.displayName) },
                             onClick = {
                                 appViewModel.apply {
-                                    onInputIntent(InputIntent.ChangeLocation(""))
+                                    onInputIntent(InputIntent.ChangeLocation(null))
                                     onExpandIntent(ExpandIntent.ToggleLocationExpanded)
                                 }
                             }
                         )
                         locationMaster.forEach { location ->
                             DropdownMenuItem(
-                                text = { Text(text = location.locationName) },
+                                text = { Text(location.locationName) },
                                 onClick = {
-                                    appViewModel.apply {
-                                        onInputIntent(InputIntent.ChangeLocation(if (location.locationName == SelectTitle.SelectLocation.displayName) "" else location.locationName))
-                                        onExpandIntent(ExpandIntent.ToggleLocationExpanded)
-                                    }
+                                    appViewModel.onInputIntent(
+                                        InputIntent.ChangeLocation(
+                                            location
+                                        )
+                                    )
+                                    appViewModel.onExpandIntent(ExpandIntent.ToggleLocationExpanded)
                                 }
                             )
                         }

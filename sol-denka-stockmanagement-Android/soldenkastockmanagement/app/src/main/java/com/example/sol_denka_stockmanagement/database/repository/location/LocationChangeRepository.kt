@@ -32,17 +32,16 @@ class LocationChangeRepository @Inject constructor(
     suspend fun insertLocationChangeEvent(
         sessionId: Int,
         memo: String,
-        newLocation: String,
+        locationId: Int,
         rfidTagList: List<TagMasterModel>
     ) {
-        val newLocationId = locationMasterRepository.getLocationIdByName(newLocation)
         rfidTagList.forEach { tag ->
             val ledgerId = tagMasterRepository.getLedgerIdByTagId(tag.tagId)
             locationChangeEventRepository.insert(
                 LocationChangeEventModel(
                     locationChangeSessionId = sessionId,
                     ledgerItemId = ledgerId ?: 0,
-                    locationId = newLocationId ?: 0,
+                    locationId = locationId,
                     memo = memo,
                     scannedAt = generateIso8601JstTimestamp(),
                 )

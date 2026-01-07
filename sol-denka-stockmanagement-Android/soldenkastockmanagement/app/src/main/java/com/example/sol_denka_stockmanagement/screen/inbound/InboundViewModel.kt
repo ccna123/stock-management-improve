@@ -6,8 +6,6 @@ import androidx.lifecycle.ViewModel
 import com.example.sol_denka_stockmanagement.constant.generateIso8601JstTimestamp
 import com.example.sol_denka_stockmanagement.database.repository.inbound.InboundRepository
 import com.example.sol_denka_stockmanagement.database.repository.item.ItemTypeRepository
-import com.example.sol_denka_stockmanagement.database.repository.location.LocationMasterRepository
-import com.example.sol_denka_stockmanagement.database.repository.winder.WinderInfoRepository
 import com.example.sol_denka_stockmanagement.model.csv.InboundResultCsvModel
 import com.example.sol_denka_stockmanagement.model.tag.TagMasterModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -18,17 +16,15 @@ import kotlinx.coroutines.withContext
 @HiltViewModel
 class InboundViewModel @Inject constructor(
     private val inboundRepository: InboundRepository,
-    private val winderInfoRepository: WinderInfoRepository,
     private val itemTypeRepository: ItemTypeRepository,
-    private val locationMasterRepository: LocationMasterRepository
 ) : ViewModel() {
 
     private val csvModels = mutableListOf<InboundResultCsvModel>()
 
     suspend fun generateCsvData(
         itemInCategory: String,
-        location: String,
-        winder: String?,
+        locationId: Int,
+        winderId: Int?,
         weight: String,
         width: String,
         length: String,
@@ -45,8 +41,6 @@ class InboundViewModel @Inject constructor(
             try {
                 csvModels.clear()
                 val itemTypeId = itemTypeRepository.getItemTypeIdByItemName(itemName = itemInCategory)
-                val locationId = locationMasterRepository.getLocationIdByName(locationName = location)
-                val winderId = winderInfoRepository.getIdByName(winderName = winder ?: "")
                 val model = InboundResultCsvModel(
                     tagId = rfidTag?.tagId ?: 0,
                     itemTypeId = itemTypeId,
@@ -75,8 +69,8 @@ class InboundViewModel @Inject constructor(
 
     suspend fun saveInboundToDb(
         itemInCategory: String,
-        location: String,
-        winder: String?,
+        locationId: Int,
+        winderId: Int?,
         weight: String?,
         thickness: String?,
         width: String?,
@@ -97,9 +91,7 @@ class InboundViewModel @Inject constructor(
 
                 // 1️⃣ create session
                 sessionId = inboundRepository.createInboundSession()
-                val winderId = winderInfoRepository.getIdByName(winderName = winder ?: "")
                 val itemTypeId = itemTypeRepository.getItemTypeIdByItemName(itemName = itemInCategory)
-                val locationId = locationMasterRepository.getLocationIdByName(locationName = location)
 
                 // 2️⃣ insert event (only if session OK)
                 inboundRepository.insertInboundEvent(

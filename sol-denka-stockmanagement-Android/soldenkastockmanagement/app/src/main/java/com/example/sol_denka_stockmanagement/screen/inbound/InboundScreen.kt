@@ -1,7 +1,6 @@
 package com.example.sol_denka_stockmanagement.screen.inbound
 
 import android.os.Build
-import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -233,8 +232,8 @@ fun InboundScreen(
                             val result = inboundViewModel.saveInboundToDb(
                                 rfidTag = rfidTagList.find { it.epc == lastInboundEpc },
                                 itemInCategory = inputState.itemInCategory,
-                                location = inputState.location,
-                                winder = inputState.winder,
+                                locationId = inputState.location?.locationId ?: 0,
+                                winderId = inputState.winder?.winderId ?: 0,
                                 weight = inputState.weight,
                                 width = inputState.width,
                                 length = inputState.length,
@@ -258,8 +257,8 @@ fun InboundScreen(
                             }
                             val csvModels = inboundViewModel.generateCsvData(
                                 itemInCategory = inputState.itemInCategory,
-                                location = inputState.location,
-                                winder = inputState.winder,
+                                locationId = inputState.location?.locationId ?: 0,
+                                winderId = inputState.winder?.winderId ?: 0,
                                 weight = inputState.weight,
                                 width = inputState.width,
                                 length = inputState.length,

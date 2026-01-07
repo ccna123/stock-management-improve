@@ -120,7 +120,7 @@ fun LocationChangeScreen(
                             spotColor = Color.DarkGray.copy(alpha = 0.7f)
                         ),
                     buttonText = stringResource(R.string.storage_area_change),
-                    canClick = inputState.location.isNotEmpty(),
+                    canClick = inputState.location != null,
                     icon = {
                         Icon(
                             painter = painterResource(R.drawable.register),
@@ -133,7 +133,7 @@ fun LocationChangeScreen(
                         scope.launch {
                             val result = locationChangeViewModel.saveLocationChangeToDb(
                                 memo = inputState.memo,
-                                newLocation = inputState.location,
+                                locationId = inputState.location?.locationId ?: 0,
                                 rfidTagList = rfidTagList.filter { it.newFields.isChecked }
                             )
                             result.exceptionOrNull()?.let { e ->
@@ -148,7 +148,7 @@ fun LocationChangeScreen(
                             val csvModels =
                                 locationChangeViewModel.generateCsvData(
                                     memo = inputState.memo,
-                                    newLocation = inputState.location,
+                                    locationId = inputState.location?.locationId ?: 0,
                                     rfidTagList = rfidTagList.filter { it.newFields.isChecked }
                                 )
                             val saveResult = appViewModel.saveScanResultToCsv(
@@ -226,17 +226,12 @@ fun LocationChangeScreen(
                                     enabled = true
                                 )
                                 .fillMaxWidth(),
-                            value = if (inputState.location == SelectTitle.SelectLocation.displayName) "" else inputState.location,
+                            value = if (inputState.location?.locationName == SelectTitle.SelectLocation.displayName) "" else inputState.location?.locationName
+                                ?: "",
                             hintText = SelectTitle.SelectLocation.displayName,
                             isNumeric = false,
                             label = SelectTitle.SelectLocation.displayName,
-                            onChange = { newValue ->
-                                appViewModel.onInputIntent(
-                                    InputIntent.ChangeLocation(
-                                        newValue
-                                    )
-                                )
-                            },
+                            onChange = {},
                             readOnly = true,
                             isDropDown = true,
                             enable = true,
@@ -248,26 +243,22 @@ fun LocationChangeScreen(
                             onDismissRequest = { appViewModel.onExpandIntent(ExpandIntent.ToggleLocationExpanded) }
                         ) {
                             DropdownMenuItem(
-                                text = { Text(text = SelectTitle.SelectLocation.displayName) },
+                                text = { Text(SelectTitle.SelectLocation.displayName) },
                                 onClick = {
-                                    appViewModel.apply {
-                                        onInputIntent(InputIntent.ChangeLocation(""))
-                                        onExpandIntent(ExpandIntent.ToggleLocationExpanded)
-                                    }
+                                    appViewModel.onInputIntent(InputIntent.ChangeLocation(null))
+                                    appViewModel.onExpandIntent(ExpandIntent.ToggleLocationExpanded)
                                 }
                             )
                             locationMaster.forEach { location ->
                                 DropdownMenuItem(
-                                    text = { Text(text = location.locationName) },
+                                    text = { Text(location.locationName) },
                                     onClick = {
-                                        appViewModel.apply {
-                                            onInputIntent(
-                                                InputIntent.ChangeLocation(
-                                                    if (location.locationName == SelectTitle.SelectLocation.displayName) "" else location.locationName
-                                                )
+                                        appViewModel.onInputIntent(
+                                            InputIntent.ChangeLocation(
+                                                location
                                             )
-                                            onExpandIntent(ExpandIntent.ToggleLocationExpanded)
-                                        }
+                                        )
+                                        appViewModel.onExpandIntent(ExpandIntent.ToggleLocationExpanded)
                                     }
                                 )
                             }

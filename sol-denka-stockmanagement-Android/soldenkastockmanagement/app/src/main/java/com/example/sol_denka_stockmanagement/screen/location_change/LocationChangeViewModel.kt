@@ -25,18 +25,17 @@ class LocationChangeViewModel @Inject constructor(
 
     suspend fun generateCsvData(
         memo: String,
-        newLocation: String,
+        locationId: Int,
         rfidTagList: List<TagMasterModel>
     ): List<LocationChangeResultCsvModel> =
         withContext(Dispatchers.IO) {
             try {
                 csvModels.clear()
-                val newLocationId = locationMasterRepository.getLocationIdByName(newLocation)
                 rfidTagList.forEach { tag ->
                     val ledgerId = tagMasterRepository.getLedgerIdByTagId(tag.tagId)
                     val model = LocationChangeResultCsvModel(
                         ledgerItemId = ledgerId ?: 0,
-                        locationId = newLocationId ?: 0,
+                        locationId = locationId,
                         deviceId = Build.ID,
                         memo = memo,
                         scannedAt = generateIso8601JstTimestamp(),
@@ -53,7 +52,7 @@ class LocationChangeViewModel @Inject constructor(
 
     suspend fun saveLocationChangeToDb(
         memo: String,
-        newLocation: String,
+        locationId: Int,
         rfidTagList: List<TagMasterModel>
     ): Result<Int> {
         return try {
@@ -65,7 +64,7 @@ class LocationChangeViewModel @Inject constructor(
                 locationChangeRepository.insertLocationChangeEvent(
                     sessionId = sessionId,
                     memo = memo,
-                    newLocation = newLocation,
+                    locationId = locationId,
                     rfidTagList = rfidTagList
                 )
             }
