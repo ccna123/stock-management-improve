@@ -20,6 +20,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material3.DrawerState
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -160,6 +161,7 @@ fun ScanScreen(
         currentScreenNameId = Screen.Scan("").routeId,
         scanViewModel = scanViewModel,
         hasBottomBar = true,
+        onNavigate = onNavigate,
         appViewModel = appViewModel,
         bottomButton = {
             Row(
@@ -264,7 +266,8 @@ fun ScanScreen(
                 )
             }
         },
-        onBackArrowClick = {
+        onBackArrowClick = { drawerState: DrawerState ->
+            scope.launch { drawerState.open() }
             if (isPerformingInventory.not()) {
                 if (rfidTagList.any { it.newFields.tagScanStatus == TagScanStatus.PROCESSED } || lastInboundEpc?.isNotEmpty() == true) {
                     appViewModel.onGeneralIntent(ShareIntent.ToggleClearTagConfirmDialog)
