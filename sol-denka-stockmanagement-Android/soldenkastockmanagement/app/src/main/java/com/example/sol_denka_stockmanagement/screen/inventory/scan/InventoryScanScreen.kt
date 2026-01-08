@@ -185,10 +185,8 @@ fun InventoryScanScreen(
     Layout(
         topBarText = Screen.Inventory.displayName,
         topBarIcon = Icons.AutoMirrored.Filled.ArrowBack,
-        prevScreenNameId = prevScreenNameId,
         hasBottomBar = true,
         appViewModel = appViewModel,
-        scanViewModel = scanViewModel,
         topBarButton = {
             Row(
                 modifier = Modifier.fillMaxWidth(),

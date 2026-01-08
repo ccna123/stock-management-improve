@@ -64,8 +64,6 @@ fun DetailScreen(
         topBarText = Screen.Detail.displayName,
         topBarIcon = Icons.AutoMirrored.Filled.ArrowBack,
         appViewModel = appViewModel,
-        currentScreenNameId = Screen.Detail.routeId,
-        prevScreenNameId = Screen.Detail.routeId,
         hasBottomBar = false,
         onBackArrowClick = { onGoBack() }
     ) { paddingValues ->

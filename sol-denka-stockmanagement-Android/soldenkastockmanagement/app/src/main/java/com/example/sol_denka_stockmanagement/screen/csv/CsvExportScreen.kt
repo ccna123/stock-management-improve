@@ -105,8 +105,6 @@ fun CsvExportScreen(
         topBarText = "${Screen.fromRouteId(Screen.CsvExport.routeId)?.displayName}",
         topBarIcon = Icons.AutoMirrored.Filled.ArrowBack,
         appViewModel = appViewModel,
-        currentScreenNameId = Screen.CsvExport.routeId,
-        prevScreenNameId = Screen.CsvExport.routeId,
         hasBottomBar = true,
         bottomButton = {
             ButtonContainer(

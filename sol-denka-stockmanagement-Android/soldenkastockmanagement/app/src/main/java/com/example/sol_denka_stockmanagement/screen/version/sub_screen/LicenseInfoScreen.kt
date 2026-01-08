@@ -20,7 +20,6 @@ fun LicenseInfoScreen(
     Layout(
         topBarText = Screen.LicenseInfo.displayName,
         topBarIcon = Icons.AutoMirrored.Filled.ArrowBack,
-        currentScreenNameId = Screen.LicenseInfo.routeId,
         hasBottomBar = false,
         onBackArrowClick = { onGoBack() }
     ) { paddingValues ->

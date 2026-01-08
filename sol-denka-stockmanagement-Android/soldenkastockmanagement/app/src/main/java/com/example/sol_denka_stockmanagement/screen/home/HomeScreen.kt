@@ -112,7 +112,6 @@ fun HomeScreen(
     Layout(
         topBarText = Screen.Home.displayName,
         topBarIcon = Icons.Default.Menu,
-        currentScreenNameId = Screen.Home.routeId,
         hasBottomBar = false,
         onNavigate = onNavigate,
         appViewModel = appViewModel,

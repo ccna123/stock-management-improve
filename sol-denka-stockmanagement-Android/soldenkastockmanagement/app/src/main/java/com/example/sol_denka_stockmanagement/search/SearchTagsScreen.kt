@@ -131,11 +131,8 @@ fun SearchTagsScreen(
     Layout(
         topBarText = "${Screen.fromRouteId(prevScreenNameId)?.displayName} (探索)",
         topBarIcon = Icons.AutoMirrored.Filled.ArrowBack,
-        currentScreenNameId = Screen.SearchTagsScreen("").routeId,
-        prevScreenNameId = prevScreenNameId,
         hasBottomBar = true,
         appViewModel = appViewModel,
-        scanViewModel = scanViewModel,
         topBarButton = {
             Row(
                 modifier = Modifier.fillMaxWidth(),

@@ -58,7 +58,6 @@ fun VersionInfoScreen(
     Layout(
         topBarText = Screen.VersionInfo.displayName,
         topBarIcon = Icons.AutoMirrored.Filled.ArrowBack,
-        currentScreenNameId = Screen.VersionInfo.routeId,
         hasBottomBar = false,
         onBackArrowClick = { onGoBack() }
     ) { paddingValues ->

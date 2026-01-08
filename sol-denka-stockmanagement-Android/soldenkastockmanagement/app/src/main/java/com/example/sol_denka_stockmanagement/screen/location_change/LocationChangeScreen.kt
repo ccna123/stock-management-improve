@@ -74,8 +74,6 @@ fun LocationChangeScreen(
         topBarIcon = Icons.AutoMirrored.Filled.ArrowBack,
         appViewModel = appViewModel,
         onNavigate = onNavigate,
-        currentScreenNameId = Screen.Outbound.routeId,
-        prevScreenNameId = Screen.Outbound.routeId, // for scan screen to navigate back,
         hasBottomBar = true,
         bottomButton = {
             Row(

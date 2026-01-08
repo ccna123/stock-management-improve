@@ -109,7 +109,6 @@ fun SettingScreen(
     Layout(
         topBarText = Screen.Setting.displayName,
         topBarIcon = Icons.AutoMirrored.Filled.ArrowBack,
-        currentScreenNameId = Screen.Setting.routeId,
         hasBottomBar = true,
         bottomButton = {
             ButtonContainer(

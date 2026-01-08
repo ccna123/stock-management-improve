@@ -91,8 +91,6 @@ fun InventoryScreen(
         topBarText = stringResource(R.string.inventory),
         topBarIcon = Icons.AutoMirrored.Filled.ArrowBack,
         appViewModel = appViewModel,
-        currentScreenNameId = Screen.Inventory.routeId,
-        prevScreenNameId = Screen.Inventory.routeId, // for scan screen to navigate back,
         hasBottomBar = true,
         bottomButton = {
             ButtonContainer(

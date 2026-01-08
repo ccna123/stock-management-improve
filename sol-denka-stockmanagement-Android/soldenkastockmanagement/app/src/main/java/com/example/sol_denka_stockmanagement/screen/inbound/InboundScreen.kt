@@ -152,8 +152,6 @@ fun InboundScreen(
         topBarIcon = Icons.AutoMirrored.Filled.ArrowBack,
         appViewModel = appViewModel,
         onNavigate = onNavigate,
-        currentScreenNameId = Screen.Inbound.routeId,
-        prevScreenNameId = Screen.Inbound.routeId, // for scan screen to navigate back,
         hasBottomBar = true,
         bottomButton = {
             Row(

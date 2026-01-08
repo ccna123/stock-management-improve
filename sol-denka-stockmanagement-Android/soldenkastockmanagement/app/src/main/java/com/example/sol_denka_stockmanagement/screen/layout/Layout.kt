@@ -28,7 +28,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DrawerState
@@ -37,7 +36,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.Scaffold
@@ -60,7 +58,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
@@ -84,7 +81,6 @@ import com.example.sol_denka_stockmanagement.ui.theme.deepOceanBlue
 import com.example.sol_denka_stockmanagement.ui.theme.orange
 import com.example.sol_denka_stockmanagement.ui.theme.paleSkyBlue
 import com.example.sol_denka_stockmanagement.viewmodel.AppViewModel
-import com.example.sol_denka_stockmanagement.viewmodel.ScanViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
@@ -94,18 +90,12 @@ fun Layout(
     modifier: Modifier = Modifier,
     topBarText: String,
     topBarIcon: ImageVector,
-    currentScreenNameId: String = "",
-    prevScreenNameId: String = "",
     hasBottomBar: Boolean = true,
     appViewModel: AppViewModel? = null,
-    scanViewModel: ScanViewModel? = null,
     onBackArrowClick: (DrawerState) -> Unit,
     onNavigate: ((Screen) -> Unit)? = null,
     bottomButton: (@Composable () -> Unit)? = null,
     topBarButton: (@Composable () -> Unit)? = null,
-    onConfirmProcessedScanDataDialog: (() -> Unit)? = null,
-    onDismissProcessedScanDataDialog: (() -> Unit)? = null,
-    onDisplayDialogPress: (() -> Unit)? = null,
     content: @Composable (PaddingValues) -> Unit
 ) {
     // ✅ Get ReaderController via Hilt entry point

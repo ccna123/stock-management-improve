@@ -150,8 +150,6 @@ fun CsvImportScreen(
         topBarText = "${Screen.fromRouteId(Screen.CsvImport.routeId)?.displayName}",
         topBarIcon = Icons.AutoMirrored.Filled.ArrowBack,
         appViewModel = appViewModel,
-        currentScreenNameId = Screen.CsvImport.routeId,
-        prevScreenNameId = Screen.CsvImport.routeId,
         hasBottomBar = true,
         bottomButton = {
             ButtonContainer(

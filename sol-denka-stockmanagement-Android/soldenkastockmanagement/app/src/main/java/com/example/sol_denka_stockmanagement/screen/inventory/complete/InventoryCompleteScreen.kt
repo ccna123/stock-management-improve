@@ -125,8 +125,6 @@ fun InventoryCompleteScreen(
         topBarIcon = Icons.AutoMirrored.Filled.ArrowBack,
         appViewModel = appViewModel,
         onNavigate = onNavigate,
-        currentScreenNameId = Screen.InventoryComplete.routeId,
-        prevScreenNameId = Screen.InventoryComplete.routeId, // for scan screen to navigate back,
         hasBottomBar = true,
         bottomButton = {
             ButtonContainer(
