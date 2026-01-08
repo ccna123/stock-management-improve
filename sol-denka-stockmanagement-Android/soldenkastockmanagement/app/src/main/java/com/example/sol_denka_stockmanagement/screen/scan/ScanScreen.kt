@@ -3,10 +3,10 @@ package com.example.sol_denka_stockmanagement.screen.scan
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -54,7 +54,6 @@ import com.example.sol_denka_stockmanagement.share.dialog.ConfirmDialog
 import com.example.sol_denka_stockmanagement.ui.theme.brightAzure
 import com.example.sol_denka_stockmanagement.ui.theme.brightGreenSecondary
 import com.example.sol_denka_stockmanagement.ui.theme.orange
-import com.example.sol_denka_stockmanagement.ui.theme.paleSkyBlue
 import com.example.sol_denka_stockmanagement.ui.theme.tealGreen
 import com.example.sol_denka_stockmanagement.viewmodel.AppViewModel
 import com.example.sol_denka_stockmanagement.viewmodel.ScanViewModel
@@ -292,14 +291,17 @@ fun ScanScreen(
                         .format(DateTimeFormatter.ofPattern("HH:mm:ss"))
                 )
             } else {
-                Box(
+                Row(
                     modifier = Modifier
-                        .background(
-                            color = Color.White,
-                            shape = RoundedCornerShape(12.dp)
+                        .fillMaxWidth()
+                        .height(IntrinsicSize.Min)
+                        .padding(horizontal = 12.dp, vertical = 8.dp)
+                        .shadow(
+                            elevation = 6.dp,
+                            shape = RoundedCornerShape(16.dp),
+                            clip = false
                         )
-                        .border(1.dp, color = paleSkyBlue, shape = RoundedCornerShape(12.dp))
-                        .fillMaxWidth(),
+                        .background(Color.White, RoundedCornerShape(16.dp))
                 ) {
                     Column(
                         modifier = Modifier

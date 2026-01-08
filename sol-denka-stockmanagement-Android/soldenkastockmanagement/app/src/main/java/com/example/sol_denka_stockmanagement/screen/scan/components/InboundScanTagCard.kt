@@ -1,7 +1,6 @@
 package com.example.sol_denka_stockmanagement.screen.scan.components
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -29,7 +28,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.sol_denka_stockmanagement.R
 import com.example.sol_denka_stockmanagement.ui.theme.deepBlueSky
-import com.example.sol_denka_stockmanagement.ui.theme.paleSkyBlue
 
 @Composable
 fun InboundScanTagCard(epc: String, itemName: String, itemCode: String, timeStamp: String) {
@@ -54,7 +52,7 @@ fun InboundScanTagCard(epc: String, itemName: String, itemCode: String, timeStam
                     shape = RoundedCornerShape(12.dp)
                 )
                 // Add border for your pale outline
-                .border(1.dp, color = paleSkyBlue, shape = RoundedCornerShape(12.dp))
+//                .border(1.dp, color = paleSkyBlue, shape = RoundedCornerShape(12.dp))
         ) {
             Column(
                 modifier = Modifier

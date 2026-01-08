@@ -66,14 +66,14 @@ fun OutboundSingleItem(
                             enabled = true
                         ),
                     value = value,
-                    borderColor = Color.Transparent,
-                    containerColor = Color.LightGray.copy(alpha = .5f),
+                    borderColor = Color.LightGray.copy(alpha = .7f),
+                    containerColor = Color.LightGray.copy(alpha = .3f),
                     hintText = SelectTitle.SelectProcessMethod.displayName,
                     isNumeric = false,
                     readOnly = true,
                     isDropDown = true,
                     enable = true,
-                    iconColor = brightGreenSecondary,
+                    iconColor = Color.LightGray.copy(alpha = .8f),
                     onChange = { onValueChange(it) }
                 )
 
