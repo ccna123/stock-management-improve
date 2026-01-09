@@ -93,10 +93,6 @@ fun InboundInputFormItem(
                         R.string.specific_gravity
                     )
 
-                    InboundInputField.WINDER.code -> stringResource(
-                        R.string.winderInfo
-                    )
-
                     InboundInputField.OCCURRENCE_REASON.code -> stringResource(
                         R.string.occurrenceReason
                     )

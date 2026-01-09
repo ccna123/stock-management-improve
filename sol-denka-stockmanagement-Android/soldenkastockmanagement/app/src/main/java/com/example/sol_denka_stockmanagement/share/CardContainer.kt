@@ -19,7 +19,7 @@ fun CardContainer(modifier: Modifier = Modifier, content: @Composable RowScope.(
         modifier = modifier
             .fillMaxWidth()
             .wrapContentHeight()
-            .padding(horizontal = 12.dp, vertical = 10.dp)
+            .padding(horizontal = 10.dp, vertical = 12.dp)
             .shadow(
                 elevation = 6.dp,
                 shape = RoundedCornerShape(16.dp),
