@@ -2,10 +2,7 @@ package com.example.sol_denka_stockmanagement.screen.csv
 
 import android.os.Build
 import androidx.annotation.RequiresApi
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -48,10 +45,10 @@ import com.example.sol_denka_stockmanagement.navigation.Screen
 import com.example.sol_denka_stockmanagement.screen.csv.components.SingleCsvFile
 import com.example.sol_denka_stockmanagement.screen.layout.Layout
 import com.example.sol_denka_stockmanagement.share.ButtonContainer
+import com.example.sol_denka_stockmanagement.share.CardContainer
 import com.example.sol_denka_stockmanagement.share.InputContainer
 import com.example.sol_denka_stockmanagement.share.InputFieldContainer
 import com.example.sol_denka_stockmanagement.share.dialog.NetworkDialog
-import com.example.sol_denka_stockmanagement.ui.theme.paleSkyBlue
 import com.example.sol_denka_stockmanagement.viewmodel.AppViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -161,18 +158,7 @@ fun CsvExportScreen(
                 .fillMaxSize()
                 .imePadding()
         ) {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp)
-                    .shadow(
-                        elevation = 3.dp,
-                        shape = RoundedCornerShape(12.dp),
-                        clip = false, // 👈 allow the shadow to bleed outside the box
-                    )
-                    .border(1.dp, color = paleSkyBlue, shape = RoundedCornerShape(12.dp))
-                    .background(Color.White, RoundedCornerShape(12.dp))
-            ) {
+            CardContainer {
                 Column(
                     modifier = Modifier
                         .padding(16.dp)

@@ -2,11 +2,9 @@ package com.example.sol_denka_stockmanagement.screen.scan
 
 import android.os.Build
 import androidx.annotation.RequiresApi
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -38,7 +36,6 @@ import com.example.sol_denka_stockmanagement.R
 import com.example.sol_denka_stockmanagement.constant.DialogType
 import com.example.sol_denka_stockmanagement.constant.ScanMode
 import com.example.sol_denka_stockmanagement.constant.StatusCode
-import com.example.sol_denka_stockmanagement.constant.TagScanStatus
 import com.example.sol_denka_stockmanagement.helper.message_mapper.MessageMapper
 import com.example.sol_denka_stockmanagement.intent.ExpandIntent
 import com.example.sol_denka_stockmanagement.intent.InputIntent
@@ -50,6 +47,7 @@ import com.example.sol_denka_stockmanagement.screen.scan.components.LocationChan
 import com.example.sol_denka_stockmanagement.screen.scan.components.OutboundSingleItem
 import com.example.sol_denka_stockmanagement.screen.scan.components.ProcessModal
 import com.example.sol_denka_stockmanagement.share.ButtonContainer
+import com.example.sol_denka_stockmanagement.share.CardContainer
 import com.example.sol_denka_stockmanagement.share.dialog.ConfirmDialog
 import com.example.sol_denka_stockmanagement.ui.theme.brightAzure
 import com.example.sol_denka_stockmanagement.ui.theme.brightGreenSecondary
@@ -291,18 +289,7 @@ fun ScanScreen(
                         .format(DateTimeFormatter.ofPattern("HH:mm:ss"))
                 )
             } else {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(IntrinsicSize.Min)
-                        .padding(horizontal = 12.dp, vertical = 8.dp)
-                        .shadow(
-                            elevation = 6.dp,
-                            shape = RoundedCornerShape(16.dp),
-                            clip = false
-                        )
-                        .background(Color.White, RoundedCornerShape(16.dp))
-                ) {
+                CardContainer {
                     Column(
                         modifier = Modifier
                             .padding(10.dp)

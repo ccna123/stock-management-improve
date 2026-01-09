@@ -18,13 +18,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.sol_denka_stockmanagement.ui.theme.brightAzure
 
-enum class ButtonPosition {
-    Top,
-    Bottom,
-    Unknown
-}
-
-
 @Composable
 fun ButtonContainer(
     modifier: Modifier = Modifier,
@@ -35,7 +28,6 @@ fun ButtonContainer(
     shape: Shape = RoundedCornerShape(20.dp),
     icon: @Composable (() -> Unit)? = null,
     buttonHeight: Dp = 48.dp,
-    position: ButtonPosition = ButtonPosition.Bottom,
     buttonText: String = "",
     buttonTextSize: Int = 16,
     textColor: Color = Color.White,
