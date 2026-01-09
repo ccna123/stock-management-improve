@@ -2,6 +2,7 @@ package com.example.sol_denka_stockmanagement.screen.inventory.input
 
 import android.os.Build
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -36,6 +37,7 @@ import com.example.sol_denka_stockmanagement.intent.ShareIntent
 import com.example.sol_denka_stockmanagement.navigation.Screen
 import com.example.sol_denka_stockmanagement.screen.layout.Layout
 import com.example.sol_denka_stockmanagement.share.ButtonContainer
+import com.example.sol_denka_stockmanagement.share.CardContainer
 import com.example.sol_denka_stockmanagement.share.InputFieldContainer
 import com.example.sol_denka_stockmanagement.share.dialog.ConfirmDialog
 import com.example.sol_denka_stockmanagement.viewmodel.AppViewModel
@@ -120,13 +122,14 @@ fun InventoryScreen(
                 onGoBack()
             }
         }) { paddingValues ->
-        LazyColumn(
+        CardContainer(
             modifier = Modifier
-                .padding(top = paddingValues.calculateTopPadding())
-                .padding(16.dp)
-                .imePadding()
+                .padding(paddingValues)
         ) {
-            item {
+            Column(
+                modifier = Modifier
+                    .padding(16.dp)
+            ) {
                 Text(text = "棚卸を行う保管場所を選択")
                 Spacer(modifier = Modifier.height(10.dp))
                 ExposedDropdownMenuBox(
