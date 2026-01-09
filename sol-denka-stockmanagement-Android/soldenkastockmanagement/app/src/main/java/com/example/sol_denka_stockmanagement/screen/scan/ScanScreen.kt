@@ -264,7 +264,7 @@ fun ScanScreen(
         },
         onBackArrowClick = {
             if (isPerformingInventory.not()) {
-                if (rfidTagList.any { it.newFields.tagScanStatus == TagScanStatus.PROCESSED } || lastInboundEpc?.isNotEmpty() == true) {
+                if (scannedTags.isNotEmpty() || lastInboundEpc?.isNotEmpty() == true) {
                     appViewModel.onGeneralIntent(ShareIntent.ToggleClearTagConfirmDialog)
                 } else {
                     scanViewModel.apply {
