@@ -18,7 +18,7 @@ sealed interface ShareIntent {
     data class ToggleNetworkDialog(val doesOpenDialog: Boolean) : ShareIntent
     data class ToggleTimePicker(val showTimePicker: Boolean, val field: String = "") : ShareIntent
     data class ToggleDatePicker(val showDatePicker: Boolean, val field: String = "") : ShareIntent
-    data class ChangePerTagProcessMethod(val tag: String, val method: String) : ShareIntent
+    data class ChangePerTagProcessMethod(val tag: String, val method: String, val isChecked: Boolean) : ShareIntent
     data class ShowModalProcessMethod(val showBottomSheet: Boolean) : ShareIntent
     data object ResetState : ShareIntent
     data object ResetDetailIndex: ShareIntent

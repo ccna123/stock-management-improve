@@ -115,7 +115,7 @@ fun ScanScreen(
         },
         onApplyBulk = {
             appViewModel.apply {
-                onInputIntent(InputIntent.BulkApplyProcessMethod(checkedTags = displayTags.map { it.epc }))
+                onInputIntent(InputIntent.BulkApplyProcessMethod(checkedTags = rfidTagList.filter { it.newFields.isChecked }.map { it.epc }))
                 onGeneralIntent(ShareIntent.ShowModalProcessMethod(false))
             }
         }
@@ -351,6 +351,7 @@ fun ScanScreen(
                 Spacer(modifier = Modifier.height(25.dp))
                 LazyColumn {
                     items(displayTags, key = { tag -> tag.epc }) { tag ->
+                        val isChecked = rfidTagList.find { it.epc == tag.epc }?.newFields?.isChecked == true
                         when (prevScreenNameId) {
                             Screen.Outbound.routeId -> {
                                 val isExpanded = expandedMap[tag.epc] ?: false
@@ -393,7 +394,8 @@ fun ScanScreen(
                                         appViewModel.onGeneralIntent(
                                             ShareIntent.ChangePerTagProcessMethod(
                                                 tag = tag.epc,
-                                                method = newValue
+                                                method = newValue,
+                                                isChecked = isChecked
                                             )
                                         )
                                     },
@@ -401,7 +403,8 @@ fun ScanScreen(
                                         appViewModel.onGeneralIntent(
                                             ShareIntent.ChangePerTagProcessMethod(
                                                 tag = tag.epc,
-                                                method = method
+                                                method = method,
+                                                isChecked = isChecked
                                             )
                                         )
 

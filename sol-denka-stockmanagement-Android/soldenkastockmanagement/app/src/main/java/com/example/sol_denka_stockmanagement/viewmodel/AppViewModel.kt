@@ -2,6 +2,7 @@ package com.example.sol_denka_stockmanagement.viewmodel
 
 import android.content.Context
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
@@ -268,6 +269,7 @@ class AppViewModel @Inject constructor(
 
                 intent.checkedTags.forEach { epc ->
                     updated[epc] = chosenMethod
+                    _outboundProcessErrorSet.value = _outboundProcessErrorSet.value - epc
                 }
 
                 perTagProcessMethod.value = updated
@@ -355,6 +357,21 @@ class AppViewModel @Inject constructor(
             is ShareIntent.ChangePerTagProcessMethod -> {
                 perTagProcessMethod.value = perTagProcessMethod.value.toMutableMap()
                     .apply { put(intent.tag, intent.method) }
+
+                val isChecked = intent.isChecked
+                _outboundProcessErrorSet.value = when {
+                    // ✅ process is chosen → not error
+                    intent.method.isNotEmpty() ->
+                        _outboundProcessErrorSet.value - intent.tag
+
+                    // ❌ choose "処理方法選択" + tag is checking → add error
+                    intent.method.isEmpty() && isChecked ->
+                        _outboundProcessErrorSet.value + intent.tag
+
+                    else ->
+                        _outboundProcessErrorSet.value
+
+                }
             }
 
             is ShareIntent.ShowModalProcessMethod -> {
