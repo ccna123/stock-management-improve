@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -28,11 +27,12 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.example.sol_denka_stockmanagement.R
+import com.example.sol_denka_stockmanagement.share.CardContainer
 import com.example.sol_denka_stockmanagement.ui.theme.brightGreenPrimary
+import com.example.sol_denka_stockmanagement.ui.theme.brightGreenSecondary
 
 @Composable
 fun SingleCsvFile(
-    modifier: Modifier = Modifier,
     csvFileName: String,
     csvFileSize: String,
     progress: Float = 0f,
@@ -47,107 +47,93 @@ fun SingleCsvFile(
     val bgColor = when {
         isError -> Color(0xFFFFE5E5)
         isCompleted -> brightGreenPrimary.copy(alpha = 0.1f)
-        isSelected -> brightGreenPrimary.copy(alpha = 0.1f)
+        isSelected -> brightGreenPrimary.copy(alpha = 0.2f)
         else -> Color.White
     }
 
-// determine border color
-    val borderColor = when {
-        isError -> Color.Red
-        isCompleted -> brightGreenPrimary
-        isSelected -> brightGreenPrimary
-        else -> Color(0xFFE0E0E0)
-    }
-
-    Row(
-        modifier = modifier
-            .padding(vertical = 0.dp, horizontal = 8.dp)
-            .fillMaxWidth()
-            .background(color = bgColor, shape = RoundedCornerShape(20.dp))
-            .border(
-                width = 1.dp,
-                color = borderColor,
-                shape = RoundedCornerShape(20.dp)
-            )
-            .padding(10.dp)
+    CardContainer(
+        modifier = Modifier
             .clickable(
                 indication = null,
                 interactionSource = null,
                 onClick = { onChoose() }
             )
-        ,
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-
-        // ==== ICON WRAPPER ====
-        Box(
+        Row(
             modifier = Modifier
-                .size(42.dp)
-                .background(
-                    color = Color(0xFFD9F7D3),   // light pastel green
-                    shape = RoundedCornerShape(12.dp)
-                )
-                .border(
-                    1.dp,
-                    color = Color(0xFF8AD882),    // bright green
-                    shape = RoundedCornerShape(12.dp)
-                )
-            ,
-            contentAlignment = Alignment.Center
+                .background(color = if (isSelected) bgColor else Color.White, shape = RoundedCornerShape(16.dp))
+                .padding(10.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            Image(
-                painter = painterResource(R.drawable.csv),  // SVG with full color
-                contentDescription = null,
-                contentScale = ContentScale.Fit,
-                modifier = Modifier.size(28.dp)
-            )
-        }
-
-        // ==== TEXT INFO ====
-        Column(
-            modifier = Modifier.weight(1f)
-        ) {
-            Text(
-                text = csvFileName,
-                color = Color.Black
-            )
-
-            Text(
-                text = "Size  $csvFileSize",
-                color = Color.Gray
-            )
-
-            if (showProgress) {
-                Spacer(modifier = Modifier.height(6.dp))
-
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(10.dp)
-                ) {
-                    LinearProgressIndicator(
-                        progress = { progress },
-                        modifier = Modifier
-                            .height(6.dp)
-                            .weight(1f),
-                        color = brightGreenPrimary,
-                        trackColor = Color.LightGray
+            // ==== ICON WRAPPER ====
+            Box(
+                modifier = Modifier
+                    .size(42.dp)
+                    .background(
+                        color = Color(0xFFD9F7D3),   // light pastel green
+                        shape = RoundedCornerShape(12.dp)
                     )
+                    .border(
+                        1.dp,
+                        color = Color(0xFF8AD882),    // bright green
+                        shape = RoundedCornerShape(12.dp)
+                    ),
+                contentAlignment = Alignment.Center
+            ) {
+                Image(
+                    painter = painterResource(R.drawable.csv),  // SVG with full color
+                    contentDescription = null,
+                    contentScale = ContentScale.Fit,
+                    modifier = Modifier.size(28.dp)
+                )
+            }
 
-                    Text(text = "${(progress * 100).toInt()}%")
+            // ==== TEXT INFO ====
+            Column(
+                modifier = Modifier.weight(1f)
+            ) {
+                Text(
+                    text = csvFileName,
+                    color = Color.Black
+                )
 
-                    when {
-                        isCompleted -> Icon(
-                            imageVector = Icons.Default.CheckCircle,
-                            contentDescription = null,
-                            tint = brightGreenPrimary
+                Text(
+                    text = "Size  $csvFileSize",
+                    color = Color.Gray
+                )
+
+                if (showProgress) {
+                    Spacer(modifier = Modifier.height(6.dp))
+
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(10.dp)
+                    ) {
+                        LinearProgressIndicator(
+                            progress = { progress },
+                            modifier = Modifier
+                                .height(6.dp)
+                                .weight(1f),
+                            color = brightGreenPrimary,
+                            trackColor = Color.LightGray
                         )
 
-                        isError -> Icon(
-                            imageVector = Icons.Default.Cancel,
-                            contentDescription = null,
-                            tint = Color.Red
-                        )
+                        Text(text = "${(progress * 100).toInt()}%")
+
+                        when {
+                            isCompleted -> Icon(
+                                imageVector = Icons.Default.CheckCircle,
+                                contentDescription = null,
+                                tint = brightGreenPrimary
+                            )
+
+                            isError -> Icon(
+                                imageVector = Icons.Default.Cancel,
+                                contentDescription = null,
+                                tint = Color.Red
+                            )
+                        }
                     }
                 }
             }

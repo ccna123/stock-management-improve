@@ -282,8 +282,6 @@ fun CsvImportScreen(
                                 progress = if (isSelectedFile) importProgress else 0f,
                                 isCompleted = isSelectedFile && importResultStatus is ProcessResult.Success,
                                 isError = isSelectedFile && importResultStatus is ProcessResult.Failure,
-                                modifier = Modifier
-                                    .padding(10.dp),
                                 onChoose = {
                                     csvViewModel.onCsvIntent(
                                         CsvIntent.ToggleFileSelect(

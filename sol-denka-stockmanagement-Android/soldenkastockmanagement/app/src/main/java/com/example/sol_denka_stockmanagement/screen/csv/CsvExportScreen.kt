@@ -244,8 +244,6 @@ fun CsvExportScreen(
                                 isCompleted = file.isCompleted,
                                 isError = file.isFailed,
                                 showProgress = showProgress,
-                                modifier = Modifier
-                                    .padding(10.dp),
                             )
                         } ?: Text(
                             color = Color.Red,
