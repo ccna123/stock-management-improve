@@ -29,7 +29,6 @@ import androidx.compose.ui.unit.dp
 import com.example.sol_denka_stockmanagement.R
 import com.example.sol_denka_stockmanagement.share.CardContainer
 import com.example.sol_denka_stockmanagement.ui.theme.brightGreenPrimary
-import com.example.sol_denka_stockmanagement.ui.theme.brightGreenSecondary
 
 @Composable
 fun SingleCsvFile(

@@ -2,22 +2,17 @@ package com.example.sol_denka_stockmanagement.screen.inbound
 
 import android.os.Build
 import androidx.annotation.RequiresApi
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Cancel
@@ -63,10 +58,10 @@ import com.example.sol_denka_stockmanagement.screen.inbound.components.InboundIn
 import com.example.sol_denka_stockmanagement.screen.inbound.components.ItemSearchBar
 import com.example.sol_denka_stockmanagement.screen.layout.Layout
 import com.example.sol_denka_stockmanagement.share.ButtonContainer
+import com.example.sol_denka_stockmanagement.share.CardContainer
 import com.example.sol_denka_stockmanagement.share.InputFieldContainer
 import com.example.sol_denka_stockmanagement.share.dialog.DateDialog
 import com.example.sol_denka_stockmanagement.share.dialog.TimeDialog
-import com.example.sol_denka_stockmanagement.ui.theme.paleSkyBlue
 import com.example.sol_denka_stockmanagement.viewmodel.AppViewModel
 import com.example.sol_denka_stockmanagement.viewmodel.ScanViewModel
 import kotlinx.coroutines.launch
@@ -304,21 +299,10 @@ fun InboundScreen(
         Column(
             modifier = Modifier
                 .padding(paddingValues)
-                .imePadding()
                 .padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .shadow(
-                        elevation = 3.dp,
-                        shape = RoundedCornerShape(12.dp),
-                        clip = false, // 👈 allow the shadow to bleed outside the box
-                    )
-                    .border(1.dp, color = paleSkyBlue, shape = RoundedCornerShape(12.dp))
-                    .background(Color.White, RoundedCornerShape(12.dp))
-            ) {
+            CardContainer{
                 Column(
                     modifier = Modifier.padding(10.dp),
                 ) {
