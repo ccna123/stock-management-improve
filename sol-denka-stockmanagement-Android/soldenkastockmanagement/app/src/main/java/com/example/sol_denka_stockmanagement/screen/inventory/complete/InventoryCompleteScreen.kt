@@ -2,10 +2,7 @@ package com.example.sol_denka_stockmanagement.screen.inventory.complete
 
 import android.os.Build
 import androidx.annotation.RequiresApi
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -15,7 +12,6 @@ import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.CheckCircle
@@ -47,12 +43,12 @@ import com.example.sol_denka_stockmanagement.model.inventory.InventoryCompleteMo
 import com.example.sol_denka_stockmanagement.navigation.Screen
 import com.example.sol_denka_stockmanagement.screen.layout.Layout
 import com.example.sol_denka_stockmanagement.share.ButtonContainer
+import com.example.sol_denka_stockmanagement.share.CardContainer
 import com.example.sol_denka_stockmanagement.share.InputFieldContainer
 import com.example.sol_denka_stockmanagement.share.dialog.NetworkDialog
 import com.example.sol_denka_stockmanagement.ui.theme.brightGreenPrimary
 import com.example.sol_denka_stockmanagement.ui.theme.brightOrange
 import com.example.sol_denka_stockmanagement.ui.theme.deepBlueSky
-import com.example.sol_denka_stockmanagement.ui.theme.paleSkyBlue
 import com.example.sol_denka_stockmanagement.ui.theme.primaryRed
 import com.example.sol_denka_stockmanagement.viewmodel.AppViewModel
 import com.example.sol_denka_stockmanagement.viewmodel.ScanViewModel
@@ -205,19 +201,7 @@ fun InventoryCompleteScreen(
                     .imePadding()
             ) {
                 item {
-                    Box(
-                        modifier = Modifier
-                            .shadow(
-                                elevation = 3.dp,
-                                shape = RoundedCornerShape(12.dp),
-                                clip = false, // 👈 allow the shadow to bleed outside the box
-                            )
-                            .background(
-                                color = Color.White,
-                                shape = RoundedCornerShape(12.dp)
-                            )
-                            .border(1.dp, color = paleSkyBlue, shape = RoundedCornerShape(10.dp)),
-                    ) {
+                    CardContainer {
                         Column(
                             modifier = Modifier
                                 .fillMaxWidth()
