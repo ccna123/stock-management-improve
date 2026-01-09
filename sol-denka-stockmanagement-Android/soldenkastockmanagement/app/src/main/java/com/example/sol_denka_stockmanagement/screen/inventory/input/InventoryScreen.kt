@@ -2,6 +2,7 @@ package com.example.sol_denka_stockmanagement.screen.inventory.input
 
 import android.os.Build
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -120,62 +121,65 @@ fun InventoryScreen(
                 onGoBack()
             }
         }) { paddingValues ->
-        CardContainer(
+        Box(
             modifier = Modifier
                 .padding(paddingValues)
+                .padding(16.dp)
         ) {
-            Column(
-                modifier = Modifier
-                    .padding(16.dp)
-            ) {
-                Text(text = "棚卸を行う保管場所を選択")
-                Spacer(modifier = Modifier.height(10.dp))
-                ExposedDropdownMenuBox(
-                    expanded = expandState.locationExpanded,
-                    onExpandedChange = { appViewModel.onExpandIntent(ExpandIntent.ToggleLocationExpanded) }) {
-                    InputFieldContainer(
-                        modifier = Modifier
-                            .menuAnchor(
-                                type = ExposedDropdownMenuAnchorType.PrimaryNotEditable,
-                                enabled = true
-                            )
-                            .fillMaxWidth(),
-                        value = if (inputState.location?.locationName == SelectTitle.SelectLocation.displayName) "" else inputState.location?.locationName
-                            ?: "",
-                        hintText = SelectTitle.SelectLocation.displayName,
-                        isNumeric = false,
-                        onChange = {
-                        },
-                        readOnly = true,
-                        isDropDown = true,
-                        enable = true,
-                        onEnterPressed = {}
-                    )
-                    ExposedDropdownMenu(
+            CardContainer {
+                Column(
+                    modifier = Modifier
+                        .padding(16.dp)
+                ) {
+                    Text(text = "棚卸を行う保管場所を選択")
+                    Spacer(modifier = Modifier.height(10.dp))
+                    ExposedDropdownMenuBox(
                         expanded = expandState.locationExpanded,
-                        onDismissRequest = { appViewModel.onExpandIntent(ExpandIntent.ToggleLocationExpanded) }
-                    ) {
-                        DropdownMenuItem(
-                            text = { Text(text = SelectTitle.SelectLocation.displayName) },
-                            onClick = {
-                                appViewModel.apply {
-                                    onInputIntent(InputIntent.ChangeLocation(null))
-                                    onExpandIntent(ExpandIntent.ToggleLocationExpanded)
-                                }
-                            }
+                        onExpandedChange = { appViewModel.onExpandIntent(ExpandIntent.ToggleLocationExpanded) }) {
+                        InputFieldContainer(
+                            modifier = Modifier
+                                .menuAnchor(
+                                    type = ExposedDropdownMenuAnchorType.PrimaryNotEditable,
+                                    enabled = true
+                                )
+                                .fillMaxWidth(),
+                            value = if (inputState.location?.locationName == SelectTitle.SelectLocation.displayName) "" else inputState.location?.locationName
+                                ?: "",
+                            hintText = SelectTitle.SelectLocation.displayName,
+                            isNumeric = false,
+                            onChange = {
+                            },
+                            readOnly = true,
+                            isDropDown = true,
+                            enable = true,
+                            onEnterPressed = {}
                         )
-                        locationMaster.forEach { location ->
+                        ExposedDropdownMenu(
+                            expanded = expandState.locationExpanded,
+                            onDismissRequest = { appViewModel.onExpandIntent(ExpandIntent.ToggleLocationExpanded) }
+                        ) {
                             DropdownMenuItem(
-                                text = { Text(location.locationName) },
+                                text = { Text(text = SelectTitle.SelectLocation.displayName) },
                                 onClick = {
-                                    appViewModel.onInputIntent(
-                                        InputIntent.ChangeLocation(
-                                            location
-                                        )
-                                    )
-                                    appViewModel.onExpandIntent(ExpandIntent.ToggleLocationExpanded)
+                                    appViewModel.apply {
+                                        onInputIntent(InputIntent.ChangeLocation(null))
+                                        onExpandIntent(ExpandIntent.ToggleLocationExpanded)
+                                    }
                                 }
                             )
+                            locationMaster.forEach { location ->
+                                DropdownMenuItem(
+                                    text = { Text(location.locationName) },
+                                    onClick = {
+                                        appViewModel.onInputIntent(
+                                            InputIntent.ChangeLocation(
+                                                location
+                                            )
+                                        )
+                                        appViewModel.onExpandIntent(ExpandIntent.ToggleLocationExpanded)
+                                    }
+                                )
+                            }
                         }
                     }
                 }
