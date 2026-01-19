@@ -5,6 +5,9 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
+import androidx.room.TypeConverters
+import com.example.sol_denka_stockmanagement.database.converter.BigDecimalConverter
+import java.math.BigDecimal
 
 @Entity(
     tableName = "ItemTypeMaster", foreignKeys = [
@@ -36,6 +39,7 @@ import androidx.room.PrimaryKey
         Index(value = ["item_category_id"]),
     ]
 )
+@TypeConverters(BigDecimalConverter::class)
 data class ItemTypeMasterEntity(
     @PrimaryKey @ColumnInfo(name = "item_type_id") val itemTypeId: Int,
     @ColumnInfo(name = "item_count_unit_id") val itemCountUnitId: Int?,
@@ -44,8 +48,8 @@ data class ItemTypeMasterEntity(
     @ColumnInfo(name = "item_type_code") val itemTypeCode: String?,
     @ColumnInfo(name = "item_type_name") val itemTypeName: String,
     @ColumnInfo(name = "packing_type") val packingType: String?,
-    @ColumnInfo(name = "specific_gravity") val specificGravity: String?,
+    @ColumnInfo(name = "specific_gravity") val specificGravity: BigDecimal?,
     @ColumnInfo(name = "grade") val grade: String?,
     @ColumnInfo(name = "memo") val memo: String?,
-    @ColumnInfo(name = "unit_weight") val unitWeight: Int?,
+    @ColumnInfo(name = "unit_weight") val unitWeight: Long?,
 )

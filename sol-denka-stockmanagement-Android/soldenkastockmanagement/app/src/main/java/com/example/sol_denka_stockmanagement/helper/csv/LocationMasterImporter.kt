@@ -20,9 +20,9 @@ class LocationMasterImporter(
     override fun mapRow(row: CsvRow): LocationMasterModel {
         return LocationMasterModel(
             locationId = row.int("location_id")!!,
-            locationCode = row.string("location_code"),
-            locationName = row.string("location_name")!!,
-            memo = row.string("memo")
+            locationCode = row.stringWithLength("location_code", min = 1, max = 50),
+            locationName = row.stringWithLength("location_name", min = 1, max = 100)!!,
+            memo = row.stringWithLength("memo", min = 1, max = 500)
         )
     }
 

@@ -36,7 +36,7 @@ class LedgerItemMasterImporter(
             ledgerItemId = row.int("ledger_item_id")!!,
             itemTypeId = row.int("item_type_id")!!,
             locationId = row.int("location_id")!!,
-            tagId = row.int("tag_id")!!,
+            tagId = row.int("tag_id"),
             winderId = row.int("winder_id"),
             isInStock = row.boolean("is_in_stock"),
             weight = row.int("weight"),

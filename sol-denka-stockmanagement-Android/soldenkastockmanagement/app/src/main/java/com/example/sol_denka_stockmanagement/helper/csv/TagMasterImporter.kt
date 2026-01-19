@@ -24,8 +24,8 @@ class TagMasterImporter(
         return TagMasterModel(
             tagId = row.int("tag_id")!!,
             tagStatusId = row.int("tag_status_id")!!,
-            epc = row.string("epc")!!,
-            memo = row.string("memo") ?: "",
+            epc = row.stringWithExactLength("epc", length = 8)!!,
+            memo = row.stringWithLength("memo", min = 1, max = 500),
             newFields = AdditionalFieldsModel(
                 tagScanStatus = TagScanStatus.UNPROCESSED,
                 inventoryResultType = InventoryResultType.UNKNOWN,

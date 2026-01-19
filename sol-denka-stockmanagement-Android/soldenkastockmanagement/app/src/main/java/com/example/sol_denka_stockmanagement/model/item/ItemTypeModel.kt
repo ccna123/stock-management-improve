@@ -1,6 +1,7 @@
 package com.example.sol_denka_stockmanagement.model.item
 
 import com.example.sol_denka_stockmanagement.database.entity.item.ItemTypeMasterEntity
+import java.math.BigDecimal
 
 data class ItemTypeMasterModel(
     val itemTypeId: Int,
@@ -11,9 +12,9 @@ data class ItemTypeMasterModel(
     val itemTypeName: String,
     val packingType: String?,
     val grade: String?,
-    val specificGravity: String?,
+    val specificGravity: BigDecimal?,
     val memo: String?,
-    val unitWeight: Int?,
+    val unitWeight: Long?,
 )
 
 fun ItemTypeMasterEntity.toModel() = ItemTypeMasterModel(
