@@ -12,6 +12,8 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import java.math.BigDecimal
+import java.math.RoundingMode
 
 @HiltViewModel
 class InboundViewModel @Inject constructor(
@@ -50,7 +52,7 @@ class InboundViewModel @Inject constructor(
                     weight = weight,
                     width = width,
                     length = length,
-                    thickness = thickness,
+                    thickness = normalizeThickness(thickness).toString(),
                     lotNo = lotNo,
                     occurrenceReason = occurrenceReason,
                     quantity = quantity,
@@ -102,7 +104,7 @@ class InboundViewModel @Inject constructor(
                     weight = weight?.takeIf { it.isNotBlank() }?.toInt(),
                     width = width?.takeIf { it.isNotBlank() }?.toInt(),
                     length = length?.takeIf { it.isNotBlank() }?.toInt(),
-                    thickness = thickness?.takeIf { it.isNotBlank() }?.toInt(),
+                    thickness = normalizeThickness(thickness),
                     lotNo = lotNo,
                     occurrenceReason = occurrenceReason,
                     quantity = quantity?.takeIf { it.isNotBlank() }?.toInt(),
@@ -119,5 +121,14 @@ class InboundViewModel @Inject constructor(
             Log.e("TSS", "saveInboundToDb: ${e.message}")
             Result.failure(e)
         }
+    }
+
+    private fun normalizeThickness(raw: String?): BigDecimal? {
+        if (raw.isNullOrBlank()) return null
+
+        val bd = raw.toBigDecimalOrNull()
+            ?: throw IllegalArgumentException("thickness is not a number")
+
+        return bd.setScale(3, RoundingMode.DOWN)
     }
 }

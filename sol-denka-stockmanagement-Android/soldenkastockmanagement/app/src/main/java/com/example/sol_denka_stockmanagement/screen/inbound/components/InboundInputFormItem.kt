@@ -26,11 +26,19 @@ import com.example.sol_denka_stockmanagement.R
 import com.example.sol_denka_stockmanagement.constant.ControlType
 import com.example.sol_denka_stockmanagement.constant.DataType
 import com.example.sol_denka_stockmanagement.constant.InboundInputField
-import com.example.sol_denka_stockmanagement.constant.PackingType
 import com.example.sol_denka_stockmanagement.constant.SelectTitle
 import com.example.sol_denka_stockmanagement.helper.validate.FilterNumber
 import com.example.sol_denka_stockmanagement.intent.ExpandIntent
-import com.example.sol_denka_stockmanagement.intent.InputIntent.*
+import com.example.sol_denka_stockmanagement.intent.InputIntent.ChangeLength
+import com.example.sol_denka_stockmanagement.intent.InputIntent.ChangeLocation
+import com.example.sol_denka_stockmanagement.intent.InputIntent.ChangeLotNo
+import com.example.sol_denka_stockmanagement.intent.InputIntent.ChangeMemo
+import com.example.sol_denka_stockmanagement.intent.InputIntent.ChangeMissRollReason
+import com.example.sol_denka_stockmanagement.intent.InputIntent.ChangeQuantity
+import com.example.sol_denka_stockmanagement.intent.InputIntent.ChangeThickness
+import com.example.sol_denka_stockmanagement.intent.InputIntent.ChangeWeight
+import com.example.sol_denka_stockmanagement.intent.InputIntent.ChangeWidth
+import com.example.sol_denka_stockmanagement.intent.InputIntent.ChangeWinderType
 import com.example.sol_denka_stockmanagement.intent.ShareIntent
 import com.example.sol_denka_stockmanagement.model.inbound.InboundInputFormModel
 import com.example.sol_denka_stockmanagement.model.location.LocationMasterModel
@@ -56,6 +64,14 @@ fun InboundInputFormItem(
 
         /* ================= INPUT ================= */
         ControlType.INPUT -> {
+            val allowDecimal = when(result.fieldCode){
+                InboundInputField.WEIGHT.code -> false
+                InboundInputField.LENGTH.code -> false
+                InboundInputField.THICKNESS.code -> true
+                InboundInputField.WIDTH.code -> false
+                InboundInputField.QUANTITY.code -> false
+                else -> false
+            }
             InputFieldContainer(
                 modifier = Modifier
                     .height(if (result.fieldCode == InboundInputField.MEMO.code) 200.dp else 68.dp)
@@ -65,7 +81,6 @@ fun InboundInputFormItem(
                     InboundInputField.LENGTH.code -> inputState.length
                     InboundInputField.THICKNESS.code -> inputState.thickness
                     InboundInputField.WIDTH.code -> inputState.width
-                    InboundInputField.SPECIFIC_GRAVITY.code -> inputState.specificGravity
                     InboundInputField.OCCURRENCE_REASON.code -> inputState.occurrenceReason
                     InboundInputField.MEMO.code -> inputState.memo
                     InboundInputField.LOT_NO.code -> inputState.lotNo
@@ -87,10 +102,6 @@ fun InboundInputFormItem(
 
                     InboundInputField.WIDTH.code -> stringResource(
                         R.string.width
-                    )
-
-                    InboundInputField.SPECIFIC_GRAVITY.code -> stringResource(
-                        R.string.specific_gravity
                     )
 
                     InboundInputField.OCCURRENCE_REASON.code -> stringResource(
@@ -128,10 +139,6 @@ fun InboundInputFormItem(
                         R.string.width_hint
                     )
 
-                    InboundInputField.SPECIFIC_GRAVITY.code -> stringResource(
-                        R.string.specific_gravity_hint
-                    )
-
                     InboundInputField.WINDER.code -> stringResource(
                         R.string.winderInfo_hint
                     )
@@ -167,7 +174,7 @@ fun InboundInputFormItem(
                 singleLine = result.fieldCode != InboundInputField.MEMO.code,
                 onChange = { newValue ->
                     val filtered = if (result.dataType == DataType.NUMBER)
-                        FilterNumber.filterNumber(newValue) else newValue
+                        FilterNumber.filterNumber(input = newValue, allowDecimal = allowDecimal) else newValue
 
                     when (result.fieldCode) {
                         InboundInputField.WEIGHT.code -> appViewModel.onInputIntent(
@@ -190,10 +197,6 @@ fun InboundInputFormItem(
                             ChangeWidth(
                                 filtered
                             )
-                        )
-
-                        InboundInputField.SPECIFIC_GRAVITY.code -> appViewModel.onInputIntent(
-                            ChangeSpecificGravity(filtered)
                         )
 
                         InboundInputField.OCCURRENCE_REASON.code -> appViewModel.onInputIntent(
@@ -228,7 +231,6 @@ fun InboundInputFormItem(
                 modifier = Modifier.height(IntrinsicSize.Min),
                 expanded = when (result.fieldCode) {
                     InboundInputField.LOCATION.code -> expandState.locationExpanded
-                    InboundInputField.PACKING_TYPE.code -> expandState.packingStyleExpanded
                     InboundInputField.WINDER.code -> expandState.winderExpanded
                     else -> false
                 },
@@ -236,9 +238,6 @@ fun InboundInputFormItem(
                     when (result.fieldCode) {
                         InboundInputField.LOCATION.code ->
                             appViewModel.onExpandIntent(ExpandIntent.ToggleLocationExpanded)
-
-                        InboundInputField.PACKING_TYPE.code ->
-                            appViewModel.onExpandIntent(ExpandIntent.TogglePackingTypeExpanded)
 
                         InboundInputField.WINDER.code ->
                             appViewModel.onExpandIntent(ExpandIntent.ToggleWinderExpanded)
@@ -258,9 +257,6 @@ fun InboundInputFormItem(
                         InboundInputField.LOCATION.code ->
                             inputState.location?.locationName ?: ""
 
-                        InboundInputField.PACKING_TYPE.code ->
-                            inputState.packingType
-
                         InboundInputField.WINDER.code ->
                             inputState.winder?.winderName ?: ""
 
@@ -268,13 +264,11 @@ fun InboundInputFormItem(
                     },
                     hintText = when (result.fieldCode) {
                         InboundInputField.LOCATION.code -> SelectTitle.SelectLocation.displayName
-                        InboundInputField.PACKING_TYPE.code -> SelectTitle.SelectPackingType.displayName
                         InboundInputField.WINDER.code -> SelectTitle.SelectWinder.displayName
                         else -> ""
                     },
                     label = when (result.fieldCode) {
                         InboundInputField.LOCATION.code -> SelectTitle.SelectLocation.displayName
-                        InboundInputField.PACKING_TYPE.code -> SelectTitle.SelectPackingType.displayName
                         InboundInputField.WINDER.code -> SelectTitle.SelectWinder.displayName
                         else -> ""
                     },
@@ -292,7 +286,6 @@ fun InboundInputFormItem(
                 ExposedDropdownMenu(
                     expanded = when (result.fieldCode) {
                         InboundInputField.LOCATION.code -> expandState.locationExpanded
-                        InboundInputField.PACKING_TYPE.code -> expandState.packingStyleExpanded
                         InboundInputField.WINDER.code -> expandState.winderExpanded
                         else -> false
                     },
@@ -300,9 +293,6 @@ fun InboundInputFormItem(
                         when (result.fieldCode) {
                             InboundInputField.LOCATION.code ->
                                 appViewModel.onExpandIntent(ExpandIntent.ToggleLocationExpanded)
-
-                            InboundInputField.PACKING_TYPE.code ->
-                                appViewModel.onExpandIntent(ExpandIntent.TogglePackingTypeExpanded)
 
                             InboundInputField.WINDER.code ->
                                 appViewModel.onExpandIntent(ExpandIntent.ToggleWinderExpanded)
@@ -333,33 +323,6 @@ fun InboundInputFormItem(
                             )
                         }
                     }
-                    if (result.fieldCode == InboundInputField.PACKING_TYPE.code) {
-                        DropdownMenuItem(
-                            text = { Text(SelectTitle.SelectPackingType.displayName) },
-                            onClick = {
-                                appViewModel.apply {
-                                    onInputIntent(ChangePackingType(""))
-                                    onExpandIntent(ExpandIntent.TogglePackingTypeExpanded)
-                                }
-                            }
-                        )
-
-                        listOf(
-                            PackingType.PAPER_BAG_25KG.displayName,
-                            PackingType.FLEXIBLE_CONTAINER_1T.displayName
-                        ).forEach { packing ->
-                            DropdownMenuItem(
-                                text = { Text(packing) },
-                                onClick = {
-                                    appViewModel.apply {
-                                        onInputIntent(ChangePackingType(packing))
-                                        onExpandIntent(ExpandIntent.TogglePackingTypeExpanded)
-                                    }
-                                }
-                            )
-                        }
-                    }
-
                     if (result.fieldCode == InboundInputField.WINDER.code) {
 
                         DropdownMenuItem(

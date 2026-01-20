@@ -5,9 +5,12 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
+import androidx.room.TypeConverters
+import com.example.sol_denka_stockmanagement.database.converter.BigDecimalConverter
 import com.example.sol_denka_stockmanagement.database.entity.item.ItemTypeMasterEntity
 import com.example.sol_denka_stockmanagement.database.entity.location.LocationMasterEntity
 import com.example.sol_denka_stockmanagement.database.entity.tag.TagMasterEntity
+import java.math.BigDecimal
 
 @Entity(
     tableName = "InBoundEvent",
@@ -48,6 +51,7 @@ import com.example.sol_denka_stockmanagement.database.entity.tag.TagMasterEntity
         Index(value = ["tag_id"]),
     ]
 )
+@TypeConverters(BigDecimalConverter::class)
 data class InboundEventEntity(
     @PrimaryKey(autoGenerate = true) @ColumnInfo(name = "inbound_event_id") val inboundEventId: Int = 0,
     @ColumnInfo(name = "inbound_session_id") val inboundSessionId: Int,
@@ -59,7 +63,7 @@ data class InboundEventEntity(
     @ColumnInfo(name = "weight") val weight: Int?,
     @ColumnInfo(name = "width") val width: Int?,
     @ColumnInfo(name = "length") val length: Int?,
-    @ColumnInfo(name = "thickness") val thickness: Int?,
+    @ColumnInfo(name = "thickness") val thickness: BigDecimal?,
     @ColumnInfo(name = "occurrence_reason") val occurrenceReason: String?,
     @ColumnInfo(name = "lot_no") val lotNo: String?,
     @ColumnInfo(name = "quantity") val quantity: Int?,

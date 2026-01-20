@@ -204,7 +204,7 @@ fun generateTimeStamp(): String {
 }
 
 fun generateIso8601JstTimestamp(): String {
-    val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssXXX")
+    val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")
     return OffsetDateTime.now(ZoneId.of("Asia/Tokyo")).format(formatter)
 }
 

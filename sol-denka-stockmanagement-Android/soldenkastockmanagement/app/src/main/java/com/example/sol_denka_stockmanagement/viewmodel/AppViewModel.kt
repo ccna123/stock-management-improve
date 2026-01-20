@@ -23,10 +23,10 @@ import com.example.sol_denka_stockmanagement.database.repository.field.ItemTypeF
 import com.example.sol_denka_stockmanagement.database.repository.item.ItemCategoryRepository
 import com.example.sol_denka_stockmanagement.database.repository.item.ItemTypeRepository
 import com.example.sol_denka_stockmanagement.database.repository.location.LocationMasterRepository
-import com.example.sol_denka_stockmanagement.database.repository.winder.WinderInfoRepository
-import com.example.sol_denka_stockmanagement.helper.NetworkConnectionObserver
 import com.example.sol_denka_stockmanagement.database.repository.process.ProcessTypeRepository
+import com.example.sol_denka_stockmanagement.database.repository.winder.WinderInfoRepository
 import com.example.sol_denka_stockmanagement.exception.AppException
+import com.example.sol_denka_stockmanagement.helper.NetworkConnectionObserver
 import com.example.sol_denka_stockmanagement.helper.controller.ReaderController
 import com.example.sol_denka_stockmanagement.helper.csv.CsvHelper
 import com.example.sol_denka_stockmanagement.helper.message_mapper.MessageMapper
@@ -239,9 +239,6 @@ class AppViewModel @Inject constructor(
             is InputIntent.ChangeMissRollReason ->
                 _inputState.update { it.copy(occurrenceReason = intent.value) }
 
-            is InputIntent.ChangeGrade ->
-                _inputState.update { it.copy(grade = intent.value) }
-
             is InputIntent.ChangeLength ->
                 _inputState.update { it.copy(length = intent.value) }
 
@@ -256,9 +253,6 @@ class AppViewModel @Inject constructor(
 
             is InputIntent.ChangeLotNo ->
                 _inputState.update { it.copy(lotNo = intent.value) }
-
-            is InputIntent.ChangePackingType ->
-                _inputState.update { it.copy(packingType = intent.value) }
 
             is InputIntent.ChangeFileTransferMethod ->
                 _inputState.update { it.copy(fileTransferMethod = intent.value) }
@@ -306,7 +300,6 @@ class AppViewModel @Inject constructor(
             }
 
             is InputIntent.SearchKeyWord -> _inputState.update { it.copy(itemInCategory = intent.itemName) }
-            is InputIntent.ChangeSpecificGravity -> _inputState.update { it.copy(specificGravity = intent.value) }
             is InputIntent.ChangeWidth -> _inputState.update { it.copy(width = intent.value) }
             is InputIntent.ChangeProcessedAtDate -> _inputState.update { it.copy(processedAtDate = intent.value) }
             is InputIntent.ChangeProcessedAtTime -> _inputState.update { it.copy(processedAtTime = intent.value) }
@@ -497,9 +490,6 @@ class AppViewModel @Inject constructor(
             ExpandIntent.ToggleLocationExpanded ->
                 _expandState.update { it.copy(locationExpanded = !_expandState.value.locationExpanded) }
 
-            ExpandIntent.TogglePackingTypeExpanded ->
-                _expandState.update { it.copy(packingStyleExpanded = !_expandState.value.packingStyleExpanded) }
-
             ExpandIntent.ToggleProcessMethodExpanded ->
                 _expandState.update { it.copy(handlingMethodExpanded = !_expandState.value.handlingMethodExpanded) }
 
@@ -569,7 +559,7 @@ class AppViewModel @Inject constructor(
             true   // ✅ OK
 
         } catch (e: AppException) {
-
+            Log.e("TSS", "saveScanResultToCsv: $e")
             _dialogState.value = Error(
                 message = MessageMapper.toMessage(e.statusCode, e.params)
             )
@@ -577,12 +567,11 @@ class AppViewModel @Inject constructor(
             false
 
         } catch (e: Exception) {
+            Log.e("TSS", "saveScanResultToCsv: $e")
             _dialogState.value = Error(
                 message = MessageMapper.toMessage(StatusCode.FAILED)
             )
-
             false
-
         } finally {
             _isFileWorking.value = false
         }
@@ -594,17 +583,15 @@ class AppViewModel @Inject constructor(
         _inputState.update {
             it.copy(
                 width = "",
-                specificGravity = "",
                 length = "",
                 thickness = "",
-                grade = "",
                 winder = null,
                 memo = "",
                 location = null,
                 processMethod = "",
                 weight = "",
                 lotNo = "",
-                packingType = "",
+                quantity = "",
                 occurrenceReason = "",
                 occurredAtDate = "",
                 occurredAtTime = "",

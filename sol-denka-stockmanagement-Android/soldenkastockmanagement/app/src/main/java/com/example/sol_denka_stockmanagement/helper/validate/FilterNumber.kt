@@ -1,30 +1,39 @@
 package com.example.sol_denka_stockmanagement.helper.validate
 
 object FilterNumber {
-    fun filterNumber(input: String): String{
+
+    fun filterNumber(
+        input: String,
+        allowDecimal: Boolean
+    ): String {
         if (input.isBlank()) return ""
 
-        // minus and not digit symbol
         var value = input
             .replace("-", "")
-            .filter { it.isDigit() || it == '.' }
+            .filter { it.isDigit() || (allowDecimal && it == '.') }
 
-        // allow only 1 dot for decimal number
-        val firstDot = value.indexOf('.')
-        if (firstDot != -1){
-            value =
-                value.substring(0, firstDot +1) +
-                value.substring(firstDot +1).replace(".", "")
+        if (allowDecimal) {
+            // allow only 1 dot
+            val firstDot = value.indexOf('.')
+            if (firstDot != -1) {
+                value =
+                    value.substring(0, firstDot + 1) +
+                            value.substring(firstDot + 1).replace(".", "")
+            }
+
+            // cannot start with dot
+            if (value.startsWith(".")) return ""
+        } else {
+            // INTEGER: remove all dots
+            value = value.replace(".", "")
         }
 
-        // do not allow start with dot -> force to 0
-        if (value.startsWith(".")) return ""
-
-        // continuous leading zero handle
-        if (value.startsWith("0") && value.length > 1 && !value.startsWith("0.")){
-            value  = value.dropWhile { it == '0' }
+        // leading zero handle
+        if (value.startsWith("0") && value.length > 1 && !value.startsWith("0.")) {
+            value = value.dropWhile { it == '0' }
             if (value.isEmpty()) value = "0"
         }
+
         return value
     }
 }

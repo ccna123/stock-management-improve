@@ -15,14 +15,11 @@ sealed interface InputIntent {
     data class ChangeOccurredAtTime(val value: String) : InputIntent
     data class ChangeProcessedAtTime(val value: String) : InputIntent
     data class ChangeWidth(val value: String) : InputIntent
-    data class ChangeSpecificGravity(val value: String) : InputIntent
     data class ChangeThickness(val value: String) : InputIntent
-    data class ChangeGrade(val value: String) : InputIntent
     data class ChangeWinderType(val value: WinderInfoModel?) : InputIntent
     data class ChangeLength(val value: String) : InputIntent
     data class ChangeWeight(val value: String) : InputIntent
     data class ChangeLotNo(val value: String) : InputIntent
-    data class ChangePackingType(val value: String) : InputIntent
     data class ChangeFileTransferMethod(val value: String): InputIntent
     data class ChangeItemInCategory(val itemName: String, val itemId: Int): InputIntent
     data class SearchKeyWord(val itemName: String): InputIntent

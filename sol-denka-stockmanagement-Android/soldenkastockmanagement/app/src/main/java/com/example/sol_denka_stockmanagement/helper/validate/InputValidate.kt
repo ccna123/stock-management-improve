@@ -52,11 +52,9 @@ object InputValidate {
                             InboundInputField.LENGTH.code -> inputState.length
                             InboundInputField.THICKNESS.code -> inputState.thickness
                             InboundInputField.WIDTH.code -> inputState.width
-                            InboundInputField.SPECIFIC_GRAVITY.code -> inputState.specificGravity
                             InboundInputField.OCCURRENCE_REASON.code -> inputState.occurrenceReason
                             InboundInputField.MEMO.code -> inputState.memo
                             InboundInputField.LOT_NO.code -> inputState.lotNo
-                            InboundInputField.PACKING_TYPE.code -> inputState.packingType
                             InboundInputField.QUANTITY.code -> inputState.quantity
                             else -> ""
                         }

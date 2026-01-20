@@ -1,6 +1,7 @@
 package com.example.sol_denka_stockmanagement.model.inbound
 
 import com.example.sol_denka_stockmanagement.database.entity.inbound.InboundEventEntity
+import java.math.BigDecimal
 
 data class InboundEventModel(
     val inboundEventId: Int = 0,
@@ -13,7 +14,7 @@ data class InboundEventModel(
     val weight: Int?,
     val width: Int?,
     val length: Int?,
-    val thickness: Int?,
+    val thickness: BigDecimal?,
     val lotNo: String?,
     val occurrenceReason: String?,
     val quantity: Int?,

@@ -8,7 +8,6 @@ import com.example.sol_denka_stockmanagement.model.winder.WinderInfoModel
 data class InputState(
     val location: LocationMasterModel? = null,
     val thickness: String = "",
-    val grade: String = "",
     val length: String = "",
     val itemInCategory: String = "",
     val memo: String = "",
@@ -22,10 +21,8 @@ data class InputState(
     val occurredAtTime: String = "",
     val processedAtDate: String = "",
     val processedAtTime: String = "",
-    val packingType: String = "",
     val width: String = "",
     val occurrenceReason: String = "",
-    val specificGravity: String = "",
     var fileTransferMethod: String = FileTransferMethod.WIFI.displayName,
     val fieldErrors: Map<String, Boolean> = emptyMap()
 )
