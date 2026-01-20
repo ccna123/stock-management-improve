@@ -359,15 +359,33 @@ fun InboundInputFormItem(
             ) {
                 InputFieldContainer(
                     modifier = Modifier.weight(1f),
-                    value = inputState.occurredAtDate,
-                    label = stringResource(R.string.occurred_at_date),
+                    value = when (result.fieldCode) {
+                        InboundInputField.OCCURRED_AT.code -> inputState.occurredAtDate
+                        InboundInputField.PROCESSED_AT.code -> inputState.processedAtDate
+                        else -> ""
+                    },
+                    label = when (result.fieldCode) {
+                        InboundInputField.OCCURRED_AT.code -> stringResource(
+                            R.string.occurred_at_date
+                        )
+
+                        InboundInputField.PROCESSED_AT.code -> stringResource(
+                            R.string.processed_at_date
+                        )
+
+                        else -> ""
+                    },
                     isRequired = result.isRequired,
                     isNumeric = false,
                     shape = RoundedCornerShape(13.dp),
                     readOnly = true,
                     isDropDown = false,
                     enable = true,
-                    error = inputState.fieldErrors["occurred_at_date"] == true,
+                    error = when (result.fieldCode) {
+                        InboundInputField.OCCURRED_AT.code -> inputState.fieldErrors["occurred_at_date"] == true
+                        InboundInputField.PROCESSED_AT.code -> inputState.fieldErrors["processed_at_date"] == true
+                        else -> false
+                    },
                     trailingIcon = {
                         Icon(
                             imageVector = Icons.Default.CalendarMonth,
@@ -376,7 +394,11 @@ fun InboundInputFormItem(
                             modifier = Modifier.clickable {
                                 appViewModel.onGeneralIntent(
                                     ShareIntent.ToggleDatePicker(
-                                        field = InboundInputField.OCCURRED_AT.code,
+                                        field = when (result.fieldCode) {
+                                            InboundInputField.OCCURRED_AT.code -> InboundInputField.OCCURRED_AT.code
+                                            InboundInputField.PROCESSED_AT.code -> InboundInputField.PROCESSED_AT.code
+                                            else -> ""
+                                        },
                                         showDatePicker = true
                                     )
                                 )
@@ -386,15 +408,33 @@ fun InboundInputFormItem(
                 )
                 InputFieldContainer(
                     modifier = Modifier.weight(1f),
-                    value = inputState.occurredAtTime,
-                    label = stringResource(R.string.occurred_at_time),
+                    value = when (result.fieldCode) {
+                        InboundInputField.OCCURRED_AT.code -> inputState.occurredAtTime
+                        InboundInputField.PROCESSED_AT.code -> inputState.processedAtTime
+                        else -> ""
+                    },
+                    label = when (result.fieldCode) {
+                        InboundInputField.OCCURRED_AT.code -> stringResource(
+                            R.string.occurred_at_time
+                        )
+
+                        InboundInputField.PROCESSED_AT.code -> stringResource(
+                            R.string.processed_at_time
+                        )
+
+                        else -> ""
+                    },
                     isRequired = result.isRequired,
                     isNumeric = false,
                     shape = RoundedCornerShape(13.dp),
                     readOnly = true,
                     isDropDown = false,
                     enable = true,
-                    error = inputState.fieldErrors["occurred_at_time"] == true,
+                    error = when (result.fieldCode) {
+                        InboundInputField.OCCURRED_AT.code -> inputState.fieldErrors["occurred_at_time"] == true
+                        InboundInputField.PROCESSED_AT.code -> inputState.fieldErrors["processed_at_time"] == true
+                        else -> false
+                    },
                     trailingIcon = {
                         Icon(
                             imageVector = Icons.Default.Timer,
@@ -403,7 +443,11 @@ fun InboundInputFormItem(
                             modifier = Modifier.clickable {
                                 appViewModel.onGeneralIntent(
                                     ShareIntent.ToggleTimePicker(
-                                        field = InboundInputField.OCCURRED_AT.code,
+                                        field = when (result.fieldCode) {
+                                            InboundInputField.OCCURRED_AT.code -> InboundInputField.OCCURRED_AT.code
+                                            InboundInputField.PROCESSED_AT.code -> InboundInputField.PROCESSED_AT.code
+                                            else -> ""
+                                        },
                                         showTimePicker = true
                                     )
                                 )
