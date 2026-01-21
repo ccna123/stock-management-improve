@@ -4,6 +4,7 @@ import androidx.room.withTransaction
 import com.example.sol_denka_stockmanagement.database.AppDatabase
 import com.example.sol_denka_stockmanagement.database.repository.ledger.LedgerItemRepository
 import com.example.sol_denka_stockmanagement.model.ledger.LedgerItemModel
+import java.math.BigDecimal
 
 class LedgerItemMasterImporter(
     private val repository: LedgerItemRepository,
@@ -39,14 +40,14 @@ class LedgerItemMasterImporter(
             tagId = row.int("tag_id"),
             winderId = row.int("winder_id"),
             isInStock = row.boolean("is_in_stock"),
-            weight = row.int("weight"),
-            width = row.int("width"),
-            length = row.int("length"),
-            thickness = row.decimal3("thickness"),
-            lotNo = row.string("lot_no"),
-            occurrenceReason = row.string("occurrence_reason"),
-            quantity = row.int("quantity"),
-            memo = row.string("memo"),
+            weight = row.intRange("weight", min = 0, max = 9999),
+            width = row.intRange("width", min = 0, max = 9999),
+            length = row.intRange("length", min = 0, max = 9999),
+            thickness = row.decimal3("thickness", min = BigDecimal("0.000"), max = BigDecimal("999.999")),
+            lotNo = row.stringWithLength("lot_no", min = 1, max = 32),
+            occurrenceReason = row.stringWithLength("occurrence_reason", min = 1, max = 100),
+            quantity = row.intRange("quantity", min = 0, max = 999999),
+            memo = row.stringWithLength("memo", min = 1, max = 500),
             occurredAt = row.string("occurred_at"),
             processedAt = row.string("processed_at"),
             registeredAt = row.string("registered_at")!!,

@@ -453,6 +453,10 @@ class CsvHelper @Inject constructor(
             } catch (_: SQLiteConstraintException) {
                 throw SqliteConstraintAppException()
             }
+            catch (e: Exception) {
+                Log.e("TSS", "import error: $e " )
+                throw e
+            }
         }
     }
     private fun getImporter(csvType: String): CsvImporter<*>? {

@@ -179,7 +179,7 @@ class CsvViewModel @Inject constructor(
 
             } catch (e: AppException) {
                 Log.e("TSS", "importMaster error: $e " )
-                val msg = MessageMapper.toMessage(
+                val msg = e.message ?: MessageMapper.toMessage(
                     e.statusCode,
                     e.params
                 )

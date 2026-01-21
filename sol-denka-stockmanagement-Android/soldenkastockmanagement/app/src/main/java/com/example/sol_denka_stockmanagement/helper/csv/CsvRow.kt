@@ -18,7 +18,7 @@ class CsvRow(private val data: Map<String, String>) {
 
         val length = value.length
         if (length < min || length > max) {
-            error(
+            throw CsvFormatException(
                 "カラム「$name」は $min ～ $max 文字で入力してください。（現在: $length 文字）"
             )
         }
@@ -32,7 +32,7 @@ class CsvRow(private val data: Map<String, String>) {
         val value = string(name) ?: return null
 
         if (value.length != length) {
-            error(
+            throw CsvFormatException(
                 "カラム「$name」は $length 文字で入力してください。（現在: ${value.length} 文字）"
             )
         }
@@ -42,10 +42,10 @@ class CsvRow(private val data: Map<String, String>) {
     fun long(name: String): Long? {
         val raw = string(name) ?: return null
         val value = raw.toLongOrNull()
-            ?: error("カラム「$name」に整数として不正なデータ「$raw」が入力されています。")
+            ?: throw CsvFormatException("カラム「$name」に整数として不正なデータ「$raw」が入力されています。")
 
         if (value < 0) {
-            error("カラム「$name」に負の値は入力できません。（$raw）")
+            throw CsvFormatException("カラム「$name」に負の値は入力できません。（$raw）")
         }
         return value
     }
@@ -58,18 +58,52 @@ class CsvRow(private val data: Map<String, String>) {
             )
     }
 
-    fun decimal3(name: String): BigDecimal? {
+    fun intRange(
+        name: String,
+        min: Int,
+        max: Int
+    ): Int? {
         val raw = string(name) ?: return null
-        return try {
-            raw.toBigDecimal().setScale(3, RoundingMode.DOWN)
+
+        val value = raw.toIntOrNull()
+            ?: throw CsvFormatException(
+                "カラム「$name」に整数として不正なデータ「$raw」が入力されています。"
+            )
+
+        if (value < min || value > max) {
+            throw CsvFormatException(
+                "カラム「$name」は $min ～ $max の範囲で入力してください。（現在: $value）"
+            )
+        }
+        return value
+    }
+
+
+    fun decimal3(
+        name: String,
+        min: BigDecimal,
+        max: BigDecimal
+    ): BigDecimal? {
+        val raw = string(name) ?: return null
+
+        val value = try {
+            raw.toBigDecimal()
         } catch (_: NumberFormatException) {
             throw CsvFormatException(
                 "カラム「$name」に小数値として不正なデータ「$raw」が入力されています。"
             )
         }
+
+        val scaled = value.setScale(3, RoundingMode.DOWN)
+
+        if (scaled < min || scaled > max) {
+            throw CsvFormatException(
+                "カラム「$name」は $min ～ $max の範囲で入力してください。（現在: $scaled）"
+            )
+        }
+
+        return scaled
     }
-
-
     fun boolean(name: String): Boolean {
         val raw = string(name)
             ?: throw CsvFormatException(
