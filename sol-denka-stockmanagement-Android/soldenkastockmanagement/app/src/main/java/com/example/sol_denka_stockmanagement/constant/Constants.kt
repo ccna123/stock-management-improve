@@ -43,6 +43,7 @@ enum class CsvType(val displayName: String) {
     ItemTypeMaster("品目マスタCSV"),
     TagMaster("タグマスタCSV"),
     ItemTypeFieldSettingMaster("品目項目設定マスタCSV"),
+    ReferenceMaster("参照マスタZIP"),
 }
 
 enum class CsvTaskType(val displayNameJp: String) {

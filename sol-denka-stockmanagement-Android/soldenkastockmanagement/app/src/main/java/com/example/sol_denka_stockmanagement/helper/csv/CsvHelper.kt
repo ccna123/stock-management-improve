@@ -62,6 +62,7 @@ class CsvHelper @Inject constructor(
         private const val ITEM_TYPE_MASTER = "ItemTypeMaster"
         private const val TAG_MASTER = "TagMaster"
         private const val ITEM_TYPE_FIELD_SETTING_MASTER = "ItemTypeFieldSettingMaster"
+        private const val REFERENCE_MASTER = "ReferenceMaster"
     }
 
     suspend fun createAppFolders(context: Context) = withContext(Dispatchers.IO) {
@@ -111,6 +112,7 @@ class CsvHelper @Inject constructor(
             ensureScopedFolder("$ROOT_FOLDER/$IMPORT/$ITEM_TYPE_MASTER")
             ensureScopedFolder("$ROOT_FOLDER/$IMPORT/$TAG_MASTER")
             ensureScopedFolder("$ROOT_FOLDER/$IMPORT/$ITEM_TYPE_FIELD_SETTING_MASTER")
+            ensureScopedFolder("$ROOT_FOLDER/$IMPORT/$REFERENCE_MASTER")
             Log.i("TSS", "✅ Folder structure ensured")
         } catch (e: Exception) {
             Log.e("TSS", "Error creating folders: ${e.message}", e)
@@ -121,7 +123,7 @@ class CsvHelper @Inject constructor(
         return when (csvType) {
 
             CsvType.LedgerMaster.displayName -> Pair(
-                "Import/LedgerMaster",
+                "Import/LedgerItemMaster",
                 "$IMPORT/$LEDGER_MASTER"
             )
 
@@ -143,6 +145,11 @@ class CsvHelper @Inject constructor(
             CsvType.ItemTypeFieldSettingMaster.displayName -> Pair(
                 "Import/ItemTypeFieldSettingMaster",
                 "$IMPORT/$ITEM_TYPE_FIELD_SETTING_MASTER"
+            )
+
+            CsvType.ReferenceMaster.displayName -> Pair(
+                "Import/ReferenceMaster",
+                "$IMPORT/$REFERENCE_MASTER"
             )
 
             CsvType.InventoryResult.displayName -> Pair(
@@ -198,7 +205,7 @@ class CsvHelper @Inject constructor(
 
                 // 2) LIST FILES DIRECTLY FROM DISK
                 val files = targetDir.listFiles()?.filter {
-                    it.isFile && it.name.lowercase().endsWith(".csv")
+                    it.isFile && it.name.lowercase().endsWith( if (csvType == CsvType.ReferenceMaster.displayName) ".zip" else ".csv")
                 } ?: emptyList()
 
                 Log.w(

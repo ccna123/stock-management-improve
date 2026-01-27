@@ -85,6 +85,7 @@ fun CsvImportScreen(
                 CsvType.ItemTypeMaster.displayName,
                 CsvType.ItemTypeFieldSettingMaster.displayName,
                 CsvType.TagMaster.displayName,
+                CsvType.ReferenceMaster.displayName,
             ) -> {
                 csvViewModel.apply {
                     onCsvIntent(CsvIntent.FetchCsvFiles)
@@ -238,6 +239,7 @@ fun CsvImportScreen(
                                         CsvType.ItemTypeMaster.displayName,
                                         CsvType.ItemTypeFieldSettingMaster.displayName,
                                         CsvType.TagMaster.displayName,
+                                        CsvType.ReferenceMaster.displayName,
                                     ).forEach { csvType ->
                                         DropdownMenuItem(
                                             text = { Text(text = csvType) },
