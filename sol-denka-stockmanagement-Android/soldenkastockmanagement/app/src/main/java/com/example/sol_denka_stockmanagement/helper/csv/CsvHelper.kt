@@ -70,7 +70,7 @@ class CsvHelper @Inject constructor(
         private const val EXPORT = "Export"
         private const val IMPORT = "Import"
 
-        private const val INVENTORY_RESULT = "InventoryResult"
+        private const val INVENTORY_RESULT = "Inventory"
         private const val INBOUND_EVENT = "InboundEvent"
         private const val OUTBOUND_EVENT = "OutboundEvent"
         private const val LOCATION_CHANGE_EVENT = "LocationChangeEvent"
@@ -171,7 +171,7 @@ class CsvHelper @Inject constructor(
             )
 
             CsvType.InventoryResult.displayName -> Pair(
-                "Export/InventoryResult",
+                "Export/Inventory",
                 "$EXPORT/$INVENTORY_RESULT"
             )
 
