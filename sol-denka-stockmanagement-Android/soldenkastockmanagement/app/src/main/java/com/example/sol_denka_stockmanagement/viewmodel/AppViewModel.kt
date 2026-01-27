@@ -217,11 +217,6 @@ class AppViewModel @Inject constructor(
                 }
             }
         }
-        viewModelScope.launch(Dispatchers.IO) {
-            presetRepositories.forEach {
-                it.ensurePresetInserted()
-            }
-        }
     }
 
     fun onInputIntent(intent: InputIntent) {

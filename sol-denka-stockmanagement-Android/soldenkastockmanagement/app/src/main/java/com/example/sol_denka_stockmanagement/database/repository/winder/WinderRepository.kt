@@ -20,65 +20,8 @@ class WinderRepository @Inject constructor(
     private val dao: WinderDao
 ): IPresetRepo {
 
-    private val presetUnits = listOf(
-        WinderModel(
-            winderId = 1,
-            winderName = WinderType.MACHINE_2.displayName,
-            createdAt = generateTimeStamp(),
-            updatedAt = generateTimeStamp()
-        ),
-        WinderModel(
-            winderId = 2,
-            winderName = WinderType.SLITTING_B_F.displayName,
-            createdAt = generateTimeStamp(),
-            updatedAt = generateTimeStamp()
-        ),
-        WinderModel(
-            winderId = 3,
-            winderName = WinderType.SLITTING_B_B.displayName,
-            createdAt = generateTimeStamp(),
-            updatedAt = generateTimeStamp()
-        ),
-        WinderModel(
-            winderId = 4,
-            winderName = WinderType.MACHINE_3_LINE_1.displayName,
-            createdAt = generateTimeStamp(),
-            updatedAt = generateTimeStamp()
-        ),
-        WinderModel(
-            winderId = 5,
-            winderName = WinderType.MACHINE_3_LINE_2.displayName,
-            createdAt = generateTimeStamp(),
-            updatedAt = generateTimeStamp()
-        ),
-        WinderModel(
-            winderId = 6,
-            winderName = WinderType.MACHINE_4_LINE_1.displayName,
-            createdAt = generateTimeStamp(),
-            updatedAt = generateTimeStamp()
-        ),
-        WinderModel(
-            winderId = 7,
-            winderName = WinderType.MACHINE_4_LINE_2.displayName,
-            createdAt = generateTimeStamp(),
-            updatedAt = generateTimeStamp()
-        ),
-        WinderModel(
-            winderId = 8,
-            winderName = WinderType.OTHERS.displayName,
-            createdAt = generateTimeStamp(),
-            updatedAt = generateTimeStamp()
-        ),
-    )
 
     override suspend fun ensurePresetInserted() {
-        val existing = dao.get().firstOrNull() ?: emptyList()
-        if (existing.isEmpty()) {
-            presetUnits.forEach { dao.insert(it.toEntity()) }
-            Log.i("TSS", "📦 [WinderRepository] Preset Item Units inserted into DB")
-        } else {
-            Log.i("TSS", "📦 [WinderRepository] Preset already exists → skip insert")
-        }
     }
 
     fun get(): Flow<List<WinderModel>> =

@@ -7,16 +7,25 @@ import android.os.Build
 import android.os.Environment
 import android.provider.MediaStore
 import android.util.Log
+import androidx.room.withTransaction
 import com.example.sol_denka_stockmanagement.app_interface.ICsvExport
 import com.example.sol_denka_stockmanagement.constant.CsvType
 import com.example.sol_denka_stockmanagement.constant.ProcessResult
 import com.example.sol_denka_stockmanagement.constant.StatusCode
 import com.example.sol_denka_stockmanagement.database.AppDatabase
+import com.example.sol_denka_stockmanagement.database.repository.csv.CsvTaskTypeRepository
+import com.example.sol_denka_stockmanagement.database.repository.field.FieldMasterRepository
 import com.example.sol_denka_stockmanagement.database.repository.field.ItemTypeFieldSettingMasterRepository
+import com.example.sol_denka_stockmanagement.database.repository.inventory.InventoryResultTypeRepository
+import com.example.sol_denka_stockmanagement.database.repository.item.ItemCategoryRepository
 import com.example.sol_denka_stockmanagement.database.repository.item.ItemTypeRepository
+import com.example.sol_denka_stockmanagement.database.repository.item.ItemUnitRepository
 import com.example.sol_denka_stockmanagement.database.repository.ledger.LedgerItemRepository
 import com.example.sol_denka_stockmanagement.database.repository.location.LocationMasterRepository
+import com.example.sol_denka_stockmanagement.database.repository.process.ProcessTypeRepository
 import com.example.sol_denka_stockmanagement.database.repository.tag.TagMasterRepository
+import com.example.sol_denka_stockmanagement.database.repository.tag.TagStatusMasterRepository
+import com.example.sol_denka_stockmanagement.database.repository.winder.WinderRepository
 import com.example.sol_denka_stockmanagement.exception.CsvFileCreateException
 import com.example.sol_denka_stockmanagement.exception.CsvImporterNotFoundException
 import com.example.sol_denka_stockmanagement.exception.CsvWriteException
@@ -37,6 +46,7 @@ import kotlinx.coroutines.withContext
 import java.io.File
 import java.util.Locale
 import java.util.Vector
+import java.util.zip.ZipInputStream
 import javax.inject.Inject
 
 class CsvHelper @Inject constructor(
@@ -45,6 +55,14 @@ class CsvHelper @Inject constructor(
     private val itemTypeRepository: ItemTypeRepository,
     private val tagMasterRepository: TagMasterRepository,
     private val itemTypeFieldSettingMasterRepository: ItemTypeFieldSettingMasterRepository,
+    private val processTypeRepository: ProcessTypeRepository,
+    private val tagStatusMasterRepository: TagStatusMasterRepository,
+    private val winderRepository: WinderRepository,
+    private val fieldMasterRepository: FieldMasterRepository,
+    private val inventoryResultTypeRepository: InventoryResultTypeRepository,
+    private val itemUnitRepository: ItemUnitRepository,
+    private val csvTaskTypeRepository: CsvTaskTypeRepository,
+    private val itemCategoryRepository: ItemCategoryRepository,
     private val db: AppDatabase
 ) {
     companion object {
@@ -430,6 +448,10 @@ class CsvHelper @Inject constructor(
 
         fileInfo?.let {
             val fileObj = File(fileInfo.filePath, fileInfo.fileName)
+            if (csvType == CsvType.ReferenceMaster.displayName) {
+                importReferenceMaster(fileObj, onProgress)
+                return@withContext
+            }
             val lines = fileObj.readLines(Charsets.UTF_8)
             if (lines.isEmpty()) {
                 throw FileEmptyException()
@@ -496,8 +518,6 @@ class CsvHelper @Inject constructor(
             else -> null
         }
     }
-
-
     suspend fun <T : ICsvExport> saveCsv(
         context: Context,
         csvType: String,
@@ -571,6 +591,103 @@ class CsvHelper @Inject constructor(
 
         Log.i("TSS", "✅ CSV saved: $relativePath$fileName")
         onProgress(1f)
-
     }
+
+    private suspend fun importReferenceMaster(
+        zipFile: File,
+        onProgress: (Float) -> Unit
+    ) {
+        val tempDir = File(zipFile.parentFile, "tmp_reference_${System.currentTimeMillis()}")
+        tempDir.mkdirs()
+
+        try {
+            unzip(zipFile, tempDir)
+
+            val csvFiles = tempDir
+                .listFiles { f -> f.extension.lowercase() == "csv" }
+                ?.sortedBy { it.name }
+                ?: emptyList()
+
+            if (csvFiles.isEmpty()) throw FileEmptyException()
+
+            val total = csvFiles.size
+            var done = 0
+
+            db.withTransaction {
+                csvFiles.forEach { csv ->
+
+                    val lines = csv.readLines(Charsets.UTF_8)
+                    val headers = lines.first()
+                        .split(",")
+                        .map { it.trim() }
+                        .toSet()
+
+                    val importer = detectReferenceImporter(headers)
+
+                    val missing = importer.requiredHeaders - headers.toSet()
+                    if (missing.isNotEmpty()) {
+                        throw MissingColumnException(missing.toList())
+                    }
+
+                    lines.drop(1).chunked(50).forEach { chunk ->
+                        importer.importAll(headers.toList(), chunk)
+                    }
+                    importer.finish()
+
+                    done++
+                    onProgress(done.toFloat() / total)
+                }
+            }
+            onProgress(1f)
+        } finally {
+            tempDir.deleteRecursively()
+        }
+    }
+    private fun detectReferenceImporter(headers: Set<String>): CsvImporter<*> {
+        val importers = listOf(
+            ProcessTypeMasterImporter(processTypeRepository, db),
+            TagStatusMasterImporter(tagStatusMasterRepository, db),
+            WinderMasterImporter(winderRepository, db),
+            ItemCategoryMasterImporter(itemCategoryRepository, db),
+            FieldMasterImporter(fieldMasterRepository, db),
+            InventoryResultTypeMasterImporter(inventoryResultTypeRepository, db),
+            ItemUnitMasterImporter(itemUnitRepository, db),
+            CsvTaskTypeMasterImporter(csvTaskTypeRepository, db)
+        )
+
+        val matched = importers.filter { importer ->
+            importer.requiredHeaders.all { it in headers }
+        }
+
+        Log.e("TSS", "detectReferenceImporter: $matched", )
+
+        return when {
+            matched.isEmpty() ->
+                throw CsvImporterNotFoundException()
+
+            matched.size == 1 ->
+                matched.first()
+
+            else ->
+                throw IllegalStateException(
+                    "ReferenceMaster header ambiguous: ${matched.map { it::class.simpleName }}"
+                )
+        }
+    }
+    private fun unzip(zipFile: File, targetDir: File) {
+        ZipInputStream(zipFile.inputStream()).use { zis ->
+            var entry = zis.nextEntry
+            while (entry != null) {
+                val outFile = File(targetDir, entry.name)
+                if (!entry.isDirectory) {
+                    outFile.parentFile?.mkdirs()
+                    outFile.outputStream().use { zis.copyTo(it) }
+                }
+                zis.closeEntry()
+                entry = zis.nextEntry
+            }
+        }
+    }
+
+
 }
