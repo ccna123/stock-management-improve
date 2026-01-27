@@ -1,7 +1,7 @@
 package com.example.sol_denka_stockmanagement.intent
 
 import com.example.sol_denka_stockmanagement.model.location.LocationMasterModel
-import com.example.sol_denka_stockmanagement.model.winder.WinderInfoModel
+import com.example.sol_denka_stockmanagement.model.winder.WinderModel
 
 sealed interface InputIntent {
     data class ChangeProcessMethod(val value: String) : InputIntent
@@ -16,7 +16,7 @@ sealed interface InputIntent {
     data class ChangeProcessedAtTime(val value: String) : InputIntent
     data class ChangeWidth(val value: String) : InputIntent
     data class ChangeThickness(val value: String) : InputIntent
-    data class ChangeWinderType(val value: WinderInfoModel?) : InputIntent
+    data class ChangeWinderType(val value: WinderModel?) : InputIntent
     data class ChangeLength(val value: String) : InputIntent
     data class ChangeWeight(val value: String) : InputIntent
     data class ChangeLotNo(val value: String) : InputIntent

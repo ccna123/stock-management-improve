@@ -5,6 +5,7 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy.Companion.REPLACE
 import androidx.room.Query
+import androidx.room.Transaction
 import androidx.room.Update
 import com.example.sol_denka_stockmanagement.database.entity.item.ItemCategoryEntity
 import kotlinx.coroutines.flow.Flow
@@ -29,4 +30,15 @@ interface ItemCategoryDao {
 
     @Delete
     suspend fun delete(e: ItemCategoryEntity)
+
+    @Query("DELETE FROM ItemCategoryMaster")
+    suspend fun deleteAll()
+
+    @Transaction
+    suspend fun replaceAll(entities: List<ItemCategoryEntity>) {
+        deleteAll()
+        insertAll(entities)
+    }
+
+
 }

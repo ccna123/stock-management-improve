@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 import javax.inject.Singleton
+import kotlin.collections.map
 
 @Singleton
 class ProcessTypeRepository @Inject constructor(
@@ -76,4 +77,7 @@ class ProcessTypeRepository @Inject constructor(
     suspend fun insert(model: ProcessTypeModel) = dao.insert(model.toEntity())
     suspend fun update(model: ProcessTypeModel) = dao.update(model.toEntity())
     suspend fun delete(model: ProcessTypeModel) = dao.delete(model.toEntity())
+    suspend fun replaceAll(models: List<ProcessTypeModel>) {
+        dao.replaceAll(models.map { it.toEntity() })
+    }
 }

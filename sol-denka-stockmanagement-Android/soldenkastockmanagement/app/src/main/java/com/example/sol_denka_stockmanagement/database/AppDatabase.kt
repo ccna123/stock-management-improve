@@ -24,7 +24,7 @@ import com.example.sol_denka_stockmanagement.database.dao.outbound.OutboundEvent
 import com.example.sol_denka_stockmanagement.database.dao.outbound.OutboundSessionDao
 import com.example.sol_denka_stockmanagement.database.dao.process.ProcessTypeDao
 import com.example.sol_denka_stockmanagement.database.dao.tag.TagStatusMasterDao
-import com.example.sol_denka_stockmanagement.database.dao.winder.WinderInfoDao
+import com.example.sol_denka_stockmanagement.database.dao.winder.WinderDao
 import com.example.sol_denka_stockmanagement.database.entity.csv.CsvHistoryEntity
 import com.example.sol_denka_stockmanagement.database.entity.csv.CsvTaskTypeEntity
 import com.example.sol_denka_stockmanagement.database.entity.field.FieldMasterEntity
@@ -130,6 +130,6 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun itemTypeFieldSettingMasterDao(): ItemTypeFieldSettingMasterDao
 
     //Winder
-    abstract fun winderInfoDao(): WinderInfoDao
+    abstract fun winderInfoDao(): WinderDao
 
 }

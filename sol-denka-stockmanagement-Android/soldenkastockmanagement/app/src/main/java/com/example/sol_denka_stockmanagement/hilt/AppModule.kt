@@ -27,7 +27,7 @@ import com.example.sol_denka_stockmanagement.database.dao.outbound.OutboundSessi
 import com.example.sol_denka_stockmanagement.database.dao.process.ProcessTypeDao
 import com.example.sol_denka_stockmanagement.database.dao.tag.TagMasterDao
 import com.example.sol_denka_stockmanagement.database.dao.tag.TagStatusMasterDao
-import com.example.sol_denka_stockmanagement.database.dao.winder.WinderInfoDao
+import com.example.sol_denka_stockmanagement.database.dao.winder.WinderDao
 import com.example.sol_denka_stockmanagement.helper.controller.ReaderController
 import com.example.sol_denka_stockmanagement.helper.controller.TagController
 import dagger.Module
@@ -207,7 +207,7 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideWinderInfoDao(database: AppDatabase): WinderInfoDao {
+    fun provideWinderInfoDao(database: AppDatabase): WinderDao {
         return database.winderInfoDao()
     }
 

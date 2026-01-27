@@ -5,6 +5,7 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy.Companion.REPLACE
 import androidx.room.Query
+import androidx.room.Transaction
 import androidx.room.Update
 import com.example.sol_denka_stockmanagement.database.entity.process.ProcessTypeEntity
 import kotlinx.coroutines.flow.Flow
@@ -21,9 +22,22 @@ interface ProcessTypeDao {
     @Insert(onConflict = REPLACE)
     suspend fun insert(e: ProcessTypeEntity): Long
 
+    @Insert(onConflict = REPLACE)
+    suspend fun insertAll(e: List<ProcessTypeEntity>)
+
     @Update
     suspend fun update(e: ProcessTypeEntity)
 
     @Delete
     suspend fun delete(e: ProcessTypeEntity)
+
+    @Query("DELETE FROM ProcessType")
+    suspend fun deleteAll()
+
+    @Transaction
+    suspend fun replaceAll(e: List<ProcessTypeEntity>) {
+        deleteAll()
+        insertAll(e)
+    }
+
 }

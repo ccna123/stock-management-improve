@@ -42,7 +42,7 @@ import com.example.sol_denka_stockmanagement.intent.InputIntent.ChangeWinderType
 import com.example.sol_denka_stockmanagement.intent.ShareIntent
 import com.example.sol_denka_stockmanagement.model.inbound.InboundInputFormModel
 import com.example.sol_denka_stockmanagement.model.location.LocationMasterModel
-import com.example.sol_denka_stockmanagement.model.winder.WinderInfoModel
+import com.example.sol_denka_stockmanagement.model.winder.WinderModel
 import com.example.sol_denka_stockmanagement.share.InputFieldContainer
 import com.example.sol_denka_stockmanagement.state.ExpandState
 import com.example.sol_denka_stockmanagement.state.InputState
@@ -55,7 +55,7 @@ import com.example.sol_denka_stockmanagement.viewmodel.AppViewModel
 fun InboundInputFormItem(
     result: InboundInputFormModel,
     locationMaster: List<LocationMasterModel>,
-    winderMaster: List<WinderInfoModel>,
+    winderMaster: List<WinderModel>,
     expandState: ExpandState,
     inputState: InputState,
     appViewModel: AppViewModel

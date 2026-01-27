@@ -24,7 +24,7 @@ import com.example.sol_denka_stockmanagement.database.repository.item.ItemCatego
 import com.example.sol_denka_stockmanagement.database.repository.item.ItemTypeRepository
 import com.example.sol_denka_stockmanagement.database.repository.location.LocationMasterRepository
 import com.example.sol_denka_stockmanagement.database.repository.process.ProcessTypeRepository
-import com.example.sol_denka_stockmanagement.database.repository.winder.WinderInfoRepository
+import com.example.sol_denka_stockmanagement.database.repository.winder.WinderRepository
 import com.example.sol_denka_stockmanagement.exception.AppException
 import com.example.sol_denka_stockmanagement.helper.NetworkConnectionObserver
 import com.example.sol_denka_stockmanagement.helper.controller.ReaderController
@@ -41,7 +41,7 @@ import com.example.sol_denka_stockmanagement.model.item.ItemTypeMasterModel
 import com.example.sol_denka_stockmanagement.model.location.LocationMasterModel
 import com.example.sol_denka_stockmanagement.model.process.ProcessTypeModel
 import com.example.sol_denka_stockmanagement.model.reader.ReaderInfoModel
-import com.example.sol_denka_stockmanagement.model.winder.WinderInfoModel
+import com.example.sol_denka_stockmanagement.model.winder.WinderModel
 import com.example.sol_denka_stockmanagement.state.DialogState
 import com.example.sol_denka_stockmanagement.state.DialogState.Error
 import com.example.sol_denka_stockmanagement.state.DialogState.Hidden
@@ -73,7 +73,7 @@ class AppViewModel @Inject constructor(
     private val itemTypeRepository: ItemTypeRepository,
     private val itemTypeFieldSettingMasterRepository: ItemTypeFieldSettingMasterRepository,
     private val itemCategoryRepository: ItemCategoryRepository,
-    private val winderInfoRepository: WinderInfoRepository,
+    private val winderRepository: WinderRepository,
     private val processTypeRepository: ProcessTypeRepository,
     private val presetRepositories: Set<@JvmSuppressWildcards IPresetRepo>,
     private val csvHelper: CsvHelper,
@@ -126,7 +126,7 @@ class AppViewModel @Inject constructor(
     private val _itemCategoryMaster = MutableStateFlow<List<ItemCategoryModel>>(emptyList())
     val itemCategoryMaster = _itemCategoryMaster.asStateFlow()
 
-    private val _winderMaster = MutableStateFlow<List<WinderInfoModel>>(emptyList())
+    private val _winderMaster = MutableStateFlow<List<WinderModel>>(emptyList())
     val winderMaster = _winderMaster.asStateFlow()
 
     private val _processTypeMaster = MutableStateFlow<List<ProcessTypeModel>>(emptyList())
@@ -190,7 +190,7 @@ class AppViewModel @Inject constructor(
         }
 
         viewModelScope.launch {
-            winderInfoRepository.get().collect { winders ->
+            winderRepository.get().collect { winders ->
                 _winderMaster.value = winders
             }
         }

@@ -1,11 +1,10 @@
 package com.example.sol_denka_stockmanagement.model.process
 
-import com.example.sol_denka_stockmanagement.constant.ProcessMethod
 import com.example.sol_denka_stockmanagement.database.entity.process.ProcessTypeEntity
 
 data class ProcessTypeModel(
     val processTypeId: Int,
-    val processCode: ProcessMethod,
+    val processCode: String,
     val processName: String,
     val createdAt: String,
     val updatedAt: String,

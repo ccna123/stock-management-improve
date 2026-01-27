@@ -3,7 +3,7 @@ package com.example.sol_denka_stockmanagement.state
 import com.example.sol_denka_stockmanagement.constant.FileTransferMethod
 import com.example.sol_denka_stockmanagement.constant.ProcessMethod
 import com.example.sol_denka_stockmanagement.model.location.LocationMasterModel
-import com.example.sol_denka_stockmanagement.model.winder.WinderInfoModel
+import com.example.sol_denka_stockmanagement.model.winder.WinderModel
 
 data class InputState(
     val location: LocationMasterModel? = null,
@@ -13,7 +13,7 @@ data class InputState(
     val memo: String = "",
     val category: String = "",
     val processMethod: String = ProcessMethod.USE.displayName,
-    val winder: WinderInfoModel? = null,
+    val winder: WinderModel? = null,
     val weight: String = "",
     val lotNo: String = "",
     val quantity: String = "",

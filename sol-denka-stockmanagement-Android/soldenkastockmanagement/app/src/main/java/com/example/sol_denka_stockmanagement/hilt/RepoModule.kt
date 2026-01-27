@@ -8,7 +8,7 @@ import com.example.sol_denka_stockmanagement.database.repository.item.ItemCatego
 import com.example.sol_denka_stockmanagement.database.repository.item.ItemUnitRepository
 import com.example.sol_denka_stockmanagement.database.repository.process.ProcessTypeRepository
 import com.example.sol_denka_stockmanagement.database.repository.tag.TagStatusMasterRepository
-import com.example.sol_denka_stockmanagement.database.repository.winder.WinderInfoRepository
+import com.example.sol_denka_stockmanagement.database.repository.winder.WinderRepository
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -54,7 +54,7 @@ abstract class RepoModule {
     @Binds
     @IntoSet
     abstract fun bindWinderInfoRepo(
-        repo: WinderInfoRepository
+        repo: WinderRepository
     ): IPresetRepo
 
     @Binds

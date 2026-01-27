@@ -86,4 +86,7 @@ class ItemUnitRepository @Inject constructor(
     suspend fun insert(model: ItemUnitMasterModel) = dao.insert(model.toEntity())
     suspend fun update(model: ItemUnitMasterModel) = dao.update(model.toEntity())
     suspend fun delete(model: ItemUnitMasterModel) = dao.delete(model.toEntity())
+    suspend fun replaceAll(models: List<ItemUnitMasterModel>) {
+        dao.replaceAll(models.map { it.toEntity() })
+    }
 }

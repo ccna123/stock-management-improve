@@ -1,11 +1,10 @@
 package com.example.sol_denka_stockmanagement.model.inventory
 
-import com.example.sol_denka_stockmanagement.constant.InventoryResultType
 import com.example.sol_denka_stockmanagement.database.entity.inventory.InventoryResultTypeEntity
 
 data class InventoryResultTypeModel(
     val inventoryResultTypeId: Int,
-    val inventoryResultTypeCode: InventoryResultType,
+    val inventoryResultTypeCode: String,
     val inventoryResultTypeName: String,
     val createdAt: String,
     val updatedAt: String,

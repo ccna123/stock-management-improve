@@ -21,7 +21,7 @@ import com.example.sol_denka_stockmanagement.database.repository.item.ItemCatego
 import com.example.sol_denka_stockmanagement.database.repository.item.ItemTypeRepository
 import com.example.sol_denka_stockmanagement.database.repository.location.LocationMasterRepository
 import com.example.sol_denka_stockmanagement.database.repository.process.ProcessTypeRepository
-import com.example.sol_denka_stockmanagement.database.repository.winder.WinderInfoRepository
+import com.example.sol_denka_stockmanagement.database.repository.winder.WinderRepository
 import com.example.sol_denka_stockmanagement.helper.NetworkConnectionObserver
 import com.example.sol_denka_stockmanagement.helper.controller.ReaderController
 import com.example.sol_denka_stockmanagement.helper.csv.CsvHelper
@@ -39,7 +39,7 @@ import com.example.sol_denka_stockmanagement.model.item.ItemTypeMasterModel
 import com.example.sol_denka_stockmanagement.model.location.LocationMasterModel
 import com.example.sol_denka_stockmanagement.model.process.ProcessTypeModel
 import com.example.sol_denka_stockmanagement.model.reader.ReaderInfoModel
-import com.example.sol_denka_stockmanagement.model.winder.WinderInfoModel
+import com.example.sol_denka_stockmanagement.model.winder.WinderModel
 import com.example.sol_denka_stockmanagement.reader.FakeBeeperVolume
 import com.example.sol_denka_stockmanagement.reader.FakeChannel
 import com.example.sol_denka_stockmanagement.reader.FakeInventoryState
@@ -51,7 +51,6 @@ import com.example.sol_denka_stockmanagement.state.InputState
 import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
-import io.mockk.verify
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -61,7 +60,6 @@ import kotlinx.coroutines.test.advanceUntilIdle
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import kotlin.math.exp
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
@@ -83,14 +81,14 @@ class AppViewModelTest {
     private val itemTypeRepo = mockk<ItemTypeRepository>(relaxed = true)
     private val fieldSettingRepo = mockk<ItemTypeFieldSettingMasterRepository>(relaxed = true)
     private val categoryRepo = mockk<ItemCategoryRepository>(relaxed = true)
-    private val winderRepo = mockk<WinderInfoRepository>(relaxed = true)
+    private val winderRepo = mockk<WinderRepository>(relaxed = true)
     private val processRepo = mockk<ProcessTypeRepository>(relaxed = true)
     private val csvHelper = mockk<CsvHelper>(relaxed = true)
 
     private val presetRepos = emptySet<IPresetRepo>()
     private val locationFlow = MutableStateFlow<List<LocationMasterModel>>(emptyList())
     private val itemCategoryFlow = MutableStateFlow<List<ItemCategoryModel>>(emptyList())
-    private val winderFlow = MutableStateFlow<List<WinderInfoModel>>(emptyList())
+    private val winderFlow = MutableStateFlow<List<WinderModel>>(emptyList())
     private val processTypeFlow = MutableStateFlow<List<ProcessTypeModel>>(emptyList())
     private val readerInfoFlow = MutableStateFlow(ReaderInfoModel())
     private val connectionStateFlow = MutableStateFlow(ConnectionState.DISCONNECTED)
@@ -275,13 +273,13 @@ class AppViewModelTest {
         assertTrue(viewModel.winderMaster.value.isEmpty())
 
         val fakeWinder = listOf(
-            WinderInfoModel(
+            WinderModel(
                 winderId = 1,
                 winderName = WinderType.MACHINE_2.displayName,
                 createdAt = generateTimeStamp(),
                 updatedAt = generateTimeStamp()
             ),
-            WinderInfoModel(
+            WinderModel(
                 winderId = 2,
                 winderName = WinderType.SLITTING_B_F.displayName,
                 createdAt = generateTimeStamp(),
