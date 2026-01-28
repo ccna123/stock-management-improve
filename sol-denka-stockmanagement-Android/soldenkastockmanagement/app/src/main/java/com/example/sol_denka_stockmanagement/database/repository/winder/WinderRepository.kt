@@ -1,15 +1,11 @@
 package com.example.sol_denka_stockmanagement.database.repository.winder
 
-import android.util.Log
 import com.example.sol_denka_stockmanagement.app_interface.IPresetRepo
-import com.example.sol_denka_stockmanagement.constant.WinderType
-import com.example.sol_denka_stockmanagement.constant.generateTimeStamp
 import com.example.sol_denka_stockmanagement.database.dao.winder.WinderDao
 import com.example.sol_denka_stockmanagement.model.winder.WinderModel
 import com.example.sol_denka_stockmanagement.model.winder.toEntity
 import com.example.sol_denka_stockmanagement.model.winder.toModel
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 import javax.inject.Singleton

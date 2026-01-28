@@ -1,6 +1,5 @@
 package com.example.sol_denka_stockmanagement.database.repository.inventory
 
-import com.example.sol_denka_stockmanagement.app_interface.IPresetRepo
 import com.example.sol_denka_stockmanagement.database.dao.inventory.InventoryResultTypeDao
 import com.example.sol_denka_stockmanagement.model.inventory.InventoryResultTypeModel
 import com.example.sol_denka_stockmanagement.model.inventory.toEntity
@@ -13,12 +12,7 @@ import javax.inject.Singleton
 @Singleton
 class InventoryResultTypeRepository @Inject constructor(
     private val dao: InventoryResultTypeDao
-): IPresetRepo {
-
-    override suspend fun ensurePresetInserted() {
-    }
-
-
+){
     fun get(): Flow<List<InventoryResultTypeModel>> = dao.get().map { entityList ->
         entityList.map { it.toModel() }
     }

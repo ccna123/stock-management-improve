@@ -1,6 +1,5 @@
 package com.example.sol_denka_stockmanagement.database.repository.process
 
-import com.example.sol_denka_stockmanagement.app_interface.IPresetRepo
 import com.example.sol_denka_stockmanagement.database.dao.process.ProcessTypeDao
 import com.example.sol_denka_stockmanagement.model.process.ProcessTypeModel
 import com.example.sol_denka_stockmanagement.model.process.toEntity
@@ -13,11 +12,7 @@ import javax.inject.Singleton
 @Singleton
 class ProcessTypeRepository @Inject constructor(
     private val dao: ProcessTypeDao
-): IPresetRepo {
-
-
-    override suspend fun ensurePresetInserted() {
-    }
+){
 
     fun get(): Flow<List<ProcessTypeModel>> = dao.get().map { entityList ->
         entityList.map { it.toModel() }

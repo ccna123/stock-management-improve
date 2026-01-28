@@ -39,5 +39,4 @@ interface ProcessTypeDao {
         deleteAll()
         insertAll(e)
     }
-
 }

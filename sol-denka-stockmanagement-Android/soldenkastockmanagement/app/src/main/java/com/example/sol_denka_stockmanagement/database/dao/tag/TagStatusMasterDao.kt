@@ -36,7 +36,4 @@ interface TagStatusMasterDao {
         deleteAll()
         insertAll(e)
     }
-
-
-
 }

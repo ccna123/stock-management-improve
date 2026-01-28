@@ -569,9 +569,6 @@ class AppViewModel @Inject constructor(
             _isFileWorking.value = false
         }
     }
-
-
-
     private fun resetInboundInputForm() {
         _inputState.update {
             it.copy(

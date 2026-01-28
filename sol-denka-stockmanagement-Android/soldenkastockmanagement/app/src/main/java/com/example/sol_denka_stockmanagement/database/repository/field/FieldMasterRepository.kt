@@ -1,6 +1,5 @@
 package com.example.sol_denka_stockmanagement.database.repository.field
 
-import com.example.sol_denka_stockmanagement.app_interface.IPresetRepo
 import com.example.sol_denka_stockmanagement.database.dao.field.FieldMasterDao
 import com.example.sol_denka_stockmanagement.model.field.FieldMasterModel
 import com.example.sol_denka_stockmanagement.model.field.toEntity
@@ -13,11 +12,7 @@ import javax.inject.Singleton
 @Singleton
 class FieldMasterRepository @Inject constructor(
     private val dao: FieldMasterDao
-): IPresetRepo {
-
-    override suspend fun ensurePresetInserted() {
-    }
-
+){
     fun get(): Flow<List<FieldMasterModel>> = dao.get().map { entityList ->
         entityList.map { it.toModel() }
     }
