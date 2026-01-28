@@ -11,7 +11,7 @@ object MessageMapper {
                 "処理が正常に完了しました。"
 
             StatusCode.FILE_NOT_FOUND ->
-                "CSVファイルが見つかりません。"
+                "対象のCSVファイルが見つかりません。削除・移動されていないか確認してください。"
 
             StatusCode.FILE_EMPTY ->
                 "CSVファイルの内容が空です。"
@@ -47,13 +47,14 @@ object MessageMapper {
             StatusCode.MISSING_COLUMN -> {
                 val missing = params?.get("missing_headers") as? List<*>
                 if (!missing.isNullOrEmpty()) {
-                    "CSVに不足している必須カラムがあります：\n" +
+                    "必須カラムが不足しています。：\n" +
                             missing.joinToString(", ")
                 } else {
                     "エラーが発生しました。"
                 }
             }
             StatusCode.CSV_SCHEMA_ERROR -> "CSVスキーマにエラーがあります。"
+            StatusCode.IMPORT_FAILED -> "CSVファイルの読み取りに失敗しました。"
         }
     }
 }

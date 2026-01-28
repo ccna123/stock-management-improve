@@ -26,7 +26,10 @@ import com.example.sol_denka_stockmanagement.database.repository.process.Process
 import com.example.sol_denka_stockmanagement.database.repository.tag.TagMasterRepository
 import com.example.sol_denka_stockmanagement.database.repository.tag.TagStatusMasterRepository
 import com.example.sol_denka_stockmanagement.database.repository.winder.WinderRepository
+import com.example.sol_denka_stockmanagement.exception.AppException
 import com.example.sol_denka_stockmanagement.exception.CsvFileCreateException
+import com.example.sol_denka_stockmanagement.exception.CsvFileNotFoundException
+import com.example.sol_denka_stockmanagement.exception.CsvImportFailedException
 import com.example.sol_denka_stockmanagement.exception.CsvImporterNotFoundException
 import com.example.sol_denka_stockmanagement.exception.CsvSchemaException
 import com.example.sol_denka_stockmanagement.exception.CsvWriteException
@@ -74,9 +77,9 @@ class CsvHelper @Inject constructor(
         private const val INVENTORY_RESULT = "Inventory"
         private const val INBOUND_EVENT = "InboundEvent"
         private const val OUTBOUND_EVENT = "OutboundEvent"
-        private const val LOCATION_CHANGE_EVENT = "LocationChangeEvent"
+        private const val LOCATION_CHANGE_EVENT = "LocationChange"
 
-        private const val LEDGER_MASTER = "LedgerMaster"
+        private const val LEDGER_MASTER = "LedgerItemMaster"
         private const val LOCATION_MASTER = "LocationMaster"
         private const val ITEM_TYPE_MASTER = "ItemTypeMaster"
         private const val TAG_MASTER = "TagMaster"
@@ -444,51 +447,65 @@ class CsvHelper @Inject constructor(
         fileName: String,
         onProgress: (Float) -> Unit
     ) = withContext(Dispatchers.IO) {
-        val files = listCsvFiles(csvType)
-        val fileInfo = files.find { it.fileName == fileName }
 
-        fileInfo?.let {
-            val fileObj = File(fileInfo.filePath, fileInfo.fileName)
-            if (csvType == CsvType.ReferenceMaster.displayName) {
-                importReferenceMaster(fileObj, onProgress)
-                return@withContext
+        val (_, localFolder) = mapCsvTypeToFolders(csvType)
+            ?: throw FolderNotFoundException()
+
+        val targetDir = File(
+            Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),
+            "$ROOT_FOLDER/$localFolder"
+        )
+
+        val fileObj = File(targetDir, fileName)
+        if (!fileObj.exists() || !fileObj.isFile) {
+            throw CsvFileNotFoundException()
+        }
+
+        if (csvType == CsvType.ReferenceMaster.displayName) {
+            importReferenceMaster(fileObj, onProgress)
+            return@withContext
+        }
+
+        val lines = fileObj.readLines(Charsets.UTF_8)
+        if (lines.isEmpty()) {
+            throw FileEmptyException()
+        }
+
+        val importer = getImporter(csvType)
+            ?: throw CsvImporterNotFoundException()
+
+        val total = maxOf(1, lines.size)
+        var count = 0
+
+        val headerLine = lines.first()
+        val headers = headerLine.split(",").map { it.trim() }
+
+        val missing = importer.requiredHeaders - headers.toSet()
+        if (missing.isNotEmpty()) {
+            throw MissingColumnException(missing.toList())
+        }
+
+        try {
+            lines.drop(1).chunked(50).forEach { chunk ->
+                importer.importAll(headers = headers, lines = chunk)
+                count += chunk.size
+                onProgress((count.toFloat() / total).coerceIn(0f, 1f))
             }
-            val lines = fileObj.readLines(Charsets.UTF_8)
-            if (lines.isEmpty()) {
-                throw FileEmptyException()
-            }
+            importer.finish()
+            onProgress(1f)
 
-            val importer = getImporter(csvType)
-                ?: throw CsvImporterNotFoundException()
+        } catch (_: SQLiteConstraintException) {
+            throw SqliteConstraintAppException()
 
-            val total = maxOf(1, lines.size)
-            var count = 0
+        } catch (e: AppException) {
+            throw e
 
-            val headerLine = lines.first()
-            val headers = headerLine.split(",").map { it.trim() }
-
-            val missing = importer.requiredHeaders - headers.toSet()
-            if (missing.isNotEmpty()) {
-                throw MissingColumnException(missing.toList())
-            }
-
-            try {
-                lines.drop(1).chunked(50).forEach { chunk ->
-                    importer.importAll(headers = headers, lines = chunk)
-                    count += chunk.size
-                    onProgress((count.toFloat() / total).coerceIn(0f, 1f))
-                }
-                importer.finish()
-                onProgress(1f)
-            } catch (_: SQLiteConstraintException) {
-                throw SqliteConstraintAppException()
-            }
-            catch (e: Exception) {
-                Log.e("TSS", "import error: $e " )
-                throw e
-            }
+        } catch (e: Exception) {
+            Log.e("TSS", "import error", e)
+            throw CsvImportFailedException()
         }
     }
+
     private fun getImporter(csvType: String): CsvImporter<*>? {
         return when (csvType) {
             CsvType.LocationMaster.displayName -> LocationMasterImporter(

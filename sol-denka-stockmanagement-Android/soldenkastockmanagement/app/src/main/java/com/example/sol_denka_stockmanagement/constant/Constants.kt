@@ -119,6 +119,7 @@ enum class StatusCode() {
     OK,
     DOWNLOAD_SFTP_OK,
     IMPORT_OK,
+    IMPORT_FAILED,
     EXPORT_OK,
     FILE_NOT_FOUND,
     FILE_EMPTY,

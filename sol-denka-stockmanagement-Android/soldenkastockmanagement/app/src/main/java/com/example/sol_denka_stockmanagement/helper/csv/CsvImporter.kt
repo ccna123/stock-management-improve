@@ -1,5 +1,7 @@
 package com.example.sol_denka_stockmanagement.helper.csv
 
+import com.example.sol_denka_stockmanagement.exception.CsvImportFailedException
+
 abstract class CsvImporter<T> {
 
     protected val buffer = mutableListOf<T>()
@@ -30,9 +32,16 @@ abstract class CsvImporter<T> {
     }
 
     suspend fun finish() {
-        if (buffer.isEmpty()) return
-        replaceAllWithNewData(buffer)
-        buffer.clear()
+        if (buffer.isEmpty()) {
+            throw CsvImportFailedException()
+        }
+        try {
+            replaceAllWithNewData(buffer)
+        } catch (_: Exception) {
+            throw CsvImportFailedException()
+        } finally {
+            buffer.clear()
+        }
     }
 }
 

@@ -20,6 +20,10 @@ class CsvFormatException(message: String) : AppException(
     message = message
 )
 
+class CsvFileNotFoundException(): AppException(
+    statusCode = StatusCode.FILE_NOT_FOUND
+)
+
 class FileEmptyException : AppException(
     statusCode = StatusCode.FILE_EMPTY
 )
@@ -46,4 +50,8 @@ class CsvWriteException: AppException(
 
 class CsvSchemaException: AppException(
     statusCode = StatusCode.CSV_SCHEMA_ERROR
+)
+
+class CsvImportFailedException: AppException(
+    statusCode = StatusCode.IMPORT_FAILED
 )
