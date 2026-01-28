@@ -134,7 +134,9 @@ enum class StatusCode() {
     CANCEL,
     MISSING_COLUMN,
     SQLITE_CONSTRAINT_ERROR,
-    CSV_SCHEMA_ERROR
+    CSV_SCHEMA_ERROR,
+    REFERENCE_MASTER_MISSING_FILE,
+    MISSING_HEADER
 }
 
 enum class TagScanStatus {

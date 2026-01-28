@@ -28,14 +28,15 @@ import com.example.sol_denka_stockmanagement.database.repository.tag.TagStatusMa
 import com.example.sol_denka_stockmanagement.database.repository.winder.WinderRepository
 import com.example.sol_denka_stockmanagement.exception.AppException
 import com.example.sol_denka_stockmanagement.exception.CsvFileCreateException
+import com.example.sol_denka_stockmanagement.exception.CsvFileEmptyException
 import com.example.sol_denka_stockmanagement.exception.CsvFileNotFoundException
 import com.example.sol_denka_stockmanagement.exception.CsvImportFailedException
 import com.example.sol_denka_stockmanagement.exception.CsvImporterNotFoundException
-import com.example.sol_denka_stockmanagement.exception.CsvSchemaException
 import com.example.sol_denka_stockmanagement.exception.CsvWriteException
-import com.example.sol_denka_stockmanagement.exception.FileEmptyException
 import com.example.sol_denka_stockmanagement.exception.FolderNotFoundException
 import com.example.sol_denka_stockmanagement.exception.MissingColumnException
+import com.example.sol_denka_stockmanagement.exception.MissingHeaderException
+import com.example.sol_denka_stockmanagement.exception.ReferenceMasterMissingFileException
 import com.example.sol_denka_stockmanagement.exception.SqliteConstraintAppException
 import com.example.sol_denka_stockmanagement.model.csv.CsvFileInfoModel
 import com.jcraft.jsch.ChannelSftp
@@ -52,6 +53,7 @@ import java.util.Locale
 import java.util.Vector
 import java.util.zip.ZipInputStream
 import javax.inject.Inject
+import kotlin.reflect.KClass
 
 class CsvHelper @Inject constructor(
     private val locationMasterRepository: LocationMasterRepository,
@@ -468,7 +470,9 @@ class CsvHelper @Inject constructor(
 
         val lines = fileObj.readLines(Charsets.UTF_8)
         if (lines.isEmpty()) {
-            throw FileEmptyException()
+            throw CsvFileEmptyException(
+                fileName = fileName
+            )
         }
 
         val importer = getImporter(csvType)
@@ -480,9 +484,10 @@ class CsvHelper @Inject constructor(
         val headerLine = lines.first()
         val headers = headerLine.split(",").map { it.trim() }
 
-        val missing = importer.requiredHeaders - headers.toSet()
-        if (missing.isNotEmpty()) {
-            throw MissingColumnException(missing.toList())
+        // ===== CHECK HEADER =====
+        val missingHeaders = importer.requiredHeaders - headers.toSet()
+        if (missingHeaders.isNotEmpty()) {
+            throw MissingHeaderException(missingHeaders.toList())
         }
 
         try {
@@ -544,7 +549,9 @@ class CsvHelper @Inject constructor(
         onProgress: (Float) -> Unit,
     ) = withContext(Dispatchers.IO) {
         if (rows.isEmpty()) {
-            throw FileEmptyException()
+            throw CsvFileEmptyException(
+                fileName = fileName
+            )
         }
 
         val resolver = context.contentResolver
@@ -626,28 +633,103 @@ class CsvHelper @Inject constructor(
                 ?.sortedBy { it.name }
                 ?: emptyList()
 
-            if (csvFiles.isEmpty()) throw FileEmptyException()
+            val expectedImporters: Map<KClass<out CsvImporter<*>>, String> = mapOf(
+                ProcessTypeMasterImporter::class to "処理種別",
+                TagStatusMasterImporter::class to "タグステータス",
+                WinderMasterImporter::class to "巻取機",
+                ItemCategoryMasterImporter::class to "品目区分",
+                FieldMasterImporter::class to "項目プリセット",
+                InventoryResultTypeMasterImporter::class to "棚卸結果種別",
+                ItemUnitMasterImporter::class to "品目単位",
+                CsvTaskTypeMasterImporter::class to "CSVタスク種別"
+            )
 
+            if (csvFiles.isEmpty()) {
+                throw ReferenceMasterMissingFileException(
+                    expectedImporters.values.toList()
+                )
+            }
+
+            // ===== PHASE 1: PRE-SCAN (NO THROW) =====
+            val detectedImporters = mutableSetOf<KClass<out CsvImporter<*>>>()
+
+            csvFiles.forEach { csv ->
+                val lines = csv.readLines(Charsets.UTF_8)
+                if (lines.size <= 1) {
+                    // header only → file empty
+                    throw CsvFileEmptyException(
+                        fileName = csv.name
+                    )
+                }
+
+                val headers = lines.first()
+                    .split(",")
+                    .map { it.trim() }
+                    .toSet()
+
+                val cls = detectReferenceImporterClass(headers)
+                if (cls != null) {
+                    detectedImporters.add(cls)
+                }
+            }
+
+            // ===== CHECK MISSING MASTER =====
+            val missing = expectedImporters.keys - detectedImporters
+            if (missing.isNotEmpty()) {
+                throw ReferenceMasterMissingFileException(
+                    missing.map { expectedImporters[it] ?: "不明なマスタ" }
+                )
+            }
+
+            // ===== PHASE 2: IMPORT =====
             val total = csvFiles.size
             var done = 0
 
             db.withTransaction {
                 csvFiles.forEach { csv ->
-
                     val lines = csv.readLines(Charsets.UTF_8)
-                    val headers = lines.first()
-                        .split(",")
-                        .map { it.trim() }
-                        .toSet()
+                    val headers = lines.first().split(",").map { it.trim() }.toSet()
 
-                    val importer = detectReferenceImporter(headers)
+                    val importerClass =
+                        detectReferenceImporterClass(headers)
+                            ?: throw CsvImporterNotFoundException()
 
-                    val missing = importer.requiredHeaders - headers.toSet()
-                    if (missing.isNotEmpty()) {
-                        throw MissingColumnException(missing.toList())
+                    val importer = createReferenceImporter(importerClass)
+
+                    // ===== CHECK HEADER =====
+                    val headerList = headers.toList()
+                    val dataLines = lines.drop(1)
+
+                    val missingHeaders = mutableListOf<String>()
+                    val missingColumns = mutableListOf<String>()
+
+                    importer.requiredHeaders.forEach { required ->
+                        val headerIndex = headerList.indexOf(required)
+
+                        if (headerIndex == -1) {
+                            // header not exists → check data
+                            val hasAnyData = dataLines.any { line ->
+                                val values = line.split(",")
+                                values.size > headerList.size && values.last().isNotBlank()
+                            }
+
+                            if (hasAnyData) {
+                                missingHeaders.add(required)
+                            } else {
+                                missingColumns.add(required)
+                            }
+                        }
                     }
 
-                    lines.drop(1).chunked(50).forEach { chunk ->
+                    when {
+                        missingHeaders.isNotEmpty() ->
+                            throw MissingHeaderException(missingHeaders)
+
+                        missingColumns.isNotEmpty() ->
+                            throw MissingColumnException(missingColumns)
+                    }
+
+                    dataLines.chunked(50).forEach { chunk ->
                         importer.importAll(headers.toList(), chunk)
                     }
                     importer.finish()
@@ -656,12 +738,18 @@ class CsvHelper @Inject constructor(
                     onProgress(done.toFloat() / total)
                 }
             }
+
             onProgress(1f)
+
         } finally {
             tempDir.deleteRecursively()
         }
     }
-    private fun detectReferenceImporter(headers: Set<String>): CsvImporter<*> {
+
+    private fun detectReferenceImporterClass(
+        headers: Set<String>
+    ): KClass<out CsvImporter<*>>? {
+
         val importers = listOf(
             ProcessTypeMasterImporter(processTypeRepository, db),
             TagStatusMasterImporter(tagStatusMasterRepository, db),
@@ -673,22 +761,45 @@ class CsvHelper @Inject constructor(
             CsvTaskTypeMasterImporter(csvTaskTypeRepository, db)
         )
 
-        val matched = importers.filter { importer ->
-            importer.requiredHeaders.all { it in headers }
+        val matched = importers.filter {
+            it.requiredHeaders.any { h -> h in headers }
         }
-        Log.e("TSS", "detectReferenceImporter: $matched")
 
-        return when {
-            matched.isEmpty() ->
-                throw CsvImporterNotFoundException()
+        return if (matched.size == 1) matched.first()::class else null
+    }
 
-            matched.size == 1 ->
-                matched.first()
+    private fun createReferenceImporter(
+        cls: KClass<out CsvImporter<*>>
+    ): CsvImporter<*> =
+        when (cls) {
+            ProcessTypeMasterImporter::class ->
+                ProcessTypeMasterImporter(processTypeRepository, db)
+
+            TagStatusMasterImporter::class ->
+                TagStatusMasterImporter(tagStatusMasterRepository, db)
+
+            WinderMasterImporter::class ->
+                WinderMasterImporter(winderRepository, db)
+
+            ItemCategoryMasterImporter::class ->
+                ItemCategoryMasterImporter(itemCategoryRepository, db)
+
+            FieldMasterImporter::class ->
+                FieldMasterImporter(fieldMasterRepository, db)
+
+            InventoryResultTypeMasterImporter::class ->
+                InventoryResultTypeMasterImporter(inventoryResultTypeRepository, db)
+
+            ItemUnitMasterImporter::class ->
+                ItemUnitMasterImporter(itemUnitRepository, db)
+
+            CsvTaskTypeMasterImporter::class ->
+                CsvTaskTypeMasterImporter(csvTaskTypeRepository, db)
 
             else ->
-                throw CsvSchemaException()
+                throw CsvImporterNotFoundException()
         }
-    }
+
     private fun unzip(zipFile: File, targetDir: File) {
         ZipInputStream(zipFile.inputStream()).use { zis ->
             var entry = zis.nextEntry

@@ -12,6 +12,13 @@ class MissingColumnException(
     missing: List<String>
 ) : AppException(
     statusCode = StatusCode.MISSING_COLUMN,
+    params = mapOf("missing_columns" to missing)
+)
+
+class MissingHeaderException(
+    missing: List<String>
+) : AppException(
+    statusCode = StatusCode.MISSING_HEADER,
     params = mapOf("missing_headers" to missing)
 )
 
@@ -24,8 +31,11 @@ class CsvFileNotFoundException(): AppException(
     statusCode = StatusCode.FILE_NOT_FOUND
 )
 
-class FileEmptyException : AppException(
-    statusCode = StatusCode.FILE_EMPTY
+class CsvFileEmptyException(
+    fileName: String
+) : AppException(
+    statusCode = StatusCode.FILE_EMPTY,
+    params = mapOf("file" to fileName)
 )
 
 class CsvImporterNotFoundException : AppException(
@@ -54,4 +64,11 @@ class CsvSchemaException: AppException(
 
 class CsvImportFailedException: AppException(
     statusCode = StatusCode.IMPORT_FAILED
+)
+
+class ReferenceMasterMissingFileException(
+    missing: List<String>
+) : AppException(
+    statusCode = StatusCode.REFERENCE_MASTER_MISSING_FILE,
+    params = mapOf("missing_files" to missing)
 )

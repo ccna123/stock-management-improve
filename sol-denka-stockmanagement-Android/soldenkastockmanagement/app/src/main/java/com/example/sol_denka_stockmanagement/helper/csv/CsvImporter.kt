@@ -1,6 +1,7 @@
 package com.example.sol_denka_stockmanagement.helper.csv
 
 import com.example.sol_denka_stockmanagement.exception.CsvImportFailedException
+import com.example.sol_denka_stockmanagement.exception.MissingColumnException
 
 abstract class CsvImporter<T> {
 
@@ -24,6 +25,12 @@ abstract class CsvImporter<T> {
             .filter { it.isNotBlank() }
             .map { line ->
                 val values = line.split(",")
+
+                // 🔥 DATA COLUMN CHECK
+                if (values.size < headers.size) {
+                    val missingCols = headers.drop(values.size)
+                    throw MissingColumnException(missingCols)
+                }
                 val rowMap = headers.zip(values).toMap()
                 mapRow(CsvRow(rowMap))
             }

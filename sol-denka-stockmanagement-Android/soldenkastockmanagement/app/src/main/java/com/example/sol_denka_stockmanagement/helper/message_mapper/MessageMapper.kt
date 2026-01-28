@@ -13,8 +13,38 @@ object MessageMapper {
             StatusCode.FILE_NOT_FOUND ->
                 "対象のCSVファイルが見つかりません。削除・移動されていないか確認してください。"
 
-            StatusCode.FILE_EMPTY ->
-                "CSVファイルの内容が空です。"
+            StatusCode.FILE_EMPTY -> {
+                val fileParam = params?.get("file")
+
+                when (fileParam) {
+                    is List<*> -> {
+                        val files = fileParam.filterIsInstance<String>()
+                        if (files.isNotEmpty()) {
+                            "CSVファイルが空です：${files.joinToString("、")}"
+                        } else {
+                            "CSVファイルの内容が空です。"
+                        }
+                    }
+
+                    is String -> {
+                        "CSVファイルが空です：$fileParam"
+                    }
+
+                    else -> {
+                        "CSVファイルの内容が空です。"
+                    }
+                }
+            }
+
+            StatusCode.MISSING_HEADER -> {
+                val headers = params?.get("missing_headers") as? List<*>
+                if (!headers.isNullOrEmpty()) {
+                    "CSVヘッダーが不足しています：\n" +
+                            headers.joinToString("、")
+                } else {
+                    "CSVヘッダーが不足しています。"
+                }
+            }
 
             StatusCode.FOLDER_NOT_FOUND ->
                 "保存先フォルダーが見つかりません。"
@@ -45,9 +75,9 @@ object MessageMapper {
             StatusCode.EXPORT_OK -> "CSV ファイルの保存は正常に完了しましたが、\n送信処理でエラーが発生しました。再度送信をお試しください。"
             StatusCode.CANCEL -> "登録作業をキャンセルし、\nホーム画面に戻ってもよろしいですか？"
             StatusCode.MISSING_COLUMN -> {
-                val missing = params?.get("missing_headers") as? List<*>
+                val missing = params?.get("missing_columns") as? List<*>
                 if (!missing.isNullOrEmpty()) {
-                    "必須カラムが不足しています。：\n" +
+                    "必須カラムが不足しています。\n" +
                             missing.joinToString(", ")
                 } else {
                     "エラーが発生しました。"
@@ -55,6 +85,15 @@ object MessageMapper {
             }
             StatusCode.CSV_SCHEMA_ERROR -> "CSVスキーマにエラーがあります。"
             StatusCode.IMPORT_FAILED -> "CSVファイルの読み取りに失敗しました。"
+            StatusCode.REFERENCE_MASTER_MISSING_FILE -> {
+                val missing = params?.get("missing_files") as? List<*>
+                if (!missing.isNullOrEmpty()) {
+                    "必須マスタが不足しています。\n" +
+                            missing.joinToString(", ")
+                } else {
+                    "エラーが発生しました。"
+                }
+            }
         }
     }
 }
