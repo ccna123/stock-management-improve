@@ -352,7 +352,7 @@ fun InboundInputFormItem(
         }
 
         /* ================= DATETIME ================= */
-        ControlType.DATETIMEPICKER -> {
+        ControlType.DATETIME_PICKER -> {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(10.dp)

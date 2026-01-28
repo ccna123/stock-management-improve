@@ -1,5 +1,6 @@
 package com.example.sol_denka_stockmanagement.helper.csv
 
+import android.util.Log
 import com.example.sol_denka_stockmanagement.exception.CsvImportFailedException
 import com.example.sol_denka_stockmanagement.exception.MissingColumnException
 
@@ -39,12 +40,14 @@ abstract class CsvImporter<T> {
     }
 
     suspend fun finish() {
+        Log.e("TSS", "buffer is empty ?: ${buffer.isEmpty()}")
         if (buffer.isEmpty()) {
             throw CsvImportFailedException()
         }
         try {
             replaceAllWithNewData(buffer)
-        } catch (_: Exception) {
+        } catch (e: Exception) {
+            Log.e("TSS", "finish: $e")
             throw CsvImportFailedException()
         } finally {
             buffer.clear()

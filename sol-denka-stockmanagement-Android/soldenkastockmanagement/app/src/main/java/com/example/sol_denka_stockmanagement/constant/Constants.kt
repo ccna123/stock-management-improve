@@ -160,20 +160,19 @@ enum class Category(val displayName: String) {
 }
 
 enum class InboundInputField(val displayName: String, val code: String) {
-    WEIGHT("重量", "Weight"),
-    LENGTH("長さ", "Length"),
-    WIDTH("巾", "Width"),
-    THICKNESS("厚み", "Thickness"),
+    WEIGHT("重量", "WEIGHT"),
+    LENGTH("長さ", "LENGTH"),
+    WIDTH("巾", "WIDTH"),
+    THICKNESS("厚み", "THICKNESS"),
     SPECIFIC_GRAVITY("比重", "SpecificGravity"),
-    LOT_NO("Lot No", "LotNo"),
-    WINDER("巻き取り機", "Winder"),
-    OCCURRENCE_REASON("発生理由", "OccurrenceReason"),
-    MEMO("備考", "Memo"),
-    LOCATION("保管場所", "Location"),
-    PACKING_TYPE("荷姿", "PackingType"),
-    OCCURRED_AT("発生日時", "OccurredAt"),
-    PROCESSED_AT("処理日時", "ProcessedAt"),
-    QUANTITY("数量", "Quantity"),
+    LOT_NO("Lot No", "LOT_NO"),
+    WINDER("巻き取り機", "WINDER"),
+    OCCURRENCE_REASON("発生理由", "OCCURRENCE_REASON"),
+    MEMO("備考", "MEMO"),
+    LOCATION("保管場所", "LOCATION"),
+    OCCURRED_AT("発生日時", "OCCURRED_AT"),
+    PROCESSED_AT("処理日時", "PROCESSED_AT"),
+    QUANTITY("数量", "QUANTITY"),
 }
 
 enum class DataType {
@@ -185,7 +184,7 @@ enum class DataType {
 enum class ControlType {
     INPUT,
     DROPDOWN,
-    DATETIMEPICKER
+    DATETIME_PICKER
 }
 
 enum class WinderType(val displayName: String) {

@@ -1,6 +1,7 @@
 package com.example.sol_denka_stockmanagement.screen.inbound
 
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -88,6 +89,8 @@ fun InboundScreen(
     val winderMaster by appViewModel.winderMaster.collectAsStateWithLifecycle()
     val itemCategoryMaster by appViewModel.itemCategoryMaster.collectAsStateWithLifecycle()
     val isNetworkConnected by appViewModel.isNetworkConnected.collectAsStateWithLifecycle()
+
+    Log.e("TSS", "InboundScreen: $inboundInputFormResults", )
 
     val scope = rememberCoroutineScope()
 
