@@ -20,14 +20,14 @@ object MessageMapper {
                     is List<*> -> {
                         val files = fileParam.filterIsInstance<String>()
                         if (files.isNotEmpty()) {
-                            "CSVファイルが空です：${files.joinToString("、")}"
+                            "CSVファイルが空です。\n${files.joinToString("、")}"
                         } else {
                             "CSVファイルの内容が空です。"
                         }
                     }
 
                     is String -> {
-                        "CSVファイルが空です：$fileParam"
+                        "CSVファイルが空です。\n$fileParam"
                     }
 
                     else -> {
@@ -39,7 +39,7 @@ object MessageMapper {
             StatusCode.MISSING_HEADER -> {
                 val headers = params?.get("missing_headers") as? List<*>
                 if (!headers.isNullOrEmpty()) {
-                    "CSVヘッダーが不足しています：\n" +
+                    "CSVヘッダーが不足しています\n" +
                             headers.joinToString("、")
                 } else {
                     "CSVヘッダーが不足しています。"
@@ -83,7 +83,6 @@ object MessageMapper {
                     "エラーが発生しました。"
                 }
             }
-            StatusCode.CSV_SCHEMA_ERROR -> "CSVスキーマにエラーがあります。"
             StatusCode.IMPORT_FAILED -> "CSVファイルの読み取りに失敗しました。"
             StatusCode.REFERENCE_MASTER_MISSING_FILE -> {
                 val missing = params?.get("missing_files") as? List<*>

@@ -58,10 +58,6 @@ class CsvWriteException: AppException(
     statusCode = StatusCode.WRITE_ERROR
 )
 
-class CsvSchemaException: AppException(
-    statusCode = StatusCode.CSV_SCHEMA_ERROR
-)
-
 class CsvImportFailedException: AppException(
     statusCode = StatusCode.IMPORT_FAILED
 )
