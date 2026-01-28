@@ -176,6 +176,9 @@ class CsvViewModel @Inject constructor(
 
                 _isImporting.value = false
                 _importResultStatus.value = ProcessResult.Success()
+                showProcessResultDialog(
+                    MessageMapper.toMessage(StatusCode.IMPORT_OK)
+                )
 
             } catch (e: AppException) {
                 Log.e("TSS", "importMaster error: $e " )
@@ -195,7 +198,6 @@ class CsvViewModel @Inject constructor(
                 _importResultStatus.value = ProcessResult.Failure(statusCode = StatusCode.FAILED)
             } finally {
                 _isImporting.value = false
-
             }
         }
     }

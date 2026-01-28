@@ -10,7 +10,7 @@ import com.example.sol_denka_stockmanagement.database.converter.BigDecimalConver
 import com.example.sol_denka_stockmanagement.database.entity.item.ItemTypeMasterEntity
 import com.example.sol_denka_stockmanagement.database.entity.location.LocationMasterEntity
 import com.example.sol_denka_stockmanagement.database.entity.tag.TagMasterEntity
-import com.example.sol_denka_stockmanagement.database.entity.winder.WinderInfoEntity
+import com.example.sol_denka_stockmanagement.database.entity.winder.WinderEntity
 import java.math.BigDecimal
 
 @Entity(
@@ -30,7 +30,7 @@ import java.math.BigDecimal
             onDelete = ForeignKey.CASCADE
         ),
         ForeignKey(
-            entity = WinderInfoEntity::class,
+            entity = WinderEntity::class,
             parentColumns = ["winder_id"],
             childColumns = ["winder_id"],
             onUpdate = ForeignKey.CASCADE,

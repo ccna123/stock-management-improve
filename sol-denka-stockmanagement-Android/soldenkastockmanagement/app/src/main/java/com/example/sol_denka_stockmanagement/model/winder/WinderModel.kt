@@ -1,6 +1,6 @@
 package com.example.sol_denka_stockmanagement.model.winder
 
-import com.example.sol_denka_stockmanagement.database.entity.winder.WinderInfoEntity
+import com.example.sol_denka_stockmanagement.database.entity.winder.WinderEntity
 
 data class WinderModel(
     val winderId: Int,
@@ -9,14 +9,14 @@ data class WinderModel(
     val updatedAt: String
 )
 
-fun WinderInfoEntity.toModel() = WinderModel(
+fun WinderEntity.toModel() = WinderModel(
     winderId = winderId,
     winderName = winderName,
     createdAt = createdAt,
     updatedAt = updatedAt
 )
 
-fun WinderModel.toEntity() = WinderInfoEntity(
+fun WinderModel.toEntity() = WinderEntity(
     winderId = winderId,
     winderName = winderName,
     createdAt = createdAt,

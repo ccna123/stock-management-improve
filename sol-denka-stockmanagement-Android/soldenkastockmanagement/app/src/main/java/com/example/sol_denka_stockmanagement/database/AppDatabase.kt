@@ -46,7 +46,7 @@ import com.example.sol_denka_stockmanagement.database.entity.outbound.OutBoundEv
 import com.example.sol_denka_stockmanagement.database.entity.outbound.OutboundSessionEntity
 import com.example.sol_denka_stockmanagement.database.entity.process.ProcessTypeEntity
 import com.example.sol_denka_stockmanagement.database.entity.tag.TagStatusMasterEntity
-import com.example.sol_denka_stockmanagement.database.entity.winder.WinderInfoEntity
+import com.example.sol_denka_stockmanagement.database.entity.winder.WinderEntity
 
 @Database(
     entities = [
@@ -81,9 +81,9 @@ import com.example.sol_denka_stockmanagement.database.entity.winder.WinderInfoEn
         FieldMasterEntity::class,
         ItemTypeFieldSettingMasterEntity::class,
 
-        WinderInfoEntity::class
+        WinderEntity::class
     ],
-    version = 30
+    version = 31
 )
 abstract class AppDatabase : RoomDatabase() {
 

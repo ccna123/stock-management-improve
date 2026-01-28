@@ -38,6 +38,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.sol_denka_stockmanagement.R
+import com.example.sol_denka_stockmanagement.constant.CsvFileType
 import com.example.sol_denka_stockmanagement.constant.CsvType
 import com.example.sol_denka_stockmanagement.constant.ProcessResult
 import com.example.sol_denka_stockmanagement.constant.SelectTitle
@@ -54,6 +55,7 @@ import com.example.sol_denka_stockmanagement.share.InputFieldContainer
 import com.example.sol_denka_stockmanagement.share.dialog.AppDialog
 import com.example.sol_denka_stockmanagement.share.dialog.NetworkDialog
 import com.example.sol_denka_stockmanagement.ui.theme.brightAzure
+import com.example.sol_denka_stockmanagement.ui.theme.brightGreenSecondary
 import com.example.sol_denka_stockmanagement.viewmodel.AppViewModel
 import kotlinx.coroutines.launch
 
@@ -118,7 +120,7 @@ fun CsvImportScreen(
                     textAlign = TextAlign.Center,
                     color = when (importResultStatus) {
                         is ProcessResult.Failure -> Color.Red
-                        is ProcessResult.Success -> brightAzure
+                        is ProcessResult.Success -> brightGreenSecondary
                         null -> Color.Unspecified
                     }
                 )
@@ -280,6 +282,10 @@ fun CsvImportScreen(
                                 csvFileName = file.fileName,
                                 csvFileSize = file.fileSize,
                                 isSelected = isSelectedFile,
+                                csvType = when(csvType){
+                                    CsvType.ReferenceMaster.displayName -> CsvFileType.ZIP_FILE
+                                    else -> CsvFileType.SINGLE_FILE
+                                },
                                 showProgress = showProgress && isSelectedFile,
                                 progress = if (isSelectedFile) importProgress else 0f,
                                 isCompleted = isSelectedFile && importResultStatus is ProcessResult.Success,

@@ -8,7 +8,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.sol_denka_stockmanagement.app_interface.ICsvExport
-import com.example.sol_denka_stockmanagement.app_interface.IPresetRepo
 import com.example.sol_denka_stockmanagement.constant.ConnectionState
 import com.example.sol_denka_stockmanagement.constant.CsvHistoryDirection
 import com.example.sol_denka_stockmanagement.constant.CsvHistoryResult
@@ -75,7 +74,6 @@ class AppViewModel @Inject constructor(
     private val itemCategoryRepository: ItemCategoryRepository,
     private val winderRepository: WinderRepository,
     private val processTypeRepository: ProcessTypeRepository,
-    private val presetRepositories: Set<@JvmSuppressWildcards IPresetRepo>,
     private val csvHelper: CsvHelper,
 ) : ViewModel() {
 

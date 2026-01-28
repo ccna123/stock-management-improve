@@ -10,7 +10,7 @@
     <string name="yes">はい</string>
     <string name="no">いいえ</string>
     <string name="return_home">Homeへ戻る</string>
-    <string name="import_file">読み取り</string>
+    <string name="import_file">取込実行</string>
     <string name="export_file">出力</string>
     <string name="finish_inventory">棚卸完了</string>
     <string name="apply_setting">設定適用</string>

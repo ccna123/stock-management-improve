@@ -28,6 +28,7 @@ import com.example.sol_denka_stockmanagement.database.repository.tag.TagStatusMa
 import com.example.sol_denka_stockmanagement.database.repository.winder.WinderRepository
 import com.example.sol_denka_stockmanagement.exception.CsvFileCreateException
 import com.example.sol_denka_stockmanagement.exception.CsvImporterNotFoundException
+import com.example.sol_denka_stockmanagement.exception.CsvSchemaException
 import com.example.sol_denka_stockmanagement.exception.CsvWriteException
 import com.example.sol_denka_stockmanagement.exception.FileEmptyException
 import com.example.sol_denka_stockmanagement.exception.FolderNotFoundException
@@ -658,8 +659,7 @@ class CsvHelper @Inject constructor(
         val matched = importers.filter { importer ->
             importer.requiredHeaders.all { it in headers }
         }
-
-        Log.e("TSS", "detectReferenceImporter: $matched", )
+        Log.e("TSS", "detectReferenceImporter: $matched")
 
         return when {
             matched.isEmpty() ->
@@ -669,9 +669,7 @@ class CsvHelper @Inject constructor(
                 matched.first()
 
             else ->
-                throw IllegalStateException(
-                    "ReferenceMaster header ambiguous: ${matched.map { it::class.simpleName }}"
-                )
+                throw CsvSchemaException()
         }
     }
     private fun unzip(zipFile: File, targetDir: File) {

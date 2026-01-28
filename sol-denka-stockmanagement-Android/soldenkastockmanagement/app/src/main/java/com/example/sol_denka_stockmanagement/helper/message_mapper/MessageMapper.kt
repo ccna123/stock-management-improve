@@ -41,7 +41,7 @@ object MessageMapper {
 
             StatusCode.PROCESS_NOT_CHOSEN -> "チェック済みのタグに処理方法を選択してください。"
 
-            StatusCode.IMPORT_OK -> "取り込み成功しました。"
+            StatusCode.IMPORT_OK -> "CSVファイルの取込に成功しました。"
             StatusCode.EXPORT_OK -> "CSV ファイルの保存は正常に完了しましたが、\n送信処理でエラーが発生しました。再度送信をお試しください。"
             StatusCode.CANCEL -> "登録作業をキャンセルし、\nホーム画面に戻ってもよろしいですか？"
             StatusCode.MISSING_COLUMN -> {
@@ -53,6 +53,7 @@ object MessageMapper {
                     "エラーが発生しました。"
                 }
             }
+            StatusCode.CSV_SCHEMA_ERROR -> "CSVスキーマにエラーがあります。"
         }
     }
 }

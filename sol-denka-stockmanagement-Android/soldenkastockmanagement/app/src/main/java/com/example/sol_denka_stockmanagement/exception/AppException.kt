@@ -43,3 +43,7 @@ class CsvFileCreateException: AppException(
 class CsvWriteException: AppException(
     statusCode = StatusCode.WRITE_ERROR
 )
+
+class CsvSchemaException: AppException(
+    statusCode = StatusCode.CSV_SCHEMA_ERROR
+)

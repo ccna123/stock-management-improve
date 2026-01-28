@@ -55,6 +55,11 @@ enum class CsvTaskType(val displayNameJp: String) {
     OTHER("その他"),
 }
 
+enum class CsvFileType(){
+    SINGLE_FILE,
+    ZIP_FILE
+}
+
 enum class InventoryScanResult(val displayName: String) {
     OK("正常一致"),
     SHORTAGE("在庫不足"),
@@ -128,6 +133,7 @@ enum class StatusCode() {
     CANCEL,
     MISSING_COLUMN,
     SQLITE_CONSTRAINT_ERROR,
+    CSV_SCHEMA_ERROR
 }
 
 enum class TagScanStatus {

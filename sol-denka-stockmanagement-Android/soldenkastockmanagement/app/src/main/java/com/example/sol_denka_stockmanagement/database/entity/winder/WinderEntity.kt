@@ -4,8 +4,8 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
-@Entity(tableName = "WinderInfo")
-data class WinderInfoEntity(
+@Entity(tableName = "Winder")
+data class WinderEntity(
     @PrimaryKey@ColumnInfo(name = "winder_id") val winderId: Int,
     @ColumnInfo(name = "winder_name") val winderName: String,
     @ColumnInfo(name = "created_at") val createdAt: String?,

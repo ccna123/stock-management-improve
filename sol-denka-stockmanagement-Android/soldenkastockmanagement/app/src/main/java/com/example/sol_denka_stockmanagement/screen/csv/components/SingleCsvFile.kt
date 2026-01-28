@@ -27,6 +27,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.example.sol_denka_stockmanagement.R
+import com.example.sol_denka_stockmanagement.constant.CsvFileType
 import com.example.sol_denka_stockmanagement.share.CardContainer
 import com.example.sol_denka_stockmanagement.ui.theme.brightGreenPrimary
 
@@ -35,6 +36,7 @@ fun SingleCsvFile(
     csvFileName: String,
     csvFileSize: String,
     progress: Float = 0f,
+    csvType: CsvFileType = CsvFileType.SINGLE_FILE,
     isCompleted: Boolean = false,
     isError: Boolean = false,
     showProgress: Boolean = false,
@@ -81,7 +83,7 @@ fun SingleCsvFile(
                 contentAlignment = Alignment.Center
             ) {
                 Image(
-                    painter = painterResource(R.drawable.csv),  // SVG with full color
+                    painter = painterResource(if (csvType == CsvFileType.SINGLE_FILE) R.drawable.csv else R.drawable.zip),  // SVG with full color
                     contentDescription = null,
                     contentScale = ContentScale.Fit,
                     modifier = Modifier.size(28.dp)
