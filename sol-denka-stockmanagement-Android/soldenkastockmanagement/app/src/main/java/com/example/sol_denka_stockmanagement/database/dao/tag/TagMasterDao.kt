@@ -5,8 +5,8 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy.Companion.REPLACE
 import androidx.room.Query
-import androidx.room.Transaction
 import androidx.room.Update
+import androidx.room.Upsert
 import com.example.sol_denka_stockmanagement.database.entity.tag.TagMasterEntity
 import com.example.sol_denka_stockmanagement.model.tag.SingleTagInfoModel
 import kotlinx.coroutines.flow.Flow
@@ -87,10 +87,6 @@ interface TagMasterDao {
     )
     suspend fun getLocationIdByTagId(tagId: Int): Long
 
-    @Transaction
-    suspend fun replaceAll(e: List<TagMasterEntity>) {
-        deleteAll()
-        insertAll(e)
-    }
-
+    @Upsert
+    suspend fun upsertAll(e: List<TagMasterEntity>)
 }

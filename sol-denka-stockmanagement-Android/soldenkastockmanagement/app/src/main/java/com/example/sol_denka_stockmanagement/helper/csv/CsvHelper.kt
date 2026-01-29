@@ -229,7 +229,8 @@ class CsvHelper @Inject constructor(
 
                 // 2) LIST FILES DIRECTLY FROM DISK
                 val files = targetDir.listFiles()?.filter {
-                    it.isFile && it.name.lowercase().endsWith( if (csvType == CsvType.ReferenceMaster.displayName) ".zip" else ".csv")
+                    it.isFile && it.name.lowercase()
+                        .endsWith(if (csvType == CsvType.ReferenceMaster.displayName) ".zip" else ".csv")
                 } ?: emptyList()
 
                 Log.w(
@@ -491,12 +492,14 @@ class CsvHelper @Inject constructor(
         }
 
         try {
-            lines.drop(1).chunked(50).forEach { chunk ->
-                importer.importAll(headers = headers, lines = chunk)
-                count += chunk.size
-                onProgress((count.toFloat() / total).coerceIn(0f, 1f))
+            db.withTransaction {
+                lines.drop(1).chunked(50).forEach { chunk ->
+                    importer.importAll(headers = headers, lines = chunk)
+                    count += chunk.size
+                    onProgress((count.toFloat() / total).coerceIn(0f, 1f))
+                }
+                importer.finish()
             }
-            importer.finish()
             onProgress(1f)
 
         } catch (_: SQLiteConstraintException) {
@@ -513,34 +516,20 @@ class CsvHelper @Inject constructor(
 
     private fun getImporter(csvType: String): CsvImporter<*>? {
         return when (csvType) {
-            CsvType.LocationMaster.displayName -> LocationMasterImporter(
-                repository = locationMasterRepository,
-                db = db
-            )
+            CsvType.LocationMaster.displayName -> LocationMasterImporter(repository = locationMasterRepository)
 
-            CsvType.LedgerMaster.displayName -> LedgerItemMasterImporter(
-                repository = ledgerItemRepository,
-                db = db
-            )
+            CsvType.LedgerMaster.displayName -> LedgerItemMasterImporter(repository = ledgerItemRepository)
 
-            CsvType.ItemTypeMaster.displayName -> ItemTypeMasterImporter(
-                repository = itemTypeRepository,
-                db = db
-            )
+            CsvType.ItemTypeMaster.displayName -> ItemTypeMasterImporter(repository = itemTypeRepository)
 
-            CsvType.TagMaster.displayName -> TagMasterImporter(
-                repository = tagMasterRepository,
-                db = db
-            )
+            CsvType.TagMaster.displayName -> TagMasterImporter(repository = tagMasterRepository)
 
-            CsvType.ItemTypeFieldSettingMaster.displayName -> ItemTypeFieldSettingMasterImporter(
-                repository = itemTypeFieldSettingMasterRepository,
-                db = db
-            )
+            CsvType.ItemTypeFieldSettingMaster.displayName -> ItemTypeFieldSettingMasterImporter(repository = itemTypeFieldSettingMasterRepository)
 
             else -> null
         }
     }
+
     suspend fun <T : ICsvExport> saveCsv(
         context: Context,
         csvType: String,
@@ -751,14 +740,14 @@ class CsvHelper @Inject constructor(
     ): KClass<out CsvImporter<*>>? {
 
         val importers = listOf(
-            ProcessTypeMasterImporter(processTypeRepository, db),
-            TagStatusMasterImporter(tagStatusMasterRepository, db),
-            WinderMasterImporter(winderRepository, db),
-            ItemCategoryMasterImporter(itemCategoryRepository, db),
-            FieldMasterImporter(fieldMasterRepository, db),
-            InventoryResultTypeMasterImporter(inventoryResultTypeRepository, db),
-            ItemUnitMasterImporter(itemUnitRepository, db),
-            CsvTaskTypeMasterImporter(csvTaskTypeRepository, db)
+            ProcessTypeMasterImporter(processTypeRepository),
+            TagStatusMasterImporter(tagStatusMasterRepository),
+            WinderMasterImporter(winderRepository),
+            ItemCategoryMasterImporter(itemCategoryRepository),
+            FieldMasterImporter(fieldMasterRepository),
+            InventoryResultTypeMasterImporter(inventoryResultTypeRepository),
+            ItemUnitMasterImporter(itemUnitRepository),
+            CsvTaskTypeMasterImporter(csvTaskTypeRepository)
         )
 
         val matched = importers.filter {
@@ -773,28 +762,28 @@ class CsvHelper @Inject constructor(
     ): CsvImporter<*> =
         when (cls) {
             ProcessTypeMasterImporter::class ->
-                ProcessTypeMasterImporter(processTypeRepository, db)
+                ProcessTypeMasterImporter(processTypeRepository)
 
             TagStatusMasterImporter::class ->
-                TagStatusMasterImporter(tagStatusMasterRepository, db)
+                TagStatusMasterImporter(tagStatusMasterRepository)
 
             WinderMasterImporter::class ->
-                WinderMasterImporter(winderRepository, db)
+                WinderMasterImporter(winderRepository)
 
             ItemCategoryMasterImporter::class ->
-                ItemCategoryMasterImporter(itemCategoryRepository, db)
+                ItemCategoryMasterImporter(itemCategoryRepository)
 
             FieldMasterImporter::class ->
-                FieldMasterImporter(fieldMasterRepository, db)
+                FieldMasterImporter(fieldMasterRepository)
 
             InventoryResultTypeMasterImporter::class ->
-                InventoryResultTypeMasterImporter(inventoryResultTypeRepository, db)
+                InventoryResultTypeMasterImporter(inventoryResultTypeRepository)
 
             ItemUnitMasterImporter::class ->
-                ItemUnitMasterImporter(itemUnitRepository, db)
+                ItemUnitMasterImporter(itemUnitRepository)
 
             CsvTaskTypeMasterImporter::class ->
-                CsvTaskTypeMasterImporter(csvTaskTypeRepository, db)
+                CsvTaskTypeMasterImporter(csvTaskTypeRepository)
 
             else ->
                 throw CsvImporterNotFoundException()
@@ -814,6 +803,4 @@ class CsvHelper @Inject constructor(
             }
         }
     }
-
-
 }

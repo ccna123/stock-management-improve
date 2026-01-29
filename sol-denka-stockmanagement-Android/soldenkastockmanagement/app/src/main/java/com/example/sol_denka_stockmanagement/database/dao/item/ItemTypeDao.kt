@@ -5,8 +5,8 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy.Companion.REPLACE
 import androidx.room.Query
-import androidx.room.Transaction
 import androidx.room.Update
+import androidx.room.Upsert
 import com.example.sol_denka_stockmanagement.database.entity.item.ItemTypeMasterEntity
 import kotlinx.coroutines.flow.Flow
 
@@ -47,9 +47,6 @@ interface ItemTypeDao {
     @Query("SELECT item_type_id FROM ItemTypeMaster WHERE item_type_name = :itemName")
     suspend fun getItemTypeIdByItemName(itemName: String): Int
 
-    @Transaction
-    suspend fun replaceAll(e: List<ItemTypeMasterEntity>) {
-        deleteAll()
-        insertAll(e)
-    }
+    @Upsert
+    suspend fun upsertAll(e: List<ItemTypeMasterEntity>)
 }

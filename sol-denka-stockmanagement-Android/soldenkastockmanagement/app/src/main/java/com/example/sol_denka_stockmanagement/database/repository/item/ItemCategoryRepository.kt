@@ -4,10 +4,13 @@ import com.example.sol_denka_stockmanagement.database.dao.item.ItemCategoryDao
 import com.example.sol_denka_stockmanagement.model.item.ItemCategoryModel
 import com.example.sol_denka_stockmanagement.model.item.toEntity
 import com.example.sol_denka_stockmanagement.model.item.toModel
+import com.example.sol_denka_stockmanagement.model.ledger.LedgerItemModel
+import com.example.sol_denka_stockmanagement.model.ledger.toEntity
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 import javax.inject.Singleton
+import kotlin.collections.map
 
 @Singleton
 class ItemCategoryRepository @Inject constructor(
@@ -22,7 +25,7 @@ class ItemCategoryRepository @Inject constructor(
     suspend fun insertAll(model: List<ItemCategoryModel>) = dao.insertAll(model.map { it.toEntity() })
     suspend fun update(model: ItemCategoryModel) = dao.update(model.toEntity())
     suspend fun delete(model: ItemCategoryModel) = dao.delete(model.toEntity())
-    suspend fun replaceAll(models: List<ItemCategoryModel>) {
-        dao.replaceAll(models.map { it.toEntity() })
-    }
+
+    suspend fun upsertAll(models: List<ItemCategoryModel>) =
+        dao.upsertAll(models.map { it.toEntity() })
 }

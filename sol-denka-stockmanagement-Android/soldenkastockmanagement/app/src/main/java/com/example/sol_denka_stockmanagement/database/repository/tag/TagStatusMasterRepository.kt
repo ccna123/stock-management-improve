@@ -16,9 +16,11 @@ class TagStatusMasterRepository @Inject constructor(
 
     fun get(): Flow<List<TagStatusMasterModel>> = dao.get().map { list -> list.map { it.toModel() } }
     suspend fun insert(model: TagStatusMasterModel) = dao.insert(model.toEntity())
+
     suspend fun update(model: TagStatusMasterModel) = dao.update(model.toEntity())
+
     suspend fun delete(model: TagStatusMasterModel) = dao.delete(model.toEntity())
-    suspend fun replaceAll(models: List<TagStatusMasterModel>) {
-        dao.replaceAll(models.map { it.toEntity() })
-    }
+
+    suspend fun upsertAll(models: List<TagStatusMasterModel>) =
+        dao.upsertAll(models.map { it.toEntity() })
 }

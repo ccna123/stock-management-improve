@@ -20,7 +20,6 @@ class CsvTaskTypeRepository @Inject constructor(
     suspend fun insert(model: CsvTaskTypeModel) = dao.insert(model.toEntity())
     suspend fun update(model: CsvTaskTypeModel) = dao.update(model.toEntity())
     suspend fun delete(model: CsvTaskTypeModel) = dao.delete(model.toEntity())
-    suspend fun replaceAll(models: List<CsvTaskTypeModel>) {
-        dao.replaceAll(models.map { it.toEntity() })
-    }
+    suspend fun upsertAll(models: List<CsvTaskTypeModel>) =
+        dao.upsertAll(models.map { it.toEntity() })
 }

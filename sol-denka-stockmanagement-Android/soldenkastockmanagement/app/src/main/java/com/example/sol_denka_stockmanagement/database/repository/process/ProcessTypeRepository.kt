@@ -4,10 +4,13 @@ import com.example.sol_denka_stockmanagement.database.dao.process.ProcessTypeDao
 import com.example.sol_denka_stockmanagement.model.process.ProcessTypeModel
 import com.example.sol_denka_stockmanagement.model.process.toEntity
 import com.example.sol_denka_stockmanagement.model.process.toModel
+import com.example.sol_denka_stockmanagement.model.tag.TagStatusMasterModel
+import com.example.sol_denka_stockmanagement.model.tag.toEntity
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 import javax.inject.Singleton
+import kotlin.collections.map
 
 @Singleton
 class ProcessTypeRepository @Inject constructor(
@@ -21,9 +24,11 @@ class ProcessTypeRepository @Inject constructor(
     suspend fun getIdByName(processTypeName: String) = dao.getIdByName(processTypeName)
 
     suspend fun insert(model: ProcessTypeModel) = dao.insert(model.toEntity())
+
     suspend fun update(model: ProcessTypeModel) = dao.update(model.toEntity())
+
     suspend fun delete(model: ProcessTypeModel) = dao.delete(model.toEntity())
-    suspend fun replaceAll(models: List<ProcessTypeModel>) {
-        dao.replaceAll(models.map { it.toEntity() })
-    }
+
+    suspend fun upsertAll(models: List<ProcessTypeModel>) =
+        dao.upsertAll(models.map { it.toEntity() })
 }

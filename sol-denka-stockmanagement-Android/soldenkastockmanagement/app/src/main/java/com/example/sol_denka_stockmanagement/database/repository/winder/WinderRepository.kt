@@ -9,7 +9,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 import javax.inject.Singleton
-import kotlin.collections.map
 
 @Singleton
 class WinderRepository @Inject constructor(
@@ -28,7 +27,6 @@ class WinderRepository @Inject constructor(
     suspend fun insert(model: WinderModel) = dao.insert(model.toEntity())
     suspend fun update(model: WinderModel) = dao.update(model.toEntity())
     suspend fun delete(model: WinderModel) = dao.delete(model.toEntity())
-    suspend fun replaceAll(models: List<WinderModel>) {
-        dao.replaceAll(models.map { it.toEntity() })
-    }
+    suspend fun upsertAll(models: List<WinderModel>) =
+        dao.upsertAll(models.map { it.toEntity() })
 }

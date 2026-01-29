@@ -1,6 +1,7 @@
 package com.example.sol_denka_stockmanagement.database.repository.field
 
 import com.example.sol_denka_stockmanagement.database.dao.field.ItemTypeFieldSettingMasterDao
+import com.example.sol_denka_stockmanagement.model.field.FieldMasterModel
 import com.example.sol_denka_stockmanagement.model.field.ItemTypeFieldSettingMasterModel
 import com.example.sol_denka_stockmanagement.model.field.toEntity
 import com.example.sol_denka_stockmanagement.model.field.toModel
@@ -22,5 +23,6 @@ class ItemTypeFieldSettingMasterRepository @Inject constructor(
     suspend fun insert(model: ItemTypeFieldSettingMasterModel) = dao.insert(model.toEntity())
     suspend fun update(model: ItemTypeFieldSettingMasterModel) = dao.update(model.toEntity())
     suspend fun delete(model: ItemTypeFieldSettingMasterModel) = dao.delete(model.toEntity())
-    suspend fun replaceAll(models: List<ItemTypeFieldSettingMasterModel>) = dao.replaceAll(models.map { it.toEntity() })
+    suspend fun upsertAll(models: List<ItemTypeFieldSettingMasterModel>) =
+        dao.upsertAll(models.map { it.toEntity() })
 }

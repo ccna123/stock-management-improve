@@ -5,8 +5,8 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy.Companion.REPLACE
 import androidx.room.Query
-import androidx.room.Transaction
 import androidx.room.Update
+import androidx.room.Upsert
 import com.example.sol_denka_stockmanagement.database.entity.field.FieldMasterEntity
 import kotlinx.coroutines.flow.Flow
 
@@ -32,9 +32,6 @@ interface FieldMasterDao {
     @Query("DELETE FROM FieldMaster")
     suspend fun deleteAll()
 
-    @Transaction
-    suspend fun replaceAll(e: List<FieldMasterEntity>) {
-        deleteAll()
-        insertAll(e)
-    }
+    @Upsert
+    suspend fun upsertAll(e: List<FieldMasterEntity>)
 }

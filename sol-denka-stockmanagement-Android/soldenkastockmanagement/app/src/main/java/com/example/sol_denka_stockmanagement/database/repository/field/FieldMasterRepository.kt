@@ -4,10 +4,13 @@ import com.example.sol_denka_stockmanagement.database.dao.field.FieldMasterDao
 import com.example.sol_denka_stockmanagement.model.field.FieldMasterModel
 import com.example.sol_denka_stockmanagement.model.field.toEntity
 import com.example.sol_denka_stockmanagement.model.field.toModel
+import com.example.sol_denka_stockmanagement.model.inventory.InventoryResultTypeModel
+import com.example.sol_denka_stockmanagement.model.inventory.toEntity
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 import javax.inject.Singleton
+import kotlin.collections.map
 
 @Singleton
 class FieldMasterRepository @Inject constructor(
@@ -19,7 +22,7 @@ class FieldMasterRepository @Inject constructor(
     suspend fun insert(model: FieldMasterModel) = dao.insert(model.toEntity())
     suspend fun update(model: FieldMasterModel) = dao.update(model.toEntity())
     suspend fun delete(model: FieldMasterModel) = dao.delete(model.toEntity())
-    suspend fun replaceAll(models: List<FieldMasterModel>) {
-        dao.replaceAll(models.map { it.toEntity() })
-    }
+
+    suspend fun upsertAll(models: List<FieldMasterModel>) =
+        dao.upsertAll(models.map { it.toEntity() })
 }

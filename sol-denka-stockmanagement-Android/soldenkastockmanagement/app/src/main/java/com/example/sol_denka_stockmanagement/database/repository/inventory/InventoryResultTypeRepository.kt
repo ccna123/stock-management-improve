@@ -4,10 +4,13 @@ import com.example.sol_denka_stockmanagement.database.dao.inventory.InventoryRes
 import com.example.sol_denka_stockmanagement.model.inventory.InventoryResultTypeModel
 import com.example.sol_denka_stockmanagement.model.inventory.toEntity
 import com.example.sol_denka_stockmanagement.model.inventory.toModel
+import com.example.sol_denka_stockmanagement.model.item.ItemUnitMasterModel
+import com.example.sol_denka_stockmanagement.model.item.toEntity
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 import javax.inject.Singleton
+import kotlin.collections.map
 
 @Singleton
 class InventoryResultTypeRepository @Inject constructor(
@@ -23,7 +26,7 @@ class InventoryResultTypeRepository @Inject constructor(
     suspend fun insert(model: InventoryResultTypeModel) = dao.insert(model.toEntity())
     suspend fun update(model: InventoryResultTypeModel) = dao.update(model.toEntity())
     suspend fun delete(model: InventoryResultTypeModel) = dao.delete(model.toEntity())
-    suspend fun replaceAll(models: List<InventoryResultTypeModel>) {
-        dao.replaceAll(models.map { it.toEntity() })
-    }
+
+    suspend fun upsertAll(models: List<InventoryResultTypeModel>) =
+        dao.upsertAll(models.map { it.toEntity() })
 }

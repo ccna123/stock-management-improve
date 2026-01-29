@@ -1,6 +1,5 @@
 package com.example.sol_denka_stockmanagement.helper.csv
 
-import androidx.room.withTransaction
 import com.example.sol_denka_stockmanagement.constant.generateTimeStamp
 import com.example.sol_denka_stockmanagement.database.AppDatabase
 import com.example.sol_denka_stockmanagement.database.repository.process.ProcessTypeRepository
@@ -8,7 +7,6 @@ import com.example.sol_denka_stockmanagement.model.process.ProcessTypeModel
 
 class ProcessTypeMasterImporter(
     private val repository: ProcessTypeRepository,
-    private val db: AppDatabase
 ): CsvImporter<ProcessTypeModel>() {
 
     override val requiredHeaders = setOf(
@@ -27,11 +25,7 @@ class ProcessTypeMasterImporter(
         )
     }
 
-    override suspend fun withTransaction(block: suspend () -> Unit) {
-        db.withTransaction { block() }
-    }
-
     override suspend fun replaceAllWithNewData(entities: List<ProcessTypeModel>) {
-        repository.replaceAll(entities)
+        repository.upsertAll(entities)
     }
 }

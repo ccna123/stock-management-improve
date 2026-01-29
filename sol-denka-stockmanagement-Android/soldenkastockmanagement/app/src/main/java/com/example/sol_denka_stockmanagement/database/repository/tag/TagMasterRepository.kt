@@ -26,7 +26,6 @@ class TagMasterRepository @Inject constructor(
     suspend fun update(model: TagMasterModel) = dao.update(model.toEntity())
     suspend fun delete(model: TagMasterModel) = dao.delete(model.toEntity())
 
-    suspend fun replaceAll(models: List<TagMasterModel>) {
-        dao.replaceAll(models.map { it.toEntity() })
-    }
+    suspend fun upsertAll(models: List<TagMasterModel>) =
+        dao.upsertAll(models.map { it.toEntity() })
 }

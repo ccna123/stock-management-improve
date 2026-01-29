@@ -1,6 +1,7 @@
 package com.example.sol_denka_stockmanagement.database.repository.item
 
 import com.example.sol_denka_stockmanagement.database.dao.item.ItemUnitDao
+import com.example.sol_denka_stockmanagement.model.item.ItemTypeMasterModel
 import com.example.sol_denka_stockmanagement.model.item.ItemUnitMasterModel
 import com.example.sol_denka_stockmanagement.model.item.toEntity
 import com.example.sol_denka_stockmanagement.model.item.toModel
@@ -8,6 +9,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 import javax.inject.Singleton
+import kotlin.collections.map
 
 @Singleton
 class ItemUnitRepository @Inject constructor(
@@ -19,7 +21,7 @@ class ItemUnitRepository @Inject constructor(
     suspend fun insert(model: ItemUnitMasterModel) = dao.insert(model.toEntity())
     suspend fun update(model: ItemUnitMasterModel) = dao.update(model.toEntity())
     suspend fun delete(model: ItemUnitMasterModel) = dao.delete(model.toEntity())
-    suspend fun replaceAll(models: List<ItemUnitMasterModel>) {
-        dao.replaceAll(models.map { it.toEntity() })
-    }
+
+    suspend fun upsertAll(models: List<ItemUnitMasterModel>) =
+        dao.upsertAll(models.map { it.toEntity() })
 }

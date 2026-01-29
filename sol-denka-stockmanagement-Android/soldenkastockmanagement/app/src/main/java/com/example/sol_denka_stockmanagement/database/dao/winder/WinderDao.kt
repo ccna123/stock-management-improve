@@ -7,6 +7,7 @@ import androidx.room.OnConflictStrategy.Companion.REPLACE
 import androidx.room.Query
 import androidx.room.Transaction
 import androidx.room.Update
+import androidx.room.Upsert
 import com.example.sol_denka_stockmanagement.database.entity.winder.WinderEntity
 import kotlinx.coroutines.flow.Flow
 
@@ -33,6 +34,9 @@ interface WinderDao {
 
     @Query("DELETE FROM Winder")
     suspend fun deleteAll()
+
+    @Upsert
+    suspend fun upsertAll(e: List<WinderEntity>)
 
     @Transaction
     suspend fun replaceAll(e: List<WinderEntity>) {

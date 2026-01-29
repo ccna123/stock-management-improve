@@ -11,12 +11,8 @@ abstract class CsvImporter<T> {
 
     protected abstract fun mapRow(row: CsvRow): T
     protected abstract suspend fun replaceAllWithNewData(entities: List<T>)
-    protected abstract suspend fun withTransaction(block: suspend () -> Unit)
-
-    suspend fun importAll(headers: List<String>, lines: List<String>) {
-        withTransaction {
-            importChunk(headers, lines)
-        }
+    fun importAll(headers: List<String>, lines: List<String>) {
+        importChunk(headers, lines)
     }
 
     fun importChunk(headers: List<String>, lines: List<String>) {

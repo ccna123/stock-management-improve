@@ -5,8 +5,8 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy.Companion.REPLACE
 import androidx.room.Query
-import androidx.room.Transaction
 import androidx.room.Update
+import androidx.room.Upsert
 import com.example.sol_denka_stockmanagement.database.entity.location.LocationMasterEntity
 import kotlinx.coroutines.flow.Flow
 
@@ -34,9 +34,6 @@ interface LocationDao {
     @Query("SELECT location_id FROM LocationMaster WHERE location_name = :locationName")
     suspend fun getLocationIdByName(locationName: String): Int
 
-    @Transaction
-    suspend fun replaceAll(e: List<LocationMasterEntity>) {
-        deleteAll()
-        insertAll(e)
-    }
+    @Upsert
+    suspend fun upsertAll(e: List<LocationMasterEntity>)
 }

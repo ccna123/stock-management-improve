@@ -1,14 +1,11 @@
 package com.example.sol_denka_stockmanagement.helper.csv
 
-import androidx.room.withTransaction
 import com.example.sol_denka_stockmanagement.constant.generateTimeStamp
-import com.example.sol_denka_stockmanagement.database.AppDatabase
 import com.example.sol_denka_stockmanagement.database.repository.item.ItemUnitRepository
 import com.example.sol_denka_stockmanagement.model.item.ItemUnitMasterModel
 
 class ItemUnitMasterImporter(
     private val repository: ItemUnitRepository,
-    private val db: AppDatabase
 ): CsvImporter<ItemUnitMasterModel>() {
 
     override val requiredHeaders = setOf(
@@ -29,11 +26,7 @@ class ItemUnitMasterImporter(
         )
     }
 
-    override suspend fun withTransaction(block: suspend () -> Unit) {
-        db.withTransaction { block() }
-    }
-
     override suspend fun replaceAllWithNewData(entities: List<ItemUnitMasterModel>) {
-        repository.replaceAll(entities)
+        repository.upsertAll(entities)
     }
 }

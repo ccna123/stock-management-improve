@@ -1,14 +1,11 @@
 package com.example.sol_denka_stockmanagement.helper.csv
 
-import androidx.room.withTransaction
-import com.example.sol_denka_stockmanagement.database.AppDatabase
 import com.example.sol_denka_stockmanagement.database.repository.item.ItemTypeRepository
 import com.example.sol_denka_stockmanagement.model.item.ItemTypeMasterModel
 import java.math.BigDecimal
 
 class ItemTypeMasterImporter(
     private val repository: ItemTypeRepository,
-    private val db: AppDatabase
 ) : CsvImporter<ItemTypeMasterModel>() {
 
     override val requiredHeaders = setOf(
@@ -41,11 +38,7 @@ class ItemTypeMasterImporter(
         )
     }
 
-    override suspend fun withTransaction(block: suspend () -> Unit) {
-        db.withTransaction { block() }
-    }
-
     override suspend fun replaceAllWithNewData(entities: List<ItemTypeMasterModel>) {
-        repository.replaceAll(entities)
+        repository.upsertAll(entities)
     }
 }

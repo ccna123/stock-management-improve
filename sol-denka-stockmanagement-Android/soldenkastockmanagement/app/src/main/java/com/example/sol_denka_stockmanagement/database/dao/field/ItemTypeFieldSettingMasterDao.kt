@@ -6,6 +6,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy.Companion.REPLACE
 import androidx.room.Query
 import androidx.room.Update
+import androidx.room.Upsert
 import com.example.sol_denka_stockmanagement.database.entity.field.ItemTypeFieldSettingMasterEntity
 import com.example.sol_denka_stockmanagement.model.inbound.InboundInputFormModel
 import kotlinx.coroutines.flow.Flow
@@ -49,8 +50,6 @@ interface ItemTypeFieldSettingMasterDao {
     @Query("DELETE FROM ItemTypeFieldSettingMaster")
     suspend fun deleteAll()
 
-    suspend fun replaceAll(e: List<ItemTypeFieldSettingMasterEntity>) {
-        deleteAll()
-        insertAll(e)
-    }
+    @Upsert
+    suspend fun upsertAll(e: List<ItemTypeFieldSettingMasterEntity>)
 }
