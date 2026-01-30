@@ -4,13 +4,10 @@ import com.example.sol_denka_stockmanagement.database.dao.leger.LedgerItemDao
 import com.example.sol_denka_stockmanagement.model.ledger.LedgerItemModel
 import com.example.sol_denka_stockmanagement.model.ledger.toEntity
 import com.example.sol_denka_stockmanagement.model.ledger.toModel
-import com.example.sol_denka_stockmanagement.model.location.LocationMasterModel
-import com.example.sol_denka_stockmanagement.model.location.toEntity
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 import javax.inject.Singleton
-import kotlin.collections.map
 
 @Singleton
 class LedgerItemRepository @Inject constructor(

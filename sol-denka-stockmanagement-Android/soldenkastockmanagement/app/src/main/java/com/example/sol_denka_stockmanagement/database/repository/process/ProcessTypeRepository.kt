@@ -4,13 +4,10 @@ import com.example.sol_denka_stockmanagement.database.dao.process.ProcessTypeDao
 import com.example.sol_denka_stockmanagement.model.process.ProcessTypeModel
 import com.example.sol_denka_stockmanagement.model.process.toEntity
 import com.example.sol_denka_stockmanagement.model.process.toModel
-import com.example.sol_denka_stockmanagement.model.tag.TagStatusMasterModel
-import com.example.sol_denka_stockmanagement.model.tag.toEntity
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 import javax.inject.Singleton
-import kotlin.collections.map
 
 @Singleton
 class ProcessTypeRepository @Inject constructor(

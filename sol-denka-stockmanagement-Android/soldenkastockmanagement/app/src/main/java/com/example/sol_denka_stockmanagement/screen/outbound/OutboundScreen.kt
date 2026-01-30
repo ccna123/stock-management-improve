@@ -251,8 +251,8 @@ fun OutboundScreen(
                         ),
                         scanResult = rfidTagList.filter { it.newFields.isChecked }.map { tag ->
                             ScanResultRowModel(
-                                itemName = rfidTagList.find { it.epc == tag.epc }?.epc ?: "-",
-                                itemCode = rfidTagList.find { it.epc == tag.epc }?.newFields?.itemCode
+                                itemName = rfidTagList.find { it.epc == tag.epc }?.newFields?.itemName ?: "-",
+                                itemCode = rfidTagList.find { it.epc == tag.epc }?.epc
                                     ?: "-",
                                 lastColumn = rfidTagList.find { it.epc == tag.epc }?.newFields?.processType
                                     ?: "-",
