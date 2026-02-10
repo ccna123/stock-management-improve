@@ -19,7 +19,7 @@ class TagMasterRepository @Inject constructor(
 
     suspend fun getFullInfo() = dao.getFullInfo()
 
-    suspend fun getLedgerIdByTagId(tagId: Int): Int?{
+    suspend fun getLedgerIdByTagId(tagId: Int): Int{
         return dao.getLedgerIdByTagId(tagId)
     }
     suspend fun insert(model: TagMasterModel) = dao.insert(model.toEntity())

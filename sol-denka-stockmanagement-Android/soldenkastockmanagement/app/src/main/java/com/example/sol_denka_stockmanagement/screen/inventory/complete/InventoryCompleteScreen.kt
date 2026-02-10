@@ -36,6 +36,7 @@ import com.example.sol_denka_stockmanagement.constant.CsvTaskType
 import com.example.sol_denka_stockmanagement.constant.DialogType
 import com.example.sol_denka_stockmanagement.constant.InventoryScanResult
 import com.example.sol_denka_stockmanagement.constant.StatusCode
+import com.example.sol_denka_stockmanagement.constant.TagScanStatus
 import com.example.sol_denka_stockmanagement.helper.message_mapper.MessageMapper
 import com.example.sol_denka_stockmanagement.intent.InputIntent
 import com.example.sol_denka_stockmanagement.intent.ShareIntent
@@ -53,6 +54,7 @@ import com.example.sol_denka_stockmanagement.ui.theme.primaryRed
 import com.example.sol_denka_stockmanagement.viewmodel.AppViewModel
 import com.example.sol_denka_stockmanagement.viewmodel.ScanViewModel
 import kotlinx.coroutines.launch
+import java.util.UUID
 
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @Composable
@@ -77,13 +79,6 @@ fun InventoryCompleteScreen(
 
     LaunchedEffect(Unit) {
         scanViewModel.setEnableScan(false)
-    }
-
-    LaunchedEffect(rfidTagList) {
-        inventoryCompleteViewModel.computeResult(
-            rfidTagList = rfidTagList.filter { it.newFields.hasLeger },
-            locationName = inputState.location?.locationName ?: ""
-        )
     }
 
     if (generalState.showNetworkDialog) {
@@ -138,9 +133,12 @@ fun InventoryCompleteScreen(
                 },
                 onClick = {
                     scope.launch {
+                        val sourceSessionUuid = UUID.randomUUID().toString()
                         val result = inventoryCompleteViewModel.saveInventoryResultToDb(
                             memo = inputState.memo,
-                            locationId = inputState.location?.locationId ?: 0,
+                            sourceSessionUuid = sourceSessionUuid,
+                            rfidTagList = rfidTagList.filter { it.newFields.tagScanStatus == TagScanStatus.PROCESSED },
+                            locationId = inputState.location!!.locationId,
                         )
                         result.exceptionOrNull()?.let { e ->
                             appViewModel.onGeneralIntent(
@@ -154,7 +152,9 @@ fun InventoryCompleteScreen(
                         val csvModels =
                             inventoryCompleteViewModel.generateCsvData(
                                 memo = inputState.memo,
-                                locationId = inputState.location?.locationId ?: 0,
+                                sourceSessionUuid = sourceSessionUuid,
+                                locationId = inputState.location!!.locationId,
+                                rfidTagList = rfidTagList.filter { it.newFields.tagScanStatus == TagScanStatus.PROCESSED },
                             )
                         val saveResult = appViewModel.saveScanResultToCsv(
                             data = csvModels,

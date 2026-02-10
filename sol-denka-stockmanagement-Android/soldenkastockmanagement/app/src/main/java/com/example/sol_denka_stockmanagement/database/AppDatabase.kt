@@ -9,6 +9,7 @@ import com.example.sol_denka_stockmanagement.database.dao.field.FieldMasterDao
 import com.example.sol_denka_stockmanagement.database.dao.field.ItemTypeFieldSettingMasterDao
 import com.example.sol_denka_stockmanagement.database.dao.inbound.InboundEventDao
 import com.example.sol_denka_stockmanagement.database.dao.inbound.InboundSessionDao
+import com.example.sol_denka_stockmanagement.database.dao.inventory.InventoryDetailDao
 import com.example.sol_denka_stockmanagement.database.dao.inventory.InventorySessionDao
 import com.example.sol_denka_stockmanagement.database.dao.inventory.InventoryResultLocalDao
 import com.example.sol_denka_stockmanagement.database.dao.inventory.InventoryResultTypeDao
@@ -31,6 +32,7 @@ import com.example.sol_denka_stockmanagement.database.entity.field.FieldMasterEn
 import com.example.sol_denka_stockmanagement.database.entity.field.ItemTypeFieldSettingMasterEntity
 import com.example.sol_denka_stockmanagement.database.entity.inbound.InboundEventEntity
 import com.example.sol_denka_stockmanagement.database.entity.inbound.InboundSessionEntity
+import com.example.sol_denka_stockmanagement.database.entity.inventory.InventoryDetailEntity
 import com.example.sol_denka_stockmanagement.database.entity.inventory.InventorySessionEntity
 import com.example.sol_denka_stockmanagement.database.entity.inventory.InventoryResultLocalEntity
 import com.example.sol_denka_stockmanagement.database.entity.inventory.InventoryResultTypeEntity
@@ -59,6 +61,7 @@ import com.example.sol_denka_stockmanagement.database.entity.winder.WinderEntity
         InventorySessionEntity::class,
         InventoryResultLocalEntity::class,
         InventoryResultTypeEntity::class,
+        InventoryDetailEntity::class,
 
         LocationChangeEventEntity::class,
         LocationChangeSessionEntity::class,
@@ -83,7 +86,7 @@ import com.example.sol_denka_stockmanagement.database.entity.winder.WinderEntity
 
         WinderEntity::class
     ],
-    version = 31
+    version = 32
 )
 abstract class AppDatabase : RoomDatabase() {
 
@@ -99,6 +102,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun inventorySessionDao(): InventorySessionDao
     abstract fun inventoryResultLocalDao(): InventoryResultLocalDao
     abstract fun inventoryResultTypeDao(): InventoryResultTypeDao
+    abstract fun inventoryDetailDao(): InventoryDetailDao
 
     // Location
     abstract fun locationDao(): LocationDao

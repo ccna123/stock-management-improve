@@ -12,6 +12,7 @@ import com.example.sol_denka_stockmanagement.database.dao.field.FieldMasterDao
 import com.example.sol_denka_stockmanagement.database.dao.field.ItemTypeFieldSettingMasterDao
 import com.example.sol_denka_stockmanagement.database.dao.inbound.InboundEventDao
 import com.example.sol_denka_stockmanagement.database.dao.inbound.InboundSessionDao
+import com.example.sol_denka_stockmanagement.database.dao.inventory.InventoryDetailDao
 import com.example.sol_denka_stockmanagement.database.dao.inventory.InventoryResultLocalDao
 import com.example.sol_denka_stockmanagement.database.dao.inventory.InventoryResultTypeDao
 import com.example.sol_denka_stockmanagement.database.dao.inventory.InventorySessionDao
@@ -170,6 +171,12 @@ object AppModule {
     @Singleton
     fun provideInventoryResultLocalDao(database: AppDatabase): InventoryResultLocalDao {
         return database.inventoryResultLocalDao()
+    }
+
+    @Provides
+    @Singleton
+    fun provideInventoryDetailDao(database: AppDatabase): InventoryDetailDao {
+        return database.inventoryDetailDao()
     }
 
     @Provides

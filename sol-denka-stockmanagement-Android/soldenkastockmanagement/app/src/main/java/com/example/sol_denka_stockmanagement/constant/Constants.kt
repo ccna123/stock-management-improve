@@ -80,10 +80,10 @@ enum class CsvHistoryResult(val displayName: String) {
 
 enum class InventoryResultType(val displayName: String) {
     UNKNOWN("未知"),
-    FOUND_OK("正常"),
+    FOUND_OK("正常発見"),
     FOUND_WRONG_LOCATION("保管場所不一致"),
-    NOT_FOUND("不足"),
-    FOUND_OVER_STOCK("過多"),
+    NOT_FOUND("在庫不足"),
+    FOUND_OVER_STOCK("在庫過剰"),
 }
 
 enum class ItemUnit(val engName: String, val jpName: String) {
