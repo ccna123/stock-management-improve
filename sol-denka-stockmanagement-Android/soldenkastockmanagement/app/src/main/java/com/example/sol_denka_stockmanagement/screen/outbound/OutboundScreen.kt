@@ -54,6 +54,7 @@ import com.example.sol_denka_stockmanagement.ui.theme.brightAzure
 import com.example.sol_denka_stockmanagement.viewmodel.AppViewModel
 import com.example.sol_denka_stockmanagement.viewmodel.ScanViewModel
 import kotlinx.coroutines.launch
+import java.util.UUID
 
 @OptIn(ExperimentalMaterial3Api::class)
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
@@ -156,7 +157,13 @@ fun OutboundScreen(
                         )
                     },
                     onClick = {
+                        val selectedTags = rfidTagList.filter { it.newFields.isChecked }
 
+                        val sourceEventIdByTagId = selectedTags.associate { tag ->
+                            tag.tagId to UUID.randomUUID().toString()
+                        }
+
+                        val registeredAt = generateIso8601JstTimestamp()
                         val processedAt =
                             if (inputState.processedAtDate.isEmpty() || inputState.processedAtTime.isEmpty()) {
                                 null
@@ -167,7 +174,8 @@ fun OutboundScreen(
                             val result = outboundViewModel.saveOutboundToDb(
                                 memo = inputState.memo,
                                 processedAt = processedAt,
-                                registeredAt = generateIso8601JstTimestamp(),
+                                registeredAt = registeredAt,
+                                sourceEventIdByTagId = sourceEventIdByTagId,
                                 rfidTagList = rfidTagList.filter { it.newFields.isChecked }
                             )
                             result.exceptionOrNull()?.let { e ->
@@ -183,7 +191,8 @@ fun OutboundScreen(
                                 outboundViewModel.generateCsvData(
                                     memo = inputState.memo,
                                     processedAt = processedAt,
-                                    registeredAt = generateIso8601JstTimestamp(),
+                                    registeredAt = registeredAt,
+                                    sourceEventIdByTagId = sourceEventIdByTagId,
                                     rfidTagList = rfidTagList.filter { it.newFields.isChecked }
                                 )
                             val saveResult = appViewModel.saveScanResultToCsv(

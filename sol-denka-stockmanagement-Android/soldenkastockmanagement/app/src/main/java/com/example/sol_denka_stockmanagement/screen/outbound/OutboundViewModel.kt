@@ -12,7 +12,6 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import kotlin.collections.emptyList
 
 @HiltViewModel
 class OutboundViewModel @Inject constructor(
@@ -27,6 +26,7 @@ class OutboundViewModel @Inject constructor(
         memo: String,
         processedAt: String?,
         registeredAt: String,
+        sourceEventIdByTagId: Map<Int, String>,
         rfidTagList: List<TagMasterModel>
     ): List<OutboundResultCsvModel> =
         withContext(Dispatchers.IO) {
@@ -41,6 +41,7 @@ class OutboundViewModel @Inject constructor(
                         processTypeId = processTypeId,
                         deviceId = Build.ID,
                         memo = memo,
+                        sourceEventId = sourceEventIdByTagId[tag.tagId] ?: "",
                         processedAt = processedAt,
                         registeredAt = registeredAt
                     )
@@ -57,6 +58,7 @@ class OutboundViewModel @Inject constructor(
         memo: String?,
         processedAt: String?,
         registeredAt: String,
+        sourceEventIdByTagId: Map<Int, String>,
         rfidTagList: List<TagMasterModel>
     ): Result<Int> {
         return try {
@@ -68,6 +70,7 @@ class OutboundViewModel @Inject constructor(
                 outboundRepository.insertOutboundEvent(
                     sessionId = sessionId,
                     memo = memo,
+                    sourceEventIdByTagId = sourceEventIdByTagId,
                     processedAt = processedAt,
                     registeredAt = registeredAt,
                     tags = rfidTagList
@@ -75,6 +78,7 @@ class OutboundViewModel @Inject constructor(
             }
             Result.success(sessionId)
         } catch (e: Exception) {
+            Log.e("TSS", "saveOutboundToDb: ${e.message}")
             Result.failure(e)
         }
     }

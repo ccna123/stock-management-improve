@@ -1,7 +1,6 @@
 package com.example.sol_denka_stockmanagement.screen.inbound
 
 import android.os.Build
-import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -66,6 +65,7 @@ import com.example.sol_denka_stockmanagement.share.dialog.TimeDialog
 import com.example.sol_denka_stockmanagement.viewmodel.AppViewModel
 import com.example.sol_denka_stockmanagement.viewmodel.ScanViewModel
 import kotlinx.coroutines.launch
+import java.util.UUID
 
 @OptIn(ExperimentalMaterial3Api::class)
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
@@ -88,9 +88,6 @@ fun InboundScreen(
     val locationMaster by appViewModel.locationMaster.collectAsStateWithLifecycle()
     val winderMaster by appViewModel.winderMaster.collectAsStateWithLifecycle()
     val itemCategoryMaster by appViewModel.itemCategoryMaster.collectAsStateWithLifecycle()
-    val isNetworkConnected by appViewModel.isNetworkConnected.collectAsStateWithLifecycle()
-
-    Log.e("TSS", "InboundScreen: $inboundInputFormResults", )
 
     val scope = rememberCoroutineScope()
 
@@ -228,8 +225,8 @@ fun InboundScreen(
                             val result = inboundViewModel.saveInboundToDb(
                                 rfidTag = rfidTagList.find { it.epc == lastInboundEpc },
                                 itemInCategory = inputState.itemInCategory,
-                                locationId = inputState.location?.locationId ?: 0,
-                                winderId = inputState.winder?.winderId ?: 0,
+                                locationId = inputState.location!!.locationId,
+                                winderId = inputState.winder?.winderId,
                                 weight = inputState.weight,
                                 width = inputState.width,
                                 length = inputState.length,
@@ -238,6 +235,7 @@ fun InboundScreen(
                                 occurrenceReason = inputState.occurrenceReason,
                                 quantity = inputState.quantity,
                                 memo = inputState.memo,
+                                sourceEventId = UUID.randomUUID().toString(),
                                 occurredAt = occurredAt,
                                 processedAt = processedAt,
                                 registeredAt = generateIso8601JstTimestamp()
@@ -253,8 +251,8 @@ fun InboundScreen(
                             }
                             val csvModels = inboundViewModel.generateCsvData(
                                 itemInCategory = inputState.itemInCategory,
-                                locationId = inputState.location?.locationId ?: 0,
-                                winderId = inputState.winder?.winderId ?: 0,
+                                locationId = inputState.location!!.locationId,
+                                winderId = inputState.winder?.winderId,
                                 weight = inputState.weight,
                                 width = inputState.width,
                                 length = inputState.length,
@@ -263,6 +261,7 @@ fun InboundScreen(
                                 occurrenceReason = inputState.occurrenceReason,
                                 quantity = inputState.quantity,
                                 memo = inputState.memo,
+                                sourceEventId = UUID.randomUUID().toString(),
                                 occurredAt = occurredAt,
                                 processedAt = processedAt,
                                 rfidTag = rfidTagList.find { it.epc == lastInboundEpc },
@@ -311,7 +310,7 @@ fun InboundScreen(
                 .padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            CardContainer{
+            CardContainer {
                 Column(
                     modifier = Modifier.padding(10.dp),
                 ) {

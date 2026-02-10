@@ -33,6 +33,7 @@ class OutboundRepository @Inject constructor(
         memo: String?,
         processedAt: String?,
         registeredAt: String,
+        sourceEventIdByTagId: Map<Int, String>,
         tags: List<TagMasterModel>
     ) {
         tags.forEach { tag ->
@@ -45,6 +46,7 @@ class OutboundRepository @Inject constructor(
                     ledgerItemId = ledgerId ?: 0,
                     processTypeId = processTypeId,
                     memo = memo,
+                    sourceEventId = sourceEventIdByTagId[tag.tagId] ?: "",
                     processedAt = processedAt,
                     registeredAt = registeredAt
                 )
@@ -56,4 +58,3 @@ class OutboundRepository @Inject constructor(
         block: suspend () -> Unit
     ) = db.withTransaction { block() }
 }
-

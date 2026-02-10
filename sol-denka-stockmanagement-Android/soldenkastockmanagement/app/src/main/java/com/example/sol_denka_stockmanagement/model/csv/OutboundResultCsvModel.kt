@@ -10,15 +10,16 @@ data class OutboundResultCsvModel(
     val processTypeId: Int,
     val deviceId: String,
     val memo: String?,
+    val sourceEventId: String,
     val processedAt: String?,
     val registeredAt: String,
-
-    ) : ICsvExport {
+) : ICsvExport {
     override fun toHeader(): List<String> = listOf(
         "ledger_item_id",
         "tag_id",
         "process_type_id",
         "device_id",
+        "source_event_id",
         "memo",
         "processed_at",
         "registered_at"
@@ -29,8 +30,9 @@ data class OutboundResultCsvModel(
         tagId.toString(),
         processTypeId.toString(),
         deviceId,
+        sourceEventId,
         memo ?: "",
-        processedAt ?:"",
+        processedAt ?: "",
         registeredAt
     )
 

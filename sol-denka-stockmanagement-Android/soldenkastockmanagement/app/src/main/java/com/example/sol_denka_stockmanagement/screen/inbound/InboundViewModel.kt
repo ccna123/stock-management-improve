@@ -35,6 +35,7 @@ class InboundViewModel @Inject constructor(
         occurrenceReason: String,
         quantity: String,
         memo: String,
+        sourceEventId: String,
         occurredAt: String?,
         processedAt: String?,
         rfidTag: TagMasterModel?
@@ -42,7 +43,8 @@ class InboundViewModel @Inject constructor(
         withContext(Dispatchers.IO) {
             try {
                 csvModels.clear()
-                val itemTypeId = itemTypeRepository.getItemTypeIdByItemName(itemName = itemInCategory)
+                val itemTypeId =
+                    itemTypeRepository.getItemTypeIdByItemName(itemName = itemInCategory)
                 val model = InboundResultCsvModel(
                     tagId = rfidTag?.tagId ?: 0,
                     itemTypeId = itemTypeId,
@@ -52,18 +54,19 @@ class InboundViewModel @Inject constructor(
                     weight = weight,
                     width = width,
                     length = length,
-                    thickness = normalizeThickness(thickness).toString(),
+                    thickness = normalizeThickness(thickness)?.toString(),
                     lotNo = lotNo,
                     occurrenceReason = occurrenceReason,
                     quantity = quantity,
                     memo = memo,
+                    sourceEventId = sourceEventId,
                     occurredAt = occurredAt,
                     processedAt = processedAt,
                     registeredAt = generateIso8601JstTimestamp()
                 )
                 csvModels.add(model)
                 csvModels.toList()
-            }catch (e: Exception){
+            } catch (e: Exception) {
                 Log.e("TSS", "generateCsvData: ${e.message}")
                 emptyList()
             }
@@ -81,6 +84,7 @@ class InboundViewModel @Inject constructor(
         lotNo: String?,
         occurrenceReason: String?,
         memo: String?,
+        sourceEventId: String,
         occurredAt: String?,
         processedAt: String?,
         registeredAt: String,
@@ -93,7 +97,8 @@ class InboundViewModel @Inject constructor(
 
                 // 1️⃣ create session
                 sessionId = inboundRepository.createInboundSession()
-                val itemTypeId = itemTypeRepository.getItemTypeIdByItemName(itemName = itemInCategory)
+                val itemTypeId =
+                    itemTypeRepository.getItemTypeIdByItemName(itemName = itemInCategory)
 
                 // 2️⃣ insert event (only if session OK)
                 inboundRepository.insertInboundEvent(
@@ -105,12 +110,13 @@ class InboundViewModel @Inject constructor(
                     width = width?.takeIf { it.isNotBlank() }?.toInt(),
                     length = length?.takeIf { it.isNotBlank() }?.toInt(),
                     thickness = normalizeThickness(thickness),
-                    lotNo = lotNo,
-                    occurrenceReason = occurrenceReason,
+                    lotNo = lotNo?.takeIf { it.isNotBlank() },
+                    occurrenceReason = occurrenceReason?.takeIf { it.isNotBlank() },
                     quantity = quantity?.takeIf { it.isNotBlank() }?.toInt(),
-                    memo = memo,
-                    occurredAt = occurredAt,
-                    processedAt = processedAt,
+                    memo = memo?.takeIf { it.isNotBlank() },
+                    sourceEventId = sourceEventId,
+                    occurredAt = occurredAt?.takeIf { it.isNotBlank() },
+                    processedAt = processedAt?.takeIf { it.isNotBlank() },
                     registeredAt = registeredAt,
                     rfidTag = rfidTag
                 )
@@ -122,7 +128,6 @@ class InboundViewModel @Inject constructor(
             Result.failure(e)
         }
     }
-
     private fun normalizeThickness(raw: String?): BigDecimal? {
         if (raw.isNullOrBlank()) return null
 

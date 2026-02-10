@@ -228,10 +228,16 @@ class CsvHelper @Inject constructor(
                 }
 
                 // 2) LIST FILES DIRECTLY FROM DISK
-                val files = targetDir.listFiles()?.filter {
-                    it.isFile && it.name.lowercase()
-                        .endsWith(if (csvType == CsvType.ReferenceMaster.displayName) ".zip" else ".csv")
-                } ?: emptyList()
+                val files = targetDir
+                    .listFiles()
+                    ?.filter {
+                        it.isFile && it.name.lowercase().endsWith(
+                            if (csvType == CsvType.ReferenceMaster.displayName) ".zip" else ".csv"
+                        )
+                    }
+                    // ✅ 更新日時降順 (newest first)
+                    ?.sortedByDescending { it.lastModified() }
+                    ?: emptyList()
 
                 Log.w(
                     "TSS",
@@ -529,7 +535,6 @@ class CsvHelper @Inject constructor(
             else -> null
         }
     }
-
     suspend fun <T : ICsvExport> saveCsv(
         context: Context,
         csvType: String,
@@ -628,7 +633,7 @@ class CsvHelper @Inject constructor(
                 WinderMasterImporter::class to "巻取機",
                 ItemCategoryMasterImporter::class to "品目区分",
                 FieldMasterImporter::class to "項目プリセット",
-                InventoryResultTypeMasterImporter::class to "棚卸結果種別",
+//                InventoryResultTypeMasterImporter::class to "棚卸結果種別",
                 ItemUnitMasterImporter::class to "品目単位",
                 CsvTaskTypeMasterImporter::class to "CSVタスク種別"
             )
@@ -745,7 +750,7 @@ class CsvHelper @Inject constructor(
             WinderMasterImporter(winderRepository),
             ItemCategoryMasterImporter(itemCategoryRepository),
             FieldMasterImporter(fieldMasterRepository),
-            InventoryResultTypeMasterImporter(inventoryResultTypeRepository),
+//            InventoryResultTypeMasterImporter(inventoryResultTypeRepository),
             ItemUnitMasterImporter(itemUnitRepository),
             CsvTaskTypeMasterImporter(csvTaskTypeRepository)
         )
@@ -776,8 +781,8 @@ class CsvHelper @Inject constructor(
             FieldMasterImporter::class ->
                 FieldMasterImporter(fieldMasterRepository)
 
-            InventoryResultTypeMasterImporter::class ->
-                InventoryResultTypeMasterImporter(inventoryResultTypeRepository)
+//            InventoryResultTypeMasterImporter::class ->
+//                InventoryResultTypeMasterImporter(inventoryResultTypeRepository)
 
             ItemUnitMasterImporter::class ->
                 ItemUnitMasterImporter(itemUnitRepository)

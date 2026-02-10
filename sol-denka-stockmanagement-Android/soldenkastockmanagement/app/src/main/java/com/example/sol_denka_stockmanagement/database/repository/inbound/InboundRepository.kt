@@ -8,7 +8,6 @@ import com.example.sol_denka_stockmanagement.model.inbound.InboundEventModel
 import com.example.sol_denka_stockmanagement.model.inbound.InboundSessionModel
 import com.example.sol_denka_stockmanagement.model.tag.TagMasterModel
 import java.math.BigDecimal
-import java.util.UUID
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -40,6 +39,7 @@ class InboundRepository @Inject constructor(
         occurrenceReason: String?,
         quantity: Int?,
         memo: String?,
+        sourceEventId: String,
         occurredAt: String?,
         processedAt: String?,
         registeredAt: String,
@@ -52,7 +52,6 @@ class InboundRepository @Inject constructor(
                 locationId = locationId,
                 winderId = winderId,
                 tagId = rfidTag?.tagId ?: 0,
-                sourceEventId = UUID.randomUUID().toString(),
                 weight = weight,
                 width = width,
                 length = length,
@@ -61,6 +60,7 @@ class InboundRepository @Inject constructor(
                 occurrenceReason = occurrenceReason,
                 quantity = quantity,
                 memo = memo,
+                sourceEventId = sourceEventId,
                 occurredAt = occurredAt,
                 processedAt = processedAt,
                 registeredAt = registeredAt
