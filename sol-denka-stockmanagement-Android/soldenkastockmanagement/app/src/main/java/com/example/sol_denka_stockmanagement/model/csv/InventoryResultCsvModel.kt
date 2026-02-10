@@ -29,9 +29,9 @@ data class InventoryResultCsvModel(
     override fun toRow(): List<String> = listOf(
         sourceSessionId,
         locationId.toString(),
+        deviceId,
         ledgerItemId.toString(),
         tagId.toString(),
-        deviceId,
         memo ?: "",
         scannedAt,
         completedAt
