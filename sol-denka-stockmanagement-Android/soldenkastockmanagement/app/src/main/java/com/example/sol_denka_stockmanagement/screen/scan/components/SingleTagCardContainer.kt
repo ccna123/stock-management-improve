@@ -32,7 +32,7 @@ import com.example.sol_denka_stockmanagement.ui.theme.brightGreenSecondary
 import kotlinx.coroutines.launch
 
 @Composable
-fun CardContainer(
+fun SingleTagCardContainer(
     isChecked: Boolean,
     isError: Boolean = false,
     verticalAlignment: Alignment.Vertical = Alignment.CenterVertically,

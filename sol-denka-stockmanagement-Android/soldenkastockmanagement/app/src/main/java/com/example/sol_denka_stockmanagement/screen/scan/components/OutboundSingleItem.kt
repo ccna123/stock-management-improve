@@ -36,7 +36,7 @@ fun OutboundSingleItem(
     onValueChange: (String) -> Unit,
     onClickDropDownMenuItem: (String) -> Unit
 ) {
-    CardContainer(
+    SingleTagCardContainer(
         isChecked = isChecked,
         isError = isError,
         onClick = onSelect
