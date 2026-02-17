@@ -55,7 +55,7 @@ class CsvFileCreateException: AppException(
 )
 
 class CsvWriteException: AppException(
-    statusCode = StatusCode.WRITE_ERROR
+    statusCode = StatusCode.SAVE_DATA_TO_CSV_FAILED
 )
 
 class CsvImportFailedException: AppException(

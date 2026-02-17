@@ -42,6 +42,7 @@ data class LocationChangeEventEntity(
     @ColumnInfo(name = "location_change_session_id") val locationChangeSessionId: Int,
     @ColumnInfo(name = "ledger_item_id") val ledgerItemId: Int,
     @ColumnInfo(name = "location_id") val locationId: Int,
+    @ColumnInfo(name = "source_event_id") val sourceEventId: String,
     @ColumnInfo(name = "memo") val memo: String?,
     @ColumnInfo(name = "scanned_at") val scannedAt: String,
 

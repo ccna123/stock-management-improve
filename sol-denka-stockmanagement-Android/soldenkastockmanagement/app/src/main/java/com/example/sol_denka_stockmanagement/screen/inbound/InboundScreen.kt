@@ -222,7 +222,7 @@ fun InboundScreen(
                                 "${inputState.processedAtDate}T${inputState.processedAtTime}"
                             }
                         scope.launch {
-                            val result = inboundViewModel.saveInboundToDb(
+                            val saveInboundToDbResult = inboundViewModel.saveInboundToDb(
                                 rfidTag = rfidTagList.find { it.epc == lastInboundEpc },
                                 itemInCategory = inputState.itemInCategory,
                                 locationId = inputState.location!!.locationId,
@@ -240,11 +240,11 @@ fun InboundScreen(
                                 processedAt = processedAt,
                                 registeredAt = generateIso8601JstTimestamp()
                             )
-                            result.exceptionOrNull()?.let { e ->
+                            saveInboundToDbResult.exceptionOrNull()?.let { e ->
                                 appViewModel.onGeneralIntent(
                                     ShareIntent.ShowDialog(
                                         type = DialogType.ERROR,
-                                        message = MessageMapper.toMessage(StatusCode.FAILED)
+                                        message = MessageMapper.toMessage(StatusCode.SAVE_DATA_TO_DB_FAILED)
                                     )
                                 )
                                 return@launch
@@ -275,24 +275,24 @@ fun InboundScreen(
                                 appViewModel.onGeneralIntent(
                                     ShareIntent.ShowDialog(
                                         type = DialogType.SAVE_CSV_SUCCESS_FAILED_SFTP,
-                                        message = MessageMapper.toMessage(StatusCode.EXPORT_OK)
+                                        message = MessageMapper.toMessage(StatusCode.SAVE_CSV_SUCCESS_FAILED_SFTP)
                                     )
                                 )
-//                                if (isNetworkConnected) {
+//                            if (isNetworkConnected) {
 //                                    //sftp send
 //                                } else {
 //                                    appViewModel.onGeneralIntent(
 //                                        ShareIntent.ShowDialog(
-//                                            type = DialogType.SAVE_CSV_SUCCESS_FAILED_SFTP,
-//                                            message = MessageMapper.toMessage(StatusCode.EXPORT_OK)
+//                                            type = DialogType.SAVE_CSV_SEND_SFTP_SUCCESS,
+//                                            message = MessageMapper.toMessage(StatusCode.SAVE_CSV_SEND_SFTP_SUCCESS)
 //                                        )
 //                                    )
 //                                }
                             } else {
                                 appViewModel.onGeneralIntent(
                                     ShareIntent.ShowDialog(
-                                        type = DialogType.SAVE_CSV_SUCCESS_FAILED_SFTP,
-                                        message = MessageMapper.toMessage(StatusCode.EXPORT_OK)
+                                        type = DialogType.SAVE_CSV_FAILED,
+                                        message = MessageMapper.toMessage(StatusCode.SAVE_DATA_TO_CSV_FAILED)
                                     )
                                 )
                             }

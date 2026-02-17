@@ -36,7 +36,7 @@ class OutboundViewModel @Inject constructor(
                     val processTypeId = processTypeRepository.getIdByName(tag.newFields.processType)
                     val ledgerId = tagMasterRepository.getLedgerIdByTagId(tag.tagId)
                     val model = OutboundResultCsvModel(
-                        ledgerItemId = ledgerId ?: 0,
+                        ledgerItemId = ledgerId,
                         tagId = tag.tagId,
                         processTypeId = processTypeId,
                         deviceId = Build.ID,

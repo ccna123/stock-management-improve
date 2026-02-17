@@ -10,7 +10,7 @@ data class InboundEventModel(
     val locationId: Int,
     val winderId: Int?,
     val tagId: Int,
-    val sourceEventId: String?,
+    val sourceEventId: String,
     val weight: Int?,
     val width: Int?,
     val length: Int?,

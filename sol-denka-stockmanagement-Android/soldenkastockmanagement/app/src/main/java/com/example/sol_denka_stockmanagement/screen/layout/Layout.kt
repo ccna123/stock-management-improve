@@ -49,6 +49,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -82,6 +83,7 @@ import com.example.sol_denka_stockmanagement.ui.theme.orange
 import com.example.sol_denka_stockmanagement.ui.theme.paleSkyBlue
 import com.example.sol_denka_stockmanagement.viewmodel.AppViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.launch
 
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @OptIn(ExperimentalMaterial3Api::class)
@@ -96,6 +98,7 @@ fun Layout(
     onNavigate: ((Screen) -> Unit)? = null,
     bottomButton: (@Composable () -> Unit)? = null,
     topBarButton: (@Composable () -> Unit)? = null,
+    retrySaveDb: (suspend () -> Unit)? = null,
     content: @Composable (PaddingValues) -> Unit
 ) {
     // ✅ Get ReaderController via Hilt entry point
@@ -129,6 +132,8 @@ fun Layout(
         )
     }
 
+    val scope = rememberCoroutineScope()
+
     when (val d = dialogState) {
         is DialogState.Error -> {
             ConfirmDialog(
@@ -148,7 +153,7 @@ fun Layout(
             )
         }
 
-        is DialogState.SaveCsvSuccessFailSftp -> {
+        is DialogState.SaveCsvSuccessFailedSftp -> {
             ConfirmDialog(
                 showDialog = true,
                 textColor = Color.Black,
@@ -156,14 +161,7 @@ fun Layout(
                 buttons = listOf(
                     {
                         ButtonContainer(
-                            containerColor = Color.Red,
-                            buttonText = stringResource(R.string.re_send),
-                            onClick = {
-                                appViewModel?.onGeneralIntent(ShareIntent.HiddenDialog)
-                            }
-                        )
-                        ButtonContainer(
-                            buttonText = stringResource(R.string.return_home),
+                            buttonText = stringResource(R.string.close),
                             onClick = {
                                 appViewModel?.onGeneralIntent(ShareIntent.HiddenDialog)
                                 onNavigate?.invoke(Screen.Home)
@@ -201,7 +199,7 @@ fun Layout(
                 buttons = listOf(
                     {
                         ButtonContainer(
-                            buttonText = stringResource(R.string.return_home),
+                            buttonText = stringResource(R.string.close),
                             onClick = {
                                 appViewModel?.onGeneralIntent(ShareIntent.HiddenDialog)
                                 onNavigate?.invoke(Screen.Home)
@@ -211,6 +209,80 @@ fun Layout(
                 )
             )
         }
+
+        is DialogState.SaveCsvFailed -> {
+            ConfirmDialog(
+                showDialog = true,
+                textColor = Color.Black,
+                dialogTitle = d.message,
+                buttons = listOf(
+                    {
+                        ButtonContainer(
+                            buttonText = stringResource(R.string.ok),
+                            onClick = {
+                                appViewModel?.onGeneralIntent(ShareIntent.HiddenDialog)
+                                onNavigate?.invoke(Screen.Home)
+                            }
+                        )
+                    }
+                )
+            )
+        }
+
+        is DialogState.CancelOperation -> {
+            ConfirmDialog(
+                showDialog = true,
+                textColor = Color.Black,
+                dialogTitle = d.message,
+                buttons = listOf(
+                    {
+                        ButtonContainer(
+                            buttonText = stringResource(R.string.yes),
+                            onClick = {
+                                appViewModel?.onGeneralIntent(ShareIntent.HiddenDialog)
+                                onNavigate?.invoke(Screen.Home)
+                            }
+                        )
+                        ButtonContainer(
+                            buttonText = stringResource(R.string.no),
+                            containerColor = Color.Red,
+                            onClick = {
+                                appViewModel?.onGeneralIntent(ShareIntent.HiddenDialog)
+                            }
+                        )
+                    }
+                )
+            )
+        }
+
+        is DialogState.SaveDataToDbFailed -> {
+            ConfirmDialog(
+                showDialog = true,
+                textColor = Color.Black,
+                dialogTitle = d.message,
+                buttons = listOf(
+                    {
+                        ButtonContainer(
+                            buttonText = stringResource(R.string.retry),
+                            onClick = {
+                                appViewModel?.onGeneralIntent(ShareIntent.HiddenDialog)
+                                scope.launch {
+                                    retrySaveDb?.invoke()
+                                }
+                            }
+                        )
+                        ButtonContainer(
+                            buttonText = stringResource(R.string.cancel),
+                            containerColor = Color.Red,
+                            onClick = {
+                                appViewModel?.onGeneralIntent(ShareIntent.HiddenDialog)
+                            }
+                        )
+                    }
+                )
+            )
+        }
+
         DialogState.Hidden -> Unit
     }
 

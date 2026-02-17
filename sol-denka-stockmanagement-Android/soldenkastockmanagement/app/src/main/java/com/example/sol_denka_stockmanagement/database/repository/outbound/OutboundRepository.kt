@@ -43,10 +43,10 @@ class OutboundRepository @Inject constructor(
             eventRepo.insert(
                 OutBoundEventModel(
                     outboundSessionId = sessionId,
-                    ledgerItemId = ledgerId ?: 0,
+                    ledgerItemId = ledgerId,
                     processTypeId = processTypeId,
                     memo = memo,
-                    sourceEventId = sourceEventIdByTagId[tag.tagId] ?: "",
+                    sourceEventId = sourceEventIdByTagId[tag.tagId]!!,
                     processedAt = processedAt,
                     registeredAt = registeredAt
                 )

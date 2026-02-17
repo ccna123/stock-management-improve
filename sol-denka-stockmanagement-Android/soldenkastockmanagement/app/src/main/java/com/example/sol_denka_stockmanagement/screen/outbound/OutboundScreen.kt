@@ -132,7 +132,7 @@ fun OutboundScreen(
                     onClick = {
                         appViewModel.onGeneralIntent(
                             ShareIntent.ShowDialog(
-                                type = DialogType.CONFIRM,
+                                type = DialogType.CANCEL_OPERATION,
                                 message = MessageMapper.toMessage(StatusCode.CANCEL)
                             )
                         )
@@ -171,18 +171,18 @@ fun OutboundScreen(
                                 "${inputState.processedAtDate}T${inputState.processedAtTime}"
                             }
                         scope.launch {
-                            val result = outboundViewModel.saveOutboundToDb(
+                            val saveOutboundToDbResult = outboundViewModel.saveOutboundToDb(
                                 memo = inputState.memo,
                                 processedAt = processedAt,
                                 registeredAt = registeredAt,
                                 sourceEventIdByTagId = sourceEventIdByTagId,
                                 rfidTagList = rfidTagList.filter { it.newFields.isChecked }
                             )
-                            result.exceptionOrNull()?.let { e ->
+                            saveOutboundToDbResult.exceptionOrNull()?.let { e ->
                                 appViewModel.onGeneralIntent(
                                     ShareIntent.ShowDialog(
                                         type = DialogType.ERROR,
-                                        message = MessageMapper.toMessage(StatusCode.FAILED)
+                                        message = MessageMapper.toMessage(StatusCode.SAVE_DATA_TO_DB_FAILED)
                                     )
                                 )
                                 return@launch
@@ -204,7 +204,7 @@ fun OutboundScreen(
                                 appViewModel.onGeneralIntent(
                                     ShareIntent.ShowDialog(
                                         type = DialogType.SAVE_CSV_SUCCESS_FAILED_SFTP,
-                                        message = MessageMapper.toMessage(StatusCode.EXPORT_OK)
+                                        message = MessageMapper.toMessage(StatusCode.SAVE_CSV_SUCCESS_FAILED_SFTP)
                                     )
                                 )
 //                                if (isNetworkConnected) {
@@ -212,16 +212,16 @@ fun OutboundScreen(
 //                                } else {
 //                                    appViewModel.onGeneralIntent(
 //                                        ShareIntent.ShowDialog(
-//                                            type = DialogType.SAVE_CSV_SUCCESS_FAILED_SFTP,
-//                                            message = MessageMapper.toMessage(StatusCode.EXPORT_OK)
+//                                            type = DialogType.SAVE_CSV_SEND_SFTP_SUCCESS,
+//                                            message = MessageMapper.toMessage(StatusCode.SAVE_CSV_SEND_SFTP_SUCCESS)
 //                                        )
 //                                    )
 //                                }
                             } else {
                                 appViewModel.onGeneralIntent(
                                     ShareIntent.ShowDialog(
-                                        type = DialogType.SAVE_CSV_SUCCESS_FAILED_SFTP,
-                                        message = MessageMapper.toMessage(StatusCode.EXPORT_OK)
+                                        type = DialogType.SAVE_CSV_FAILED,
+                                        message = MessageMapper.toMessage(StatusCode.SAVE_DATA_TO_CSV_FAILED)
                                     )
                                 )
                             }

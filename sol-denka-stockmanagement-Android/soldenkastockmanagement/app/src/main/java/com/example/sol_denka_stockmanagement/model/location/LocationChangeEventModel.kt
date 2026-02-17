@@ -7,6 +7,7 @@ data class LocationChangeEventModel(
     val locationChangeSessionId: Int,
     val ledgerItemId: Int,
     val locationId: Int,
+    val sourceEventId: String,
     val memo: String?,
     val scannedAt: String,
 )
@@ -16,6 +17,7 @@ fun LocationChangeEventEntity.toModel() = LocationChangeEventModel(
     locationChangeSessionId = locationChangeSessionId,
     ledgerItemId = ledgerItemId,
     locationId = locationId,
+    sourceEventId = sourceEventId,
     memo = memo,
     scannedAt = scannedAt
 )
@@ -25,6 +27,7 @@ fun LocationChangeEventModel.toEntity() = LocationChangeEventEntity(
     locationChangeSessionId = locationChangeSessionId,
     ledgerItemId = ledgerItemId,
     locationId = locationId,
+    sourceEventId = sourceEventId,
     memo = memo,
     scannedAt = scannedAt
 )

@@ -2,7 +2,6 @@ package com.example.sol_denka_stockmanagement.database.repository.location
 
 import android.os.Build
 import androidx.room.withTransaction
-import com.example.sol_denka_stockmanagement.constant.generateIso8601JstTimestamp
 import com.example.sol_denka_stockmanagement.database.AppDatabase
 import com.example.sol_denka_stockmanagement.database.repository.tag.TagMasterRepository
 import com.example.sol_denka_stockmanagement.model.location.LocationChangeEventModel
@@ -10,7 +9,6 @@ import com.example.sol_denka_stockmanagement.model.location.LocationChangeSessio
 import com.example.sol_denka_stockmanagement.model.tag.TagMasterModel
 import javax.inject.Inject
 import javax.inject.Singleton
-import kotlin.collections.forEach
 
 @Singleton
 class LocationChangeRepository @Inject constructor(
@@ -20,11 +18,11 @@ class LocationChangeRepository @Inject constructor(
     private val tagMasterRepository: TagMasterRepository,
 ) {
 
-    suspend fun createLocationChangeSession(): Int =
+    suspend fun createLocationChangeSession(executedAt: String): Int =
         sessionRepo.insert(
             LocationChangeSessionModel(
                 deviceId = Build.ID,
-                executedAt = generateIso8601JstTimestamp()
+                executedAt = executedAt
             )
         ).toInt()
 
@@ -32,6 +30,8 @@ class LocationChangeRepository @Inject constructor(
         sessionId: Int,
         memo: String,
         locationId: Int,
+        scannedAt: String,
+        sourceEventIdByTagId: Map<Int, String>,
         rfidTagList: List<TagMasterModel>
     ) {
         rfidTagList.forEach { tag ->
@@ -39,10 +39,11 @@ class LocationChangeRepository @Inject constructor(
             locationChangeEventRepository.insert(
                 LocationChangeEventModel(
                     locationChangeSessionId = sessionId,
-                    ledgerItemId = ledgerId ?: 0,
+                    ledgerItemId = ledgerId,
                     locationId = locationId,
+                    sourceEventId = sourceEventIdByTagId[tag.tagId]!!,
                     memo = memo,
-                    scannedAt = generateIso8601JstTimestamp(),
+                    scannedAt = scannedAt,
                 )
             )
         }

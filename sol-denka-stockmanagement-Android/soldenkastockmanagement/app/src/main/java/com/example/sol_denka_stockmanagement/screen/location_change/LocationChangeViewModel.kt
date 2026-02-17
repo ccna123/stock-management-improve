@@ -3,7 +3,6 @@ package com.example.sol_denka_stockmanagement.screen.location_change
 import android.os.Build
 import android.util.Log
 import androidx.lifecycle.ViewModel
-import com.example.sol_denka_stockmanagement.constant.generateIso8601JstTimestamp
 import com.example.sol_denka_stockmanagement.database.repository.location.LocationChangeRepository
 import com.example.sol_denka_stockmanagement.database.repository.tag.TagMasterRepository
 import com.example.sol_denka_stockmanagement.model.csv.LocationChangeResultCsvModel
@@ -24,6 +23,9 @@ class LocationChangeViewModel @Inject constructor(
     suspend fun generateCsvData(
         memo: String,
         locationId: Int,
+        scannedAt: String,
+        executedAt: String,
+        sourceEventIdByTagId: Map<Int, String>,
         rfidTagList: List<TagMasterModel>
     ): List<LocationChangeResultCsvModel> =
         withContext(Dispatchers.IO) {
@@ -32,12 +34,13 @@ class LocationChangeViewModel @Inject constructor(
                 rfidTagList.forEach { tag ->
                     val ledgerId = tagMasterRepository.getLedgerIdByTagId(tag.tagId)
                     val model = LocationChangeResultCsvModel(
-                        ledgerItemId = ledgerId ?: 0,
+                        ledgerItemId = ledgerId,
                         locationId = locationId,
                         deviceId = Build.ID,
                         memo = memo,
-                        scannedAt = generateIso8601JstTimestamp(),
-                        executedAt = generateIso8601JstTimestamp()
+                        sourceEventId = sourceEventIdByTagId[tag.tagId]!!,
+                        scannedAt = scannedAt,
+                        executedAt = executedAt
                     )
                     csvModels.add(model)
                 }
@@ -51,22 +54,27 @@ class LocationChangeViewModel @Inject constructor(
     suspend fun saveLocationChangeToDb(
         memo: String,
         locationId: Int,
+        scannedAt: String,
+        executedAt: String,
+        sourceEventIdByTagId: Map<Int, String>,
         rfidTagList: List<TagMasterModel>
-    ): Result<Int> {
+    ): Result<Unit> {
         return try {
             var sessionId = 0
             locationChangeRepository.saveLocationChangeTransaction {
 
-                sessionId = locationChangeRepository.createLocationChangeSession()
+                sessionId = locationChangeRepository.createLocationChangeSession(executedAt = executedAt)
 
                 locationChangeRepository.insertLocationChangeEvent(
                     sessionId = sessionId,
                     memo = memo,
                     locationId = locationId,
+                    sourceEventIdByTagId = sourceEventIdByTagId,
+                    scannedAt = scannedAt,
                     rfidTagList = rfidTagList
                 )
             }
-            Result.success(sessionId)
+            Result.success(Unit)
         } catch (e: Exception) {
             Result.failure(e)
         }

@@ -42,6 +42,7 @@ import com.example.sol_denka_stockmanagement.model.process.ProcessTypeModel
 import com.example.sol_denka_stockmanagement.model.reader.ReaderInfoModel
 import com.example.sol_denka_stockmanagement.model.winder.WinderModel
 import com.example.sol_denka_stockmanagement.state.DialogState
+import com.example.sol_denka_stockmanagement.state.DialogState.*
 import com.example.sol_denka_stockmanagement.state.DialogState.Error
 import com.example.sol_denka_stockmanagement.state.DialogState.Hidden
 import com.example.sol_denka_stockmanagement.state.ExpandState
@@ -388,7 +389,7 @@ class AppViewModel @Inject constructor(
                 when (intent.type) {
                     DialogType.CONFIRM -> {
                         _dialogState.update {
-                            DialogState.Confirm(
+                            Confirm(
                                 message = intent.message,
                             )
                         }
@@ -396,7 +397,7 @@ class AppViewModel @Inject constructor(
 
                     DialogType.SAVE_CSV_SUCCESS_FAILED_SFTP -> {
                         _dialogState.update {
-                            DialogState.SaveCsvSuccessFailSftp(
+                            SaveCsvSuccessFailedSftp(
                                 message = intent.message,
                             )
                         }
@@ -404,7 +405,15 @@ class AppViewModel @Inject constructor(
 
                     DialogType.SAVE_CSV_SEND_SFTP_SUCCESS -> {
                         _dialogState.update {
-                            DialogState.SaveCsvSendSftpSuccess(
+                            SaveCsvSendSftpSuccess(
+                                message = intent.message,
+                            )
+                        }
+                    }
+
+                    DialogType.SAVE_CSV_FAILED -> {
+                        _dialogState.update {
+                            SaveCsvFailed(
                                 message = intent.message,
                             )
                         }
@@ -413,6 +422,22 @@ class AppViewModel @Inject constructor(
                     DialogType.ERROR -> {
                         _dialogState.update {
                             Error(
+                                message = intent.message,
+                            )
+                        }
+                    }
+
+                    DialogType.CANCEL_OPERATION -> {
+                        _dialogState.update {
+                            CancelOperation(
+                                message = intent.message,
+                            )
+                        }
+                    }
+
+                    DialogType.SAVE_DATA_TO_DB_FAILED -> {
+                        _dialogState.update {
+                            SaveDataToDbFailed(
                                 message = intent.message,
                             )
                         }
@@ -548,17 +573,13 @@ class AppViewModel @Inject constructor(
                     executedAt = generateIso8601JstTimestamp()
                 )
             )
-
             true   // ✅ OK
-
         } catch (e: AppException) {
             Log.e("TSS", "saveScanResultToCsv: $e")
             _dialogState.value = Error(
                 message = MessageMapper.toMessage(e.statusCode, e.params)
             )
-
             false
-
         } catch (e: Exception) {
             Log.e("TSS", "saveScanResultToCsv: $e")
             _dialogState.value = Error(

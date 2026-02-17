@@ -24,6 +24,7 @@
     <string name="bulk_apply">一括適用</string>
     <string name="ok">OK</string>
     <string name="re_send">再送信</string>
+    <string name="retry">再試行</string>
 
     <!--    タブ名-->
     <string name="unprocessed">未処理</string>

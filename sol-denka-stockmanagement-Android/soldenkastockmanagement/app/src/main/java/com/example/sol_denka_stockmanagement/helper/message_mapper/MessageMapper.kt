@@ -49,8 +49,8 @@ object MessageMapper {
             StatusCode.FOLDER_NOT_FOUND ->
                 "保存先フォルダーが見つかりません。"
 
-            StatusCode.WRITE_ERROR ->
-                "CSVファイルの書き込みに失敗しました。"
+            StatusCode.SAVE_DATA_TO_CSV_FAILED ->
+                "CSVファイルの作成に失敗しました。再度お試しください。"
 
             StatusCode.EMPTY_DATA ->
                 "保存するデータがありません。"
@@ -67,12 +67,14 @@ object MessageMapper {
             StatusCode.FAILED ->
                 "エラーが発生しました。"
 
+            StatusCode.SAVE_DATA_TO_DB_FAILED -> "データの保存に失敗しました。再度お試しください。"
+
             StatusCode.SQLITE_CONSTRAINT_ERROR -> "外部キーエラー"
 
             StatusCode.PROCESS_NOT_CHOSEN -> "チェック済みのタグに処理方法を選択してください。"
 
             StatusCode.IMPORT_OK -> "CSVファイルの取込に成功しました。"
-            StatusCode.EXPORT_OK -> "CSV ファイルの保存は正常に完了しましたが、\n送信処理でエラーが発生しました。再度送信をお試しください。"
+            StatusCode.SAVE_CSV_SUCCESS_FAILED_SFTP -> "CSV ファイルの保存は正常に完了しましたが、\n送信処理でエラーが発生しました。再度送信をお試しください。"
             StatusCode.CANCEL -> "登録作業をキャンセルし、\nホーム画面に戻ってもよろしいですか？"
             StatusCode.MISSING_COLUMN -> {
                 val missing = params?.get("missing_columns") as? List<*>
@@ -93,6 +95,8 @@ object MessageMapper {
                     "エラーが発生しました。"
                 }
             }
+
+            StatusCode.SAVE_CSV_SEND_SFTP_SUCCESS -> "CSVファイルの保存、送信に成功しました。"
         }
     }
 }

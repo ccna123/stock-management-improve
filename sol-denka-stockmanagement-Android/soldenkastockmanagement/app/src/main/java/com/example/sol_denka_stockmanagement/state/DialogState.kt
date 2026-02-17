@@ -7,7 +7,7 @@ sealed interface DialogState {
         val message: String,
     ) : DialogState
 
-    data class SaveCsvSuccessFailSftp(
+    data class SaveCsvSuccessFailedSftp(
         val message: String,
     ) : DialogState
 
@@ -15,8 +15,20 @@ sealed interface DialogState {
         val message: String,
     ) : DialogState
 
+    data class SaveCsvFailed(
+        val message: String,
+    ) : DialogState
+
     data class Confirm(
         val message: String = "",
     ) : DialogState
+
+    data class CancelOperation(
+        val message: String = "",
+    ) : DialogState
+
+    data class SaveDataToDbFailed(
+        val message: String = ""
+    ): DialogState
 
 }

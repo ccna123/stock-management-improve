@@ -9,6 +9,7 @@ data class LocationChangeResultCsvModel(
     val locationId: Int,
     val deviceId: String,
     val memo: String,
+    val sourceEventId: String,
     val scannedAt: String,
     val executedAt: String,
 
@@ -18,6 +19,7 @@ data class LocationChangeResultCsvModel(
         "location_id",
         "device_id",
         "memo",
+        "source_event_id",
         "scanned_at",
         "executed_at"
     )
@@ -27,6 +29,7 @@ data class LocationChangeResultCsvModel(
         locationId.toString(),
         deviceId,
         memo,
+        sourceEventId,
         scannedAt,
         executedAt
     )

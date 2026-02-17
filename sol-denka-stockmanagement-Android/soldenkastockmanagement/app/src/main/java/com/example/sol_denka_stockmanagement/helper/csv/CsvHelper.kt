@@ -591,25 +591,30 @@ class CsvHelper @Inject constructor(
         val bytes = fullContent.toByteArray()
         val totalBytes = bytes.size.takeIf { it > 0 } ?: 1
         var written = 0
+        try {
+            resolver.openOutputStream(uri)?.use { output ->
+                val bufferSize = 4096
+                var offset = 0
 
-        resolver.openOutputStream(uri)?.use { output ->
-            val bufferSize = 4096
-            var offset = 0
+                while (offset < bytes.size) {
+                    val count = minOf(bufferSize, bytes.size - offset)
+                    output.write(bytes, offset, count)
+                    offset += count
+                    written += count
 
-            while (offset < bytes.size) {
-                val count = minOf(bufferSize, bytes.size - offset)
-                output.write(bytes, offset, count)
-                offset += count
-                written += count
+                    val progress = (written.toFloat() / totalBytes).coerceIn(0f, 1f)
+                    onProgress(progress)
+                }
+                output.flush()
+            } ?: throw CsvWriteException()
 
-                val progress = (written.toFloat() / totalBytes).coerceIn(0f, 1f)
-                onProgress(progress)
-            }
-            output.flush()
-        } ?: throw CsvWriteException()
-
-        Log.i("TSS", "✅ CSV saved: $relativePath$fileName")
-        onProgress(1f)
+            Log.i("TSS", "✅ CSV saved: $relativePath$fileName")
+            onProgress(1f)
+        }catch (e: Exception){
+            resolver.delete(uri, null, null)
+            Log.e("TSS", "saveCsv error: $e")
+            throw e
+        }
     }
 
     private suspend fun importReferenceMaster(
