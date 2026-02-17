@@ -13,6 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.example.sol_denka_stockmanagement.constant.SelectTitle
 import com.example.sol_denka_stockmanagement.model.process.ProcessTypeModel
 import com.example.sol_denka_stockmanagement.share.InputFieldContainer
@@ -52,8 +53,8 @@ fun OutboundSingleItem(
         Column(
             modifier = Modifier.padding(start = 6.dp)
         ) {
-            Text(text = itemName)
-            Text(text = tag)
+            Text(text = itemName, fontSize = 20.sp)
+            Text(text = tag, fontSize = 16.sp)
 
             ExposedDropdownMenuBox(
                 expanded = isExpanded,

@@ -29,6 +29,7 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.sol_denka_stockmanagement.R
@@ -148,7 +149,6 @@ fun LocationChangeScreen(
                             appViewModel = appViewModel,
                             inputState = inputState,
                             rfidTagList = rfidTagList,
-                            failSimulate = true
                         )
                     },
                 )
@@ -251,15 +251,10 @@ fun LocationChangeScreen(
                         isDropDown = false,
                         enable = true,
                         singleLine = false,
+                        imeAction = ImeAction.Default,
                         onChange = { newValue ->
-                            val filteredValue = newValue.trimStart().filter { char ->
-                                (char.isLetterOrDigit() && char.toString()
-                                    .toByteArray().size == 1) || char == '-'
-                            }
                             appViewModel.onInputIntent(
-                                InputIntent.ChangeMemo(
-                                    filteredValue
-                                )
+                                InputIntent.ChangeMemo(newValue.take(500))
                             )
                         }
                     )
@@ -271,7 +266,6 @@ fun LocationChangeScreen(
 
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 private fun executeLocationChange(
-    failSimulate: Boolean = false,
     scope: CoroutineScope,
     locationChangeViewModel: LocationChangeViewModel,
     appViewModel: AppViewModel,

@@ -569,7 +569,9 @@ class CsvHelper @Inject constructor(
         val headerLine = rows.first().toHeader().joinToString(",")
 
         // Build data
-        val dataLines = rows.joinToString("\n") { it.toRow().joinToString(",") }
+        val dataLines = rows.joinToString("\n") { row ->
+            row.toRow().joinToString(",") { sanitizeForLineCsv(it) }
+        }
 
         // Content assemble
         val fullContent = buildString {
@@ -813,4 +815,12 @@ class CsvHelper @Inject constructor(
             }
         }
     }
+
+    private fun sanitizeForLineCsv(value: String): String {
+        return value
+            .replace("\r\n", "\\n")
+            .replace("\n", "\\n")
+            .replace("\r", "\\n")
+    }
+
 }

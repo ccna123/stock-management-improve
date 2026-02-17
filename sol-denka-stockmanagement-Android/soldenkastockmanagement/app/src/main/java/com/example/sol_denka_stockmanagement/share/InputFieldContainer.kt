@@ -34,6 +34,7 @@ fun InputFieldContainer(
     error: Boolean? = false,
     isNumeric: Boolean = false,
     shape: Shape = RoundedCornerShape(13.dp),
+    imeAction: ImeAction = ImeAction.Next,
     fontSize: TextUnit = 16.sp,
     isRequired: Boolean = false,
     enable: Boolean,
@@ -52,7 +53,7 @@ fun InputFieldContainer(
     OutlinedTextField(
         value = value,
         onValueChange = { newText ->
-            if (!readOnly) onChange?.invoke(newText.replace("\n", ""))
+            if (!readOnly) onChange?.invoke(newText)
         },
         modifier = modifier,
         shape = shape,
@@ -79,9 +80,14 @@ fun InputFieldContainer(
         textStyle = TextStyle(fontSize = fontSize),
         keyboardOptions = KeyboardOptions(
             keyboardType = if (isNumeric) KeyboardType.Number else KeyboardType.Text,
-            imeAction = if (readOnly) ImeAction.None else ImeAction.Next
+            imeAction = if (singleLine) imeAction else ImeAction.Default
         ),
-        keyboardActions = KeyboardActions(onNext = { if (!readOnly) onEnterPressed?.invoke() }),
+        keyboardActions =
+            if (singleLine && imeAction == ImeAction.Next) {
+                KeyboardActions(onNext = { if (!readOnly) onEnterPressed?.invoke() })
+            } else {
+                KeyboardActions.Default
+            },
         readOnly = readOnly,
         enabled = enable,
         trailingIcon = {

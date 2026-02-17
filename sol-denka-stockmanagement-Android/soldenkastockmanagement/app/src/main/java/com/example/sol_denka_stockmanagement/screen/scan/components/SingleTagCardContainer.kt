@@ -35,6 +35,8 @@ import kotlinx.coroutines.launch
 fun CardContainer(
     isChecked: Boolean,
     isError: Boolean = false,
+    verticalAlignment: Alignment.Vertical = Alignment.CenterVertically,
+    horizontalArrangement: Arrangement.Horizontal = Arrangement.SpaceBetween,
     onClick: () -> Unit,
     content: @Composable RowScope.() -> Unit
 ) {
@@ -119,8 +121,8 @@ fun CardContainer(
         }
 
         Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = verticalAlignment,
+            horizontalArrangement = horizontalArrangement,
             modifier = Modifier
                 .padding(start = 8.dp, end = 12.dp, top = 12.dp, bottom = 12.dp)
                 .fillMaxWidth(),
