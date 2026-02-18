@@ -46,7 +46,7 @@ class ScanViewModel @Inject constructor(
 
 
     private var inboundJob: Job? = null
-    private var outboundJob: Job? = null
+    private var outboundLocationChangeJob: Job? = null
     private var inventoryJob: Job? = null
     private var processJob: Job? = null
     private var searchJob: Job? = null
@@ -84,7 +84,8 @@ class ScanViewModel @Inject constructor(
                             tagScanStatus = prev?.newFields?.tagScanStatus ?: TagScanStatus.UNPROCESSED,
                             rssi = prev?.newFields?.rssi ?: -100f,
                             isChecked = prev?.newFields?.isChecked ?: false,
-                            processType = prev?.newFields?.processType ?: ""
+                            processType = prev?.newFields?.processType ?: "",
+                            readTimeStamp = prev?.newFields?.readTimeStamp ?: 0L
                         )
                     )
                 }
@@ -98,7 +99,7 @@ class ScanViewModel @Inject constructor(
 
                 // cancel all jobs whenever mode changes
                 inboundJob?.cancel()
-                outboundJob?.cancel()
+                outboundLocationChangeJob?.cancel()
                 inventoryJob?.cancel()
                 processJob?.cancel()
                 searchJob?.cancel()
@@ -151,11 +152,27 @@ class ScanViewModel @Inject constructor(
                     }
 
                     ScanMode.OUTBOUND, ScanMode.LOCATION_CHANGE -> {
-                        outboundJob = viewModelScope.launch(Dispatchers.IO) {
-                            scannedTags.collect {}
+                        outboundLocationChangeJob = viewModelScope.launch(Dispatchers.IO) {
+                            scannedTags.collect { scanned ->
+
+                                val lastEpc = scanned.keys.lastOrNull() ?: return@collect
+                                val now = System.currentTimeMillis()
+
+                                val updated = _rfidTagList.value.map { tag ->
+                                    if (tag.epc == lastEpc) {
+                                        tag.copy(
+                                            newFields = tag.newFields.copy(
+                                                readTimeStamp = now
+                                            )
+                                        )
+                                    } else tag
+                                }
+
+                                _rfidTagList.value =
+                                    updated.sortedByDescending { it.newFields.readTimeStamp }
+                            }
                         }
                     }
-
                     ScanMode.NONE -> {}
                 }
             }

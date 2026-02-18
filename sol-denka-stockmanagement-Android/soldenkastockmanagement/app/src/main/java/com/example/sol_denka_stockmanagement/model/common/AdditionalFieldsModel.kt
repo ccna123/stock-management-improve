@@ -13,7 +13,8 @@ data class AdditionalFieldsModel(
     val processType: String,
     val isChecked: Boolean,
     val hasLeger: Boolean,
-    val isInStock: Boolean
+    val isInStock: Boolean,
+    val readTimeStamp: Long
 
 
 ){
@@ -28,7 +29,8 @@ data class AdditionalFieldsModel(
             processType = "",
             isChecked = false,
             hasLeger = false,
-            isInStock = false
+            isInStock = false,
+            readTimeStamp = 0
         )
     }
 }
