@@ -3,8 +3,8 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.about.libraries)
-//    alias(libs.plugins.kotlin.kapt)
-    id("com.google.devtools.ksp")
+    alias(libs.plugins.kotlin.kapt)
+//    id("com.google.devtools.ksp")
     id("com.google.dagger.hilt.android")
 
     // Optional, provides the @Serialize annotation for autogeneration of Serializers.
@@ -25,7 +25,14 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        kapt {
+            arguments {
+                arg("room.schemaLocation", "$projectDir/schemas")
+            }
+        }
     }
+
 
     buildTypes {
         release {
@@ -85,14 +92,14 @@ dependencies {
 
     //room
     implementation(libs.androidx.room.ktx)
-    ksp(libs.androidx.room.compiler)
+    kapt(libs.androidx.room.compiler)
 
     //sftp
     implementation("com.github.mwiede:jsch:2.27.5")
 
     //hilt
     implementation(libs.hilt.android)
-    ksp(libs.hilt.android.compiler)
+    kapt(libs.hilt.android.compiler)
     implementation(libs.androidx.hilt.navigation.compose)
 
     // OSS licenses
@@ -116,5 +123,4 @@ dependencies {
     implementation(libs.androidx.material3.adaptive.navigation3)
     implementation(libs.kotlinx.serialization.core)
     testImplementation(kotlin("test"))
-
 }

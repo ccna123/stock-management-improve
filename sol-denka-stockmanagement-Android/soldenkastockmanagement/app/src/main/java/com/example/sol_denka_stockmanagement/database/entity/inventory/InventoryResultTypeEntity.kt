@@ -11,5 +11,4 @@ data class InventoryResultTypeEntity(
     @ColumnInfo(name = "inventory_result_name") val inventoryResultTypeName: String,
     @ColumnInfo(name = "created_at") val createdAt: String,
     @ColumnInfo(name = "updated_at") val updatedAt: String,
-
-    )
+)

@@ -1,0 +1,1539 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 34,
+    "identityHash": "ef521844e93397261e5bd3f63a8e3e7d",
+    "entities": [
+      {
+        "tableName": "CsvHistory",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`csv_history_id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `csv_task_type_id` INTEGER NOT NULL, `file_name` TEXT NOT NULL, `direction` TEXT NOT NULL, `result` TEXT NOT NULL, `record_num` INTEGER, `error_message` TEXT, `executed_at` TEXT NOT NULL, FOREIGN KEY(`csv_task_type_id`) REFERENCES `CsvTaskType`(`csv_task_type_id`) ON UPDATE RESTRICT ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "csvHistoryId",
+            "columnName": "csv_history_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "csvTaskTypeId",
+            "columnName": "csv_task_type_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "fileName",
+            "columnName": "file_name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "direction",
+            "columnName": "direction",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "result",
+            "columnName": "result",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "recordNum",
+            "columnName": "record_num",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "errorMessage",
+            "columnName": "error_message",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "executedAt",
+            "columnName": "executed_at",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "csv_history_id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_CsvHistory_csv_task_type_id",
+            "unique": false,
+            "columnNames": [
+              "csv_task_type_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_CsvHistory_csv_task_type_id` ON `${TABLE_NAME}` (`csv_task_type_id`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "CsvTaskType",
+            "onDelete": "CASCADE",
+            "onUpdate": "RESTRICT",
+            "columns": [
+              "csv_task_type_id"
+            ],
+            "referencedColumns": [
+              "csv_task_type_id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "CsvTaskType",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`csv_task_type_id` INTEGER NOT NULL, `csv_task_code` TEXT NOT NULL, `csv_task_name` TEXT NOT NULL, `created_at` TEXT NOT NULL, `updated_at` TEXT NOT NULL, PRIMARY KEY(`csv_task_type_id`))",
+        "fields": [
+          {
+            "fieldPath": "csvTaskTypeId",
+            "columnName": "csv_task_type_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "csvTaskCode",
+            "columnName": "csv_task_code",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "csvTaskName",
+            "columnName": "csv_task_name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "createdAt",
+            "columnName": "created_at",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "updatedAt",
+            "columnName": "updated_at",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "csv_task_type_id"
+          ]
+        }
+      },
+      {
+        "tableName": "InBoundEvent",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`inbound_event_id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `inbound_session_id` INTEGER NOT NULL, `item_type_id` INTEGER NOT NULL, `location_id` INTEGER NOT NULL, `winder_id` INTEGER, `tag_id` INTEGER NOT NULL, `source_event_id` TEXT NOT NULL, `weight` INTEGER, `width` INTEGER, `length` INTEGER, `thickness` TEXT, `occurrence_reason` TEXT, `lot_no` TEXT, `quantity` INTEGER, `memo` TEXT, `occurred_at` TEXT, `processed_at` TEXT, `registered_at` TEXT NOT NULL, FOREIGN KEY(`inbound_session_id`) REFERENCES `InboundSession`(`inbound_session_id`) ON UPDATE CASCADE ON DELETE CASCADE , FOREIGN KEY(`tag_id`) REFERENCES `TagMaster`(`tag_id`) ON UPDATE CASCADE ON DELETE CASCADE , FOREIGN KEY(`location_id`) REFERENCES `LocationMaster`(`location_id`) ON UPDATE CASCADE ON DELETE CASCADE , FOREIGN KEY(`item_type_id`) REFERENCES `ItemTypeMaster`(`item_type_id`) ON UPDATE CASCADE ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "inboundEventId",
+            "columnName": "inbound_event_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "inboundSessionId",
+            "columnName": "inbound_session_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "itemTypeId",
+            "columnName": "item_type_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "locationId",
+            "columnName": "location_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "winderId",
+            "columnName": "winder_id",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "tagId",
+            "columnName": "tag_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "sourceEventId",
+            "columnName": "source_event_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "weight",
+            "columnName": "weight",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "width",
+            "columnName": "width",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "length",
+            "columnName": "length",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "thickness",
+            "columnName": "thickness",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "occurrenceReason",
+            "columnName": "occurrence_reason",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "lotNo",
+            "columnName": "lot_no",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "quantity",
+            "columnName": "quantity",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "memo",
+            "columnName": "memo",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "occurredAt",
+            "columnName": "occurred_at",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "processedAt",
+            "columnName": "processed_at",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "registeredAt",
+            "columnName": "registered_at",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "inbound_event_id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_InBoundEvent_inbound_session_id",
+            "unique": false,
+            "columnNames": [
+              "inbound_session_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_InBoundEvent_inbound_session_id` ON `${TABLE_NAME}` (`inbound_session_id`)"
+          },
+          {
+            "name": "index_InBoundEvent_item_type_id",
+            "unique": false,
+            "columnNames": [
+              "item_type_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_InBoundEvent_item_type_id` ON `${TABLE_NAME}` (`item_type_id`)"
+          },
+          {
+            "name": "index_InBoundEvent_location_id",
+            "unique": false,
+            "columnNames": [
+              "location_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_InBoundEvent_location_id` ON `${TABLE_NAME}` (`location_id`)"
+          },
+          {
+            "name": "index_InBoundEvent_tag_id",
+            "unique": false,
+            "columnNames": [
+              "tag_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_InBoundEvent_tag_id` ON `${TABLE_NAME}` (`tag_id`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "InboundSession",
+            "onDelete": "CASCADE",
+            "onUpdate": "CASCADE",
+            "columns": [
+              "inbound_session_id"
+            ],
+            "referencedColumns": [
+              "inbound_session_id"
+            ]
+          },
+          {
+            "table": "TagMaster",
+            "onDelete": "CASCADE",
+            "onUpdate": "CASCADE",
+            "columns": [
+              "tag_id"
+            ],
+            "referencedColumns": [
+              "tag_id"
+            ]
+          },
+          {
+            "table": "LocationMaster",
+            "onDelete": "CASCADE",
+            "onUpdate": "CASCADE",
+            "columns": [
+              "location_id"
+            ],
+            "referencedColumns": [
+              "location_id"
+            ]
+          },
+          {
+            "table": "ItemTypeMaster",
+            "onDelete": "CASCADE",
+            "onUpdate": "CASCADE",
+            "columns": [
+              "item_type_id"
+            ],
+            "referencedColumns": [
+              "item_type_id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "InboundSession",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`inbound_session_id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `device_id` TEXT NOT NULL, `executed_at` TEXT NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "inboundSessionId",
+            "columnName": "inbound_session_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "deviceId",
+            "columnName": "device_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "executedAt",
+            "columnName": "executed_at",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "inbound_session_id"
+          ]
+        }
+      },
+      {
+        "tableName": "InventorySession",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`inventory_session_id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `source_session_uuid` TEXT NOT NULL, `location_id` INTEGER NOT NULL, `device_id` TEXT NOT NULL, `memo` TEXT, `executed_at` TEXT NOT NULL, FOREIGN KEY(`location_id`) REFERENCES `LocationMaster`(`location_id`) ON UPDATE CASCADE ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "inventorySessionId",
+            "columnName": "inventory_session_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "sourceSessionUuid",
+            "columnName": "source_session_uuid",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "locationId",
+            "columnName": "location_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "deviceId",
+            "columnName": "device_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "memo",
+            "columnName": "memo",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "executedAt",
+            "columnName": "executed_at",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "inventory_session_id"
+          ]
+        },
+        "foreignKeys": [
+          {
+            "table": "LocationMaster",
+            "onDelete": "CASCADE",
+            "onUpdate": "CASCADE",
+            "columns": [
+              "location_id"
+            ],
+            "referencedColumns": [
+              "location_id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "InventoryResultType",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`inventory_result_type_id` INTEGER NOT NULL, `inventory_result_code` TEXT NOT NULL, `inventory_result_name` TEXT NOT NULL, `created_at` TEXT NOT NULL, `updated_at` TEXT NOT NULL, PRIMARY KEY(`inventory_result_type_id`))",
+        "fields": [
+          {
+            "fieldPath": "inventoryResultTypeId",
+            "columnName": "inventory_result_type_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "inventoryResultTypeCode",
+            "columnName": "inventory_result_code",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "inventoryResultTypeName",
+            "columnName": "inventory_result_name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "createdAt",
+            "columnName": "created_at",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "updatedAt",
+            "columnName": "updated_at",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "inventory_result_type_id"
+          ]
+        }
+      },
+      {
+        "tableName": "InventoryDetail",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`inventory_detail_id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `inventory_session_id` INTEGER NOT NULL, `ledger_item_id` INTEGER NOT NULL, `tag_id` INTEGER NOT NULL, `scanned_at` TEXT NOT NULL, FOREIGN KEY(`inventory_session_id`) REFERENCES `InventorySession`(`inventory_session_id`) ON UPDATE CASCADE ON DELETE CASCADE , FOREIGN KEY(`ledger_item_id`) REFERENCES `LedgerItem`(`ledger_item_id`) ON UPDATE CASCADE ON DELETE CASCADE , FOREIGN KEY(`tag_id`) REFERENCES `TagMaster`(`tag_id`) ON UPDATE CASCADE ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "inventoryDetailId",
+            "columnName": "inventory_detail_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "inventorySessionId",
+            "columnName": "inventory_session_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "ledgerItemId",
+            "columnName": "ledger_item_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "tagId",
+            "columnName": "tag_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "scannedAt",
+            "columnName": "scanned_at",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "inventory_detail_id"
+          ]
+        },
+        "foreignKeys": [
+          {
+            "table": "InventorySession",
+            "onDelete": "CASCADE",
+            "onUpdate": "CASCADE",
+            "columns": [
+              "inventory_session_id"
+            ],
+            "referencedColumns": [
+              "inventory_session_id"
+            ]
+          },
+          {
+            "table": "LedgerItem",
+            "onDelete": "CASCADE",
+            "onUpdate": "CASCADE",
+            "columns": [
+              "ledger_item_id"
+            ],
+            "referencedColumns": [
+              "ledger_item_id"
+            ]
+          },
+          {
+            "table": "TagMaster",
+            "onDelete": "CASCADE",
+            "onUpdate": "CASCADE",
+            "columns": [
+              "tag_id"
+            ],
+            "referencedColumns": [
+              "tag_id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "LocationChangeEvent",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`location_change_event_id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `location_change_session_id` INTEGER NOT NULL, `ledger_item_id` INTEGER NOT NULL, `location_id` INTEGER NOT NULL, `source_event_id` TEXT NOT NULL, `memo` TEXT, `scanned_at` TEXT NOT NULL, FOREIGN KEY(`location_change_session_id`) REFERENCES `LocationChangeSession`(`location_change_session_id`) ON UPDATE CASCADE ON DELETE CASCADE , FOREIGN KEY(`ledger_item_id`) REFERENCES `LedgerItem`(`ledger_item_id`) ON UPDATE CASCADE ON DELETE CASCADE , FOREIGN KEY(`location_id`) REFERENCES `LocationMaster`(`location_id`) ON UPDATE CASCADE ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "locationChangeEventId",
+            "columnName": "location_change_event_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "locationChangeSessionId",
+            "columnName": "location_change_session_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "ledgerItemId",
+            "columnName": "ledger_item_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "locationId",
+            "columnName": "location_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "sourceEventId",
+            "columnName": "source_event_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "memo",
+            "columnName": "memo",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "scannedAt",
+            "columnName": "scanned_at",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "location_change_event_id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_LocationChangeEvent_location_change_session_id",
+            "unique": false,
+            "columnNames": [
+              "location_change_session_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_LocationChangeEvent_location_change_session_id` ON `${TABLE_NAME}` (`location_change_session_id`)"
+          },
+          {
+            "name": "index_LocationChangeEvent_ledger_item_id",
+            "unique": false,
+            "columnNames": [
+              "ledger_item_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_LocationChangeEvent_ledger_item_id` ON `${TABLE_NAME}` (`ledger_item_id`)"
+          },
+          {
+            "name": "index_LocationChangeEvent_location_id",
+            "unique": false,
+            "columnNames": [
+              "location_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_LocationChangeEvent_location_id` ON `${TABLE_NAME}` (`location_id`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "LocationChangeSession",
+            "onDelete": "CASCADE",
+            "onUpdate": "CASCADE",
+            "columns": [
+              "location_change_session_id"
+            ],
+            "referencedColumns": [
+              "location_change_session_id"
+            ]
+          },
+          {
+            "table": "LedgerItem",
+            "onDelete": "CASCADE",
+            "onUpdate": "CASCADE",
+            "columns": [
+              "ledger_item_id"
+            ],
+            "referencedColumns": [
+              "ledger_item_id"
+            ]
+          },
+          {
+            "table": "LocationMaster",
+            "onDelete": "CASCADE",
+            "onUpdate": "CASCADE",
+            "columns": [
+              "location_id"
+            ],
+            "referencedColumns": [
+              "location_id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "LocationChangeSession",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`location_change_session_id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `device_id` TEXT NOT NULL, `executed_at` TEXT NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "locationChangeSessionId",
+            "columnName": "location_change_session_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "deviceId",
+            "columnName": "device_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "executedAt",
+            "columnName": "executed_at",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "location_change_session_id"
+          ]
+        }
+      },
+      {
+        "tableName": "LocationMaster",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`location_id` INTEGER NOT NULL, `location_code` TEXT, `location_name` TEXT NOT NULL, `memo` TEXT, PRIMARY KEY(`location_id`))",
+        "fields": [
+          {
+            "fieldPath": "locationId",
+            "columnName": "location_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "locationCode",
+            "columnName": "location_code",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "locationName",
+            "columnName": "location_name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "memo",
+            "columnName": "memo",
+            "affinity": "TEXT"
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "location_id"
+          ]
+        }
+      },
+      {
+        "tableName": "ItemTypeMaster",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`item_type_id` INTEGER NOT NULL, `item_count_unit_id` INTEGER, `item_weight_unit_id` INTEGER, `item_category_id` INTEGER NOT NULL, `item_type_code` TEXT, `item_type_name` TEXT NOT NULL, `packing_type` TEXT, `specific_gravity` TEXT, `grade` TEXT, `memo` TEXT, `unit_weight` INTEGER, PRIMARY KEY(`item_type_id`), FOREIGN KEY(`item_count_unit_id`) REFERENCES `ItemUnitMaster`(`item_unit_id`) ON UPDATE CASCADE ON DELETE CASCADE , FOREIGN KEY(`item_weight_unit_id`) REFERENCES `ItemUnitMaster`(`item_unit_id`) ON UPDATE CASCADE ON DELETE CASCADE , FOREIGN KEY(`item_category_id`) REFERENCES `ItemCategoryMaster`(`item_category_id`) ON UPDATE CASCADE ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "itemTypeId",
+            "columnName": "item_type_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "itemCountUnitId",
+            "columnName": "item_count_unit_id",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "itemWeightUnitId",
+            "columnName": "item_weight_unit_id",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "itemCategoryId",
+            "columnName": "item_category_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "itemTypeCode",
+            "columnName": "item_type_code",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "itemTypeName",
+            "columnName": "item_type_name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "packingType",
+            "columnName": "packing_type",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "specificGravity",
+            "columnName": "specific_gravity",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "grade",
+            "columnName": "grade",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "memo",
+            "columnName": "memo",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "unitWeight",
+            "columnName": "unit_weight",
+            "affinity": "INTEGER"
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "item_type_id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_ItemTypeMaster_item_count_unit_id",
+            "unique": false,
+            "columnNames": [
+              "item_count_unit_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_ItemTypeMaster_item_count_unit_id` ON `${TABLE_NAME}` (`item_count_unit_id`)"
+          },
+          {
+            "name": "index_ItemTypeMaster_item_weight_unit_id",
+            "unique": false,
+            "columnNames": [
+              "item_weight_unit_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_ItemTypeMaster_item_weight_unit_id` ON `${TABLE_NAME}` (`item_weight_unit_id`)"
+          },
+          {
+            "name": "index_ItemTypeMaster_item_category_id",
+            "unique": false,
+            "columnNames": [
+              "item_category_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_ItemTypeMaster_item_category_id` ON `${TABLE_NAME}` (`item_category_id`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "ItemUnitMaster",
+            "onDelete": "CASCADE",
+            "onUpdate": "CASCADE",
+            "columns": [
+              "item_count_unit_id"
+            ],
+            "referencedColumns": [
+              "item_unit_id"
+            ]
+          },
+          {
+            "table": "ItemUnitMaster",
+            "onDelete": "CASCADE",
+            "onUpdate": "CASCADE",
+            "columns": [
+              "item_weight_unit_id"
+            ],
+            "referencedColumns": [
+              "item_unit_id"
+            ]
+          },
+          {
+            "table": "ItemCategoryMaster",
+            "onDelete": "CASCADE",
+            "onUpdate": "CASCADE",
+            "columns": [
+              "item_category_id"
+            ],
+            "referencedColumns": [
+              "item_category_id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "ItemUnitMaster",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`item_unit_id` INTEGER NOT NULL, `item_unit_code` TEXT NOT NULL, `unit_category` INTEGER NOT NULL, `item_unit_name` TEXT NOT NULL, `created_at` TEXT NOT NULL, `updated_at` TEXT NOT NULL, PRIMARY KEY(`item_unit_id`))",
+        "fields": [
+          {
+            "fieldPath": "itemUnitId",
+            "columnName": "item_unit_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "itemUnitCode",
+            "columnName": "item_unit_code",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "unitCategory",
+            "columnName": "unit_category",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "itemUnitName",
+            "columnName": "item_unit_name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "createdAt",
+            "columnName": "created_at",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "updatedAt",
+            "columnName": "updated_at",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "item_unit_id"
+          ]
+        }
+      },
+      {
+        "tableName": "ItemCategoryMaster",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`item_category_id` INTEGER NOT NULL, `item_category_name` TEXT NOT NULL, `created_at` TEXT NOT NULL, `updated_at` TEXT NOT NULL, PRIMARY KEY(`item_category_id`))",
+        "fields": [
+          {
+            "fieldPath": "itemCategoryId",
+            "columnName": "item_category_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "itemCategoryName",
+            "columnName": "item_category_name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "createdAt",
+            "columnName": "created_at",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "updatedAt",
+            "columnName": "updated_at",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "item_category_id"
+          ]
+        }
+      },
+      {
+        "tableName": "LedgerItem",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`ledger_item_id` INTEGER NOT NULL, `item_type_id` INTEGER NOT NULL, `location_id` INTEGER NOT NULL, `winder_id` INTEGER, `tag_id` INTEGER, `is_in_stock` INTEGER NOT NULL, `weight` INTEGER, `width` INTEGER, `length` INTEGER, `thickness` TEXT, `lot_no` TEXT, `occurrence_reason` TEXT, `quantity` INTEGER, `memo` TEXT, `occurred_at` TEXT, `processed_at` TEXT, `registered_at` TEXT NOT NULL, `updated_at` TEXT NOT NULL, PRIMARY KEY(`ledger_item_id`), FOREIGN KEY(`item_type_id`) REFERENCES `ItemTypeMaster`(`item_type_id`) ON UPDATE CASCADE ON DELETE CASCADE , FOREIGN KEY(`location_id`) REFERENCES `LocationMaster`(`location_id`) ON UPDATE CASCADE ON DELETE CASCADE , FOREIGN KEY(`winder_id`) REFERENCES `Winder`(`winder_id`) ON UPDATE CASCADE ON DELETE CASCADE , FOREIGN KEY(`tag_id`) REFERENCES `TagMaster`(`tag_id`) ON UPDATE CASCADE ON DELETE SET NULL )",
+        "fields": [
+          {
+            "fieldPath": "ledgerItemId",
+            "columnName": "ledger_item_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "itemTypeId",
+            "columnName": "item_type_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "locationId",
+            "columnName": "location_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "winderInfoId",
+            "columnName": "winder_id",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "tagId",
+            "columnName": "tag_id",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "isInStock",
+            "columnName": "is_in_stock",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "weight",
+            "columnName": "weight",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "width",
+            "columnName": "width",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "length",
+            "columnName": "length",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "thickness",
+            "columnName": "thickness",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "lotNo",
+            "columnName": "lot_no",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "occurrenceReason",
+            "columnName": "occurrence_reason",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "quantity",
+            "columnName": "quantity",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "memo",
+            "columnName": "memo",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "occurredAt",
+            "columnName": "occurred_at",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "processedAt",
+            "columnName": "processed_at",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "registeredAt",
+            "columnName": "registered_at",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "updatedAt",
+            "columnName": "updated_at",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "ledger_item_id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_LedgerItem_item_type_id",
+            "unique": false,
+            "columnNames": [
+              "item_type_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_LedgerItem_item_type_id` ON `${TABLE_NAME}` (`item_type_id`)"
+          },
+          {
+            "name": "index_LedgerItem_location_id",
+            "unique": false,
+            "columnNames": [
+              "location_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_LedgerItem_location_id` ON `${TABLE_NAME}` (`location_id`)"
+          },
+          {
+            "name": "index_LedgerItem_winder_id",
+            "unique": false,
+            "columnNames": [
+              "winder_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_LedgerItem_winder_id` ON `${TABLE_NAME}` (`winder_id`)"
+          },
+          {
+            "name": "index_LedgerItem_tag_id",
+            "unique": false,
+            "columnNames": [
+              "tag_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_LedgerItem_tag_id` ON `${TABLE_NAME}` (`tag_id`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "ItemTypeMaster",
+            "onDelete": "CASCADE",
+            "onUpdate": "CASCADE",
+            "columns": [
+              "item_type_id"
+            ],
+            "referencedColumns": [
+              "item_type_id"
+            ]
+          },
+          {
+            "table": "LocationMaster",
+            "onDelete": "CASCADE",
+            "onUpdate": "CASCADE",
+            "columns": [
+              "location_id"
+            ],
+            "referencedColumns": [
+              "location_id"
+            ]
+          },
+          {
+            "table": "Winder",
+            "onDelete": "CASCADE",
+            "onUpdate": "CASCADE",
+            "columns": [
+              "winder_id"
+            ],
+            "referencedColumns": [
+              "winder_id"
+            ]
+          },
+          {
+            "table": "TagMaster",
+            "onDelete": "SET NULL",
+            "onUpdate": "CASCADE",
+            "columns": [
+              "tag_id"
+            ],
+            "referencedColumns": [
+              "tag_id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "TagMaster",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`tag_id` INTEGER NOT NULL, `tag_status_id` INTEGER NOT NULL, `epc` TEXT NOT NULL, `memo` TEXT, PRIMARY KEY(`tag_id`), FOREIGN KEY(`tag_status_id`) REFERENCES `TagStatusMaster`(`tag_status_id`) ON UPDATE NO ACTION ON DELETE NO ACTION )",
+        "fields": [
+          {
+            "fieldPath": "tagId",
+            "columnName": "tag_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "tagStatusId",
+            "columnName": "tag_status_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "epc",
+            "columnName": "epc",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "memo",
+            "columnName": "memo",
+            "affinity": "TEXT"
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "tag_id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_TagMaster_tag_status_id",
+            "unique": false,
+            "columnNames": [
+              "tag_status_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_TagMaster_tag_status_id` ON `${TABLE_NAME}` (`tag_status_id`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "TagStatusMaster",
+            "onDelete": "NO ACTION",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "tag_status_id"
+            ],
+            "referencedColumns": [
+              "tag_status_id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "TagStatusMaster",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`tag_status_id` INTEGER NOT NULL, `status_code` TEXT NOT NULL, `status_name` TEXT NOT NULL, `created_at` TEXT NOT NULL, `updated_at` TEXT NOT NULL, PRIMARY KEY(`tag_status_id`))",
+        "fields": [
+          {
+            "fieldPath": "tagStatusId",
+            "columnName": "tag_status_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "statusCode",
+            "columnName": "status_code",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "statusName",
+            "columnName": "status_name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "createdAt",
+            "columnName": "created_at",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "updatedAt",
+            "columnName": "updated_at",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "tag_status_id"
+          ]
+        }
+      },
+      {
+        "tableName": "OutboundEvent",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`outbound_event_id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `outbound_session_id` INTEGER NOT NULL, `ledger_item_id` INTEGER NOT NULL, `process_type_id` INTEGER NOT NULL, `source_event_id` TEXT NOT NULL, `memo` TEXT, `processed_at` TEXT, `registered_at` TEXT NOT NULL, FOREIGN KEY(`outbound_session_id`) REFERENCES `OutboundSession`(`outbound_session_id`) ON UPDATE CASCADE ON DELETE CASCADE , FOREIGN KEY(`ledger_item_id`) REFERENCES `LedgerItem`(`ledger_item_id`) ON UPDATE CASCADE ON DELETE CASCADE , FOREIGN KEY(`process_type_id`) REFERENCES `ProcessType`(`process_type_id`) ON UPDATE CASCADE ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "outboundEventId",
+            "columnName": "outbound_event_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "outboundSessionId",
+            "columnName": "outbound_session_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "ledgerItemId",
+            "columnName": "ledger_item_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "processTypeId",
+            "columnName": "process_type_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "sourceEventId",
+            "columnName": "source_event_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "memo",
+            "columnName": "memo",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "processedAt",
+            "columnName": "processed_at",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "registeredAt",
+            "columnName": "registered_at",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "outbound_event_id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_OutboundEvent_outbound_session_id",
+            "unique": false,
+            "columnNames": [
+              "outbound_session_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_OutboundEvent_outbound_session_id` ON `${TABLE_NAME}` (`outbound_session_id`)"
+          },
+          {
+            "name": "index_OutboundEvent_ledger_item_id",
+            "unique": false,
+            "columnNames": [
+              "ledger_item_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_OutboundEvent_ledger_item_id` ON `${TABLE_NAME}` (`ledger_item_id`)"
+          },
+          {
+            "name": "index_OutboundEvent_process_type_id",
+            "unique": false,
+            "columnNames": [
+              "process_type_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_OutboundEvent_process_type_id` ON `${TABLE_NAME}` (`process_type_id`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "OutboundSession",
+            "onDelete": "CASCADE",
+            "onUpdate": "CASCADE",
+            "columns": [
+              "outbound_session_id"
+            ],
+            "referencedColumns": [
+              "outbound_session_id"
+            ]
+          },
+          {
+            "table": "LedgerItem",
+            "onDelete": "CASCADE",
+            "onUpdate": "CASCADE",
+            "columns": [
+              "ledger_item_id"
+            ],
+            "referencedColumns": [
+              "ledger_item_id"
+            ]
+          },
+          {
+            "table": "ProcessType",
+            "onDelete": "CASCADE",
+            "onUpdate": "CASCADE",
+            "columns": [
+              "process_type_id"
+            ],
+            "referencedColumns": [
+              "process_type_id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "OutboundSession",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`outbound_session_id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `device_id` TEXT NOT NULL, `executed_at` TEXT NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "outboundSessionId",
+            "columnName": "outbound_session_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "deviceId",
+            "columnName": "device_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "executedAt",
+            "columnName": "executed_at",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "outbound_session_id"
+          ]
+        }
+      },
+      {
+        "tableName": "ProcessType",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`process_type_id` INTEGER NOT NULL, `process_code` TEXT NOT NULL, `process_name` TEXT NOT NULL, `created_at` TEXT NOT NULL, `updated_at` TEXT NOT NULL, PRIMARY KEY(`process_type_id`))",
+        "fields": [
+          {
+            "fieldPath": "processTypeId",
+            "columnName": "process_type_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "processCode",
+            "columnName": "process_code",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "processName",
+            "columnName": "process_name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "createdAt",
+            "columnName": "created_at",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "updatedAt",
+            "columnName": "updated_at",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "process_type_id"
+          ]
+        }
+      },
+      {
+        "tableName": "FieldMaster",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`field_id` INTEGER NOT NULL, `field_name` TEXT NOT NULL, `field_code` TEXT NOT NULL, `data_type` TEXT NOT NULL, `control_type` TEXT NOT NULL, PRIMARY KEY(`field_id`))",
+        "fields": [
+          {
+            "fieldPath": "fieldId",
+            "columnName": "field_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "fieldName",
+            "columnName": "field_name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "fieldCode",
+            "columnName": "field_code",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "dataType",
+            "columnName": "data_type",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "controlType",
+            "columnName": "control_type",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "field_id"
+          ]
+        }
+      },
+      {
+        "tableName": "ItemTypeFieldSettingMaster",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`item_type_id` INTEGER NOT NULL, `field_id` INTEGER NOT NULL, `is_required` INTEGER NOT NULL, `is_visible` INTEGER NOT NULL, PRIMARY KEY(`item_type_id`, `field_id`))",
+        "fields": [
+          {
+            "fieldPath": "itemTypeId",
+            "columnName": "item_type_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "fieldId",
+            "columnName": "field_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isRequired",
+            "columnName": "is_required",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isVisible",
+            "columnName": "is_visible",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "item_type_id",
+            "field_id"
+          ]
+        }
+      },
+      {
+        "tableName": "Winder",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`winder_id` INTEGER NOT NULL, `winder_name` TEXT NOT NULL, `created_at` TEXT, `updated_at` TEXT NOT NULL, PRIMARY KEY(`winder_id`))",
+        "fields": [
+          {
+            "fieldPath": "winderId",
+            "columnName": "winder_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "winderName",
+            "columnName": "winder_name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "createdAt",
+            "columnName": "created_at",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "updatedAt",
+            "columnName": "updated_at",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "winder_id"
+          ]
+        }
+      }
+    ],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'ef521844e93397261e5bd3f63a8e3e7d')"
+    ]
+  }
+}

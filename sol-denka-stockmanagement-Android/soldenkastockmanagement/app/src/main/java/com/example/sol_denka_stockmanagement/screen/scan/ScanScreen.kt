@@ -208,7 +208,7 @@ fun ScanScreen(
                             ambientColor = Color.Gray.copy(alpha = 0.5f),
                             spotColor = Color.DarkGray.copy(alpha = 0.7f)
                         ),
-                    canClick = when (prevScreenNameId) {
+                    canClick = isPerformingInventory.not() && when (prevScreenNameId) {
                         in listOf(
                             Screen.Outbound.routeId,
                             Screen.LocationChange.routeId

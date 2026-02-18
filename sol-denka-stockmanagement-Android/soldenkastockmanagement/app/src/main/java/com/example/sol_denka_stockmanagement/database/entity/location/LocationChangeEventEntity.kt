@@ -45,5 +45,4 @@ data class LocationChangeEventEntity(
     @ColumnInfo(name = "source_event_id") val sourceEventId: String,
     @ColumnInfo(name = "memo") val memo: String?,
     @ColumnInfo(name = "scanned_at") val scannedAt: String,
-
-    )
+)

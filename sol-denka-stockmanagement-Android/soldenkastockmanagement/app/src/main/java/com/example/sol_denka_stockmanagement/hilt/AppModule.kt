@@ -13,7 +13,6 @@ import com.example.sol_denka_stockmanagement.database.dao.field.ItemTypeFieldSet
 import com.example.sol_denka_stockmanagement.database.dao.inbound.InboundEventDao
 import com.example.sol_denka_stockmanagement.database.dao.inbound.InboundSessionDao
 import com.example.sol_denka_stockmanagement.database.dao.inventory.InventoryDetailDao
-import com.example.sol_denka_stockmanagement.database.dao.inventory.InventoryResultLocalDao
 import com.example.sol_denka_stockmanagement.database.dao.inventory.InventoryResultTypeDao
 import com.example.sol_denka_stockmanagement.database.dao.inventory.InventorySessionDao
 import com.example.sol_denka_stockmanagement.database.dao.item.ItemCategoryDao
@@ -29,6 +28,7 @@ import com.example.sol_denka_stockmanagement.database.dao.process.ProcessTypeDao
 import com.example.sol_denka_stockmanagement.database.dao.tag.TagMasterDao
 import com.example.sol_denka_stockmanagement.database.dao.tag.TagStatusMasterDao
 import com.example.sol_denka_stockmanagement.database.dao.winder.WinderDao
+import com.example.sol_denka_stockmanagement.database.migration.MIGRATION_33_34
 import com.example.sol_denka_stockmanagement.helper.controller.ReaderController
 import com.example.sol_denka_stockmanagement.helper.controller.TagController
 import dagger.Module
@@ -85,7 +85,7 @@ object AppModule {
             AppDatabase::class.java,
             "stock_management_db"
         )
-            .fallbackToDestructiveMigration(false)
+            .addMigrations(MIGRATION_33_34)
             .build()
     }
 
@@ -165,12 +165,6 @@ object AppModule {
     @Singleton
     fun provideInventorySessionDao(database: AppDatabase): InventorySessionDao {
         return database.inventorySessionDao()
-    }
-
-    @Provides
-    @Singleton
-    fun provideInventoryResultLocalDao(database: AppDatabase): InventoryResultLocalDao {
-        return database.inventoryResultLocalDao()
     }
 
     @Provides

@@ -11,7 +11,6 @@ import com.example.sol_denka_stockmanagement.database.dao.inbound.InboundEventDa
 import com.example.sol_denka_stockmanagement.database.dao.inbound.InboundSessionDao
 import com.example.sol_denka_stockmanagement.database.dao.inventory.InventoryDetailDao
 import com.example.sol_denka_stockmanagement.database.dao.inventory.InventorySessionDao
-import com.example.sol_denka_stockmanagement.database.dao.inventory.InventoryResultLocalDao
 import com.example.sol_denka_stockmanagement.database.dao.inventory.InventoryResultTypeDao
 import com.example.sol_denka_stockmanagement.database.dao.item.ItemCategoryDao
 import com.example.sol_denka_stockmanagement.database.dao.location.LocationDao
@@ -34,7 +33,6 @@ import com.example.sol_denka_stockmanagement.database.entity.inbound.InboundEven
 import com.example.sol_denka_stockmanagement.database.entity.inbound.InboundSessionEntity
 import com.example.sol_denka_stockmanagement.database.entity.inventory.InventoryDetailEntity
 import com.example.sol_denka_stockmanagement.database.entity.inventory.InventorySessionEntity
-import com.example.sol_denka_stockmanagement.database.entity.inventory.InventoryResultLocalEntity
 import com.example.sol_denka_stockmanagement.database.entity.inventory.InventoryResultTypeEntity
 import com.example.sol_denka_stockmanagement.database.entity.item.ItemCategoryEntity
 import com.example.sol_denka_stockmanagement.database.entity.location.LocationChangeEventEntity
@@ -59,7 +57,6 @@ import com.example.sol_denka_stockmanagement.database.entity.winder.WinderEntity
         InboundSessionEntity::class,
 
         InventorySessionEntity::class,
-        InventoryResultLocalEntity::class,
         InventoryResultTypeEntity::class,
         InventoryDetailEntity::class,
 
@@ -86,7 +83,8 @@ import com.example.sol_denka_stockmanagement.database.entity.winder.WinderEntity
 
         WinderEntity::class
     ],
-    version = 33
+    version = 34,
+    exportSchema = true
 )
 abstract class AppDatabase : RoomDatabase() {
 
@@ -100,7 +98,6 @@ abstract class AppDatabase : RoomDatabase() {
 
     // Inventory
     abstract fun inventorySessionDao(): InventorySessionDao
-    abstract fun inventoryResultLocalDao(): InventoryResultLocalDao
     abstract fun inventoryResultTypeDao(): InventoryResultTypeDao
     abstract fun inventoryDetailDao(): InventoryDetailDao
 

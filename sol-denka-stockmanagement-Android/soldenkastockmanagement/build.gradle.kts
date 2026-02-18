@@ -6,5 +6,5 @@ plugins {
     alias(libs.plugins.about.libraries) apply false
     id("com.google.dagger.hilt.android") version "2.57.2" apply false
     alias(libs.plugins.kotlin.kapt) apply false
-    id("com.google.devtools.ksp") version "2.1.10-1.0.29" apply false
+//    id("com.google.devtools.ksp") version "2.1.10-1.0.29" apply false
 }

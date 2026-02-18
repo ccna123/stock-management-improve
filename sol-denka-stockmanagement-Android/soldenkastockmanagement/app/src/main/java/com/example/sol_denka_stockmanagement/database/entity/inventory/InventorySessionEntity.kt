@@ -6,15 +6,17 @@ import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
 import com.example.sol_denka_stockmanagement.database.entity.location.LocationMasterEntity
 
-@Entity(tableName = "InventorySession", foreignKeys = [
-    ForeignKey(
-        entity = LocationMasterEntity::class,
-        parentColumns = ["location_id"],
-        childColumns = ["location_id"],
-        onDelete = ForeignKey.CASCADE,
-        onUpdate = ForeignKey.CASCADE,
-    )
-])
+@Entity(
+    tableName = "InventorySession", foreignKeys = [
+        ForeignKey(
+            entity = LocationMasterEntity::class,
+            parentColumns = ["location_id"],
+            childColumns = ["location_id"],
+            onDelete = ForeignKey.CASCADE,
+            onUpdate = ForeignKey.CASCADE,
+        )
+    ]
+)
 data class InventorySessionEntity(
     @PrimaryKey(autoGenerate = true) @ColumnInfo(name = "inventory_session_id") val inventorySessionId: Int = 0,
     @ColumnInfo(name = "source_session_uuid") val sourceSessionUuid: String,
@@ -22,5 +24,4 @@ data class InventorySessionEntity(
     @ColumnInfo(name = "device_id") val deviceId: String,
     @ColumnInfo(name = "memo") val memo: String?,
     @ColumnInfo(name = "executed_at") val executedAt: String,
-
 )
