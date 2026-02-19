@@ -3,6 +3,7 @@ package com.example.sol_denka_stockmanagement.screen.outbound
 import android.os.Build
 import android.util.Log
 import androidx.lifecycle.ViewModel
+import com.example.sol_denka_stockmanagement.constant.formatTimestamp
 import com.example.sol_denka_stockmanagement.database.repository.outbound.OutboundRepository
 import com.example.sol_denka_stockmanagement.database.repository.process.ProcessTypeRepository
 import com.example.sol_denka_stockmanagement.database.repository.tag.TagMasterRepository
@@ -43,7 +44,8 @@ class OutboundViewModel @Inject constructor(
                         memo = memo,
                         sourceEventId = sourceEventIdByTagId[tag.tagId] ?: "",
                         processedAt = processedAt,
-                        registeredAt = registeredAt
+                        registeredAt = registeredAt,
+                        timeStamp = formatTimestamp(registeredAt)
                     )
                     csvModels.add(model)
                 }

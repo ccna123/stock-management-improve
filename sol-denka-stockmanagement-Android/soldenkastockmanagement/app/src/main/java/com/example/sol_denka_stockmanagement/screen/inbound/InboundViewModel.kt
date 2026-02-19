@@ -3,7 +3,7 @@ package com.example.sol_denka_stockmanagement.screen.inbound
 import android.os.Build
 import android.util.Log
 import androidx.lifecycle.ViewModel
-import com.example.sol_denka_stockmanagement.constant.generateIso8601JstTimestamp
+import com.example.sol_denka_stockmanagement.constant.formatTimestamp
 import com.example.sol_denka_stockmanagement.database.repository.inbound.InboundRepository
 import com.example.sol_denka_stockmanagement.database.repository.item.ItemTypeRepository
 import com.example.sol_denka_stockmanagement.model.csv.InboundResultCsvModel
@@ -38,6 +38,7 @@ class InboundViewModel @Inject constructor(
         sourceEventId: String,
         occurredAt: String?,
         processedAt: String?,
+        registeredAt: String,
         rfidTag: TagMasterModel?
     ): List<InboundResultCsvModel> =
         withContext(Dispatchers.IO) {
@@ -60,9 +61,10 @@ class InboundViewModel @Inject constructor(
                     quantity = quantity,
                     memo = memo,
                     sourceEventId = sourceEventId,
-                    occurredAt = occurredAt,
-                    processedAt = processedAt,
-                    registeredAt = generateIso8601JstTimestamp()
+                    occurredAt = occurredAt?.takeIf { it.isNotBlank() },
+                    processedAt = processedAt?.takeIf { it.isNotBlank() },
+                    registeredAt = registeredAt,
+                    timeStamp = formatTimestamp(registeredAt)
                 )
                 csvModels.add(model)
                 csvModels.toList()
@@ -88,16 +90,16 @@ class InboundViewModel @Inject constructor(
         occurredAt: String?,
         processedAt: String?,
         registeredAt: String,
+        executedAt: String,
         rfidTag: TagMasterModel?
     ): Result<Int> {
         return try {
             var sessionId = 0
-            Log.e("TSS", "registeredAt: $registeredAt", )
 
             inboundRepository.saveInboundTransaction {
 
                 // 1️⃣ create session
-                sessionId = inboundRepository.createInboundSession()
+                sessionId = inboundRepository.createInboundSession(executedAt = executedAt)
                 val itemTypeId =
                     itemTypeRepository.getItemTypeIdByItemName(itemName = itemInCategory)
 

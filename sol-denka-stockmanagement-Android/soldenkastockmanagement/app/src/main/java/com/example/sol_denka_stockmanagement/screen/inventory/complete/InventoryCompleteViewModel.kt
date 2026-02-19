@@ -3,7 +3,7 @@ package com.example.sol_denka_stockmanagement.screen.inventory.complete
 import android.os.Build
 import android.util.Log
 import androidx.lifecycle.ViewModel
-import com.example.sol_denka_stockmanagement.constant.generateIso8601JstTimestamp
+import com.example.sol_denka_stockmanagement.constant.formatTimestamp
 import com.example.sol_denka_stockmanagement.database.repository.inventory.InventoryCompleteRepository
 import com.example.sol_denka_stockmanagement.database.repository.tag.TagMasterRepository
 import com.example.sol_denka_stockmanagement.model.csv.InventoryResultCsvModel
@@ -40,6 +40,8 @@ class InventoryCompleteViewModel @Inject constructor(
     suspend fun generateCsvData(
         memo: String,
         sourceSessionUuid: String,
+        scannedAt: String,
+        completedAt: String,
         locationId: Int,
         rfidTagList: List<TagMasterModel>
     ): List<InventoryResultCsvModel> =
@@ -55,8 +57,9 @@ class InventoryCompleteViewModel @Inject constructor(
                         tagId = tag.tagId,
                         deviceId = Build.ID,
                         memo = memo,
-                        scannedAt = generateIso8601JstTimestamp(),
-                        completedAt = generateIso8601JstTimestamp()
+                        scannedAt = scannedAt,
+                        completedAt = completedAt,
+                        timeStamp = formatTimestamp(completedAt)
                     )
                     csvModels.add(model)
                 }
@@ -70,6 +73,8 @@ class InventoryCompleteViewModel @Inject constructor(
     suspend fun saveInventoryResultToDb(
         memo: String,
         sourceSessionUuid: String,
+        scannedAt: String,
+        executedAt: String,
         locationId: Int,
         rfidTagList: List<TagMasterModel>
     ): Result<Int> {
@@ -79,11 +84,13 @@ class InventoryCompleteViewModel @Inject constructor(
                 sessionId = inventoryCompleteRepository.createInventorySession(
                     locationId = locationId,
                     sourceSessionUuid = sourceSessionUuid,
-                    memo = memo
+                    memo = memo,
+                    executedAt = executedAt
                 )
                 inventoryCompleteRepository.insertInventoryDetail(
                     sessionId = sessionId,
-                    tagList = rfidTagList
+                    tagList = rfidTagList,
+                    scannedAt = scannedAt
                 )
             }
 

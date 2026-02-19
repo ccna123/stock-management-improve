@@ -3,6 +3,7 @@ package com.example.sol_denka_stockmanagement.screen.location_change
 import android.os.Build
 import android.util.Log
 import androidx.lifecycle.ViewModel
+import com.example.sol_denka_stockmanagement.constant.formatTimestamp
 import com.example.sol_denka_stockmanagement.database.repository.location.LocationChangeRepository
 import com.example.sol_denka_stockmanagement.database.repository.tag.TagMasterRepository
 import com.example.sol_denka_stockmanagement.model.csv.LocationChangeResultCsvModel
@@ -40,7 +41,8 @@ class LocationChangeViewModel @Inject constructor(
                         memo = memo,
                         sourceEventId = sourceEventIdByTagId[tag.tagId]!!,
                         scannedAt = scannedAt,
-                        executedAt = executedAt
+                        executedAt = executedAt,
+                        timeStamp = formatTimestamp(executedAt)
                     )
                     csvModels.add(model)
                 }

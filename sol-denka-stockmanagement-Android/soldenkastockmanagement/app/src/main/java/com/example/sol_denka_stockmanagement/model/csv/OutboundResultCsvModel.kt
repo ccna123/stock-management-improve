@@ -2,7 +2,6 @@ package com.example.sol_denka_stockmanagement.model.csv
 
 import com.example.sol_denka_stockmanagement.app_interface.ICsvExport
 import com.example.sol_denka_stockmanagement.constant.CsvType
-import com.example.sol_denka_stockmanagement.constant.generateTimeStamp
 
 data class OutboundResultCsvModel(
     val ledgerItemId: Int,
@@ -13,6 +12,7 @@ data class OutboundResultCsvModel(
     val sourceEventId: String,
     val processedAt: String?,
     val registeredAt: String,
+    val timeStamp: String
 ) : ICsvExport {
     override fun toHeader(): List<String> = listOf(
         "ledger_item_id",
@@ -38,5 +38,5 @@ data class OutboundResultCsvModel(
 
     override fun toCsvType(): String = CsvType.OutboundResult.displayNameJp
 
-    override fun toCsvName(): String = "outbound_result_${generateTimeStamp()}.csv"
+    override fun toCsvName(): String = "outbound_result_${timeStamp}.csv"
 }

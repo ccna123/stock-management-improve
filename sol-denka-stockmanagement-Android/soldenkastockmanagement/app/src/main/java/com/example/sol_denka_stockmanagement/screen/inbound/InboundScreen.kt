@@ -221,6 +221,7 @@ fun InboundScreen(
                             } else {
                                 "${inputState.processedAtDate}T${inputState.processedAtTime}"
                             }
+                        val now = generateIso8601JstTimestamp()
                         scope.launch {
                             val saveInboundToDbResult = inboundViewModel.saveInboundToDb(
                                 rfidTag = rfidTagList.find { it.epc == lastInboundEpc },
@@ -238,7 +239,8 @@ fun InboundScreen(
                                 sourceEventId = UUID.randomUUID().toString(),
                                 occurredAt = occurredAt,
                                 processedAt = processedAt,
-                                registeredAt = generateIso8601JstTimestamp()
+                                registeredAt = now,
+                                executedAt = now
                             )
                             saveInboundToDbResult.exceptionOrNull()?.let { e ->
                                 appViewModel.onGeneralIntent(
@@ -264,6 +266,7 @@ fun InboundScreen(
                                 sourceEventId = UUID.randomUUID().toString(),
                                 occurredAt = occurredAt,
                                 processedAt = processedAt,
+                                registeredAt = now,
                                 rfidTag = rfidTagList.find { it.epc == lastInboundEpc },
                             )
                             val saveResult = appViewModel.saveScanResultToCsv(

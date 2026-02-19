@@ -2,7 +2,6 @@ package com.example.sol_denka_stockmanagement.database.repository.inbound
 
 import android.os.Build
 import androidx.room.withTransaction
-import com.example.sol_denka_stockmanagement.constant.generateIso8601JstTimestamp
 import com.example.sol_denka_stockmanagement.database.AppDatabase
 import com.example.sol_denka_stockmanagement.model.inbound.InboundEventModel
 import com.example.sol_denka_stockmanagement.model.inbound.InboundSessionModel
@@ -18,11 +17,11 @@ class InboundRepository @Inject constructor(
     private val eventRepo: InboundEventRepository,
 ) {
 
-    suspend fun createInboundSession(): Int =
+    suspend fun createInboundSession(executedAt: String): Int =
         sessionRepo.insert(
             InboundSessionModel(
                 deviceId = Build.ID,
-                executedAt = generateIso8601JstTimestamp()
+                executedAt = executedAt
             )
         ).toInt()
 

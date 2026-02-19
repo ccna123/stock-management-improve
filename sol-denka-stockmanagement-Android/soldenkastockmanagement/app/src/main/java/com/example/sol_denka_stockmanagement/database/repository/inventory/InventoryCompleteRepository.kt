@@ -2,7 +2,6 @@ package com.example.sol_denka_stockmanagement.database.repository.inventory
 
 import android.os.Build
 import androidx.room.withTransaction
-import com.example.sol_denka_stockmanagement.constant.generateIso8601JstTimestamp
 import com.example.sol_denka_stockmanagement.database.AppDatabase
 import com.example.sol_denka_stockmanagement.database.repository.tag.TagMasterRepository
 import com.example.sol_denka_stockmanagement.model.inventory.InventoryDetailModel
@@ -22,6 +21,7 @@ class InventoryCompleteRepository @Inject constructor(
     suspend fun createInventorySession(
         locationId: Int,
         memo: String?,
+        executedAt: String,
         sourceSessionUuid: String
     ): Int =
         inventorySessionRepository.insert(
@@ -30,12 +30,13 @@ class InventoryCompleteRepository @Inject constructor(
                 deviceId = Build.ID,
                 memo = memo,
                 locationId = locationId,
-                executedAt = generateIso8601JstTimestamp(),
+                executedAt = executedAt,
             )
         ).toInt()
 
     suspend fun insertInventoryDetail(
         sessionId: Int,
+        scannedAt: String,
         tagList: List<TagMasterModel>
     ) {
         tagList.forEach { tag ->
@@ -45,7 +46,7 @@ class InventoryCompleteRepository @Inject constructor(
                     inventorySessionId = sessionId,
                     ledgerItemId = ledgerItemId,
                     tagId = tag.tagId,
-                    scannedAt = generateIso8601JstTimestamp(),
+                    scannedAt = scannedAt,
                 )
             )
         }

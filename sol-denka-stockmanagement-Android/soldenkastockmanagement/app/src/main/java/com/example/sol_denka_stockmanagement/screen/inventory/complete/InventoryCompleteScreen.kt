@@ -37,6 +37,7 @@ import com.example.sol_denka_stockmanagement.constant.DialogType
 import com.example.sol_denka_stockmanagement.constant.InventoryScanResult
 import com.example.sol_denka_stockmanagement.constant.StatusCode
 import com.example.sol_denka_stockmanagement.constant.TagScanStatus
+import com.example.sol_denka_stockmanagement.constant.generateIso8601JstTimestamp
 import com.example.sol_denka_stockmanagement.helper.message_mapper.MessageMapper
 import com.example.sol_denka_stockmanagement.intent.InputIntent
 import com.example.sol_denka_stockmanagement.intent.ShareIntent
@@ -134,11 +135,14 @@ fun InventoryCompleteScreen(
                 onClick = {
                     scope.launch {
                         val sourceSessionUuid = UUID.randomUUID().toString()
+                        val now = generateIso8601JstTimestamp()
                         val result = inventoryCompleteViewModel.saveInventoryResultToDb(
                             memo = inputState.memo,
                             sourceSessionUuid = sourceSessionUuid,
                             rfidTagList = rfidTagList.filter { it.newFields.tagScanStatus == TagScanStatus.PROCESSED },
                             locationId = inputState.location!!.locationId,
+                            scannedAt = now,
+                            executedAt = now
                         )
                         result.exceptionOrNull()?.let { e ->
                             appViewModel.onGeneralIntent(
@@ -154,6 +158,8 @@ fun InventoryCompleteScreen(
                                 memo = inputState.memo,
                                 sourceSessionUuid = sourceSessionUuid,
                                 locationId = inputState.location!!.locationId,
+                                scannedAt = now,
+                                completedAt = now,
                                 rfidTagList = rfidTagList.filter { it.newFields.tagScanStatus == TagScanStatus.PROCESSED },
                             )
                         val saveResult = appViewModel.saveScanResultToCsv(
