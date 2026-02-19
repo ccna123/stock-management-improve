@@ -16,6 +16,7 @@ class InventorySessionRepository @Inject constructor(
     fun get(): Flow<List<InventorySessionModel>> = dao.get().map { entityList ->
         entityList.map { it.toModel() }
     }
+    suspend fun getExecutedAt(): List<String> = dao.getExecutedAt()
     suspend fun insert(model: InventorySessionModel) = dao.insert(model.toEntity())
     suspend fun update(model: InventorySessionModel) = dao.update(model.toEntity())
     suspend fun delete(model: InventorySessionModel) = dao.delete(model.toEntity())

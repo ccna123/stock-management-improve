@@ -34,7 +34,7 @@ data class LocationChangeResultCsvModel(
         executedAt
     )
 
-    override fun toCsvType(): String = CsvType.LocationChangeResult.displayName
+    override fun toCsvType(): String = CsvType.LocationChangeResult.displayNameJp
 
     override fun toCsvName(): String = "location_change_result_${generateTimeStamp()}.csv"
 }

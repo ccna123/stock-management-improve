@@ -33,13 +33,13 @@ enum class SelectTitle(val displayName: String) {
     SelectWinder("巻き取り機選択"),
 }
 
-enum class CsvType(val displayName: String) {
+enum class CsvType(val displayNameJp: String, val displayNameEng: String = "", val sessionTable: String = "") {
     LocationMaster("保管場所マスタCSV"),
     LedgerMaster("台帳アイテムマスタCSV"),
-    InventoryResult("棚卸結果データCSV"),
-    InboundResult("入庫結果CSV"),
-    OutboundResult("出庫結果CSV"),
-    LocationChangeResult("保管場所変更CSV"),
+    InventoryResult("棚卸結果データCSV", "inventory_result", "InventorySession"),
+    InboundResult("入庫結果CSV", "inbound_result", "InboundSession"),
+    OutboundResult("出庫結果CSV", "outbound_result", "OutboundSession"),
+    LocationChangeResult("保管場所変更CSV", "location_change_result", "LocationChangeSession"),
     ItemTypeMaster("品目マスタCSV"),
     TagMaster("タグマスタCSV"),
     ItemTypeFieldSettingMaster("品目項目設定マスタCSV"),
@@ -217,7 +217,17 @@ fun generateTimeStamp(): String {
 }
 
 fun generateIso8601JstTimestamp(): String {
-    val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")
+    val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS")
     return OffsetDateTime.now(ZoneId.of("Asia/Tokyo")).format(formatter)
+}
+
+fun formatTimestamp(raw: String): String {
+    val inputFormatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME
+    val outputFormatter =
+        DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss_SSS")
+
+    val dateTime = LocalDateTime.parse(raw, inputFormatter)
+
+    return dateTime.format(outputFormatter)
 }
 

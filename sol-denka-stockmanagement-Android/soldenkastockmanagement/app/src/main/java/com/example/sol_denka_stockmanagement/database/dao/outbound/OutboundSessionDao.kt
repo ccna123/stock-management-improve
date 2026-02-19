@@ -15,6 +15,9 @@ interface OutboundSessionDao {
     @Query("SELECT * FROM Outboundsession")
     fun get(): Flow<List<OutboundSessionEntity>>
 
+    @Query("SELECT executed_at FROM OutboundSession")
+    suspend fun getExecutedAt(): List<String>
+
     @Insert(onConflict = REPLACE)
     suspend fun insert(e: OutboundSessionEntity): Long
 

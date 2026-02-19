@@ -14,6 +14,9 @@ interface InventorySessionDao {
     @Query("SELECT * FROM InventorySession")
     fun get(): Flow<List<InventorySessionEntity>>
 
+    @Query("SELECT executed_at FROM InventorySession")
+    suspend fun getExecutedAt(): List<String>
+
     @Insert
     suspend fun insert(e: InventorySessionEntity): Long
 

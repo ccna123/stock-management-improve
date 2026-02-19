@@ -82,12 +82,12 @@ fun CsvImportScreen(
     LaunchedEffect(csvType) {
         when (csvType) {
             in listOf(
-                CsvType.LedgerMaster.displayName,
-                CsvType.LocationMaster.displayName,
-                CsvType.ItemTypeMaster.displayName,
-                CsvType.ItemTypeFieldSettingMaster.displayName,
-                CsvType.TagMaster.displayName,
-                CsvType.ReferenceMaster.displayName,
+                CsvType.LedgerMaster.displayNameJp,
+                CsvType.LocationMaster.displayNameJp,
+                CsvType.ItemTypeMaster.displayNameJp,
+                CsvType.ItemTypeFieldSettingMaster.displayNameJp,
+                CsvType.TagMaster.displayNameJp,
+                CsvType.ReferenceMaster.displayNameJp,
             ) -> {
                 csvViewModel.apply {
                     onCsvIntent(CsvIntent.FetchCsvFiles)
@@ -236,12 +236,12 @@ fun CsvImportScreen(
                                 ) {
                                     listOf(
                                         SelectTitle.SelectCsvType.displayName,
-                                        CsvType.LedgerMaster.displayName,
-                                        CsvType.LocationMaster.displayName,
-                                        CsvType.ItemTypeMaster.displayName,
-                                        CsvType.ItemTypeFieldSettingMaster.displayName,
-                                        CsvType.TagMaster.displayName,
-                                        CsvType.ReferenceMaster.displayName,
+                                        CsvType.LedgerMaster.displayNameJp,
+                                        CsvType.LocationMaster.displayNameJp,
+                                        CsvType.ItemTypeMaster.displayNameJp,
+                                        CsvType.ItemTypeFieldSettingMaster.displayNameJp,
+                                        CsvType.TagMaster.displayNameJp,
+                                        CsvType.ReferenceMaster.displayNameJp,
                                     ).forEach { csvType ->
                                         DropdownMenuItem(
                                             text = { Text(text = csvType) },
@@ -283,7 +283,7 @@ fun CsvImportScreen(
                                 csvFileSize = file.fileSize,
                                 isSelected = isSelectedFile,
                                 csvType = when(csvType){
-                                    CsvType.ReferenceMaster.displayName -> CsvFileType.ZIP_FILE
+                                    CsvType.ReferenceMaster.displayNameJp -> CsvFileType.ZIP_FILE
                                     else -> CsvFileType.SINGLE_FILE
                                 },
                                 showProgress = showProgress && isSelectedFile,

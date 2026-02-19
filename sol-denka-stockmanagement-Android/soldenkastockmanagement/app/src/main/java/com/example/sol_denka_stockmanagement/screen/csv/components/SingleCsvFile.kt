@@ -28,15 +28,18 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.example.sol_denka_stockmanagement.R
 import com.example.sol_denka_stockmanagement.constant.CsvFileType
+import com.example.sol_denka_stockmanagement.constant.CsvHistoryDirection
 import com.example.sol_denka_stockmanagement.share.CardContainer
 import com.example.sol_denka_stockmanagement.ui.theme.brightGreenPrimary
 
 @Composable
 fun SingleCsvFile(
     csvFileName: String,
-    csvFileSize: String,
+    csvFileSize: String = "",
+    timeStamp: String = "",
     progress: Float = 0f,
     csvType: CsvFileType = CsvFileType.SINGLE_FILE,
+    type: String = "",
     isCompleted: Boolean = false,
     isError: Boolean = false,
     showProgress: Boolean = false,
@@ -62,7 +65,10 @@ fun SingleCsvFile(
     ) {
         Row(
             modifier = Modifier
-                .background(color = if (isSelected) bgColor else Color.White, shape = RoundedCornerShape(16.dp))
+                .background(
+                    color = if (isSelected) bgColor else Color.White,
+                    shape = RoundedCornerShape(16.dp)
+                )
                 .padding(10.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(12.dp)
@@ -98,12 +104,17 @@ fun SingleCsvFile(
                     text = csvFileName,
                     color = Color.Black
                 )
-
-                Text(
-                    text = "Size  $csvFileSize",
-                    color = Color.Gray
-                )
-
+                if (type == CsvHistoryDirection.IMPORT.displayName){
+                    Text(
+                        text = "Size  $csvFileSize",
+                        color = Color.Gray
+                    )
+                }else {
+                    Text(
+                        text = "Date  $timeStamp",
+                        color = Color.Gray
+                    )
+                }
                 if (showProgress) {
                     Spacer(modifier = Modifier.height(6.dp))
 

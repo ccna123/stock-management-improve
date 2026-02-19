@@ -34,8 +34,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.sol_denka_stockmanagement.R
+import com.example.sol_denka_stockmanagement.constant.CsvHistoryDirection
 import com.example.sol_denka_stockmanagement.constant.CsvType
 import com.example.sol_denka_stockmanagement.constant.SelectTitle
+import com.example.sol_denka_stockmanagement.constant.formatTimestamp
 import com.example.sol_denka_stockmanagement.helper.toast.ToastManager
 import com.example.sol_denka_stockmanagement.helper.toast.ToastType
 import com.example.sol_denka_stockmanagement.intent.CsvIntent
@@ -63,7 +65,7 @@ fun CsvExportScreen(
     val expandState by appViewModel.expandState.collectAsStateWithLifecycle()
     val generalState by appViewModel.generalState.collectAsState()
 
-    val csvFiles by csvViewModel.csvFiles.collectAsStateWithLifecycle()
+    val exportFiles by csvViewModel.exportFiles.collectAsStateWithLifecycle()
     val showProgress by csvViewModel.showProgress.collectAsStateWithLifecycle()
     val isExporting by csvViewModel.isExporting.collectAsStateWithLifecycle()
 
@@ -72,13 +74,13 @@ fun CsvExportScreen(
     LaunchedEffect(csvType) {
         when (csvType) {
             in listOf(
-                CsvType.InboundResult.displayName,
-                CsvType.OutboundResult.displayName,
-                CsvType.LocationChangeResult.displayName,
-                CsvType.InventoryResult.displayName,
+                CsvType.InboundResult.displayNameJp,
+                CsvType.OutboundResult.displayNameJp,
+                CsvType.LocationChangeResult.displayNameJp,
+                CsvType.InventoryResult.displayNameJp,
             ) -> {
                 csvViewModel.apply {
-                    onCsvIntent(CsvIntent.FetchCsvFiles)
+                    onCsvIntent(CsvIntent.FetchExportCsvFiles)
                     onCsvIntent(CsvIntent.ToggleProgressVisibility(false))
                     onCsvIntent(CsvIntent.ResetFileSelect)
                     onCsvIntent(CsvIntent.ResetFileSelectedStatus)
@@ -116,7 +118,7 @@ fun CsvExportScreen(
                 ),
                 buttonTextSize = 20,
                 buttonText = stringResource(R.string.export_file),
-                canClick = csvType.isNotEmpty() && csvFiles.isNotEmpty() && exportFileSelectedIndex != -1,
+                canClick = csvType.isNotEmpty() && exportFiles.isNotEmpty() && exportFileSelectedIndex != -1,
                 icon = {
                     Icon(
                         painter = painterResource(R.drawable.file_export),
@@ -203,10 +205,10 @@ fun CsvExportScreen(
                                 ) {
                                     listOf(
                                         SelectTitle.SelectCsvType.displayName,
-                                        CsvType.InboundResult.displayName,
-                                        CsvType.OutboundResult.displayName,
-                                        CsvType.LocationChangeResult.displayName,
-                                        CsvType.InventoryResult.displayName
+                                        CsvType.InboundResult.displayNameJp,
+                                        CsvType.OutboundResult.displayNameJp,
+                                        CsvType.LocationChangeResult.displayNameJp,
+                                        CsvType.InventoryResult.displayNameJp
                                     ).forEach { csvType ->
                                         DropdownMenuItem(
                                             text = { Text(text = csvType) },
@@ -233,7 +235,7 @@ fun CsvExportScreen(
             ) {
                 item {
                     if (csvType == "") {
-                        if (csvFiles.isEmpty()) {
+                        if (exportFiles.isEmpty()) {
                             Text(
                                 color = Color.Red,
                                 fontSize = 17.sp,
@@ -241,22 +243,21 @@ fun CsvExportScreen(
                             )
                         }
                     } else {
-                        csvFiles.takeIf { it.isNotEmpty() }?.forEachIndexed { index, file ->
+                        exportFiles.takeIf { it.isNotEmpty() }?.forEachIndexed { index, file ->
                             val isSelectedFile = exportFileSelectedIndex == index
                             SingleCsvFile(
-                                csvFileName = file.fileName,
-                                csvFileSize = file.fileSize,
-                                progress = file.progress,
-                                isCompleted = file.isCompleted,
-                                isError = file.isFailed,
-                                showProgress = showProgress,
+                                csvFileName =
+                                    file.substringBeforeLast("_") + "_" +
+                                            formatTimestamp(file.substringAfterLast("_")),
                                 isSelected = isSelectedFile,
+                                timeStamp = file.substringAfterLast("_"),
+                                type = CsvHistoryDirection.EXPORT.displayName,
                                 onChoose = {
                                     csvViewModel.onCsvIntent(
                                         CsvIntent.ToggleFileSelect(
                                             type = "Export",
                                             fileIndex = index,
-                                            fileName = file.fileName
+                                            fileName = file
                                         )
                                     )
                                 }

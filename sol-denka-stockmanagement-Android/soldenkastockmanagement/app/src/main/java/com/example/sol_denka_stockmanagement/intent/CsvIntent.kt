@@ -8,5 +8,6 @@ sealed interface CsvIntent {
     data object ResetFileSelectedStatus: CsvIntent
     data object ClearCsvFileList: CsvIntent
     data object FetchCsvFiles: CsvIntent
+    data object FetchExportCsvFiles: CsvIntent
     data object ResetCsvType: CsvIntent
 }

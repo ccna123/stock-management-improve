@@ -14,6 +14,9 @@ interface LocationChangeSessionDao {
     @Query("SELECT * FROM LocationChangeSession")
     fun get(): Flow<List<LocationChangeSessionEntity>>
 
+    @Query("SELECT executed_at FROM LocationChangeSession")
+    suspend fun getExecutedAt(): List<String>
+
     @Insert
     suspend fun insert(e: LocationChangeSessionEntity): Long
 

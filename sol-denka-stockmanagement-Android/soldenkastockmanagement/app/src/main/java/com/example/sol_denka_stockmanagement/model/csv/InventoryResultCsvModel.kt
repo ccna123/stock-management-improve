@@ -37,7 +37,7 @@ data class InventoryResultCsvModel(
         completedAt
     )
 
-    override fun toCsvType(): String = CsvType.InventoryResult.displayName
+    override fun toCsvType(): String = CsvType.InventoryResult.displayNameJp
 
     override fun toCsvName(): String = "inventory_result_${generateTimeStamp()}.csv"
 }

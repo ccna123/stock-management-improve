@@ -12,16 +12,21 @@ import com.example.sol_denka_stockmanagement.app_interface.ICsvExport
 import com.example.sol_denka_stockmanagement.constant.CsvType
 import com.example.sol_denka_stockmanagement.constant.ProcessResult
 import com.example.sol_denka_stockmanagement.constant.StatusCode
+import com.example.sol_denka_stockmanagement.constant.formatTimestamp
 import com.example.sol_denka_stockmanagement.database.AppDatabase
 import com.example.sol_denka_stockmanagement.database.repository.csv.CsvTaskTypeRepository
 import com.example.sol_denka_stockmanagement.database.repository.field.FieldMasterRepository
 import com.example.sol_denka_stockmanagement.database.repository.field.ItemTypeFieldSettingMasterRepository
+import com.example.sol_denka_stockmanagement.database.repository.inbound.InboundSessionRepository
 import com.example.sol_denka_stockmanagement.database.repository.inventory.InventoryResultTypeRepository
+import com.example.sol_denka_stockmanagement.database.repository.inventory.InventorySessionRepository
 import com.example.sol_denka_stockmanagement.database.repository.item.ItemCategoryRepository
 import com.example.sol_denka_stockmanagement.database.repository.item.ItemTypeRepository
 import com.example.sol_denka_stockmanagement.database.repository.item.ItemUnitRepository
 import com.example.sol_denka_stockmanagement.database.repository.ledger.LedgerItemRepository
+import com.example.sol_denka_stockmanagement.database.repository.location.LocationChangeSessionRepository
 import com.example.sol_denka_stockmanagement.database.repository.location.LocationMasterRepository
+import com.example.sol_denka_stockmanagement.database.repository.outbound.OutboundSessionRepository
 import com.example.sol_denka_stockmanagement.database.repository.process.ProcessTypeRepository
 import com.example.sol_denka_stockmanagement.database.repository.tag.TagMasterRepository
 import com.example.sol_denka_stockmanagement.database.repository.tag.TagStatusMasterRepository
@@ -69,6 +74,10 @@ class CsvHelper @Inject constructor(
     private val itemUnitRepository: ItemUnitRepository,
     private val csvTaskTypeRepository: CsvTaskTypeRepository,
     private val itemCategoryRepository: ItemCategoryRepository,
+    private val inboundSessionRepository: InboundSessionRepository,
+    private val outboundSessionRepository: OutboundSessionRepository,
+    private val locationChangeSessionRepository: LocationChangeSessionRepository,
+    private val inventorySessionRepository: InventorySessionRepository,
     private val db: AppDatabase
 ) {
     companion object {
@@ -146,57 +155,91 @@ class CsvHelper @Inject constructor(
     private fun mapCsvTypeToFolders(csvType: String): Pair<String, String>? {
         return when (csvType) {
 
-            CsvType.LedgerMaster.displayName -> Pair(
+            CsvType.LedgerMaster.displayNameJp -> Pair(
                 "Import/LedgerItemMaster",
                 "$IMPORT/$LEDGER_MASTER"
             )
 
-            CsvType.LocationMaster.displayName -> Pair(
+            CsvType.LocationMaster.displayNameJp -> Pair(
                 "Import/LocationMaster",
                 "$IMPORT/$LOCATION_MASTER"
             )
 
-            CsvType.ItemTypeMaster.displayName -> Pair(
+            CsvType.ItemTypeMaster.displayNameJp -> Pair(
                 "Import/ItemTypeMaster",
                 "$IMPORT/$ITEM_TYPE_MASTER"
             )
 
-            CsvType.TagMaster.displayName -> Pair(
+            CsvType.TagMaster.displayNameJp -> Pair(
                 "Import/TagMaster",
                 "$IMPORT/$TAG_MASTER"
             )
 
-            CsvType.ItemTypeFieldSettingMaster.displayName -> Pair(
+            CsvType.ItemTypeFieldSettingMaster.displayNameJp -> Pair(
                 "Import/ItemTypeFieldSettingMaster",
                 "$IMPORT/$ITEM_TYPE_FIELD_SETTING_MASTER"
             )
 
-            CsvType.ReferenceMaster.displayName -> Pair(
+            CsvType.ReferenceMaster.displayNameJp -> Pair(
                 "Import/ReferenceMaster",
                 "$IMPORT/$REFERENCE_MASTER"
             )
 
-            CsvType.InventoryResult.displayName -> Pair(
+            CsvType.InventoryResult.displayNameJp -> Pair(
                 "Export/Inventory",
                 "$EXPORT/$INVENTORY_RESULT"
             )
 
-            CsvType.LocationChangeResult.displayName -> Pair(
+            CsvType.LocationChangeResult.displayNameJp -> Pair(
                 "Export/LocationChange",
                 "$EXPORT/$LOCATION_CHANGE_EVENT"
             )
 
-            CsvType.OutboundResult.displayName -> Pair(
+            CsvType.OutboundResult.displayNameJp -> Pair(
                 "Export/Outbound",
                 "$EXPORT/$OUTBOUND"
             )
 
-            CsvType.InboundResult.displayName -> Pair(
+            CsvType.InboundResult.displayNameJp -> Pair(
                 "Export/Inbound",
                 "$EXPORT/$INBOUND"
             )
 
             else -> null
+        }
+    }
+
+    suspend fun listExportFileName(csvType: String): List<String> {
+        try {
+            val listFileName = mutableListOf<String>()
+            when (csvType) {
+                CsvType.InboundResult.displayNameJp -> {
+                    inboundSessionRepository.getExecutedAt().map { executedAt ->
+                        listFileName.add("${CsvType.InboundResult.displayNameEng}_$executedAt")
+                    }
+                }
+
+                CsvType.OutboundResult.displayNameJp -> outboundSessionRepository.getExecutedAt()
+                    .map { executedAt ->
+                        listFileName.add("${CsvType.OutboundResult.displayNameEng}_$executedAt")
+                    }
+
+                CsvType.LocationChangeResult.displayNameJp -> locationChangeSessionRepository.getExecutedAt()
+                    .map { executedAt ->
+                        listFileName.add("${CsvType.LocationChangeResult.displayNameEng}_$executedAt")
+                    }
+
+                CsvType.InventoryResult.displayNameJp -> inventorySessionRepository.getExecutedAt()
+                    .map { executedAt ->
+                        listFileName.add("${CsvType.InventoryResult.displayNameEng}_$executedAt")
+                    }
+
+                else -> {}
+            }
+            Log.e("TSS", "listFileName: $listFileName")
+            return listFileName
+        } catch (e: Exception) {
+            throw e
         }
     }
 
@@ -232,7 +275,7 @@ class CsvHelper @Inject constructor(
                     .listFiles()
                     ?.filter {
                         it.isFile && it.name.lowercase().endsWith(
-                            if (csvType == CsvType.ReferenceMaster.displayName) ".zip" else ".csv"
+                            if (csvType == CsvType.ReferenceMaster.displayNameJp) ".zip" else ".csv"
                         )
                     }
                     // ✅ 更新日時降順 (newest first)
@@ -470,7 +513,7 @@ class CsvHelper @Inject constructor(
             throw CsvFileNotFoundException()
         }
 
-        if (csvType == CsvType.ReferenceMaster.displayName) {
+        if (csvType == CsvType.ReferenceMaster.displayNameJp) {
             importReferenceMaster(fileObj, onProgress)
             return@withContext
         }
@@ -522,19 +565,22 @@ class CsvHelper @Inject constructor(
 
     private fun getImporter(csvType: String): CsvImporter<*>? {
         return when (csvType) {
-            CsvType.LocationMaster.displayName -> LocationMasterImporter(repository = locationMasterRepository)
+            CsvType.LocationMaster.displayNameJp -> LocationMasterImporter(repository = locationMasterRepository)
 
-            CsvType.LedgerMaster.displayName -> LedgerItemMasterImporter(repository = ledgerItemRepository)
+            CsvType.LedgerMaster.displayNameJp -> LedgerItemMasterImporter(repository = ledgerItemRepository)
 
-            CsvType.ItemTypeMaster.displayName -> ItemTypeMasterImporter(repository = itemTypeRepository)
+            CsvType.ItemTypeMaster.displayNameJp -> ItemTypeMasterImporter(repository = itemTypeRepository)
 
-            CsvType.TagMaster.displayName -> TagMasterImporter(repository = tagMasterRepository)
+            CsvType.TagMaster.displayNameJp -> TagMasterImporter(repository = tagMasterRepository)
 
-            CsvType.ItemTypeFieldSettingMaster.displayName -> ItemTypeFieldSettingMasterImporter(repository = itemTypeFieldSettingMasterRepository)
+            CsvType.ItemTypeFieldSettingMaster.displayNameJp -> ItemTypeFieldSettingMasterImporter(
+                repository = itemTypeFieldSettingMasterRepository
+            )
 
             else -> null
         }
     }
+
     suspend fun <T : ICsvExport> saveCsv(
         context: Context,
         csvType: String,
@@ -612,7 +658,7 @@ class CsvHelper @Inject constructor(
 
             Log.i("TSS", "✅ CSV saved: $relativePath$fileName")
             onProgress(1f)
-        }catch (e: Exception){
+        } catch (e: Exception) {
             resolver.delete(uri, null, null)
             Log.e("TSS", "saveCsv error: $e")
             throw e

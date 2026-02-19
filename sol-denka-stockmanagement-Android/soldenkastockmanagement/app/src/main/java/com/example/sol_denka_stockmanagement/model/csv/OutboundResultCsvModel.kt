@@ -36,7 +36,7 @@ data class OutboundResultCsvModel(
         registeredAt
     )
 
-    override fun toCsvType(): String = CsvType.OutboundResult.displayName
+    override fun toCsvType(): String = CsvType.OutboundResult.displayNameJp
 
     override fun toCsvName(): String = "outbound_result_${generateTimeStamp()}.csv"
 }

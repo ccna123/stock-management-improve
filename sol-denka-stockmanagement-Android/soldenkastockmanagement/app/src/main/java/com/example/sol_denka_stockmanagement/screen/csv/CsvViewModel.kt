@@ -4,6 +4,7 @@ import android.content.Context
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.sol_denka_stockmanagement.constant.CsvType
 import com.example.sol_denka_stockmanagement.constant.ProcessResult
 import com.example.sol_denka_stockmanagement.constant.StatusCode
 import com.example.sol_denka_stockmanagement.exception.AppException
@@ -30,6 +31,8 @@ class CsvViewModel @Inject constructor(
     private val _csvFiles = MutableStateFlow<List<CsvFileInfoModel>>(emptyList())
     val csvFiles: StateFlow<List<CsvFileInfoModel>> = _csvFiles.asStateFlow()
 
+    private val _exportFiles = MutableStateFlow<List<String>>(emptyList())
+    val exportFiles: StateFlow<List<String>> = _exportFiles.asStateFlow()
 
     private val _showProgress = MutableStateFlow(false)
     val showProgress = _showProgress.asStateFlow()
@@ -70,14 +73,14 @@ class CsvViewModel @Inject constructor(
     fun onCsvIntent(intent: CsvIntent) {
         when (intent) {
             is CsvIntent.ToggleFileSelect -> {
-                if (intent.type == "Import"){
+                if (intent.type == "Import") {
                     _importFileSelectedIndex.value = intent.fileIndex
                     _importFileSelectedName.value = intent.fileName
 
                     _importResultStatus.value = null
                     _importProgress.value = 0f
                     _showProgress.value = false
-                }else {
+                } else {
                     _exportFileSelectedIndex.value = intent.fileIndex
                     _exportFileSelectedName.value = intent.fileName
                     _showProgress.value = false
@@ -107,6 +110,7 @@ class CsvViewModel @Inject constructor(
             CsvIntent.FetchCsvFiles -> fetchCsvFiles()
 
             CsvIntent.ResetCsvType -> _csvType.value = ""
+            CsvIntent.FetchExportCsvFiles -> listExportFileName()
         }
     }
 
@@ -139,6 +143,16 @@ class CsvViewModel @Inject constructor(
                 }
             )
             Log.i("TSS", "🎉 All files exported successfully")
+        }
+    }
+
+    fun listExportFileName(){
+        viewModelScope.launch {
+            val result = helper.listExportFileName(
+                csvType = _csvType.value
+            )
+            _exportFiles.value = result
+            Log.e("TSS", "listExportFileName: ${_exportFiles.value}", )
         }
     }
 
@@ -192,16 +206,17 @@ class CsvViewModel @Inject constructor(
                 )
 
             } catch (e: AppException) {
-                Log.e("TSS", "importMaster error: $e " )
+                Log.e("TSS", "importMaster error: $e ")
                 val msg = e.message ?: MessageMapper.toMessage(
                     e.statusCode,
                     e.params
                 )
                 showProcessResultDialog(msg)
-                _importResultStatus.value = ProcessResult.Failure(statusCode = StatusCode.FAILED, rawMessage = msg)
+                _importResultStatus.value =
+                    ProcessResult.Failure(statusCode = StatusCode.FAILED, rawMessage = msg)
 
             } catch (e: Exception) {
-                Log.e("TSS", "importMaster error: $e " )
+                Log.e("TSS", "importMaster error: $e ")
                 showProcessResultDialog(
                     MessageMapper.toMessage(StatusCode.FAILED)
 
@@ -212,6 +227,7 @@ class CsvViewModel @Inject constructor(
             }
         }
     }
+
     private fun updateFileProgress(index: Int, progress: Float) {
         _csvFiles.update { current ->
             current.toMutableList().apply {

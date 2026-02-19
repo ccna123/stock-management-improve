@@ -92,6 +92,7 @@ class InboundViewModel @Inject constructor(
     ): Result<Int> {
         return try {
             var sessionId = 0
+            Log.e("TSS", "registeredAt: $registeredAt", )
 
             inboundRepository.saveInboundTransaction {
 
