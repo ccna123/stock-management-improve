@@ -163,7 +163,7 @@ fun OutboundScreen(
                             tag.tagId to UUID.randomUUID().toString()
                         }
 
-                        val registeredAt = generateIso8601JstTimestamp()
+                        val now = generateIso8601JstTimestamp()
                         val processedAt =
                             if (inputState.processedAtDate.isEmpty() || inputState.processedAtTime.isEmpty()) {
                                 null
@@ -174,7 +174,8 @@ fun OutboundScreen(
                             val saveOutboundToDbResult = outboundViewModel.saveOutboundToDb(
                                 memo = inputState.memo,
                                 processedAt = processedAt,
-                                registeredAt = registeredAt,
+                                registeredAt = now,
+                                executedAt = now,
                                 sourceEventIdByTagId = sourceEventIdByTagId,
                                 rfidTagList = rfidTagList.filter { it.newFields.isChecked }
                             )
@@ -191,7 +192,7 @@ fun OutboundScreen(
                                 outboundViewModel.generateCsvData(
                                     memo = inputState.memo,
                                     processedAt = processedAt,
-                                    registeredAt = registeredAt,
+                                    registeredAt = now,
                                     sourceEventIdByTagId = sourceEventIdByTagId,
                                     rfidTagList = rfidTagList.filter { it.newFields.isChecked }
                                 )

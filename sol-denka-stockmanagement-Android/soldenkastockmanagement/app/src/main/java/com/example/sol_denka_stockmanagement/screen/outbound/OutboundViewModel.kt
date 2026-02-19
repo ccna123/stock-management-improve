@@ -60,6 +60,7 @@ class OutboundViewModel @Inject constructor(
         memo: String?,
         processedAt: String?,
         registeredAt: String,
+        executedAt: String,
         sourceEventIdByTagId: Map<Int, String>,
         rfidTagList: List<TagMasterModel>
     ): Result<Int> {
@@ -67,7 +68,7 @@ class OutboundViewModel @Inject constructor(
             var sessionId = 0
             outboundRepository.saveOutboundTransaction {
 
-                sessionId = outboundRepository.createOutboundSession()
+                sessionId = outboundRepository.createOutboundSession(executedAt = executedAt)
 
                 outboundRepository.insertOutboundEvent(
                     sessionId = sessionId,

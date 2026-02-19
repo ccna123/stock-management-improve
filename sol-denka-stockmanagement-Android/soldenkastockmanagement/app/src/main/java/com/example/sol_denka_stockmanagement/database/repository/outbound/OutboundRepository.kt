@@ -20,11 +20,11 @@ class OutboundRepository @Inject constructor(
     private val tagMasterRepository: TagMasterRepository,
     private val processTypeRepository: ProcessTypeRepository
 ) {
-    suspend fun createOutboundSession(): Int =
+    suspend fun createOutboundSession(executedAt: String): Int =
         sessionRepo.insert(
             OutboundSessionModel(
                 deviceId = Build.ID,
-                executedAt = generateIso8601JstTimestamp()
+                executedAt = executedAt
             )
         ).toInt()
 

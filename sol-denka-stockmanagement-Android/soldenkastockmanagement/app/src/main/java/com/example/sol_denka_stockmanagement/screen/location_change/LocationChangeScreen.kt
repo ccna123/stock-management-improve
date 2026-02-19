@@ -278,8 +278,7 @@ private fun executeLocationChange(
         tag.tagId to UUID.randomUUID().toString()
     }
 
-    val scannedAt = generateIso8601JstTimestamp()
-    val executedAt = generateIso8601JstTimestamp()
+    val now = generateIso8601JstTimestamp()
 
     scope.launch {
         val saveLocationChangeToDbResult =
@@ -287,8 +286,8 @@ private fun executeLocationChange(
                 memo = inputState.memo,
                 locationId = inputState.location?.locationId ?: 0,
                 sourceEventIdByTagId = sourceEventIdByTagId,
-                scannedAt = scannedAt,
-                executedAt = executedAt,
+                scannedAt = now,
+                executedAt = now,
                 rfidTagList = selectedTags,
             )
 
@@ -306,8 +305,8 @@ private fun executeLocationChange(
             locationChangeViewModel.generateCsvData(
                 memo = inputState.memo,
                 locationId = inputState.location?.locationId ?: 0,
-                scannedAt = scannedAt,
-                executedAt = executedAt,
+                scannedAt = now,
+                executedAt = now,
                 sourceEventIdByTagId = sourceEventIdByTagId,
                 rfidTagList = selectedTags
             )
