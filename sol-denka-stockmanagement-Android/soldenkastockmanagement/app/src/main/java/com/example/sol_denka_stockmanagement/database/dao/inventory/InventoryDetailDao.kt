@@ -14,6 +14,8 @@ interface InventoryDetailDao {
     @Query("SELECT * FROM InventoryDetail")
     fun get(): Flow<List<InventoryDetailEntity>>
 
+    @Query("SELECT * FROM InventoryDetail WHERE inventory_session_id = :sessionId")
+    suspend fun getEventBySessionId(sessionId: Int): InventoryDetailEntity
     @Insert
     suspend fun insert(e: InventoryDetailEntity): Long
 

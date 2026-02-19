@@ -1,16 +1,21 @@
 package com.example.sol_denka_stockmanagement.screen.csv
 
 import android.content.Context
+import android.os.Build
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.sol_denka_stockmanagement.constant.ProcessResult
 import com.example.sol_denka_stockmanagement.constant.StatusCode
+import com.example.sol_denka_stockmanagement.constant.formatTimestamp
 import com.example.sol_denka_stockmanagement.exception.AppException
 import com.example.sol_denka_stockmanagement.helper.csv.CsvHelper
 import com.example.sol_denka_stockmanagement.helper.message_mapper.MessageMapper
 import com.example.sol_denka_stockmanagement.intent.CsvIntent
 import com.example.sol_denka_stockmanagement.model.csv.CsvFileInfoModel
+import com.example.sol_denka_stockmanagement.model.csv.InboundResultCsvModel
+import com.example.sol_denka_stockmanagement.model.inbound.InboundEventModel
+import com.example.sol_denka_stockmanagement.model.inbound.toCsvModel
 import com.example.sol_denka_stockmanagement.model.session.SessionModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -73,6 +78,8 @@ class CsvViewModel @Inject constructor(
     private val _csvType = MutableStateFlow("")
     val csvType: StateFlow<String> = _csvType.asStateFlow()
 
+    private val csvModels = mutableListOf<InboundResultCsvModel>()
+
     fun onCsvIntent(intent: CsvIntent) {
         when (intent) {
             is CsvIntent.ToggleFileSelect -> {
@@ -126,6 +133,23 @@ class CsvViewModel @Inject constructor(
         }
     }
 
+    fun getEventDataBySessionId(sessionId: Int, type: String){
+        viewModelScope.launch {
+            try {
+                val eventData = helper.getEventDataBySessionId(sessionId = sessionId, type = type)
+                eventData?.let {
+                    val csvModel = it.toCsvModel(
+                        deviceId = Build.ID,
+                        timeStamp = formatTimestamp(it.registeredAt)
+                    )
+                    csvModels.add(csvModel)
+                }
+            } catch (e: Exception) {
+                return@launch
+            }
+        }
+    }
+
     fun exportToCsvFile() {
         viewModelScope.launch(Dispatchers.IO) {
             try {
@@ -138,7 +162,6 @@ class CsvViewModel @Inject constructor(
                 Log.e("TSS", "exportToCsvFile: $e")
                 showProcessResultDialog(
                     MessageMapper.toMessage(StatusCode.EXPORT_FAILED)
-
                 )
                 _exportResultStatus.value =
                     ProcessResult.Failure(statusCode = StatusCode.EXPORT_FAILED)

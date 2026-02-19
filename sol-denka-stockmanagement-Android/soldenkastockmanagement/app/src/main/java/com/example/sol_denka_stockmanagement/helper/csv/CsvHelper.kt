@@ -17,15 +17,19 @@ import com.example.sol_denka_stockmanagement.database.AppDatabase
 import com.example.sol_denka_stockmanagement.database.repository.csv.CsvTaskTypeRepository
 import com.example.sol_denka_stockmanagement.database.repository.field.FieldMasterRepository
 import com.example.sol_denka_stockmanagement.database.repository.field.ItemTypeFieldSettingMasterRepository
+import com.example.sol_denka_stockmanagement.database.repository.inbound.InboundEventRepository
 import com.example.sol_denka_stockmanagement.database.repository.inbound.InboundSessionRepository
+import com.example.sol_denka_stockmanagement.database.repository.inventory.InventoryDetailRepository
 import com.example.sol_denka_stockmanagement.database.repository.inventory.InventoryResultTypeRepository
 import com.example.sol_denka_stockmanagement.database.repository.inventory.InventorySessionRepository
 import com.example.sol_denka_stockmanagement.database.repository.item.ItemCategoryRepository
 import com.example.sol_denka_stockmanagement.database.repository.item.ItemTypeRepository
 import com.example.sol_denka_stockmanagement.database.repository.item.ItemUnitRepository
 import com.example.sol_denka_stockmanagement.database.repository.ledger.LedgerItemRepository
+import com.example.sol_denka_stockmanagement.database.repository.location.LocationChangeEventRepository
 import com.example.sol_denka_stockmanagement.database.repository.location.LocationChangeSessionRepository
 import com.example.sol_denka_stockmanagement.database.repository.location.LocationMasterRepository
+import com.example.sol_denka_stockmanagement.database.repository.outbound.OutboundEventRepository
 import com.example.sol_denka_stockmanagement.database.repository.outbound.OutboundSessionRepository
 import com.example.sol_denka_stockmanagement.database.repository.process.ProcessTypeRepository
 import com.example.sol_denka_stockmanagement.database.repository.tag.TagMasterRepository
@@ -44,6 +48,14 @@ import com.example.sol_denka_stockmanagement.exception.MissingHeaderException
 import com.example.sol_denka_stockmanagement.exception.ReferenceMasterMissingFileException
 import com.example.sol_denka_stockmanagement.exception.SqliteConstraintAppException
 import com.example.sol_denka_stockmanagement.model.csv.CsvFileInfoModel
+import com.example.sol_denka_stockmanagement.model.inbound.InboundEventModel
+import com.example.sol_denka_stockmanagement.model.inbound.toCsvModel
+import com.example.sol_denka_stockmanagement.model.inventory.InventoryDetailModel
+import com.example.sol_denka_stockmanagement.model.inventory.toCsvModel
+import com.example.sol_denka_stockmanagement.model.location.LocationChangeEventModel
+import com.example.sol_denka_stockmanagement.model.location.toCsvModel
+import com.example.sol_denka_stockmanagement.model.outbound.OutBoundEventModel
+import com.example.sol_denka_stockmanagement.model.outbound.toCsvModel
 import com.example.sol_denka_stockmanagement.model.session.SessionModel
 import com.jcraft.jsch.ChannelSftp
 import com.jcraft.jsch.JSch
@@ -76,9 +88,13 @@ class CsvHelper @Inject constructor(
     private val csvTaskTypeRepository: CsvTaskTypeRepository,
     private val itemCategoryRepository: ItemCategoryRepository,
     private val inboundSessionRepository: InboundSessionRepository,
+    private val inboundEventRepository: InboundEventRepository,
     private val outboundSessionRepository: OutboundSessionRepository,
+    private val outboundEventRepository: OutboundEventRepository,
     private val locationChangeSessionRepository: LocationChangeSessionRepository,
+    private val locationChangeRepository: LocationChangeEventRepository,
     private val inventorySessionRepository: InventorySessionRepository,
+    private val inventoryDetailRepository: InventoryDetailRepository,
     private val db: AppDatabase
 ) {
     companion object {
@@ -215,7 +231,7 @@ class CsvHelper @Inject constructor(
             val listFileName = mutableListOf<SessionModel>()
             when (csvType) {
                 CsvType.InboundResult.displayNameJp -> {
-                    inboundSessionRepository.getExecutedAt().map { model ->
+                    inboundSessionRepository.getSession().map { model ->
                         listFileName.add(
                             SessionModel(
                                 sessionId = model.sessionId,
@@ -263,12 +279,79 @@ class CsvHelper @Inject constructor(
         }
     }
 
-    suspend fun exportToCsvFile(sessionId: Int){
-        try {
+    suspend fun getInboundEvents(sessionId: Int): List<InboundEventModel> {
+        return inboundEventRepository
+            .getEventBySessionId(sessionId)
+            ?.let { listOf(it) }
+            ?: emptyList()
+    }
 
-        }catch (e: Exception){
-            Log.e("TSS", "exportToCsvFile: $e", )
-            throw e
+    suspend fun getOutboundEvents(sessionId: Int): List<OutBoundEventModel> {
+        return outboundEventRepository
+            .getEventBySessionId(sessionId)
+            .let { listOf(it) }
+    }
+
+    suspend fun getLocationChangeEvents(sessionId: Int): List<LocationChangeEventModel> {
+        return locationChangeRepository
+            .getEventBySessionId(sessionId)
+            .let { listOf(it) }
+    }
+
+    suspend fun getInventoryEvents(sessionId: Int): List<InventoryDetailModel> {
+        return inventoryDetailRepository
+            .getEventBySessionId(sessionId)
+            .let { listOf(it) }
+    }
+
+    suspend fun getEventDataBySessionId(
+        sessionId: Int,
+        type: String,
+        deviceId: String
+    ): List<ICsvExport> {
+
+        return when (type) {
+
+            CsvType.InboundResult.displayNameJp ->
+                getInboundEvents(sessionId).map {
+                    it.toCsvModel(
+                        deviceId = deviceId,
+                        timeStamp = formatTimestamp(it.registeredAt)
+                    )
+                }
+
+            CsvType.OutboundResult.displayNameJp ->
+                getOutboundEvents(sessionId).map {
+                    it.toCsvModel(
+                        deviceId = deviceId,
+                        timeStamp = formatTimestamp(it.registeredAt),
+                        tagId = 0
+                    )
+                }
+
+            CsvType.LocationChangeResult.displayNameJp ->
+                getLocationChangeEvents(sessionId).map {
+                    it.toCsvModel(
+                        deviceId = deviceId,
+                        timeStamp = formatTimestamp(it.registeredAt),
+                        executedAt = formatTimestamp(it.registeredAt)
+                    )
+                }
+
+            CsvType.InventoryResult.displayNameJp ->
+                getInventoryEvents(sessionId).map {
+                    it.toCsvModel(
+                        deviceId = deviceId,
+                        locationId = 0,
+                        tagId = 0,
+                        sourceSessionId = "",
+                        memo = "",
+                        completedAt = "",
+                        timeStamp = formatTimestamp(it.registeredAt),
+                    )
+                }
+
+            else -> emptyList()
         }
     }
 
