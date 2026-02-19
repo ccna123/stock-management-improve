@@ -26,6 +26,7 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
@@ -38,10 +39,14 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.sol_denka_stockmanagement.R
 import com.example.sol_denka_stockmanagement.constant.CsvHistoryDirection
+import com.example.sol_denka_stockmanagement.constant.CsvTaskType
 import com.example.sol_denka_stockmanagement.constant.CsvType
+import com.example.sol_denka_stockmanagement.constant.DialogType
 import com.example.sol_denka_stockmanagement.constant.ProcessResult
 import com.example.sol_denka_stockmanagement.constant.SelectTitle
+import com.example.sol_denka_stockmanagement.constant.StatusCode
 import com.example.sol_denka_stockmanagement.constant.formatTimestamp
+import com.example.sol_denka_stockmanagement.helper.message_mapper.MessageMapper
 import com.example.sol_denka_stockmanagement.helper.toast.ToastManager
 import com.example.sol_denka_stockmanagement.helper.toast.ToastType
 import com.example.sol_denka_stockmanagement.intent.CsvIntent
@@ -59,6 +64,7 @@ import com.example.sol_denka_stockmanagement.share.dialog.NetworkDialog
 import com.example.sol_denka_stockmanagement.ui.theme.brightAzure
 import com.example.sol_denka_stockmanagement.ui.theme.brightGreenSecondary
 import com.example.sol_denka_stockmanagement.viewmodel.AppViewModel
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
@@ -79,7 +85,10 @@ fun CsvExportScreen(
     val exportFileSelectedIndex by csvViewModel.exportFileSelectedIndex.collectAsState()
     val showProcessResultDialog by csvViewModel.showProcessResultDialog.collectAsStateWithLifecycle()
     val processResultMessage by csvViewModel.processResultMessage.collectAsStateWithLifecycle()
+
     val exportResultStatus by csvViewModel.exportResultStatus.collectAsStateWithLifecycle()
+    val csvModels = csvViewModel.csvModels
+    val scope = rememberCoroutineScope()
 
     LaunchedEffect(csvType) {
         when (csvType) {
@@ -169,31 +178,43 @@ fun CsvExportScreen(
                     )
                 },
                 onClick = {
-                    ToastManager.showToast(
-                        message = "開発中",
-                        type = ToastType.INFO
-                    )
-//                    if (appViewModel.isNetworkConnected.value.not()) {
-//                        appViewModel.onGeneralIntent(
-//                            ShareIntent.ToggleNetworkDialog(true)
-//                        )
-//                    } else {
-//                        csvViewModel.toggleProgressVisibility(true)
-//                        csvViewModel.exportAllFilesIndividually(
-//                            context = context,
-//                            isInventoryResult = when (csvType) {
-//                                CsvType.InventoryResult.displayName -> {
-//                                    true
+                    scope.launch {
+                        csvViewModel.getEventDataBySessionId(
+                            sessionId = 9,
+                            type = csvType
+                        )
+                        val saveResult = appViewModel.saveScanResultToCsv(
+                            data = csvModels,
+                            direction = CsvHistoryDirection.EXPORT,
+                            taskCode = CsvTaskType.IN,
+                        )
+
+                        if (saveResult) {
+                            appViewModel.onGeneralIntent(
+                                ShareIntent.ShowDialog(
+                                    type = DialogType.EXPORT_CSV_OK,
+                                    message = MessageMapper.toMessage(StatusCode.EXPORT_OK)
+                                )
+                            )
+//                            if (isNetworkConnected) {
+//                                    //sftp send
+//                                } else {
+//                                    appViewModel.onGeneralIntent(
+//                                        ShareIntent.ShowDialog(
+//                                            type = DialogType.SAVE_CSV_SEND_SFTP_SUCCESS,
+//                                            message = MessageMapper.toMessage(StatusCode.SAVE_CSV_SEND_SFTP_SUCCESS)
+//                                        )
+//                                    )
 //                                }
-//
-//                                CsvType.StockEvent.displayName -> {
-//                                    false
-//                                }
-//
-//                                else -> false
-//                            }
-//                        )
-//                    }
+                        } else {
+                            appViewModel.onGeneralIntent(
+                                ShareIntent.ShowDialog(
+                                    type = DialogType.EXPORT_CSV_FAILED,
+                                    message = MessageMapper.toMessage(StatusCode.EXPORT_FAILED)
+                                )
+                            )
+                        }
+                    }
                 },
             )
         },

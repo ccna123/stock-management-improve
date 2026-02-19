@@ -442,6 +442,21 @@ class AppViewModel @Inject constructor(
                             )
                         }
                     }
+
+                    DialogType.EXPORT_CSV_OK -> {
+                        _dialogState.update {
+                            ExportCsvSuccess(
+                                message = intent.message,
+                            )
+                        }
+                    }
+                    DialogType.EXPORT_CSV_FAILED -> {
+                        _dialogState.update {
+                            ExportCsvFailed(
+                                message = intent.message,
+                            )
+                        }
+                    }
                 }
             }
 

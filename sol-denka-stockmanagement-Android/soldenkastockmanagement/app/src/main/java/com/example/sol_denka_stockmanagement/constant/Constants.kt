@@ -114,7 +114,9 @@ enum class DialogType {
     SAVE_CSV_FAILED,
     SAVE_CSV_SEND_SFTP_SUCCESS,
     SAVE_DATA_TO_DB_FAILED,
-    ERROR
+    ERROR,
+    EXPORT_CSV_OK,
+    EXPORT_CSV_FAILED,
 
 }
 

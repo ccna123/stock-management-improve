@@ -31,4 +31,12 @@ sealed interface DialogState {
         val message: String = ""
     ): DialogState
 
+    data class ExportCsvSuccess(
+        val message: String = ""
+    ): DialogState
+
+    data class ExportCsvFailed(
+        val message: String = ""
+    ): DialogState
+
 }

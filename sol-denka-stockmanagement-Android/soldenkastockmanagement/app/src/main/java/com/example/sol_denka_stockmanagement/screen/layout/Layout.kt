@@ -283,6 +283,40 @@ fun Layout(
             )
         }
 
+        is DialogState.ExportCsvSuccess -> {
+            ConfirmDialog(
+                showDialog = true,
+                textColor = Color.Black,
+                dialogTitle = d.message,
+                buttons = listOf(
+                    {
+                        ButtonContainer(
+                            buttonText = stringResource(R.string.close),
+                            onClick = {
+                                appViewModel?.onGeneralIntent(ShareIntent.HiddenDialog)
+                            }
+                        )
+                    }
+                )
+            )
+        }
+        is DialogState.ExportCsvFailed -> {
+            ConfirmDialog(
+                showDialog = true,
+                textColor = Color.Black,
+                dialogTitle = d.message,
+                buttons = listOf(
+                    {
+                        ButtonContainer(
+                            buttonText = stringResource(R.string.close),
+                            onClick = {
+                                appViewModel?.onGeneralIntent(ShareIntent.HiddenDialog)
+                            }
+                        )
+                    }
+                )
+            )
+        }
         DialogState.Hidden -> Unit
     }
 

@@ -307,7 +307,7 @@ class CsvHelper @Inject constructor(
     suspend fun getEventDataBySessionId(
         sessionId: Int,
         type: String,
-        deviceId: String
+        deviceId: String = Build.ID
     ): List<ICsvExport> {
 
         return when (type) {
@@ -333,8 +333,8 @@ class CsvHelper @Inject constructor(
                 getLocationChangeEvents(sessionId).map {
                     it.toCsvModel(
                         deviceId = deviceId,
-                        timeStamp = formatTimestamp(it.registeredAt),
-                        executedAt = formatTimestamp(it.registeredAt)
+                        timeStamp = formatTimestamp(it.scannedAt),
+                        executedAt = formatTimestamp(it.scannedAt)
                     )
                 }
 
@@ -347,7 +347,7 @@ class CsvHelper @Inject constructor(
                         sourceSessionId = "",
                         memo = "",
                         completedAt = "",
-                        timeStamp = formatTimestamp(it.registeredAt),
+                        timeStamp = formatTimestamp(it.scannedAt),
                     )
                 }
 
