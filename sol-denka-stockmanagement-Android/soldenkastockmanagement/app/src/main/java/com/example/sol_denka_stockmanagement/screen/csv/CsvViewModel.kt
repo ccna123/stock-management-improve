@@ -58,30 +58,48 @@ class CsvViewModel @Inject constructor(
     private val _importFileSelectedName = MutableStateFlow("")
     val importFileSelectedName: StateFlow<String> = _importFileSelectedName.asStateFlow()
 
+    private val _exportFileSelectedIndex = MutableStateFlow(-1)
+    val exportFileSelectedIndex: StateFlow<Int> = _exportFileSelectedIndex.asStateFlow()
+
+    private val _exportFileSelectedName = MutableStateFlow("")
+    val exportFileSelectedName: StateFlow<String> = _exportFileSelectedName.asStateFlow()
+
     private val _csvType = MutableStateFlow("")
     val csvType: StateFlow<String> = _csvType.asStateFlow()
 
     fun onCsvIntent(intent: CsvIntent) {
         when (intent) {
             is CsvIntent.ToggleFileSelect -> {
-                _importFileSelectedIndex.value = intent.fileIndex
-                _importFileSelectedName.value = intent.fileName
+                if (intent.type == "Import"){
+                    _importFileSelectedIndex.value = intent.fileIndex
+                    _importFileSelectedName.value = intent.fileName
 
-                _importResultStatus.value = null
-                _importProgress.value = 0f
-                _showProgress.value = false
+                    _importResultStatus.value = null
+                    _importProgress.value = 0f
+                    _showProgress.value = false
+                }else {
+                    _exportFileSelectedIndex.value = intent.fileIndex
+                    _exportFileSelectedName.value = intent.fileName
+                    _showProgress.value = false
+                }
             }
 
             is CsvIntent.ResetFileSelect -> {
                 _importFileSelectedIndex.value = -1
                 _importFileSelectedName.value = ""
+
+                _exportFileSelectedIndex.value = -1
+                _exportFileSelectedName.value = ""
             }
 
             is CsvIntent.SelectCsvType -> _csvType.value = intent.csvType
-            CsvIntent.ResetImportStatus -> {
+            CsvIntent.ResetFileSelectedStatus -> {
                 _importResultStatus.value = null
                 _importFileSelectedName.value = ""
                 _importFileSelectedIndex.value = -1
+
+                _exportFileSelectedName.value = ""
+                _exportFileSelectedIndex.value = -1
             }
 
             is CsvIntent.ToggleProgressVisibility -> _showProgress.value = intent.show

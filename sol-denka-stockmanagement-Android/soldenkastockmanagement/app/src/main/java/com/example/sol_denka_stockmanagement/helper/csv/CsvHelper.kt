@@ -77,8 +77,8 @@ class CsvHelper @Inject constructor(
         private const val IMPORT = "Import"
 
         private const val INVENTORY_RESULT = "Inventory"
-        private const val INBOUND_EVENT = "InboundEvent"
-        private const val OUTBOUND_EVENT = "OutboundEvent"
+        private const val INBOUND = "Inbound"
+        private const val OUTBOUND = "Outbound"
         private const val LOCATION_CHANGE_EVENT = "LocationChange"
 
         private const val LEDGER_MASTER = "LedgerItemMaster"
@@ -126,8 +126,8 @@ class CsvHelper @Inject constructor(
             ensureScopedFolder("$ROOT_FOLDER/$EXPORT")
             ensureScopedFolder("$ROOT_FOLDER/$EXPORT/$INVENTORY_RESULT")
             ensureScopedFolder("$ROOT_FOLDER/$EXPORT/$LOCATION_CHANGE_EVENT")
-            ensureScopedFolder("$ROOT_FOLDER/$EXPORT/$INBOUND_EVENT")
-            ensureScopedFolder("$ROOT_FOLDER/$EXPORT/$OUTBOUND_EVENT")
+            ensureScopedFolder("$ROOT_FOLDER/$EXPORT/$INBOUND")
+            ensureScopedFolder("$ROOT_FOLDER/$EXPORT/$OUTBOUND")
 
             // Import folders
             ensureScopedFolder("$ROOT_FOLDER/$IMPORT")
@@ -187,13 +187,13 @@ class CsvHelper @Inject constructor(
             )
 
             CsvType.OutboundResult.displayName -> Pair(
-                "Export/OutboundEvent",
-                "$EXPORT/$OUTBOUND_EVENT"
+                "Export/Outbound",
+                "$EXPORT/$OUTBOUND"
             )
 
             CsvType.InboundResult.displayName -> Pair(
-                "Export/InboundEvent",
-                "$EXPORT/$INBOUND_EVENT"
+                "Export/Inbound",
+                "$EXPORT/$INBOUND"
             )
 
             else -> null

@@ -536,6 +536,7 @@ class AppViewModel @Inject constructor(
         direction: CsvHistoryDirection,
         data: List<ICsvExport>
     ): Boolean {
+
         if (data.isEmpty()) {
             _isFileWorking.value = false
             _dialogState.value = Error(
@@ -550,7 +551,15 @@ class AppViewModel @Inject constructor(
         _isFileWorking.value = true
         _progress.value = 0f
 
-        return try {
+        var result = CsvHistoryResult.SUCCESS
+        var errorMessage = ""
+        var success = true
+        var csvTaskTypeId: Int? = null
+
+        try {
+            csvTaskTypeId = csvTaskTypeRepository
+                .getIdByTaskCode(taskCode.name)
+
             csvHelper.saveCsv(
                 context = context,
                 csvType = first.toCsvType(),
@@ -559,37 +568,55 @@ class AppViewModel @Inject constructor(
                 onProgress = { p -> _progress.value = p },
             )
 
-            val csvTaskTypeId =
-                csvTaskTypeRepository.getIdByTaskCode(taskCode.name)
-
-            csvHistoryRepository.insert(
-                CsvHistoryModel(
-                    csvTaskTypeId = csvTaskTypeId,
-                    fileName = first.toCsvName(),
-                    direction = direction,
-                    result = CsvHistoryResult.SUCCESS,
-                    recordNum = rows.size,
-                    errorMessage = "",
-                    executedAt = generateIso8601JstTimestamp()
-                )
-            )
-            true   // ✅ OK
         } catch (e: AppException) {
+
             Log.e("TSS", "saveScanResultToCsv: $e")
+
+            result = CsvHistoryResult.FAILURE
+            errorMessage = e.message ?: ""
+
             _dialogState.value = Error(
                 message = MessageMapper.toMessage(e.statusCode, e.params)
             )
-            false
+
+            success = false
+
         } catch (e: Exception) {
+
             Log.e("TSS", "saveScanResultToCsv: $e")
+
+            result = CsvHistoryResult.FAILURE
+            errorMessage = e.message ?: ""
+
             _dialogState.value = Error(
                 message = MessageMapper.toMessage(StatusCode.FAILED)
             )
-            false
+
+            success = false
+
         } finally {
+            csvTaskTypeId?.let {
+                try {
+                    csvHistoryRepository.insert(
+                        CsvHistoryModel(
+                            csvTaskTypeId = it,
+                            fileName = first.toCsvName(),
+                            direction = direction,
+                            result = result,
+                            recordNum = rows.size,
+                            errorMessage = errorMessage,
+                            executedAt = generateIso8601JstTimestamp()
+                        )
+                    )
+                } catch (historyEx: Exception) {
+                    Log.e("TSS", "Failed to insert csv history: $historyEx")
+                }
+            }
             _isFileWorking.value = false
         }
+        return success
     }
+
     private fun resetInboundInputForm() {
         _inputState.update {
             it.copy(

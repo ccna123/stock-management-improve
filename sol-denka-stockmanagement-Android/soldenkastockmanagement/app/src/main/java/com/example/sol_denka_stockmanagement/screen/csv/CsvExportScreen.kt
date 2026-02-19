@@ -60,11 +60,14 @@ fun CsvExportScreen(
     onGoBack: () -> Unit
 ) {
     val csvType by csvViewModel.csvType.collectAsStateWithLifecycle()
-    val expandState = appViewModel.expandState.collectAsStateWithLifecycle()
-    val generalState = appViewModel.generalState.collectAsState().value
+    val expandState by appViewModel.expandState.collectAsStateWithLifecycle()
+    val generalState by appViewModel.generalState.collectAsState()
+
     val csvFiles by csvViewModel.csvFiles.collectAsStateWithLifecycle()
     val showProgress by csvViewModel.showProgress.collectAsStateWithLifecycle()
     val isExporting by csvViewModel.isExporting.collectAsStateWithLifecycle()
+
+    val exportFileSelectedIndex by csvViewModel.exportFileSelectedIndex.collectAsState()
 
     LaunchedEffect(csvType) {
         when (csvType) {
@@ -77,6 +80,8 @@ fun CsvExportScreen(
                 csvViewModel.apply {
                     onCsvIntent(CsvIntent.FetchCsvFiles)
                     onCsvIntent(CsvIntent.ToggleProgressVisibility(false))
+                    onCsvIntent(CsvIntent.ResetFileSelect)
+                    onCsvIntent(CsvIntent.ResetFileSelectedStatus)
                 }
             }
 
@@ -111,7 +116,7 @@ fun CsvExportScreen(
                 ),
                 buttonTextSize = 20,
                 buttonText = stringResource(R.string.export_file),
-                canClick = csvType.isNotEmpty() && isExporting.not() && csvFiles.isNotEmpty(),
+                canClick = csvType.isNotEmpty() && csvFiles.isNotEmpty() && exportFileSelectedIndex != -1,
                 icon = {
                     Icon(
                         painter = painterResource(R.drawable.file_export),
@@ -168,7 +173,7 @@ fun CsvExportScreen(
                         isRequired = true,
                         children = {
                             ExposedDropdownMenuBox(
-                                expanded = expandState.value.csvTypeExpanded,
+                                expanded = expandState.csvTypeExpanded,
                                 onExpandedChange = { appViewModel.onExpandIntent(ExpandIntent.ToggleCsvTypeExpanded) }) {
                                 InputFieldContainer(
                                     modifier = Modifier
@@ -193,7 +198,7 @@ fun CsvExportScreen(
                                     enable = true,
                                 )
                                 ExposedDropdownMenu(
-                                    expanded = expandState.value.csvTypeExpanded,
+                                    expanded = expandState.csvTypeExpanded,
                                     onDismissRequest = { appViewModel.onExpandIntent(ExpandIntent.ToggleCsvTypeExpanded) }
                                 ) {
                                     listOf(
@@ -237,6 +242,7 @@ fun CsvExportScreen(
                         }
                     } else {
                         csvFiles.takeIf { it.isNotEmpty() }?.forEachIndexed { index, file ->
+                            val isSelectedFile = exportFileSelectedIndex == index
                             SingleCsvFile(
                                 csvFileName = file.fileName,
                                 csvFileSize = file.fileSize,
@@ -244,6 +250,16 @@ fun CsvExportScreen(
                                 isCompleted = file.isCompleted,
                                 isError = file.isFailed,
                                 showProgress = showProgress,
+                                isSelected = isSelectedFile,
+                                onChoose = {
+                                    csvViewModel.onCsvIntent(
+                                        CsvIntent.ToggleFileSelect(
+                                            type = "Export",
+                                            fileIndex = index,
+                                            fileName = file.fileName
+                                        )
+                                    )
+                                }
                             )
                         } ?: Text(
                             color = Color.Red,

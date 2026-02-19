@@ -60,7 +60,7 @@ class LocationChangeViewModel @Inject constructor(
         rfidTagList: List<TagMasterModel>
     ): Result<Unit> {
         return try {
-            var sessionId = 0
+            var sessionId: Int
             locationChangeRepository.saveLocationChangeTransaction {
 
                 sessionId = locationChangeRepository.createLocationChangeSession(executedAt = executedAt)

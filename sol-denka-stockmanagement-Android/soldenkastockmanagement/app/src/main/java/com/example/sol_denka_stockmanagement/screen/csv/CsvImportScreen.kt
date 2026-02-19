@@ -93,7 +93,7 @@ fun CsvImportScreen(
                     onCsvIntent(CsvIntent.FetchCsvFiles)
                     onCsvIntent(CsvIntent.ToggleProgressVisibility(false))
                     onCsvIntent(CsvIntent.ResetFileSelect)
-                    onCsvIntent(CsvIntent.ResetImportStatus)
+                    onCsvIntent(CsvIntent.ResetFileSelectedStatus)
                 }
             }
 
@@ -293,6 +293,7 @@ fun CsvImportScreen(
                                 onChoose = {
                                     csvViewModel.onCsvIntent(
                                         CsvIntent.ToggleFileSelect(
+                                            type = "Import",
                                             fileIndex = index,
                                             fileName = file.fileName
                                         )
