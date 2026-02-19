@@ -177,12 +177,12 @@ fun CsvExportScreen(
                 },
                 onClick = {
                     scope.launch {
-                        csvViewModel.getEventDataBySessionId(
+                        val data = csvViewModel.getEventDataBySessionId(
                             sessionId = exportFileSessionId,
                             type = csvType
                         )
                         val saveResult = appViewModel.saveScanResultToCsv(
-                            data = csvModels,
+                            data = data,
                             direction = CsvHistoryDirection.EXPORT,
                             taskCode = CsvTaskType.IN,
                         )

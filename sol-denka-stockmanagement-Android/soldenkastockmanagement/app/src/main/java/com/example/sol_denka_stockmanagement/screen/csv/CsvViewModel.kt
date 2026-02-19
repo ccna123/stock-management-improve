@@ -130,16 +130,18 @@ class CsvViewModel @Inject constructor(
         }
     }
 
-    suspend fun getEventDataBySessionId(sessionId: Int, type: String) {
-        try {
-            val csvList = helper.getEventDataBySessionId(
+    suspend fun getEventDataBySessionId(
+        sessionId: Int,
+        type: String
+    ): List<ICsvExport> {
+        return try {
+            helper.getEventDataBySessionId(
                 sessionId = sessionId,
                 type = type,
                 deviceId = Build.ID
             )
-            csvModels.addAll(csvList)
         } catch (e: Exception) {
-            return
+            emptyList()
         }
     }
 
