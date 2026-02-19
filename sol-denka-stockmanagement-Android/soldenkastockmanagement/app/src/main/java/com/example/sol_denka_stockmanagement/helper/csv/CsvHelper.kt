@@ -44,6 +44,7 @@ import com.example.sol_denka_stockmanagement.exception.MissingHeaderException
 import com.example.sol_denka_stockmanagement.exception.ReferenceMasterMissingFileException
 import com.example.sol_denka_stockmanagement.exception.SqliteConstraintAppException
 import com.example.sol_denka_stockmanagement.model.csv.CsvFileInfoModel
+import com.example.sol_denka_stockmanagement.model.session.SessionModel
 import com.jcraft.jsch.ChannelSftp
 import com.jcraft.jsch.JSch
 import com.jcraft.jsch.Session
@@ -209,34 +210,53 @@ class CsvHelper @Inject constructor(
         }
     }
 
-    suspend fun listExportFileName(csvType: String): List<String> {
+    suspend fun listExportFileName(csvType: String): List<SessionModel> {
         try {
-            val listFileName = mutableListOf<String>()
+            val listFileName = mutableListOf<SessionModel>()
             when (csvType) {
                 CsvType.InboundResult.displayNameJp -> {
-                    inboundSessionRepository.getExecutedAt().map { executedAt ->
-                        listFileName.add("${CsvType.InboundResult.displayNameEng}_$executedAt")
+                    inboundSessionRepository.getExecutedAt().map { model ->
+                        listFileName.add(
+                            SessionModel(
+                                sessionId = model.sessionId,
+                                timeStamp = "${CsvType.InboundResult.displayNameEng}_${model.timeStamp}"
+                            )
+                        )
                     }
                 }
 
                 CsvType.OutboundResult.displayNameJp -> outboundSessionRepository.getExecutedAt()
-                    .map { executedAt ->
-                        listFileName.add("${CsvType.OutboundResult.displayNameEng}_$executedAt")
+                    .map { model ->
+                        listFileName.add(
+                            SessionModel(
+                                sessionId = model.sessionId,
+                                timeStamp = "${CsvType.OutboundResult.displayNameEng}_${model.timeStamp}"
+                            )
+                        )
                     }
 
                 CsvType.LocationChangeResult.displayNameJp -> locationChangeSessionRepository.getExecutedAt()
-                    .map { executedAt ->
-                        listFileName.add("${CsvType.LocationChangeResult.displayNameEng}_$executedAt")
+                    .map { model ->
+                        listFileName.add(
+                            SessionModel(
+                                sessionId = model.sessionId,
+                                timeStamp = "${CsvType.LocationChangeResult.displayNameEng}_${model.timeStamp}"
+                            )
+                        )
                     }
 
                 CsvType.InventoryResult.displayNameJp -> inventorySessionRepository.getExecutedAt()
-                    .map { executedAt ->
-                        listFileName.add("${CsvType.InventoryResult.displayNameEng}_$executedAt")
+                    .map { model ->
+                        listFileName.add(
+                            SessionModel(
+                                sessionId = model.sessionId,
+                                timeStamp = "${CsvType.InventoryResult.displayNameEng}_${model.timeStamp}"
+                            )
+                        )
                     }
 
                 else -> {}
             }
-            Log.e("TSS", "listFileName: $listFileName")
             return listFileName
         } catch (e: Exception) {
             throw e

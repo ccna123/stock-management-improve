@@ -4,6 +4,7 @@ import com.example.sol_denka_stockmanagement.database.dao.outbound.OutboundSessi
 import com.example.sol_denka_stockmanagement.model.outbound.OutboundSessionModel
 import com.example.sol_denka_stockmanagement.model.outbound.toEntity
 import com.example.sol_denka_stockmanagement.model.outbound.toModel
+import com.example.sol_denka_stockmanagement.model.session.SessionModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
@@ -16,7 +17,7 @@ class OutboundSessionRepository @Inject constructor(
     fun get(): Flow<List<OutboundSessionModel>> = dao.get().map { entityList ->
         entityList.map { it.toModel() }
     }
-    suspend fun getExecutedAt(): List<String> = dao.getExecutedAt()
+    suspend fun getExecutedAt(): List<SessionModel> = dao.getExecutedAt()
     suspend fun insert(model: OutboundSessionModel) = dao.insert(model.toEntity())
     suspend fun update(model: OutboundSessionModel) = dao.update(model.toEntity())
     suspend fun delete(model: OutboundSessionModel) = dao.delete(model.toEntity())

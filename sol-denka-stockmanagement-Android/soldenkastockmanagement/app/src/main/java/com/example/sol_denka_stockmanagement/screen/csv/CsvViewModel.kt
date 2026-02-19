@@ -4,7 +4,6 @@ import android.content.Context
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.sol_denka_stockmanagement.constant.CsvType
 import com.example.sol_denka_stockmanagement.constant.ProcessResult
 import com.example.sol_denka_stockmanagement.constant.StatusCode
 import com.example.sol_denka_stockmanagement.exception.AppException
@@ -12,6 +11,7 @@ import com.example.sol_denka_stockmanagement.helper.csv.CsvHelper
 import com.example.sol_denka_stockmanagement.helper.message_mapper.MessageMapper
 import com.example.sol_denka_stockmanagement.intent.CsvIntent
 import com.example.sol_denka_stockmanagement.model.csv.CsvFileInfoModel
+import com.example.sol_denka_stockmanagement.model.session.SessionModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
@@ -31,8 +31,8 @@ class CsvViewModel @Inject constructor(
     private val _csvFiles = MutableStateFlow<List<CsvFileInfoModel>>(emptyList())
     val csvFiles: StateFlow<List<CsvFileInfoModel>> = _csvFiles.asStateFlow()
 
-    private val _exportFiles = MutableStateFlow<List<String>>(emptyList())
-    val exportFiles: StateFlow<List<String>> = _exportFiles.asStateFlow()
+    private val _exportFiles = MutableStateFlow<List<SessionModel>>(emptyList())
+    val exportFiles: StateFlow<List<SessionModel>> = _exportFiles.asStateFlow()
 
     private val _showProgress = MutableStateFlow(false)
     val showProgress = _showProgress.asStateFlow()
@@ -152,7 +152,7 @@ class CsvViewModel @Inject constructor(
                 csvType = _csvType.value
             )
             _exportFiles.value = result
-            Log.e("TSS", "listExportFileName: ${_exportFiles.value}", )
+            Log.e("TSS", "listExportFileName: ${_exportFiles.value}")
         }
     }
 
