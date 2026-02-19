@@ -4,8 +4,10 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -30,12 +32,14 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.sol_denka_stockmanagement.R
 import com.example.sol_denka_stockmanagement.constant.CsvHistoryDirection
 import com.example.sol_denka_stockmanagement.constant.CsvType
+import com.example.sol_denka_stockmanagement.constant.ProcessResult
 import com.example.sol_denka_stockmanagement.constant.SelectTitle
 import com.example.sol_denka_stockmanagement.constant.formatTimestamp
 import com.example.sol_denka_stockmanagement.helper.toast.ToastManager
@@ -50,7 +54,10 @@ import com.example.sol_denka_stockmanagement.share.ButtonContainer
 import com.example.sol_denka_stockmanagement.share.CardContainer
 import com.example.sol_denka_stockmanagement.share.InputContainer
 import com.example.sol_denka_stockmanagement.share.InputFieldContainer
+import com.example.sol_denka_stockmanagement.share.dialog.AppDialog
 import com.example.sol_denka_stockmanagement.share.dialog.NetworkDialog
+import com.example.sol_denka_stockmanagement.ui.theme.brightAzure
+import com.example.sol_denka_stockmanagement.ui.theme.brightGreenSecondary
 import com.example.sol_denka_stockmanagement.viewmodel.AppViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -70,6 +77,9 @@ fun CsvExportScreen(
     val isExporting by csvViewModel.isExporting.collectAsStateWithLifecycle()
 
     val exportFileSelectedIndex by csvViewModel.exportFileSelectedIndex.collectAsState()
+    val showProcessResultDialog by csvViewModel.showProcessResultDialog.collectAsStateWithLifecycle()
+    val processResultMessage by csvViewModel.processResultMessage.collectAsStateWithLifecycle()
+    val exportResultStatus by csvViewModel.exportResultStatus.collectAsStateWithLifecycle()
 
     LaunchedEffect(csvType) {
         when (csvType) {
@@ -97,6 +107,37 @@ fun CsvExportScreen(
                 ShareIntent.ToggleNetworkDialog(false)
             )
         })
+    }
+
+    if (showProcessResultDialog) {
+        AppDialog {
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    text = processResultMessage ?: "",
+                    textAlign = TextAlign.Center,
+                    color = when (exportResultStatus) {
+                        is ProcessResult.Failure -> Color.Red
+                        is ProcessResult.Success -> brightGreenSecondary
+                        null -> Color.Unspecified
+                    }
+                )
+                Spacer(Modifier.height(12.dp))
+                ButtonContainer(
+                    containerColor = when (exportResultStatus) {
+                        is ProcessResult.Failure -> Color.Red
+                        is ProcessResult.Success -> brightAzure
+                        null -> Color.Unspecified
+                    },
+                    buttonText = stringResource(R.string.close),
+                    onClick = {
+                        csvViewModel.dismissProcessResultDialog()
+                    }
+                )
+            }
+        }
     }
 
     DisposableEffect(Unit) {

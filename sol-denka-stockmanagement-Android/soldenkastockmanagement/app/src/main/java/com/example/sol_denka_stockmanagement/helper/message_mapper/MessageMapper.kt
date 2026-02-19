@@ -97,6 +97,8 @@ object MessageMapper {
             }
 
             StatusCode.SAVE_CSV_SEND_SFTP_SUCCESS -> "CSVファイルの保存、送信に成功しました。"
+            StatusCode.EXPORT_OK -> "CSVファイルの出力に成功しました。"
+            StatusCode.EXPORT_FAILED -> "CSVファイルの出力に失敗しました。"
         }
     }
 }

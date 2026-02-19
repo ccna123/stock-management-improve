@@ -55,6 +55,9 @@ class CsvViewModel @Inject constructor(
     private val _importResultStatus = MutableStateFlow<ProcessResult?>(null)
     val importResultStatus = _importResultStatus.asStateFlow()
 
+    private val _exportResultStatus = MutableStateFlow<ProcessResult?>(null)
+    val exportResultStatus = _exportResultStatus.asStateFlow()
+
     private val _importFileSelectedIndex = MutableStateFlow(-1)
     val importFileSelectedIndex: StateFlow<Int> = _importFileSelectedIndex.asStateFlow()
 
@@ -123,30 +126,27 @@ class CsvViewModel @Inject constructor(
         }
     }
 
-    fun exportAllFilesIndividually(context: Context, isInventoryResult: Boolean) {
+    fun exportToCsvFile() {
         viewModelScope.launch(Dispatchers.IO) {
-            val files = _csvFiles.value.toMutableList()
-            helper.exportAllFilesIndividually(
-                context = context,
-                files = files,
-                isInventoryResult = isInventoryResult,
-                onProgressUpdate = { index, progress ->
-                    updateFileProgress(index = index, progress = progress)
-                    _isExporting.value = true
-                },
-                onFileComplete = { index ->
-                    markFileCompleted(index = index)
-                    _isExporting.value = false
-                },
-                onFileError = { index ->
-                    markFileError(index)
-                }
-            )
-            Log.i("TSS", "🎉 All files exported successfully")
+            try {
+                _exportResultStatus.value = ProcessResult.Success()
+                showProcessResultDialog(
+                    MessageMapper.toMessage(StatusCode.EXPORT_OK)
+                )
+                Log.i("TSS", "🎉 All files exported successfully")
+            } catch (e: Exception) {
+                Log.e("TSS", "exportToCsvFile: $e")
+                showProcessResultDialog(
+                    MessageMapper.toMessage(StatusCode.EXPORT_FAILED)
+
+                )
+                _exportResultStatus.value =
+                    ProcessResult.Failure(statusCode = StatusCode.EXPORT_FAILED)
+            }
         }
     }
 
-    fun listExportFileName(){
+    fun listExportFileName() {
         viewModelScope.launch {
             val result = helper.listExportFileName(
                 csvType = _csvType.value

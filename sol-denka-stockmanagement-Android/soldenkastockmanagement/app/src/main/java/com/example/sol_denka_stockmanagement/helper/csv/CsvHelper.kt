@@ -263,6 +263,15 @@ class CsvHelper @Inject constructor(
         }
     }
 
+    suspend fun exportToCsvFile(sessionId: Int){
+        try {
+
+        }catch (e: Exception){
+            Log.e("TSS", "exportToCsvFile: $e", )
+            throw e
+        }
+    }
+
     suspend fun listCsvFiles(csvType: String): List<CsvFileInfoModel> =
         withContext(Dispatchers.IO) {
 

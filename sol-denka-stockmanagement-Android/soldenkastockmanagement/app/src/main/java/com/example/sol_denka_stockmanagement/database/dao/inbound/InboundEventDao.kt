@@ -14,6 +14,9 @@ interface InboundEventDao {
     @Query("SELECT * FROM InBoundEvent")
     fun get(): Flow<List<InboundEventEntity>>
 
+    @Query("SELECT * FROM inboundevent WHERE inbound_session_id = :sessionId")
+    suspend fun getEventBySessionId(sessionId: Int): InboundEventEntity?
+
     @Insert
     suspend fun insert(e: InboundEventEntity): Long
 
