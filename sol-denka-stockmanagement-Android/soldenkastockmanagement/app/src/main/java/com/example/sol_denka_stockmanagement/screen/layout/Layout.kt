@@ -303,7 +303,7 @@ fun Layout(
         is DialogState.ExportCsvFailed -> {
             ConfirmDialog(
                 showDialog = true,
-                textColor = Color.Black,
+                textColor = Color.Red,
                 dialogTitle = d.message,
                 buttons = listOf(
                     {
