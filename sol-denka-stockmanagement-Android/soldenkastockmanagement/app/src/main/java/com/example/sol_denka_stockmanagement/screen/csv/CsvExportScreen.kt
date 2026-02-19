@@ -47,8 +47,6 @@ import com.example.sol_denka_stockmanagement.constant.SelectTitle
 import com.example.sol_denka_stockmanagement.constant.StatusCode
 import com.example.sol_denka_stockmanagement.constant.formatTimestamp
 import com.example.sol_denka_stockmanagement.helper.message_mapper.MessageMapper
-import com.example.sol_denka_stockmanagement.helper.toast.ToastManager
-import com.example.sol_denka_stockmanagement.helper.toast.ToastType
 import com.example.sol_denka_stockmanagement.intent.CsvIntent
 import com.example.sol_denka_stockmanagement.intent.ExpandIntent
 import com.example.sol_denka_stockmanagement.intent.ShareIntent
@@ -79,7 +77,7 @@ fun CsvExportScreen(
     val generalState by appViewModel.generalState.collectAsState()
 
     val exportFiles by csvViewModel.exportFiles.collectAsStateWithLifecycle()
-    val showProgress by csvViewModel.showProgress.collectAsStateWithLifecycle()
+    val exportFileSessionId by csvViewModel.exportFileSessionId.collectAsStateWithLifecycle()
     val isExporting by csvViewModel.isExporting.collectAsStateWithLifecycle()
 
     val exportFileSelectedIndex by csvViewModel.exportFileSelectedIndex.collectAsState()
@@ -180,7 +178,7 @@ fun CsvExportScreen(
                 onClick = {
                     scope.launch {
                         csvViewModel.getEventDataBySessionId(
-                            sessionId = 9,
+                            sessionId = exportFileSessionId,
                             type = csvType
                         )
                         val saveResult = appViewModel.saveScanResultToCsv(
@@ -319,7 +317,7 @@ fun CsvExportScreen(
                                         CsvIntent.ToggleFileSelect(
                                             type = "Export",
                                             fileIndex = index,
-                                            fileName = sessionModel.timeStamp
+                                            fileSessionId = sessionModel.sessionId,
                                         )
                                     )
                                 }

@@ -69,8 +69,8 @@ class CsvViewModel @Inject constructor(
     private val _exportFileSelectedIndex = MutableStateFlow(-1)
     val exportFileSelectedIndex: StateFlow<Int> = _exportFileSelectedIndex.asStateFlow()
 
-    private val _exportFileSelectedName = MutableStateFlow("")
-    val exportFileSelectedName: StateFlow<String> = _exportFileSelectedName.asStateFlow()
+    private val _exportFileSessionId = MutableStateFlow(0)
+    val exportFileSessionId: StateFlow<Int> = _exportFileSessionId.asStateFlow()
 
     private val _csvType = MutableStateFlow("")
     val csvType: StateFlow<String> = _csvType.asStateFlow()
@@ -89,7 +89,7 @@ class CsvViewModel @Inject constructor(
                     _showProgress.value = false
                 } else {
                     _exportFileSelectedIndex.value = intent.fileIndex
-                    _exportFileSelectedName.value = intent.fileName
+                    _exportFileSessionId.value = intent.fileSessionId
                     _showProgress.value = false
                 }
             }
@@ -99,7 +99,7 @@ class CsvViewModel @Inject constructor(
                 _importFileSelectedName.value = ""
 
                 _exportFileSelectedIndex.value = -1
-                _exportFileSelectedName.value = ""
+                _exportFileSessionId.value = 0
             }
 
             is CsvIntent.SelectCsvType -> _csvType.value = intent.csvType
@@ -108,7 +108,7 @@ class CsvViewModel @Inject constructor(
                 _importFileSelectedName.value = ""
                 _importFileSelectedIndex.value = -1
 
-                _exportFileSelectedName.value = ""
+                _exportFileSessionId.value = 0
                 _exportFileSelectedIndex.value = -1
             }
 
