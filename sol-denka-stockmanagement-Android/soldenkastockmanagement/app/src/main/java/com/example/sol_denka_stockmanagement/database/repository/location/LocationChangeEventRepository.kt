@@ -1,7 +1,6 @@
 package com.example.sol_denka_stockmanagement.database.repository.location
 
 import com.example.sol_denka_stockmanagement.database.dao.location.LocationChangeEventDao
-import com.example.sol_denka_stockmanagement.model.inbound.toModel
 import com.example.sol_denka_stockmanagement.model.location.LocationChangeEventModel
 import com.example.sol_denka_stockmanagement.model.location.toEntity
 import com.example.sol_denka_stockmanagement.model.location.toModel
@@ -17,7 +16,10 @@ class LocationChangeEventRepository @Inject constructor(
     fun get(): Flow<List<LocationChangeEventModel>> = dao.get().map { entityList ->
         entityList.map { it.toModel() }
     }
-    suspend fun getEventBySessionId(sessionId: Int) = dao.getEventBySessionId(sessionId).toModel()
+
+    suspend fun getEventBySessionId(sessionId: Int) =
+        dao.getEventBySessionId(sessionId).map { it.toModel() }
+
     suspend fun insert(model: LocationChangeEventModel) = dao.insert(model.toEntity())
     suspend fun update(model: LocationChangeEventModel) = dao.update(model.toEntity())
     suspend fun delete(model: LocationChangeEventModel) = dao.delete(model.toEntity())

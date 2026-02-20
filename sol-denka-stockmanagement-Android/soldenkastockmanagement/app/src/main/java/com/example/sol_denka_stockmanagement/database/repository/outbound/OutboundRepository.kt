@@ -45,6 +45,7 @@ class OutboundRepository @Inject constructor(
                     outboundSessionId = sessionId,
                     ledgerItemId = ledgerId,
                     processTypeId = processTypeId,
+                    tagId = tag.tagId,
                     memo = memo,
                     sourceEventId = sourceEventIdByTagId[tag.tagId]!!,
                     processedAt = processedAt,

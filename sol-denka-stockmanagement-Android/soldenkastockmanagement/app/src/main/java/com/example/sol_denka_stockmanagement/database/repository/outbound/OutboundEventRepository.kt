@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 import javax.inject.Singleton
+import kotlin.collections.map
 
 @Singleton
 class OutboundEventRepository @Inject constructor(
@@ -16,7 +17,10 @@ class OutboundEventRepository @Inject constructor(
     fun get(): Flow<List<OutBoundEventModel>> = dao.get().map { entityList ->
         entityList.map { it.toModel() }
     }
-    suspend fun getEventBySessionId(sessionId: Int) = dao.getEventBySessionId(sessionId).toModel()
+
+    suspend fun getEventBySessionId(sessionId: Int) =
+        dao.getEventBySessionId(sessionId).map { it.toModel() }
+
     suspend fun insert(model: OutBoundEventModel) = dao.insert(model.toEntity())
     suspend fun update(model: OutBoundEventModel) = dao.update(model.toEntity())
     suspend fun delete(model: OutBoundEventModel) = dao.delete(model.toEntity())

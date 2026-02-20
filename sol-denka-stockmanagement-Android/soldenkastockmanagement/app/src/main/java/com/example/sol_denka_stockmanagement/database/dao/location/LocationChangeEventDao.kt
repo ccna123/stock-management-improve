@@ -15,7 +15,7 @@ interface LocationChangeEventDao {
     fun get(): Flow<List<LocationChangeEventEntity>>
 
     @Query("SELECT * FROM locationchangeevent WHERE location_change_session_id = :sessionId")
-    suspend fun getEventBySessionId(sessionId: Int): LocationChangeEventEntity
+    suspend fun getEventBySessionId(sessionId: Int): List<LocationChangeEventEntity>
 
     @Insert
     suspend fun insert(e: LocationChangeEventEntity): Long

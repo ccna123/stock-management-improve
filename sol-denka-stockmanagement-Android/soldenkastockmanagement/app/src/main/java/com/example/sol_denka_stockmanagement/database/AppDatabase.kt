@@ -83,7 +83,7 @@ import com.example.sol_denka_stockmanagement.database.entity.winder.WinderEntity
 
         WinderEntity::class
     ],
-    version = 34,
+    version = 35,
     exportSchema = true
 )
 abstract class AppDatabase : RoomDatabase() {

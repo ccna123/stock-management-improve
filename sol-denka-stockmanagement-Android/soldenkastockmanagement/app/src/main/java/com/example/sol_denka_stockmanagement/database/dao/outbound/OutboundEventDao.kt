@@ -16,7 +16,7 @@ interface OutboundEventDao {
     fun get(): Flow<List<OutBoundEventEntity>>
 
     @Query("SELECT * FROM outboundevent WHERE outbound_session_id = :sessionId")
-    suspend fun getEventBySessionId(sessionId: Int): OutBoundEventEntity
+    suspend fun getEventBySessionId(sessionId: Int): List<OutBoundEventEntity>
 
     @Insert(onConflict = REPLACE)
     suspend fun insert(e: OutBoundEventEntity): Long

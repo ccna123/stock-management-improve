@@ -16,7 +16,10 @@ class InventoryDetailRepository @Inject constructor(
     fun get(): Flow<List<InventoryDetailModel>> = dao.get().map { entityList ->
         entityList.map { it.toModel() }
     }
-    suspend fun getEventBySessionId(sessionId: Int) = dao.getEventBySessionId(sessionId).toModel()
+
+    suspend fun getEventBySessionId(sessionId: Int) =
+        dao.getEventBySessionId(sessionId).map { it.toModel() }
+
     suspend fun insert(model: InventoryDetailModel) = dao.insert(model.toEntity())
     suspend fun update(model: InventoryDetailModel) = dao.update(model.toEntity())
     suspend fun delete(model: InventoryDetailModel) = dao.delete(model.toEntity())

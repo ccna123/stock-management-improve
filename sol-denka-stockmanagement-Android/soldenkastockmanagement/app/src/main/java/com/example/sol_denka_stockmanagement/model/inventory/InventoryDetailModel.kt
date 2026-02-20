@@ -28,7 +28,6 @@ fun InventoryDetailModel.toEntity() = InventoryDetailEntity(
 )
 
 fun InventoryDetailModel.toCsvModel(
-    tagId: Int,
     sourceSessionId: String,
     memo: String,
     locationId: Int,

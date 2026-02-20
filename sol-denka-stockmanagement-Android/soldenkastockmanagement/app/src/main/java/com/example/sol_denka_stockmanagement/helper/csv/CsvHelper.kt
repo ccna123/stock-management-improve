@@ -57,7 +57,6 @@ import com.example.sol_denka_stockmanagement.model.location.LocationChangeEventM
 import com.example.sol_denka_stockmanagement.model.location.toCsvModel
 import com.example.sol_denka_stockmanagement.model.outbound.OutBoundEventModel
 import com.example.sol_denka_stockmanagement.model.outbound.toCsvModel
-import com.example.sol_denka_stockmanagement.model.session.SessionModel
 import com.jcraft.jsch.ChannelSftp
 import com.jcraft.jsch.JSch
 import com.jcraft.jsch.Session
@@ -294,19 +293,16 @@ class CsvHelper @Inject constructor(
     suspend fun getOutboundEvents(sessionId: Int): List<OutBoundEventModel> {
         return outboundEventRepository
             .getEventBySessionId(sessionId)
-            .let { listOf(it) }
     }
 
     suspend fun getLocationChangeEvents(sessionId: Int): List<LocationChangeEventModel> {
         return locationChangeRepository
             .getEventBySessionId(sessionId)
-            .let { listOf(it) }
     }
 
     suspend fun getInventoryEvents(sessionId: Int): List<InventoryDetailModel> {
         return inventoryDetailRepository
             .getEventBySessionId(sessionId)
-            .let { listOf(it) }
     }
 
     suspend fun getEventDataBySessionId(
@@ -330,7 +326,6 @@ class CsvHelper @Inject constructor(
                     it.toCsvModel(
                         deviceId = deviceId,
                         timeStamp = formatTimestamp(it.registeredAt),
-                        tagId = 0
                     )
                 }
 
@@ -339,7 +334,7 @@ class CsvHelper @Inject constructor(
                     it.toCsvModel(
                         deviceId = deviceId,
                         timeStamp = formatTimestamp(it.scannedAt),
-                        executedAt = formatTimestamp(it.scannedAt)
+                        executedAt = it.scannedAt
                     )
                 }
 
@@ -348,7 +343,6 @@ class CsvHelper @Inject constructor(
                     it.toCsvModel(
                         deviceId = deviceId,
                         locationId = 0,
-                        tagId = 0,
                         sourceSessionId = "",
                         memo = "",
                         completedAt = "",
