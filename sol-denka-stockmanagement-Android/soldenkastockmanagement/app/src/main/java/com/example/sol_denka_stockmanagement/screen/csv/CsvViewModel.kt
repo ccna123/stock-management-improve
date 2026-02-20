@@ -6,6 +6,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.sol_denka_stockmanagement.app_interface.ICsvExport
+import com.example.sol_denka_stockmanagement.constant.CsvHistoryDirection
 import com.example.sol_denka_stockmanagement.constant.ProcessResult
 import com.example.sol_denka_stockmanagement.constant.StatusCode
 import com.example.sol_denka_stockmanagement.exception.AppException
@@ -80,7 +81,7 @@ class CsvViewModel @Inject constructor(
     fun onCsvIntent(intent: CsvIntent) {
         when (intent) {
             is CsvIntent.ToggleFileSelect -> {
-                if (intent.type == "Import") {
+                if (intent.type == CsvHistoryDirection.IMPORT.displayName) {
                     _importFileSelectedIndex.value = intent.fileIndex
                     _importFileSelectedName.value = intent.fileName
 
