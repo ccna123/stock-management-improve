@@ -4,16 +4,8 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.imePadding
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -21,10 +13,7 @@ import androidx.compose.material.icons.automirrored.filled.ArrowForwardIos
 import androidx.compose.material.icons.filled.ArrowBackIosNew
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -56,9 +45,12 @@ fun DetailScreen(
         appViewModel.onGeneralIntent(ShareIntent.ResetDetailIndex)
     }
 
-    val currentItem =
-        rfidTagList.filter { it.newFields.isChecked }.getOrNull(generalState.currentIndex)
-    val totalCount = rfidTagList.filter { it.newFields.isChecked }.size
+    val checkedList = remember(rfidTagList) {
+        rfidTagList.filter { it.newFields.isChecked }
+    }
+
+    val currentItem = checkedList.getOrNull(generalState.currentIndex)
+    val totalCount = checkedList.size
 
     Layout(
         topBarText = Screen.Detail.displayName,
@@ -68,122 +60,179 @@ fun DetailScreen(
         onBackArrowClick = { onGoBack() }
     ) { paddingValues ->
 
-        Box(
+        Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
-                .imePadding()
                 .padding(16.dp)
         ) {
-            Column(
-                modifier = Modifier.fillMaxSize(),
+
+            // ===== CONTENT =====
+            LazyColumn(
+                modifier = Modifier.weight(1f)
+            ) {
+                item {
+
+                    if (currentItem != null) {
+
+                        val fields = currentItem.newFields
+
+                        ItemInfo(stringResource(R.string.item_name_title), fields.itemName)
+
+                        ItemInfo(stringResource(R.string.item_category_name), fields.categoryName)
+
+                        ItemInfo(stringResource(R.string.location), fields.location)
+
+                        ItemInfo(
+                            title = stringResource(R.string.item_stock_status),
+                            content = if (fields.isInStock)
+                                stringResource(R.string.in_stock)
+                            else
+                                stringResource(R.string.not_in_stock),
+                            textColor = if (fields.isInStock)
+                                brightGreenPrimary
+                            else
+                                Color.Red
+                        )
+
+                        ItemInfo(
+                            stringResource(R.string.item_packing_type),
+                            fields.packingType.orEmpty()
+                        )
+
+                        ItemInfo(
+                            stringResource(R.string.specific_gravity),
+                            fields.specificGravity.toString()
+                        )
+
+                        ItemInfo(
+                            stringResource(R.string.thickness),
+                            fields.thickness?.stripTrailingZeros()?.toPlainString().orEmpty()
+                        )
+
+                        ItemInfo(
+                            stringResource(R.string.width),
+                            fields.width?.toString().orEmpty()
+                        )
+
+                        ItemInfo(
+                            stringResource(R.string.length),
+                            fields.length?.toString().orEmpty()
+                        )
+
+                        ItemInfo(
+                            stringResource(R.string.quantity),
+                            fields.quantity?.toString().orEmpty()
+                        )
+
+                        ItemInfo(
+                            stringResource(R.string.weight),
+                            fields.weight?.toString().orEmpty()
+                        )
+
+                        ItemInfo(
+                            stringResource(R.string.item_winder),
+                            fields.winderName.orEmpty()
+                        )
+
+                        ItemInfo(
+                            stringResource(R.string.lot_no),
+                            fields.lotNo.orEmpty()
+                        )
+
+                        ItemInfo(
+                            stringResource(R.string.occurrenceReason),
+                            fields.occurrenceReason.orEmpty()
+                        )
+
+                        ItemInfo(
+                            stringResource(R.string.occurred_at_date_time),
+                            fields.occurredAt.orEmpty()
+                        )
+
+                        ItemInfo(
+                            stringResource(R.string.processed_at_date_time),
+                            fields.processedAt.orEmpty()
+                        )
+
+                        ItemInfo(
+                            stringResource(R.string.memo),
+                            currentItem.memo.orEmpty()
+                        )
+
+                    } else {
+                        Text(text = "No Data")
+                    }
+                }
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // ===== PAGINATION =====
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceEvenly,
+                verticalAlignment = Alignment.CenterVertically
             ) {
 
-                // ===== CONTENT =====
-                if (currentItem != null) {
-                    ItemInfo(
-                        title = stringResource(R.string.item_name_title),
-                        content = currentItem.newFields.itemName
-                    )
-                    ItemInfo(
-                        title = stringResource(R.string.item_code_title),
-                        content = currentItem.newFields.itemCode
-                    )
-                    ItemInfo(
-                        title = stringResource(R.string.location),
-                        content = currentItem.newFields.location
-                    )
-                    ItemInfo(
-                        title = stringResource(R.string.stock_status),
-                        content = when {
-                            currentItem.newFields.isInStock -> stringResource(R.string.in_stock)
-                            else -> stringResource(R.string.not_in_stock)
-                        },
-                        textColor = when {
-                            currentItem.newFields.isInStock -> brightGreenPrimary
-                            else -> Color.Red
-                        }
-                    )
-                } else {
-                    Text(text = "No Data")
+                PaginationButton(
+                    enabled = generalState.currentIndex > 0,
+                    icon = Icons.Filled.ArrowBackIosNew
+                ) {
+                    appViewModel.onGeneralIntent(ShareIntent.Prev)
                 }
 
-                Spacer(modifier = Modifier.weight(1f))
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(
+                        fontSize = 26.sp,
+                        text = if (totalCount == 0)
+                            "0"
+                        else
+                            "${generalState.currentIndex + 1}"
+                    )
+                    Text(fontSize = 20.sp, text = "/")
+                    Text(fontSize = 18.sp, text = totalCount.toString())
+                }
 
-                // ===== PAGINATION =====
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(bottom = 12.dp),
-                    horizontalArrangement = Arrangement.SpaceEvenly,
-                    verticalAlignment = Alignment.CenterVertically
+                PaginationButton(
+                    enabled = generalState.currentIndex < totalCount - 1,
+                    icon = Icons.AutoMirrored.Filled.ArrowForwardIos
                 ) {
-
-                    // PREV
-                    Box(
-                        modifier = Modifier
-                            .clickable(enabled = generalState.currentIndex > 0) {
-                                appViewModel.onGeneralIntent(ShareIntent.Prev)
-                            }
-                            .background(
-                                color = if (generalState.currentIndex > 0)
-                                    brightGreenSecondary else Color.LightGray,
-                                shape = RoundedCornerShape(12.dp)
-                            )
-                    ) {
-                        Icon(
-                            imageVector = Icons.Filled.ArrowBackIosNew,
-                            contentDescription = null,
-                            modifier = Modifier
-                                .size(50.dp)
-                                .padding(10.dp),
-                            tint = if (generalState.currentIndex > 0)
-                                Color.White else Color.Black.copy(alpha = 0.2f)
+                    appViewModel.onGeneralIntent(
+                        ShareIntent.Next(
+                            lastItemIndex = checkedList.lastIndex
                         )
-                    }
-
-                    // INDEX
-                    Row {
-                        Text(
-                            fontSize = 26.sp,
-                            text = if (totalCount == 0) "0"
-                            else "${generalState.currentIndex + 1}"
-                        )
-                        Text(fontSize = 20.sp, text = "/")
-                        Text(fontSize = 18.sp, text = totalCount.toString())
-                    }
-
-                    // NEXT
-                    Box(
-                        modifier = Modifier
-                            .clickable(enabled = generalState.currentIndex < totalCount - 1) {
-                                appViewModel.onGeneralIntent(
-                                    ShareIntent.Next(
-                                        lastItemIndex = rfidTagList
-                                            .filter { it.newFields.isChecked }
-                                            .lastIndex
-                                    )
-                                )
-                            }
-                            .background(
-                                color = if (generalState.currentIndex < totalCount - 1)
-                                    brightGreenSecondary else Color.LightGray,
-                                shape = RoundedCornerShape(12.dp)
-                            )
-                    ) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowForwardIos,
-                            contentDescription = null,
-                            modifier = Modifier
-                                .size(50.dp)
-                                .padding(10.dp),
-                            tint = if (generalState.currentIndex < totalCount - 1)
-                                Color.White else Color.Black.copy(alpha = 0.2f)
-                        )
-                    }
+                    )
                 }
             }
         }
     }
+}
 
+@Composable
+private fun PaginationButton(
+    enabled: Boolean,
+    icon: androidx.compose.ui.graphics.vector.ImageVector,
+    onClick: () -> Unit
+) {
+    Box(
+        modifier = Modifier
+            .clickable(enabled = enabled) { onClick() }
+            .background(
+                color = if (enabled) brightGreenSecondary else Color.LightGray,
+                shape = RoundedCornerShape(12.dp)
+            )
+    ) {
+        Icon(
+            imageVector = icon,
+            contentDescription = null,
+            modifier = Modifier
+                .size(50.dp)
+                .padding(10.dp),
+            tint = if (enabled)
+                Color.White
+            else
+                Color.Black.copy(alpha = 0.2f)
+        )
+    }
 }

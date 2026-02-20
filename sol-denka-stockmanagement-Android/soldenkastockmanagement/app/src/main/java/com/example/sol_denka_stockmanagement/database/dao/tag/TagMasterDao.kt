@@ -56,13 +56,29 @@ interface TagMasterDao {
                 t.tag_id AS tagId, 
                 t.epc , 
                 le.is_in_stock AS isInStock,
+                le.weight AS weight,
+                le.width AS width,
+                le.length AS length,
+                le.thickness AS thickness,
+                le.lot_no AS lot_no,
+                le.occurrence_reason AS occurrenceReason,
+                le.quantity AS quantity,
+                le.occurred_at AS occurredAt,
+                le.processed_at AS processedAt,
+                le.memo AS memo,
+                it.specific_gravity AS specificGravity,
+                it.packing_type AS packingType,
+                wi.winder_name AS winderName,
                 IFNULL(it.item_type_name, '') AS itemName,
                 IFNULL(it.item_type_code, '') AS itemCode,
-                IFNULL(lo.location_name, '') AS location
+                IFNULL(lo.location_name, '') AS location,
+                IFNULL(itc.item_category_name, '') AS categoryName
             FROM tagmaster AS t 
             LEFT JOIN ledgeritem le ON le.tag_id = t.tag_id
             LEFT JOIN locationmaster lo ON lo.location_id = le.location_id
             LEFT JOIN itemtypemaster it ON it.item_type_id = le.item_type_id
+            LEFT JOIN winder wi ON wi.winder_id = le.winder_id
+            LEFT JOIN itemcategorymaster itc ON itc.item_category_id = it.item_category_id
     """
     )
     suspend fun getFullInfo(): List<SingleTagInfoModel>

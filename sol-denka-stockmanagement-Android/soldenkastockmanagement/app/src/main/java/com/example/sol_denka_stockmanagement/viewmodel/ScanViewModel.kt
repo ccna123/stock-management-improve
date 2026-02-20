@@ -20,6 +20,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import java.math.BigDecimal
 import javax.inject.Inject
 
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
@@ -80,6 +81,19 @@ class ScanViewModel @Inject constructor(
                             itemName = info?.itemName ?: "",
                             itemCode = info?.itemCode ?: "",
                             location = info?.location ?: "",
+                            packingType = info?.packingType ?: "",
+                            specificGravity = info?.specificGravity ?: 0,
+                            thickness = info?.thickness?.toBigDecimal() ?: BigDecimal.ZERO,
+                            length = info?.length ?: 0,
+                            width = info?.width ?: 0,
+                            weight = info?.weight ?: 0,
+                            lotNo = info?.lotNo ?: "",
+                            quantity = info?.quantity ?: 0,
+                            occurrenceReason = info?.occurrenceReason ?: "",
+                            occurredAt = info?.occurredAt ?: "",
+                            processedAt = info?.processedAt ?: "",
+                            winderName = info?.winderName ?: "",
+                            categoryName = info?.categoryName ?: "",
 
                             tagScanStatus = prev?.newFields?.tagScanStatus ?: TagScanStatus.UNPROCESSED,
                             rssi = prev?.newFields?.rssi ?: -100f,

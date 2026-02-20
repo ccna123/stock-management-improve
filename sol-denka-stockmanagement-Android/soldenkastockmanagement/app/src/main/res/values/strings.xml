@@ -80,6 +80,12 @@
     <string name="bulk_apply_item_number">%s件のアイテムをに適用されます</string>
     <string name="planned_register_item_number">登録予定アイテム（%s件）</string>
     <string name="item_name_title">アイテム名</string>
+    <string name="item_category_name">区分</string>
+    <string name="item_stock_status">在庫状態</string>
+    <string name="item_packing_type">荷姿</string>
+    <string name="occurred_at_date_time">発生日時</string>
+    <string name="processed_at_date_time">処理日時</string>
+    <string name="item_winder">巻取機</string>
     <string name="item_code_title">アイテムコード</string>
     <string name="csv_type_select_request">CSVファイルの種類を選択してください</string>
     <string name="csv_type_selection">CSVファイルの種類選択</string>
@@ -95,8 +101,8 @@
     <string name="csv_export_title">以下の内容でCSVファイルを出力します</string>
     <string name="choose_time">時刻を選択</string>
     <string name="stock_status">在庫状況</string>
-    <string name="in_stock">在庫あり</string>
-    <string name="not_in_stock">在庫なし</string>
+    <string name="in_stock">在庫有</string>
+    <string name="not_in_stock">在庫無</string>
 
     <!-- 入力-->
     <string name="grade_hint">グレード入力</string>

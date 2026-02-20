@@ -5,6 +5,7 @@ import com.example.sol_denka_stockmanagement.constant.TagScanStatus
 import com.example.sol_denka_stockmanagement.database.repository.tag.TagMasterRepository
 import com.example.sol_denka_stockmanagement.model.common.AdditionalFieldsModel
 import com.example.sol_denka_stockmanagement.model.tag.TagMasterModel
+import java.math.BigDecimal
 
 class TagMasterImporter(
     private val repository: TagMasterRepository,
@@ -34,7 +35,20 @@ class TagMasterImporter(
                 isChecked = false,
                 hasLeger = false,
                 isInStock = false,
-                readTimeStamp = 0
+                readTimeStamp = 0,
+                packingType = "",
+                specificGravity = 0,
+                thickness = BigDecimal.ZERO,
+                length = 0,
+                width = 0,
+                weight = 0,
+                lotNo = "",
+                quantity = 0,
+                occurrenceReason = "",
+                occurredAt = "",
+                processedAt = "",
+                winderName = "",
+                categoryName = ""
             )
         )
     }
