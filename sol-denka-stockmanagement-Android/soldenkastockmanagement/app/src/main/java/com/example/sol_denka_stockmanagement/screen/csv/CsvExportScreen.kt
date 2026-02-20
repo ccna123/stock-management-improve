@@ -303,21 +303,21 @@ fun CsvExportScreen(
                             )
                         }
                     } else {
-                        exportFiles.takeIf { it.isNotEmpty() }?.forEachIndexed { index, sessionModel ->
+                        exportFiles.sortedByDescending { it.timeStamp }.takeIf { it.isNotEmpty() }?.forEachIndexed { index, file ->
                             val isSelectedFile = exportFileSelectedIndex == index
                             SingleCsvFile(
                                 csvFileName =
-                                    sessionModel.timeStamp.substringBeforeLast("_") + "_" +
-                                            formatTimestamp(sessionModel.timeStamp.substringAfterLast("_")),
+                                    file.fileName.substringBeforeLast("_") + "_" +
+                                            formatTimestamp(file.timeStamp.substringAfterLast("_")),
                                 isSelected = isSelectedFile,
-                                timeStamp = sessionModel.timeStamp.substringAfterLast("_"),
+                                timeStamp = file.timeStamp,
                                 type = CsvHistoryDirection.EXPORT.displayName,
                                 onChoose = {
                                     csvViewModel.onCsvIntent(
                                         CsvIntent.ToggleFileSelect(
-                                            type = CsvHistoryDirection.EXPORT.displayName,
+                                            type = "Export",
                                             fileIndex = index,
-                                            fileSessionId = sessionModel.sessionId,
+                                            fileSessionId = file.sessionId,
                                         )
                                     )
                                 }

@@ -48,6 +48,7 @@ import com.example.sol_denka_stockmanagement.exception.MissingHeaderException
 import com.example.sol_denka_stockmanagement.exception.ReferenceMasterMissingFileException
 import com.example.sol_denka_stockmanagement.exception.SqliteConstraintAppException
 import com.example.sol_denka_stockmanagement.model.csv.CsvFileInfoModel
+import com.example.sol_denka_stockmanagement.model.csv.ExportFileModel
 import com.example.sol_denka_stockmanagement.model.inbound.InboundEventModel
 import com.example.sol_denka_stockmanagement.model.inbound.toCsvModel
 import com.example.sol_denka_stockmanagement.model.inventory.InventoryDetailModel
@@ -226,16 +227,17 @@ class CsvHelper @Inject constructor(
         }
     }
 
-    suspend fun listExportFileName(csvType: String): List<SessionModel> {
+    suspend fun listExportFileName(csvType: String): List<ExportFileModel> {
         try {
-            val listFileName = mutableListOf<SessionModel>()
+            val listFileName = mutableListOf<ExportFileModel>()
             when (csvType) {
                 CsvType.InboundResult.displayNameJp -> {
                     inboundSessionRepository.getSession().map { model ->
                         listFileName.add(
-                            SessionModel(
+                            ExportFileModel(
                                 sessionId = model.sessionId,
-                                timeStamp = "${CsvType.InboundResult.displayNameEng}_${model.timeStamp}"
+                                fileName = "${CsvType.InboundResult.displayNameEng}_${model.timeStamp}",
+                                timeStamp = model.timeStamp
                             )
                         )
                     }
@@ -244,9 +246,10 @@ class CsvHelper @Inject constructor(
                 CsvType.OutboundResult.displayNameJp -> outboundSessionRepository.getSession()
                     .map { model ->
                         listFileName.add(
-                            SessionModel(
+                            ExportFileModel(
                                 sessionId = model.sessionId,
-                                timeStamp = "${CsvType.OutboundResult.displayNameEng}_${model.timeStamp}"
+                                fileName = "${CsvType.OutboundResult.displayNameEng}_${model.timeStamp}",
+                                timeStamp = model.timeStamp
                             )
                         )
                     }
@@ -254,9 +257,10 @@ class CsvHelper @Inject constructor(
                 CsvType.LocationChangeResult.displayNameJp -> locationChangeSessionRepository.getSession()
                     .map { model ->
                         listFileName.add(
-                            SessionModel(
+                            ExportFileModel(
                                 sessionId = model.sessionId,
-                                timeStamp = "${CsvType.LocationChangeResult.displayNameEng}_${model.timeStamp}"
+                                fileName = "${CsvType.LocationChangeResult.displayNameEng}_${model.timeStamp}",
+                                timeStamp = model.timeStamp
                             )
                         )
                     }
@@ -264,9 +268,10 @@ class CsvHelper @Inject constructor(
                 CsvType.InventoryResult.displayNameJp -> inventorySessionRepository.getSession()
                     .map { model ->
                         listFileName.add(
-                            SessionModel(
+                            ExportFileModel(
                                 sessionId = model.sessionId,
-                                timeStamp = "${CsvType.InventoryResult.displayNameEng}_${model.timeStamp}"
+                                fileName = "${CsvType.InventoryResult.displayNameEng}_${model.timeStamp}",
+                                timeStamp = model.timeStamp
                             )
                         )
                     }
