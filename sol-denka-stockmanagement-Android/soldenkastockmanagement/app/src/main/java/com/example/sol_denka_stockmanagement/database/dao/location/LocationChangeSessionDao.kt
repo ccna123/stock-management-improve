@@ -16,7 +16,7 @@ interface LocationChangeSessionDao {
     fun get(): Flow<List<LocationChangeSessionEntity>>
 
     @Query("SELECT location_change_session_id AS sessionId, executed_at AS timeStamp FROM LocationChangeSession")
-    suspend fun getExecutedAt(): List<SessionModel>
+    suspend fun getSession(): List<SessionModel>
 
     @Insert
     suspend fun insert(e: LocationChangeSessionEntity): Long

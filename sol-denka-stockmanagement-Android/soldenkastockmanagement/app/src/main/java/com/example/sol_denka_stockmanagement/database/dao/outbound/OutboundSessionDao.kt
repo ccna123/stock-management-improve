@@ -17,7 +17,7 @@ interface OutboundSessionDao {
     fun get(): Flow<List<OutboundSessionEntity>>
 
     @Query("SELECT outbound_session_id AS sessionId, executed_at AS timeStamp FROM OutboundSession")
-    suspend fun getExecutedAt(): List<SessionModel>
+    suspend fun getSession(): List<SessionModel>
 
     @Insert(onConflict = REPLACE)
     suspend fun insert(e: OutboundSessionEntity): Long

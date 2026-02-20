@@ -241,7 +241,7 @@ class CsvHelper @Inject constructor(
                     }
                 }
 
-                CsvType.OutboundResult.displayNameJp -> outboundSessionRepository.getExecutedAt()
+                CsvType.OutboundResult.displayNameJp -> outboundSessionRepository.getSession()
                     .map { model ->
                         listFileName.add(
                             SessionModel(
@@ -251,7 +251,7 @@ class CsvHelper @Inject constructor(
                         )
                     }
 
-                CsvType.LocationChangeResult.displayNameJp -> locationChangeSessionRepository.getExecutedAt()
+                CsvType.LocationChangeResult.displayNameJp -> locationChangeSessionRepository.getSession()
                     .map { model ->
                         listFileName.add(
                             SessionModel(
@@ -261,7 +261,7 @@ class CsvHelper @Inject constructor(
                         )
                     }
 
-                CsvType.InventoryResult.displayNameJp -> inventorySessionRepository.getExecutedAt()
+                CsvType.InventoryResult.displayNameJp -> inventorySessionRepository.getSession()
                     .map { model ->
                         listFileName.add(
                             SessionModel(

@@ -17,7 +17,7 @@ class LocationChangeSessionRepository @Inject constructor(
     fun get(): Flow<List<LocationChangeSessionModel>> = dao.get().map { entityList ->
         entityList.map { it.toModel() }
     }
-    suspend fun getExecutedAt(): List<SessionModel> = dao.getExecutedAt()
+    suspend fun getSession(): List<SessionModel> = dao.getSession()
     suspend fun insert(model: LocationChangeSessionModel) = dao.insert(model.toEntity())
     suspend fun update(model: LocationChangeSessionModel) = dao.update(model.toEntity())
     suspend fun delete(model: LocationChangeSessionModel) = dao.delete(model.toEntity())
