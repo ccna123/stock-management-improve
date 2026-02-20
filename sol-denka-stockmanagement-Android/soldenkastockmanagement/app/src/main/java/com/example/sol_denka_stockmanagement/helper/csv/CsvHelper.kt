@@ -715,12 +715,6 @@ class CsvHelper @Inject constructor(
         val relativePath =
             Environment.DIRECTORY_DOWNLOADS + "/$ROOT_FOLDER/$localFolder/"
 
-        // Remove file that has same name
-        resolver.delete(
-            externalUri,
-            "${MediaStore.MediaColumns.RELATIVE_PATH}=? AND ${MediaStore.MediaColumns.DISPLAY_NAME}=?",
-            arrayOf(relativePath, fileName)
-        )
 
         // Get header from first row
         val headerLine = rows.first().toHeader().joinToString(",")
