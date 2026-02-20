@@ -70,16 +70,21 @@ fun InventoryCompleteScreen(
     val generalState by appViewModel.generalState.collectAsStateWithLifecycle()
     val inputState by appViewModel.inputState.collectAsStateWithLifecycle()
     val rfidTagList by scanViewModel.rfidTagList.collectAsStateWithLifecycle()
+
     val wrongLocationCount by inventoryCompleteViewModel.wrongLocationCount.collectAsStateWithLifecycle()
     val shortageCount by inventoryCompleteViewModel.shortageCount.collectAsStateWithLifecycle()
     val overCount by inventoryCompleteViewModel.overCount.collectAsStateWithLifecycle()
+
     val okCount by inventoryCompleteViewModel.okCount.collectAsStateWithLifecycle()
     val isNetworkConnected by appViewModel.isNetworkConnected.collectAsStateWithLifecycle()
-
     val scope = rememberCoroutineScope()
 
     LaunchedEffect(Unit) {
         scanViewModel.setEnableScan(false)
+        inventoryCompleteViewModel.computeResult(
+            rfidTagList = rfidTagList,
+            locationName = inputState.location!!.locationName
+        )
     }
 
     if (generalState.showNetworkDialog) {

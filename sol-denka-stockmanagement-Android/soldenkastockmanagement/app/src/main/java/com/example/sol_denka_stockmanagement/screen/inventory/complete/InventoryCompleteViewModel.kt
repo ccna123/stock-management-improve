@@ -3,6 +3,9 @@ package com.example.sol_denka_stockmanagement.screen.inventory.complete
 import android.os.Build
 import android.util.Log
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.example.sol_denka_stockmanagement.constant.InventoryResultType
+import com.example.sol_denka_stockmanagement.constant.TagScanStatus
 import com.example.sol_denka_stockmanagement.constant.formatTimestamp
 import com.example.sol_denka_stockmanagement.database.repository.inventory.InventoryCompleteRepository
 import com.example.sol_denka_stockmanagement.database.repository.tag.TagMasterRepository
@@ -13,6 +16,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
@@ -36,6 +40,42 @@ class InventoryCompleteViewModel @Inject constructor(
     val overCount = _overCount.asStateFlow()
 
     private val csvModels = mutableListOf<InventoryResultCsvModel>()
+
+    fun computeResult(rfidTagList: List<TagMasterModel>, locationName: String) {
+        viewModelScope.launch {
+            val newList =
+                rfidTagList.map { tag ->
+                    val wrongLocation =
+                        tag.newFields.tagScanStatus == TagScanStatus.PROCESSED && tag.newFields.location != locationName
+                    val shortage =
+                        tag.newFields.tagScanStatus != TagScanStatus.PROCESSED && tag.newFields.isInStock && tag.newFields.location == locationName
+                    val over =
+                        tag.newFields.tagScanStatus == TagScanStatus.PROCESSED && tag.newFields.isInStock.not() && tag.newFields.location == locationName
+                    val ok =
+                        tag.newFields.tagScanStatus == TagScanStatus.PROCESSED && tag.newFields.isInStock && tag.newFields.location == locationName
+
+
+                    val resultType = when {
+                        wrongLocation -> InventoryResultType.FOUND_WRONG_LOCATION
+                        shortage -> InventoryResultType.NOT_FOUND
+                        over -> InventoryResultType.FOUND_OVER_STOCK
+                        ok -> InventoryResultType.FOUND_OK
+                        else -> InventoryResultType.UNKNOWN
+                    }
+                    tag.copy(newFields = tag.newFields.copy(inventoryResultType = resultType))
+                }
+            Log.e("TSS", "computeResult: ${newList.filter { it.newFields.inventoryResultType != InventoryResultType.UNKNOWN }}", )
+            _wrongLocationCount.value =
+                newList.count { it.newFields.inventoryResultType == InventoryResultType.FOUND_WRONG_LOCATION }
+            _shortageCount.value =
+                newList.count { it.newFields.inventoryResultType == InventoryResultType.NOT_FOUND }
+            _overCount.value =
+                newList.count { it.newFields.inventoryResultType == InventoryResultType.FOUND_OVER_STOCK }
+            _okCount.value =
+                newList.count { it.newFields.inventoryResultType == InventoryResultType.FOUND_OK }
+
+        }
+    }
 
     suspend fun generateCsvData(
         memo: String,

@@ -12,8 +12,7 @@ data class LocationChangeResultCsvModel(
     val scannedAt: String,
     val executedAt: String,
     val timeStamp: String
-
-    ) : ICsvExport {
+) : ICsvExport {
     override fun toHeader(): List<String> = listOf(
         "ledger_item_id",
         "location_id",
