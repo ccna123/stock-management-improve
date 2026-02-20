@@ -315,7 +315,7 @@ fun CsvExportScreen(
                                 onChoose = {
                                     csvViewModel.onCsvIntent(
                                         CsvIntent.ToggleFileSelect(
-                                            type = "Export",
+                                            type = CsvHistoryDirection.EXPORT.displayName,
                                             fileIndex = index,
                                             fileSessionId = sessionModel.sessionId,
                                         )

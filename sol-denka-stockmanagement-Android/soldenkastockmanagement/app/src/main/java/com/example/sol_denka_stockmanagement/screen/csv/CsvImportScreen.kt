@@ -39,6 +39,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.sol_denka_stockmanagement.R
 import com.example.sol_denka_stockmanagement.constant.CsvFileType
+import com.example.sol_denka_stockmanagement.constant.CsvHistoryDirection
 import com.example.sol_denka_stockmanagement.constant.CsvType
 import com.example.sol_denka_stockmanagement.constant.ProcessResult
 import com.example.sol_denka_stockmanagement.constant.SelectTitle
@@ -282,6 +283,7 @@ fun CsvImportScreen(
                                 csvFileName = file.fileName,
                                 csvFileSize = file.fileSize,
                                 isSelected = isSelectedFile,
+                                type = CsvHistoryDirection.IMPORT.displayName,
                                 csvType = when(csvType){
                                     CsvType.ReferenceMaster.displayNameJp -> CsvFileType.ZIP_FILE
                                     else -> CsvFileType.SINGLE_FILE
@@ -293,7 +295,7 @@ fun CsvImportScreen(
                                 onChoose = {
                                     csvViewModel.onCsvIntent(
                                         CsvIntent.ToggleFileSelect(
-                                            type = "Import",
+                                            type = CsvHistoryDirection.IMPORT.displayName,
                                             fileIndex = index,
                                             fileName = file.fileName
                                         )
