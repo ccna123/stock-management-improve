@@ -163,7 +163,7 @@ fun HomeScreen(
                                     )
                                     Screen.Inventory -> appViewModel.checkMasterAndNavigate(
                                         operation = "inventory",
-                                        screen = Screen.Scan(Screen.Inventory.routeId)
+                                        screen = Screen.Inventory
                                     )
                                     else -> error("No route")
                                 }
