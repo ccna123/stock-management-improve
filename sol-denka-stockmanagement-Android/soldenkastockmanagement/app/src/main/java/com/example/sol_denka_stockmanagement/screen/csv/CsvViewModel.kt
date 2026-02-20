@@ -114,7 +114,10 @@ class CsvViewModel @Inject constructor(
             }
 
             is CsvIntent.ToggleProgressVisibility -> _showProgress.value = intent.show
-            CsvIntent.ClearCsvFileList -> _csvFiles.value = emptyList()
+            CsvIntent.ClearCsvFileList -> {
+                _csvFiles.value = emptyList()
+                _exportFiles.value = emptyList()
+            }
             CsvIntent.FetchCsvFiles -> fetchCsvFiles()
 
             CsvIntent.ResetCsvType -> _csvType.value = ""
