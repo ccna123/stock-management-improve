@@ -16,6 +16,9 @@ interface LocationDao {
     @Query("SELECT * FROM LocationMaster")
     fun get(): Flow<List<LocationMasterEntity>>
 
+    @Query("SELECT COUNT(*) FROM LocationMaster")
+    suspend fun countRecord(): Int
+
     @Insert(onConflict = REPLACE)
     suspend fun insert(e: LocationMasterEntity): Long
 

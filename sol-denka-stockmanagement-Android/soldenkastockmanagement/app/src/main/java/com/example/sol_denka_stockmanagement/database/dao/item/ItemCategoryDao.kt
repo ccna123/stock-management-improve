@@ -16,6 +16,9 @@ interface ItemCategoryDao {
     @Query("SELECT * FROM ItemCategoryMaster")
     fun get(): Flow<List<ItemCategoryEntity>>
 
+    @Query("SELECT COUNT(*) FROM ItemCategoryMaster")
+    suspend fun countRecord(): Int
+
     @Query("SELECT item_category_id FROM ItemCategoryMaster WHERE item_category_name = :name")
     suspend fun getIdByName(name: String): Long
 

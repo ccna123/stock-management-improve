@@ -3,7 +3,6 @@ package com.example.sol_denka_stockmanagement.viewmodel
 import android.content.Context
 import app.cash.turbine.test
 import com.example.sol_denka_stockmanagement.MainDispatcherRule
-import com.example.sol_denka_stockmanagement.app_interface.IPresetRepo
 import com.example.sol_denka_stockmanagement.constant.Category
 import com.example.sol_denka_stockmanagement.constant.ConnectionState
 import com.example.sol_denka_stockmanagement.constant.ControlType

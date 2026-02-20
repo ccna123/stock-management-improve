@@ -18,6 +18,8 @@ class ProcessTypeRepository @Inject constructor(
         entityList.map { it.toModel() }
     }
 
+    suspend fun countRecord() = dao.countRecord()
+
     suspend fun getIdByName(processTypeName: String) = dao.getIdByName(processTypeName)
 
     suspend fun insert(model: ProcessTypeModel) = dao.insert(model.toEntity())

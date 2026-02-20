@@ -16,6 +16,9 @@ interface ItemTypeDao {
     @Query("SELECT * FROM ItemTypeMaster")
     fun get(): Flow<List<ItemTypeMasterEntity>>
 
+    @Query("SELECT COUNT(*) FROM ItemTypeMaster")
+    suspend fun countRecord(): Int
+
     @Insert(onConflict = REPLACE)
     suspend fun insert(e: ItemTypeMasterEntity): Long
 

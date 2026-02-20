@@ -17,6 +17,9 @@ interface TagMasterDao {
     @Query("SELECT * FROM TagMaster")
     fun get(): Flow<List<TagMasterEntity>>
 
+    @Query("SELECT COUNT(*) FROM TagMaster")
+    suspend fun countRecord(): Int
+
     @Insert(onConflict = REPLACE)
     suspend fun insert(e: TagMasterEntity): Long
 

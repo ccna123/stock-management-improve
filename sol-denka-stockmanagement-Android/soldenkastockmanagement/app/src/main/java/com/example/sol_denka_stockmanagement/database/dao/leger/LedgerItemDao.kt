@@ -16,6 +16,9 @@ interface LedgerItemDao {
     @Query("SELECT * FROM ledgeritem")
     fun get(): Flow<List<LedgerItemEntity>>
 
+    @Query("SELECT COUNT(*) FROM ledgeritem")
+    suspend fun countRecord(): Int
+
     @Query("SELECT winder_id FROM LedgerItem WHERE ledger_item_id = :ledgerId ")
     suspend fun getWinderIdByLedgerId(ledgerId: Int): Int
 

@@ -39,4 +39,8 @@ sealed interface DialogState {
         val message: String = ""
     ): DialogState
 
+    data class MasterInvalid(
+        val message: String = ""
+    ): DialogState
+
 }

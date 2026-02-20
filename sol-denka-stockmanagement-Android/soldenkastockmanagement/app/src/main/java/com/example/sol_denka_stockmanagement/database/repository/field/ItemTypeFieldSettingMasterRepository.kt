@@ -17,6 +17,7 @@ class ItemTypeFieldSettingMasterRepository @Inject constructor(
     fun get(): Flow<List<ItemTypeFieldSettingMasterModel>> = dao.get().map { entityList ->
         entityList.map { it.toModel() }
     }
+    suspend fun countRecord() = dao.countRecord()
     suspend fun getFieldForItemTypeByItemTypeId(id: Int) = dao.getFieldForItemTypeByItemTypeId(id)
     suspend fun insert(model: ItemTypeFieldSettingMasterModel) = dao.insert(model.toEntity())
     suspend fun update(model: ItemTypeFieldSettingMasterModel) = dao.update(model.toEntity())

@@ -42,11 +42,12 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.sol_denka_stockmanagement.R
 import com.example.sol_denka_stockmanagement.constant.ScanMode
 import com.example.sol_denka_stockmanagement.intent.ShareIntent
-import com.example.sol_denka_stockmanagement.screen.home.model.HomeMenuModel
 import com.example.sol_denka_stockmanagement.navigation.Screen
+import com.example.sol_denka_stockmanagement.screen.home.model.HomeMenuModel
 import com.example.sol_denka_stockmanagement.screen.layout.Layout
 import com.example.sol_denka_stockmanagement.share.ButtonContainer
 import com.example.sol_denka_stockmanagement.share.dialog.ConfirmDialog
@@ -63,8 +64,11 @@ fun HomeScreen(
     onNavigate: (Screen) -> Unit
 ) {
     val scope = rememberCoroutineScope()
+    val doesMasterValid by appViewModel.doesMasterValid.collectAsStateWithLifecycle()
     val context = LocalContext.current
+
     var showExitDialog by remember { mutableStateOf(false) }
+    var showMasterInvalidDialog by remember { mutableStateOf(false) }
 
     val menuItems = listOf(
         HomeMenuModel(screen = Screen.Inbound, icon = R.drawable.receiving),
@@ -78,14 +82,20 @@ fun HomeScreen(
     }
 
     LaunchedEffect(Unit) {
-        appViewModel.apply {
-            onGeneralIntent(ShareIntent.ResetState)
-        }
+        appViewModel.onGeneralIntent(ShareIntent.ResetState)
         scanViewModel.apply {
             resetIsCheckedField()
             clearTagStatusAndRssi()
             clearInboundDetail()
             setScanMode(ScanMode.NONE)
+        }
+    }
+
+    LaunchedEffect(Unit) {
+        appViewModel.navigateTo.collect { screen ->
+            screen?.let {
+                onNavigate(it)
+            }
         }
     }
 
@@ -140,10 +150,25 @@ fun HomeScreen(
                                 interactionSource = remember { MutableInteractionSource() }
                             ) {
                                 when (menu.screen) {
-                                    Screen.Inbound -> onNavigate(Screen.Scan(Screen.Inbound.routeId))
-                                    Screen.Outbound -> onNavigate(Screen.Scan(Screen.Outbound.routeId))
-                                    Screen.LocationChange -> onNavigate(Screen.Scan(Screen.LocationChange.routeId))
-                                    Screen.Inventory -> onNavigate(Screen.Inventory)
+                                    Screen.Inbound -> {
+                                        appViewModel.checkMasterAndNavigate(
+                                            operation = "inbound",
+                                            screen = Screen.Scan(Screen.Inbound.routeId)
+                                        )
+                                    }
+
+                                    Screen.Outbound -> appViewModel.checkMasterAndNavigate(
+                                        operation = "outbound",
+                                        screen = Screen.Scan(Screen.Outbound.routeId)
+                                    )
+                                    Screen.LocationChange -> appViewModel.checkMasterAndNavigate(
+                                        operation = "location_change",
+                                        screen = Screen.Scan(Screen.LocationChange.routeId)
+                                    )
+                                    Screen.Inventory -> appViewModel.checkMasterAndNavigate(
+                                        operation = "inventory",
+                                        screen = Screen.Scan(Screen.Inventory.routeId)
+                                    )
                                     else -> error("No route")
                                 }
                             }, contentAlignment = Alignment.Center

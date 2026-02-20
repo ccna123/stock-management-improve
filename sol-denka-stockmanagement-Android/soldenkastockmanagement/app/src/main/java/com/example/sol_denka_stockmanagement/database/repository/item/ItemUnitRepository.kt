@@ -16,6 +16,8 @@ class ItemUnitRepository @Inject constructor(
     fun get(): Flow<List<ItemUnitMasterModel>> =
         dao.get().map { entityList -> entityList.map { it.toModel() } }
 
+    suspend fun countRecord() = dao.countRecord()
+
     suspend fun insert(model: ItemUnitMasterModel) = dao.insert(model.toEntity())
     suspend fun update(model: ItemUnitMasterModel) = dao.update(model.toEntity())
     suspend fun delete(model: ItemUnitMasterModel) = dao.delete(model.toEntity())

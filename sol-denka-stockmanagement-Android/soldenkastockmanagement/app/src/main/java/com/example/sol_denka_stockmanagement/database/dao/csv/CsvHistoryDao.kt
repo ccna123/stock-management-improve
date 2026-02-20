@@ -14,6 +14,9 @@ interface CsvHistoryDao {
     @Query("SELECT * FROM CsvHistory")
     fun get(): Flow<List<CsvHistoryEntity>>
 
+    @Query("SELECT COUNT(*) FROM CsvHistory")
+    suspend fun countRecord(): Int
+
     @Insert
     suspend fun insert(e: CsvHistoryEntity): Long
 

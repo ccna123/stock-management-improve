@@ -1,6 +1,5 @@
 package com.example.sol_denka_stockmanagement.database.repository.winder
 
-import com.example.sol_denka_stockmanagement.app_interface.IPresetRepo
 import com.example.sol_denka_stockmanagement.database.dao.winder.WinderDao
 import com.example.sol_denka_stockmanagement.model.winder.WinderModel
 import com.example.sol_denka_stockmanagement.model.winder.toEntity
@@ -13,14 +12,12 @@ import javax.inject.Singleton
 @Singleton
 class WinderRepository @Inject constructor(
     private val dao: WinderDao
-): IPresetRepo {
-
-
-    override suspend fun ensurePresetInserted() {
-    }
+){
 
     fun get(): Flow<List<WinderModel>> =
         dao.get().map { entityList -> entityList.map { it.toModel() } }
+
+    suspend fun countRecord() = dao.countRecord()
 
     suspend fun getIdByName(winderName: String) = dao.getIdByName(winderName)
 

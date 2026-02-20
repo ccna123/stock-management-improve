@@ -16,6 +16,8 @@ class CsvTaskTypeRepository @Inject constructor(
     fun get(): Flow<List<CsvTaskTypeModel>> = dao.get().map { entityList ->
         entityList.map { it.toModel() }
     }
+
+    suspend fun countRecord() = dao.countRecord()
     suspend fun getIdByTaskCode(taskCode: String) = dao.getIdByTaskCode(taskCode)
     suspend fun insert(model: CsvTaskTypeModel) = dao.insert(model.toEntity())
     suspend fun update(model: CsvTaskTypeModel) = dao.update(model.toEntity())

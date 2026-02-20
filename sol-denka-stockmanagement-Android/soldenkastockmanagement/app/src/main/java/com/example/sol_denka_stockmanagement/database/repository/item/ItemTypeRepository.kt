@@ -17,6 +17,8 @@ class ItemTypeRepository @Inject constructor(
     fun get(): Flow<List<ItemTypeMasterModel>> =
         dao.get().map { list -> list.map { it.toModel() } }
 
+    suspend fun countRecord() = dao.countRecord()
+
     suspend fun getItemTypeByCategoryId(categoryId: Int) =
         dao.getItemTypeByCategoryId(categoryId).map { it.toModel() }
 

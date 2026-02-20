@@ -17,6 +17,9 @@ interface WinderDao {
     @Query("SELECT * FROM Winder")
     fun get(): Flow<List<WinderEntity>>
 
+    @Query("SELECT COUNT(*) FROM Winder")
+    suspend fun countRecord(): Int
+
     @Query("SELECT winder_id FROM Winder WHERE winder_name = :winderName")
     suspend fun getIdByName(winderName: String): Int?
 

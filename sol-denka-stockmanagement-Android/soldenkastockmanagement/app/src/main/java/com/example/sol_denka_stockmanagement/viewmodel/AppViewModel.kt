@@ -18,11 +18,16 @@ import com.example.sol_denka_stockmanagement.constant.StatusCode
 import com.example.sol_denka_stockmanagement.constant.generateIso8601JstTimestamp
 import com.example.sol_denka_stockmanagement.database.repository.csv.CsvHistoryRepository
 import com.example.sol_denka_stockmanagement.database.repository.csv.CsvTaskTypeRepository
+import com.example.sol_denka_stockmanagement.database.repository.field.FieldMasterRepository
 import com.example.sol_denka_stockmanagement.database.repository.field.ItemTypeFieldSettingMasterRepository
 import com.example.sol_denka_stockmanagement.database.repository.item.ItemCategoryRepository
 import com.example.sol_denka_stockmanagement.database.repository.item.ItemTypeRepository
+import com.example.sol_denka_stockmanagement.database.repository.item.ItemUnitRepository
+import com.example.sol_denka_stockmanagement.database.repository.ledger.LedgerItemRepository
 import com.example.sol_denka_stockmanagement.database.repository.location.LocationMasterRepository
 import com.example.sol_denka_stockmanagement.database.repository.process.ProcessTypeRepository
+import com.example.sol_denka_stockmanagement.database.repository.tag.TagMasterRepository
+import com.example.sol_denka_stockmanagement.database.repository.tag.TagStatusMasterRepository
 import com.example.sol_denka_stockmanagement.database.repository.winder.WinderRepository
 import com.example.sol_denka_stockmanagement.exception.AppException
 import com.example.sol_denka_stockmanagement.helper.NetworkConnectionObserver
@@ -41,6 +46,7 @@ import com.example.sol_denka_stockmanagement.model.location.LocationMasterModel
 import com.example.sol_denka_stockmanagement.model.process.ProcessTypeModel
 import com.example.sol_denka_stockmanagement.model.reader.ReaderInfoModel
 import com.example.sol_denka_stockmanagement.model.winder.WinderModel
+import com.example.sol_denka_stockmanagement.navigation.Screen
 import com.example.sol_denka_stockmanagement.state.DialogState
 import com.example.sol_denka_stockmanagement.state.DialogState.*
 import com.example.sol_denka_stockmanagement.state.DialogState.Error
@@ -55,10 +61,12 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
@@ -68,6 +76,7 @@ class AppViewModel @Inject constructor(
     private val readerController: ReaderController,
     private val connectionObserver: NetworkConnectionObserver,
     private val locationMasterRepository: LocationMasterRepository,
+    private val tagMasterRepository: TagMasterRepository,
     private val csvTaskTypeRepository: CsvTaskTypeRepository,
     private val csvHistoryRepository: CsvHistoryRepository,
     private val itemTypeRepository: ItemTypeRepository,
@@ -75,6 +84,10 @@ class AppViewModel @Inject constructor(
     private val itemCategoryRepository: ItemCategoryRepository,
     private val winderRepository: WinderRepository,
     private val processTypeRepository: ProcessTypeRepository,
+    private val ledgerItemRepository: LedgerItemRepository,
+    private val fieldMasterRepository: FieldMasterRepository,
+    private val itemUnitRepository: ItemUnitRepository,
+    private val tagStatusMasterRepository: TagStatusMasterRepository,
     private val csvHelper: CsvHelper,
 ) : ViewModel() {
 
@@ -136,6 +149,12 @@ class AppViewModel @Inject constructor(
 
     private val _searchResults = MutableStateFlow<List<ItemTypeMasterModel>>(emptyList())
     val searchResults = _searchResults.asStateFlow()
+
+    private val _navigateTo = MutableSharedFlow<Screen?>()
+    val navigateTo = _navigateTo.asSharedFlow()
+
+    private val _doesMasterValid = MutableStateFlow(false)
+    val doesMasterValid = _doesMasterValid.asStateFlow()
 
     private val _inboundInputFormResults =
         MutableStateFlow<List<InboundInputFormModel>>(emptyList())
@@ -289,7 +308,7 @@ class AppViewModel @Inject constructor(
                 resetInboundInputForm()
                 viewModelScope.launch {
                     _inboundInputFormResults.value =
-                    itemTypeFieldSettingMasterRepository.getFieldForItemTypeByItemTypeId(intent.itemId)
+                        itemTypeFieldSettingMasterRepository.getFieldForItemTypeByItemTypeId(intent.itemId)
                 }
             }
 
@@ -373,6 +392,7 @@ class AppViewModel @Inject constructor(
                 perTagProcessMethod.value = emptyMap()
                 _showModalProcessMethod.value = false
                 _inboundInputFormResults.value = emptyList()
+                _doesMasterValid.value = false
             }
 
             ShareIntent.ToggleDialog -> showAppDialog.value = !showAppDialog.value
@@ -450,6 +470,7 @@ class AppViewModel @Inject constructor(
                             )
                         }
                     }
+
                     DialogType.EXPORT_CSV_FAILED -> {
                         _dialogState.update {
                             ExportCsvFailed(
@@ -543,6 +564,72 @@ class AppViewModel @Inject constructor(
             ExpandIntent.ToggleCsvTypeExpanded -> _expandState.update { it.copy(csvTypeExpanded = !_expandState.value.csvTypeExpanded) }
             ExpandIntent.ToggleCategoryExpanded -> _expandState.update { it.copy(categoryExpanded = !_expandState.value.categoryExpanded) }
             ExpandIntent.ToggleWinderExpanded -> _expandState.update { it.copy(winderExpanded = !_expandState.value.winderExpanded) }
+        }
+    }
+
+    fun checkMasterAndNavigate(operation: String, screen: Screen) {
+        viewModelScope.launch(Dispatchers.IO) {
+
+            val missingMasters = mutableListOf<String>()
+
+            if (locationMasterRepository.countRecord() == 0)
+                missingMasters.add("保管場所マスタCSV")
+
+            if (tagMasterRepository.countRecord() == 0)
+                missingMasters.add("タグマスタCSV")
+
+            if (itemTypeRepository.countRecord() == 0)
+                missingMasters.add("品目マスタCSV")
+
+            if (csvTaskTypeRepository.countRecord() == 0)
+                missingMasters.add("CSVタスク種別CSV")
+
+            if (fieldMasterRepository.countRecord() == 0)
+                missingMasters.add("項目マスタCSV")
+
+            if (itemCategoryRepository.countRecord() == 0)
+                missingMasters.add("品目区分CSV")
+
+            if (itemUnitRepository.countRecord() == 0)
+                missingMasters.add("品目単位CSV")
+
+            if (processTypeRepository.countRecord() == 0)
+                missingMasters.add("処理種別CSV")
+
+            if (tagStatusMasterRepository.countRecord() == 0)
+                missingMasters.add("タグステータス種別CSV")
+
+            if (winderRepository.countRecord() == 0)
+                missingMasters.add("巻取機CSV")
+
+
+            // operation-specific
+            if (operation != "inbound") {
+                if (ledgerItemRepository.countRecord() == 0)
+                    missingMasters.add("台帳アイテムCSV")
+            } else {
+                if (itemTypeFieldSettingMasterRepository.countRecord() == 0)
+                    missingMasters.add("品目項目設定マスタCSV")
+            }
+
+            if (missingMasters.isEmpty()) {
+                _doesMasterValid.value = true
+                _navigateTo.emit(screen)
+            } else {
+                _doesMasterValid.value = false
+
+                val message = buildString {
+                    append("以下のマスタが連携されていません：\n\n")
+                    missingMasters.forEach {
+                        append("・$it\n")
+                    }
+                    append("\nマスタの取込を行ってください")
+                }
+
+                _dialogState.value = MasterInvalid(
+                    message = message
+                )
+            }
         }
     }
 

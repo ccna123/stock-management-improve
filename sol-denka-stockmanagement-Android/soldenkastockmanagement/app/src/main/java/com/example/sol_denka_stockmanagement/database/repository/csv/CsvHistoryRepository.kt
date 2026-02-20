@@ -16,6 +16,7 @@ class CsvHistoryRepository @Inject constructor(
     fun get(): Flow<List<CsvHistoryModel>> = dao.get().map { entityList ->
         entityList.map { it.toModel() }
     }
+    suspend fun countRecord() = dao.countRecord()
     suspend fun insert(model: CsvHistoryModel) = dao.insert(model.toEntity())
     suspend fun update(model: CsvHistoryModel) = dao.update(model.toEntity())
     suspend fun delete(model: CsvHistoryModel) = dao.delete(model.toEntity())

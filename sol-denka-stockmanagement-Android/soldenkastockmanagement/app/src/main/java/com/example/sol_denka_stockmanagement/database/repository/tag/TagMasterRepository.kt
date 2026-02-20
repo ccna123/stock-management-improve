@@ -17,6 +17,8 @@ class TagMasterRepository @Inject constructor(
 
     fun get(): Flow<List<TagMasterModel>> = dao.get().map { list -> list.map { it.toModel() } }
 
+    suspend fun countRecord() = dao.countRecord()
+
     suspend fun getFullInfo() = dao.getFullInfo()
 
     suspend fun getLedgerIdByTagId(tagId: Int): Int{

@@ -17,7 +17,7 @@ class LocationMasterRepository @Inject constructor(
         entityList.map { it.toModel() }
     }
 
-    suspend fun getLocationIdByName(locationName: String) = dao.getLocationIdByName(locationName)
+    suspend fun countRecord() = dao.countRecord()
 
     suspend fun insert(model: LocationMasterModel) = dao.insert(model.toEntity())
 

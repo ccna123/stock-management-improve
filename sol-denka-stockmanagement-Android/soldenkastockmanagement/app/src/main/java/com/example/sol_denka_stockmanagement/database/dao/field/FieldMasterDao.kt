@@ -16,6 +16,9 @@ interface FieldMasterDao {
     @Query("SELECT * FROM FieldMaster")
     fun get(): Flow<List<FieldMasterEntity>>
 
+    @Query("SELECT COUNT(*) FROM FieldMaster")
+    suspend fun countRecord(): Int
+
     @Insert
     suspend fun insert(e: FieldMasterEntity): Long
 

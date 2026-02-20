@@ -317,6 +317,24 @@ fun Layout(
                 )
             )
         }
+        is DialogState.MasterInvalid -> {
+            ConfirmDialog(
+                showDialog = true,
+                textColor = Color.Red,
+                dialogTitle = d.message,
+                buttons = listOf(
+                    {
+                        ButtonContainer(
+                            buttonText = stringResource(R.string.close),
+                            onClick = {
+                                appViewModel?.onGeneralIntent(ShareIntent.HiddenDialog)
+                                onNavigate?.invoke(Screen.Home)
+                            }
+                        )
+                    }
+                )
+            )
+        }
         DialogState.Hidden -> Unit
     }
 

@@ -16,6 +16,9 @@ interface CsvTaskTypeDao {
     @Query("SELECT * FROM CsvTaskType")
     fun get(): Flow<List<CsvTaskTypeEntity>>
 
+    @Query("SELECT COUNT(*) FROM CsvTaskType")
+    suspend fun countRecord(): Int
+
     @Query("SELECT csv_task_type_id FROM CsvTaskType WHERE csv_task_code = :taskCode")
     suspend fun getIdByTaskCode(taskCode: String): Int
 

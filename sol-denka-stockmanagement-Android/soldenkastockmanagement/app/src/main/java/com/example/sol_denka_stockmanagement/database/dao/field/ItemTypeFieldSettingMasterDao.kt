@@ -17,6 +17,9 @@ interface ItemTypeFieldSettingMasterDao {
     @Query("SELECT * FROM ItemTypeFieldSettingMaster")
     fun get(): Flow<List<ItemTypeFieldSettingMasterEntity>>
 
+    @Query("SELECT COUNT(*) FROM ItemTypeFieldSettingMaster")
+    suspend fun countRecord(): Int
+
     @Query(
         """
         SELECT 
