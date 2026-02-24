@@ -19,7 +19,7 @@ class OutboundEventRepository @Inject constructor(
     }
 
     suspend fun getEventBySessionId(sessionId: Int) =
-        dao.getEventBySessionId(sessionId).map { it.toModel() }
+        dao.getEventBySessionId(sessionId)
 
     suspend fun insert(model: OutBoundEventModel) = dao.insert(model.toEntity())
     suspend fun update(model: OutBoundEventModel) = dao.update(model.toEntity())

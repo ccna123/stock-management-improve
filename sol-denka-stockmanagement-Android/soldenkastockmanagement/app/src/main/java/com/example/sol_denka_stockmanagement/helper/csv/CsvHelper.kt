@@ -51,12 +51,11 @@ import com.example.sol_denka_stockmanagement.model.csv.CsvFileInfoModel
 import com.example.sol_denka_stockmanagement.model.csv.ExportFileModel
 import com.example.sol_denka_stockmanagement.model.inbound.InboundEventModel
 import com.example.sol_denka_stockmanagement.model.inbound.toCsvModel
-import com.example.sol_denka_stockmanagement.model.inventory.InventoryDetailModel
 import com.example.sol_denka_stockmanagement.model.inventory.InventoryEventForExportModel
 import com.example.sol_denka_stockmanagement.model.inventory.toCsvModel
-import com.example.sol_denka_stockmanagement.model.location.LocationChangeEventModel
+import com.example.sol_denka_stockmanagement.model.location.LocationChangeEventForExportModel
 import com.example.sol_denka_stockmanagement.model.location.toCsvModel
-import com.example.sol_denka_stockmanagement.model.outbound.OutBoundEventModel
+import com.example.sol_denka_stockmanagement.model.outbound.OutboundEventForExportModel
 import com.example.sol_denka_stockmanagement.model.outbound.toCsvModel
 import com.jcraft.jsch.ChannelSftp
 import com.jcraft.jsch.JSch
@@ -291,12 +290,12 @@ class CsvHelper @Inject constructor(
             ?: emptyList()
     }
 
-    suspend fun getOutboundEvents(sessionId: Int): List<OutBoundEventModel> {
+    suspend fun getOutboundEvents(sessionId: Int): List<OutboundEventForExportModel> {
         return outboundEventRepository
             .getEventBySessionId(sessionId)
     }
 
-    suspend fun getLocationChangeEvents(sessionId: Int): List<LocationChangeEventModel> {
+    suspend fun getLocationChangeEvents(sessionId: Int): List<LocationChangeEventForExportModel> {
         return locationChangeRepository
             .getEventBySessionId(sessionId)
     }
@@ -325,7 +324,6 @@ class CsvHelper @Inject constructor(
             CsvType.OutboundResult.displayNameJp ->
                 getOutboundEvents(sessionId).map {
                     it.toCsvModel(
-                        deviceId = deviceId,
                         timeStamp = formatTimestamp(it.registeredAt),
                     )
                 }
@@ -333,9 +331,7 @@ class CsvHelper @Inject constructor(
             CsvType.LocationChangeResult.displayNameJp ->
                 getLocationChangeEvents(sessionId).map {
                     it.toCsvModel(
-                        deviceId = deviceId,
                         timeStamp = formatTimestamp(it.scannedAt),
-                        executedAt = it.scannedAt
                     )
                 }
 

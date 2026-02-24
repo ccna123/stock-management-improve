@@ -18,7 +18,7 @@ class LocationChangeEventRepository @Inject constructor(
     }
 
     suspend fun getEventBySessionId(sessionId: Int) =
-        dao.getEventBySessionId(sessionId).map { it.toModel() }
+        dao.getEventBySessionId(sessionId)
 
     suspend fun insert(model: LocationChangeEventModel) = dao.insert(model.toEntity())
     suspend fun update(model: LocationChangeEventModel) = dao.update(model.toEntity())

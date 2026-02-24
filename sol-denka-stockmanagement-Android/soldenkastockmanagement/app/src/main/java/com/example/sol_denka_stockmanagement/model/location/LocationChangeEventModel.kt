@@ -1,7 +1,6 @@
 package com.example.sol_denka_stockmanagement.model.location
 
 import com.example.sol_denka_stockmanagement.database.entity.location.LocationChangeEventEntity
-import com.example.sol_denka_stockmanagement.model.csv.LocationChangeResultCsvModel
 
 data class LocationChangeEventModel(
     val locationChangeEventId: Int = 0,
@@ -31,19 +30,4 @@ fun LocationChangeEventModel.toEntity() = LocationChangeEventEntity(
     sourceEventId = sourceEventId,
     memo = memo,
     scannedAt = scannedAt
-)
-
-fun LocationChangeEventModel.toCsvModel(
-    deviceId: String,
-    timeStamp: String,
-    executedAt: String
-) = LocationChangeResultCsvModel(
-    ledgerItemId = ledgerItemId,
-    locationId = locationId,
-    sourceEventId = sourceEventId,
-    memo = memo,
-    scannedAt = scannedAt,
-    deviceId = deviceId,
-    executedAt = executedAt,
-    timeStamp = timeStamp
 )
