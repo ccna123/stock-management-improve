@@ -222,6 +222,7 @@ fun InboundScreen(
                                 "${inputState.processedAtDate}T${inputState.processedAtTime}"
                             }
                         val now = generateIso8601JstTimestamp()
+                        val sourceEventId = UUID.randomUUID().toString()
                         scope.launch {
                             val saveInboundToDbResult = inboundViewModel.saveInboundToDb(
                                 rfidTag = rfidTagList.find { it.epc == lastInboundEpc },
@@ -236,7 +237,7 @@ fun InboundScreen(
                                 occurrenceReason = inputState.occurrenceReason,
                                 quantity = inputState.quantity,
                                 memo = inputState.memo,
-                                sourceEventId = UUID.randomUUID().toString(),
+                                sourceEventId = sourceEventId,
                                 occurredAt = occurredAt,
                                 processedAt = processedAt,
                                 registeredAt = now,
@@ -263,7 +264,7 @@ fun InboundScreen(
                                 occurrenceReason = inputState.occurrenceReason,
                                 quantity = inputState.quantity,
                                 memo = inputState.memo,
-                                sourceEventId = UUID.randomUUID().toString(),
+                                sourceEventId = sourceEventId,
                                 occurredAt = occurredAt,
                                 processedAt = processedAt,
                                 registeredAt = now,

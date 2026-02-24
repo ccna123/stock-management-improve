@@ -101,14 +101,14 @@
     <string name="csv_export_title">以下の内容でCSVファイルを出力します</string>
     <string name="choose_time">時刻を選択</string>
     <string name="stock_status">在庫状況</string>
-    <string name="in_stock">在庫有</string>
-    <string name="not_in_stock">在庫無</string>
+    <string name="in_stock">在庫有（入庫状態）</string>
+    <string name="not_in_stock">在庫無（出庫状態）</string>
 
     <!-- 入力-->
     <string name="grade_hint">グレード入力</string>
     <string name="grade">グレード</string>
-    <string name="thickness_hint">厚み入力</string>
-    <string name="thickness">厚み(mm)</string>
+    <string name="thickness_hint">厚さ入力</string>
+    <string name="thickness">厚さ(mm)</string>
     <string name="length_hint">長さ入力</string>
     <string name="length">長さ(m)</string>
     <string name="winderInfo_hint">巻き取り機情報入力</string>
