@@ -52,6 +52,7 @@ import com.example.sol_denka_stockmanagement.model.csv.ExportFileModel
 import com.example.sol_denka_stockmanagement.model.inbound.InboundEventModel
 import com.example.sol_denka_stockmanagement.model.inbound.toCsvModel
 import com.example.sol_denka_stockmanagement.model.inventory.InventoryDetailModel
+import com.example.sol_denka_stockmanagement.model.inventory.InventoryEventForExportModel
 import com.example.sol_denka_stockmanagement.model.inventory.toCsvModel
 import com.example.sol_denka_stockmanagement.model.location.LocationChangeEventModel
 import com.example.sol_denka_stockmanagement.model.location.toCsvModel
@@ -300,7 +301,7 @@ class CsvHelper @Inject constructor(
             .getEventBySessionId(sessionId)
     }
 
-    suspend fun getInventoryEvents(sessionId: Int): List<InventoryDetailModel> {
+    suspend fun getInventoryEvents(sessionId: Int): List<InventoryEventForExportModel> {
         return inventoryDetailRepository
             .getEventBySessionId(sessionId)
     }
@@ -341,11 +342,6 @@ class CsvHelper @Inject constructor(
             CsvType.InventoryResult.displayNameJp ->
                 getInventoryEvents(sessionId).map {
                     it.toCsvModel(
-                        deviceId = deviceId,
-                        locationId = 0,
-                        sourceSessionId = "",
-                        memo = "",
-                        completedAt = "",
                         timeStamp = formatTimestamp(it.scannedAt),
                     )
                 }

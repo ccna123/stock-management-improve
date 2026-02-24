@@ -164,7 +164,7 @@ fun InventoryCompleteScreen(
                                 sourceSessionUuid = sourceSessionUuid,
                                 locationId = inputState.location!!.locationId,
                                 scannedAt = now,
-                                completedAt = now,
+                                executedAt = now,
                                 rfidTagList = rfidTagList.filter { it.newFields.tagScanStatus == TagScanStatus.PROCESSED },
                             )
                         val saveResult = appViewModel.saveScanResultToCsv(

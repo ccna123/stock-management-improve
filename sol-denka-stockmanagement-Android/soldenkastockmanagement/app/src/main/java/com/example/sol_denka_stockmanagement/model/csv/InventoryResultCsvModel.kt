@@ -11,7 +11,7 @@ data class InventoryResultCsvModel(
     val tagId: Int,
     val memo: String?,
     val scannedAt: String,
-    val completedAt: String,
+    val executedAt: String,
     val timeStamp: String
 
     ) : ICsvExport {
@@ -23,7 +23,7 @@ data class InventoryResultCsvModel(
         "tag_id",
         "memo",
         "scanned_at",
-        "completed_at"
+        "executed_at"
     )
 
     override fun toRow(): List<String> = listOf(
@@ -34,7 +34,7 @@ data class InventoryResultCsvModel(
         tagId.toString(),
         memo ?: "",
         scannedAt,
-        completedAt
+        executedAt
     )
 
     override fun toCsvType(): String = CsvType.InventoryResult.displayNameJp

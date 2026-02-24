@@ -18,7 +18,7 @@ class InventoryDetailRepository @Inject constructor(
     }
 
     suspend fun getEventBySessionId(sessionId: Int) =
-        dao.getEventBySessionId(sessionId).map { it.toModel() }
+        dao.getEventBySessionId(sessionId)
 
     suspend fun insert(model: InventoryDetailModel) = dao.insert(model.toEntity())
     suspend fun update(model: InventoryDetailModel) = dao.update(model.toEntity())

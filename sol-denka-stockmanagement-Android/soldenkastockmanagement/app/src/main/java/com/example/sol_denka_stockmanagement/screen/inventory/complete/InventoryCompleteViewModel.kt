@@ -81,7 +81,7 @@ class InventoryCompleteViewModel @Inject constructor(
         memo: String,
         sourceSessionUuid: String,
         scannedAt: String,
-        completedAt: String,
+        executedAt: String,
         locationId: Int,
         rfidTagList: List<TagMasterModel>
     ): List<InventoryResultCsvModel> =
@@ -98,8 +98,8 @@ class InventoryCompleteViewModel @Inject constructor(
                         deviceId = Build.ID,
                         memo = memo,
                         scannedAt = scannedAt,
-                        completedAt = completedAt,
-                        timeStamp = formatTimestamp(completedAt)
+                        executedAt = executedAt,
+                        timeStamp = formatTimestamp(executedAt)
                     )
                     csvModels.add(model)
                 }
