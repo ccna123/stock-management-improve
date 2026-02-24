@@ -900,7 +900,7 @@ class CsvHelper @Inject constructor(
             WinderMasterImporter(winderRepository),
             ItemCategoryMasterImporter(itemCategoryRepository),
             FieldMasterImporter(fieldMasterRepository),
-//            InventoryResultTypeMasterImporter(inventoryResultTypeRepository),
+            InventoryResultTypeMasterImporter(inventoryResultTypeRepository),
             ItemUnitMasterImporter(itemUnitRepository),
             CsvTaskTypeMasterImporter(csvTaskTypeRepository)
         )
@@ -931,8 +931,8 @@ class CsvHelper @Inject constructor(
             FieldMasterImporter::class ->
                 FieldMasterImporter(fieldMasterRepository)
 
-//            InventoryResultTypeMasterImporter::class ->
-//                InventoryResultTypeMasterImporter(inventoryResultTypeRepository)
+            InventoryResultTypeMasterImporter::class ->
+                InventoryResultTypeMasterImporter(inventoryResultTypeRepository)
 
             ItemUnitMasterImporter::class ->
                 ItemUnitMasterImporter(itemUnitRepository)
