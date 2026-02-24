@@ -8,8 +8,8 @@ data class OutboundEventForExportModel(
     val processTypeId: Int,
     val deviceId: String,
     val sourceEventId: String,
-    val memo: String,
-    val processedAt: String,
+    val memo: String?,
+    val processedAt: String?,
     val registeredAt: String,
 )
 

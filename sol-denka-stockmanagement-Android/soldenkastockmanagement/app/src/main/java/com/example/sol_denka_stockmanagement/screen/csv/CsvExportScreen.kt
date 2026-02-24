@@ -1,6 +1,7 @@
 package com.example.sol_denka_stockmanagement.screen.csv
 
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -184,8 +185,10 @@ fun CsvExportScreen(
                         val saveResult = appViewModel.saveScanResultToCsv(
                             data = data,
                             direction = CsvHistoryDirection.EXPORT,
-                            taskCode = CsvTaskType.IN,
+                            taskCode = CsvTaskType.OUT,
                         )
+                        Log.e("TSS", "data: $data", )
+                        Log.e("TSS", "saveResult: $saveResult", )
 
                         if (saveResult) {
                             appViewModel.onGeneralIntent(

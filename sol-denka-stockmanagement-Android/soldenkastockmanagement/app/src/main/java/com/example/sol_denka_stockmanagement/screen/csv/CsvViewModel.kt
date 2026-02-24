@@ -145,6 +145,7 @@ class CsvViewModel @Inject constructor(
                 deviceId = Build.ID
             )
         } catch (e: Exception) {
+            Log.e("TSS", "getEventDataBySessionId: $e", )
             emptyList()
         }
     }
