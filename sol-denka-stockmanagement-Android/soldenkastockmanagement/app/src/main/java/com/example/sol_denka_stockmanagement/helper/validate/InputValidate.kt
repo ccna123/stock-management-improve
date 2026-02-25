@@ -23,7 +23,7 @@ object InputValidate {
 
         /* ================= REQUIRED ================= */
 
-        formItems.filter { it.isRequired }.filter { it.isVisible }.forEach { item ->
+        formItems.filter { it.isRequired }.forEach { item ->
             when (item.fieldCode) {
 
                 InboundInputField.LOCATION.code -> {
@@ -71,8 +71,6 @@ object InputValidate {
                 }
             }
         }
-        Log.e("TSS", "formItems: $formItems", )
-        Log.e("TSS", "errors: $errors", )
 
         /* ================= RANGE ================= */
 

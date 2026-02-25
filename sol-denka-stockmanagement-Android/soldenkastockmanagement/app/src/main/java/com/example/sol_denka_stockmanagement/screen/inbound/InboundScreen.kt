@@ -389,7 +389,7 @@ fun InboundScreen(
                             }
                         }
                         if (inputState.category.isNotBlank()) {
-                            Spacer(modifier = Modifier.height(20.dp))
+                            Spacer(modifier = Modifier.height(10.dp))
 
                             ItemSearchBar(
                                 keyword = inputState.itemInCategory,

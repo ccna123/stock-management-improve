@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CalendarMonth
@@ -73,6 +74,13 @@ fun InboundInputFormItem(
         InboundInputField.OCCURRENCE_REASON.code -> 100
         else -> null
     }
+
+    val currentLength = when (result.fieldCode) {
+        InboundInputField.MEMO.code -> inputState.memo.length
+        InboundInputField.LOT_NO.code -> inputState.lotNo.length
+        InboundInputField.OCCURRENCE_REASON.code -> inputState.occurrenceReason.length
+        else -> 0
+    }
     when (result.controlType) {
         /* ================= INPUT ================= */
         ControlType.INPUT -> {
@@ -86,9 +94,15 @@ fun InboundInputFormItem(
             }
             InputFieldContainer(
                 modifier = Modifier
-                    .height(if (result.fieldCode == InboundInputField.MEMO.code) 200.dp else 68.dp)
-                    .fillMaxWidth(),
+                    .fillMaxWidth()
+                    .then(
+                        if (result.fieldCode == InboundInputField.MEMO.code)
+                            Modifier.heightIn(min = 200.dp)
+                        else
+                            Modifier.heightIn(min = 68.dp)
+                    ),
                 maxLength = maxLength,
+                currentLength = currentLength,
                 value = when (result.fieldCode) {
                     InboundInputField.WEIGHT.code -> inputState.weight
                     InboundInputField.LENGTH.code -> inputState.length

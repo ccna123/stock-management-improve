@@ -32,6 +32,7 @@ import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.sol_denka_stockmanagement.ui.theme.brightAzure
+import com.example.sol_denka_stockmanagement.ui.theme.primaryRed
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -42,6 +43,7 @@ fun InputFieldContainer(
     errorMessages: List<String>? = null,
     isNumeric: Boolean = false,
     maxLength: Int? = null,
+    currentLength: Int? = null,
     shape: Shape = RoundedCornerShape(13.dp),
     imeAction: ImeAction = ImeAction.Next,
     fontSize: TextUnit = 16.sp,
@@ -60,11 +62,22 @@ fun InputFieldContainer(
 ) {
     val textFieldInteractionSource = remember { MutableInteractionSource() }
     val focusManager = LocalFocusManager.current
+    val showSupporting = maxLength != null && currentLength != null
     OutlinedTextField(
         value = value,
         onValueChange = { newText ->
             if (!readOnly) onChange?.invoke(newText)
         },
+        supportingText = if (showSupporting) {
+            {
+                Text(
+                    text = "$currentLength / $maxLength",
+                    modifier = Modifier.fillMaxWidth(),
+                    fontSize = 11.sp,
+                    color = if (currentLength > maxLength) primaryRed else brightAzure,
+                )
+            }
+        } else null,
         modifier = modifier,
         shape = shape,
         label = label?.let {
