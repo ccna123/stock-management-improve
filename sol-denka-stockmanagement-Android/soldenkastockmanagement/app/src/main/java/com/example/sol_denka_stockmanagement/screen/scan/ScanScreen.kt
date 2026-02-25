@@ -101,7 +101,7 @@ fun ScanScreen(
     ProcessModal(
         showModalProcessMethod = showModalProcessMethod,
         processTypeList = processTypeMaster,
-        selectedCount = rfidTagList.count { it.newFields.isChecked },
+        selectedCount = displayTags.count { it.newFields.isChecked },
         chosenMethod = inputState.processMethod,
         onChooseMethod = { method ->
             appViewModel.onInputIntent(InputIntent.ChangeProcessMethod(method))
@@ -333,9 +333,9 @@ fun ScanScreen(
                                     containerColor = brightGreenSecondary,
                                     buttonText = stringResource(
                                         R.string.bulk_register,
-                                        rfidTagList.count { it.newFields.isChecked }.toString()
+                                        displayTags.count { it.newFields.isChecked }.toString()
                                     ),
-                                    canClick = rfidTagList.any { it.newFields.isChecked },
+                                    canClick = displayTags.any { it.newFields.isChecked } && isPerformingInventory.not(),
                                     onClick = {
                                         appViewModel.onGeneralIntent(
                                             ShareIntent.ShowModalProcessMethod(
@@ -358,10 +358,10 @@ fun ScanScreen(
                                 val value = processMap[tag.epc] ?: ""
                                 OutboundSingleItem(
                                     processTypeList = processTypeMaster,
-                                    tag = rfidTagList.find { it.epc == tag.epc }?.epc ?: "",
-                                    itemName = rfidTagList.find { it.epc == tag.epc }?.newFields?.itemName
+                                    tag = displayTags.find { it.epc == tag.epc }?.epc ?: "",
+                                    itemName = displayTags.find { it.epc == tag.epc }?.newFields?.itemName
                                         ?: "",
-                                    isChecked = rfidTagList.find { it.epc == tag.epc }?.newFields?.isChecked
+                                    isChecked = displayTags.find { it.epc == tag.epc }?.newFields?.isChecked
                                         ?: false,
                                     isError = outboundProcessErrorSet.contains(tag.epc),
                                     onSelect = {
@@ -417,10 +417,10 @@ fun ScanScreen(
 
                             Screen.LocationChange.routeId -> {
                                 LocationChangeSingleItem(
-                                    tag = rfidTagList.find { it.epc == tag.epc }?.epc ?: "",
-                                    itemName = rfidTagList.find { it.epc == tag.epc }?.newFields?.itemName
+                                    tag = displayTags.find { it.epc == tag.epc }?.epc ?: "",
+                                    itemName = displayTags.find { it.epc == tag.epc }?.newFields?.itemName
                                         ?: "",
-                                    isChecked = rfidTagList.find { it.epc == tag.epc }?.newFields?.isChecked
+                                    isChecked = displayTags.find { it.epc == tag.epc }?.newFields?.isChecked
                                         ?: false,
                                     onCheckedChange = {
                                         if (isPerformingInventory.not()) {

@@ -227,7 +227,7 @@ class ScanViewModel @Inject constructor(
     }
 
     fun applyProcessType(processTypeMap: Map<String, String>) {
-        val currentList = _rfidTagList.value
+        val currentList = _rfidTagList.value.filter { it.newFields.hasLeger }
 
         val updated = currentList.map { tag ->
             val newProcessType = processTypeMap[tag.epc] ?: tag.newFields.processType
@@ -237,7 +237,7 @@ class ScanViewModel @Inject constructor(
     }
 
     fun toggleCheck(epc: String) {
-        val updated = _rfidTagList.value.map { tag ->
+        val updated = _rfidTagList.value.filter { it.newFields.hasLeger }.map { tag ->
             if (tag.epc == epc) {
                 tag.copy(newFields = tag.newFields.copy(isChecked = !tag.newFields.isChecked))
             } else tag
@@ -246,7 +246,7 @@ class ScanViewModel @Inject constructor(
     }
 
     fun toggleCheckAll(value: Boolean, targetEpcs: Set<String> = emptySet()) {
-        val updated = _rfidTagList.value.map { tag ->
+        val updated = _rfidTagList.value.filter { it.newFields.hasLeger }.map { tag ->
             if (tag.epc in targetEpcs) {
                 tag.copy(newFields = tag.newFields.copy(isChecked = value))
             } else {
@@ -257,7 +257,7 @@ class ScanViewModel @Inject constructor(
     }
 
     fun resetIsCheckedField() {
-        val updated = _rfidTagList.value.map { tag ->
+        val updated = _rfidTagList.value.filter { it.newFields.hasLeger }.map { tag ->
             tag.copy(newFields = tag.newFields.copy(isChecked = false))
         }
         _rfidTagList.value = updated
