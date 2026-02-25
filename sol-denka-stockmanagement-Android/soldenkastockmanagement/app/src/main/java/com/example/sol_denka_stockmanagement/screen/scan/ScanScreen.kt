@@ -56,7 +56,7 @@ import com.example.sol_denka_stockmanagement.ui.theme.tealGreen
 import com.example.sol_denka_stockmanagement.viewmodel.AppViewModel
 import com.example.sol_denka_stockmanagement.viewmodel.ScanViewModel
 import kotlinx.coroutines.launch
-import java.time.LocalDateTime
+import java.time.Instant
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
@@ -285,8 +285,11 @@ fun ScanScreen(
                     epc = tag?.epc ?: "-",
                     itemName = tag?.newFields?.itemName?.ifBlank { "-" } ?: "-",
                     itemCode = tag?.newFields?.itemCode?.ifBlank { "-" } ?: "-",
-                    timeStamp = if (tag == null) "-" else LocalDateTime.now(ZoneId.of("Asia/Tokyo"))
-                        .format(DateTimeFormatter.ofPattern("HH:mm:ss"))
+                    timeStamp = tag?.newFields?.readTimeStamp?.let { millis ->
+                        Instant.ofEpochMilli(millis)
+                            .atZone(ZoneId.of("Asia/Tokyo"))
+                            .format(DateTimeFormatter.ofPattern("HH:mm:ss"))
+                    } ?: "-"
                 )
             } else {
                 CardContainer {

@@ -22,6 +22,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import java.math.BigDecimal
 import javax.inject.Inject
+import kotlin.text.get
 
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @HiltViewModel
@@ -121,10 +122,28 @@ class ScanViewModel @Inject constructor(
                 when (mode) {
 
                     ScanMode.INBOUND -> {
+                        outboundLocationChangeJob?.cancel()
+                        inventoryJob?.cancel()
+                        processJob?.cancel()
+                        searchJob?.cancel()
                         inboundJob = viewModelScope.launch(Dispatchers.IO) {
                             scannedTags.collect { tags ->
                                 val latest = tags.values.lastOrNull()?.rfidNo ?: return@collect
+
+                                val now = System.currentTimeMillis()
+
                                 _lastInboundEpc.value = latest
+
+                                _rfidTagList.value = _rfidTagList.value.map { tag ->
+                                    if (tag.epc == latest) {
+                                        tag.copy(
+                                            newFields = tag.newFields.copy(
+                                                readTimeStamp = now
+                                            )
+                                        )
+                                    } else tag
+                                }
+
                                 readerController.clearScannedTag()
                             }
                         }
@@ -133,6 +152,7 @@ class ScanViewModel @Inject constructor(
                     ScanMode.INVENTORY_SCAN -> {
                         searchJob?.cancel()
                         inboundJob?.cancel()
+                        outboundLocationChangeJob?.cancel()
                         inventoryJob = viewModelScope.launch(Dispatchers.IO) {
                             tagController.statusMap.collect { status ->
                                 val updated = _rfidTagList.value.map { item ->
@@ -158,6 +178,10 @@ class ScanViewModel @Inject constructor(
                     }
 
                     ScanMode.SEARCH -> {
+                        inboundJob?.cancel()
+                        outboundLocationChangeJob?.cancel()
+                        inventoryJob?.cancel()
+                        processJob?.cancel()
                         searchJob = viewModelScope.launch(Dispatchers.IO) {
                             scannedTags.collect { map ->
                                 _rssiMap.value = map.mapValues { it.value.rssi }
@@ -166,6 +190,10 @@ class ScanViewModel @Inject constructor(
                     }
 
                     ScanMode.OUTBOUND, ScanMode.LOCATION_CHANGE -> {
+                        inboundJob?.cancel()
+                        inventoryJob?.cancel()
+                        processJob?.cancel()
+                        searchJob?.cancel()
                         outboundLocationChangeJob = viewModelScope.launch(Dispatchers.IO) {
                             scannedTags.collect { scanned ->
 
@@ -227,32 +255,39 @@ class ScanViewModel @Inject constructor(
     }
 
     fun applyProcessType(processTypeMap: Map<String, String>) {
-        val currentList = _rfidTagList.value.filter { it.newFields.hasLeger }
-
-        val updated = currentList.map { tag ->
-            val newProcessType = processTypeMap[tag.epc] ?: tag.newFields.processType
-            tag.copy(newFields = tag.newFields.copy(processType = newProcessType))
+        val updated = _rfidTagList.value.map { tag ->
+            if (tag.newFields.hasLeger) {
+                val newProcessType = processTypeMap[tag.epc] ?: tag.newFields.processType
+                tag.copy(newFields = tag.newFields.copy(processType = newProcessType))
+            } else tag
         }
+
         _rfidTagList.value = updated
     }
 
     fun toggleCheck(epc: String) {
-        val updated = _rfidTagList.value.filter { it.newFields.hasLeger }.map { tag ->
-            if (tag.epc == epc) {
-                tag.copy(newFields = tag.newFields.copy(isChecked = !tag.newFields.isChecked))
+        val updated = _rfidTagList.value.map { tag ->
+            if (tag.epc == epc && tag.newFields.hasLeger) {
+                tag.copy(
+                    newFields = tag.newFields.copy(
+                        isChecked = !tag.newFields.isChecked
+                    )
+                )
             } else tag
         }
+
         _rfidTagList.value = updated
     }
 
     fun toggleCheckAll(value: Boolean, targetEpcs: Set<String> = emptySet()) {
-        val updated = _rfidTagList.value.filter { it.newFields.hasLeger }.map { tag ->
-            if (tag.epc in targetEpcs) {
-                tag.copy(newFields = tag.newFields.copy(isChecked = value))
-            } else {
-                tag
-            }
+        val updated = _rfidTagList.value.map { tag ->
+            if (tag.epc in targetEpcs && tag.newFields.hasLeger) {
+                tag.copy(
+                    newFields = tag.newFields.copy(isChecked = value)
+                )
+            } else tag
         }
+
         _rfidTagList.value = updated
     }
 
