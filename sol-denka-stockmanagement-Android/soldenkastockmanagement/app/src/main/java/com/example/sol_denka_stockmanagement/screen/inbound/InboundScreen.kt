@@ -308,138 +308,140 @@ fun InboundScreen(
         onBackArrowClick = {
             onGoBack()
         }) { paddingValues ->
-        Column(
+        LazyColumn(
             modifier = Modifier
                 .padding(paddingValues)
                 .padding(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+            horizontalAlignment = Alignment.CenterHorizontally,
+            contentPadding = PaddingValues(vertical = 16.dp)
         ) {
-            CardContainer {
-                Column(
-                    modifier = Modifier.padding(10.dp),
-                ) {
-                    Text(
-                        text = stringResource(
-                            R.string.item_code, lastInboundEpc ?: ""
-                        )
-                    )
-                    Spacer(modifier = Modifier.height(10.dp))
-                    ExposedDropdownMenuBox(
-                        expanded = expandState.categoryExpanded,
-                        onExpandedChange = { appViewModel.onExpandIntent(ExpandIntent.ToggleCategoryExpanded) }) {
-                        InputFieldContainer(
-                            modifier = Modifier
-                                .menuAnchor(
-                                    type = ExposedDropdownMenuAnchorType.PrimaryNotEditable,
-                                    enabled = true
-                                )
-                                .fillMaxWidth(),
-                            value = if (inputState.category == SelectTitle.SelectCategory.displayName) "" else inputState.category,
-                            hintText = SelectTitle.SelectCategory.displayName,
-                            isNumeric = false,
-                            onChange = { newValue ->
-                                appViewModel.onInputIntent(
-                                    ChangeCategory(
-                                        categoryId = 0,
-                                        value = newValue
-                                    )
-                                )
-                            },
-                            readOnly = true,
-                            isDropDown = true,
-                            enable = true,
-                            onEnterPressed = {}
-                        )
-                        ExposedDropdownMenu(
-                            expanded = expandState.categoryExpanded,
-                            onDismissRequest = { appViewModel.onExpandIntent(ExpandIntent.ToggleCategoryExpanded) }
-                        ) {
-                            DropdownMenuItem(
-                                text = { Text(text = SelectTitle.SelectCategory.displayName) },
-                                onClick = {
-                                    appViewModel.apply {
-                                        onInputIntent(
-                                            ChangeCategory(
-                                                categoryId = 0,
-                                                value = ""
-                                            )
-                                        )
-                                        onExpandIntent(ExpandIntent.ToggleCategoryExpanded)
-                                    }
-                                }
+            item {
+                CardContainer {
+                    Column(
+                        modifier = Modifier.padding(10.dp),
+                    ) {
+                        Text(
+                            text = stringResource(
+                                R.string.item_code, lastInboundEpc ?: ""
                             )
-                            itemCategoryMaster.forEach { category ->
+                        )
+                        Spacer(modifier = Modifier.height(10.dp))
+                        ExposedDropdownMenuBox(
+                            expanded = expandState.categoryExpanded,
+                            onExpandedChange = { appViewModel.onExpandIntent(ExpandIntent.ToggleCategoryExpanded) }) {
+                            InputFieldContainer(
+                                modifier = Modifier
+                                    .menuAnchor(
+                                        type = ExposedDropdownMenuAnchorType.PrimaryNotEditable,
+                                        enabled = true
+                                    )
+                                    .fillMaxWidth(),
+                                value = if (inputState.category == SelectTitle.SelectCategory.displayName) "" else inputState.category,
+                                hintText = SelectTitle.SelectCategory.displayName,
+                                isNumeric = false,
+                                onChange = { newValue ->
+                                    appViewModel.onInputIntent(
+                                        ChangeCategory(
+                                            categoryId = 0,
+                                            value = newValue
+                                        )
+                                    )
+                                },
+                                readOnly = true,
+                                isDropDown = true,
+                                enable = true,
+                                onEnterPressed = {}
+                            )
+                            ExposedDropdownMenu(
+                                expanded = expandState.categoryExpanded,
+                                onDismissRequest = { appViewModel.onExpandIntent(ExpandIntent.ToggleCategoryExpanded) }
+                            ) {
                                 DropdownMenuItem(
-                                    text = { Text(text = category.itemCategoryName) },
+                                    text = { Text(text = SelectTitle.SelectCategory.displayName) },
                                     onClick = {
                                         appViewModel.apply {
                                             onInputIntent(
                                                 ChangeCategory(
-                                                    categoryId = category.itemCategoryId,
-                                                    value = category.itemCategoryName
+                                                    categoryId = 0,
+                                                    value = ""
                                                 )
                                             )
                                             onExpandIntent(ExpandIntent.ToggleCategoryExpanded)
                                         }
                                     }
                                 )
+                                itemCategoryMaster.forEach { category ->
+                                    DropdownMenuItem(
+                                        text = { Text(text = category.itemCategoryName) },
+                                        onClick = {
+                                            appViewModel.apply {
+                                                onInputIntent(
+                                                    ChangeCategory(
+                                                        categoryId = category.itemCategoryId,
+                                                        value = category.itemCategoryName
+                                                    )
+                                                )
+                                                onExpandIntent(ExpandIntent.ToggleCategoryExpanded)
+                                            }
+                                        }
+                                    )
+                                }
                             }
                         }
-                    }
-                    if (inputState.category.isNotBlank()) {
-                        Spacer(modifier = Modifier.height(10.dp))
+                        if (inputState.category.isNotBlank()) {
+                            Spacer(modifier = Modifier.height(20.dp))
 
-                        ItemSearchBar(
-                            keyword = inputState.itemInCategory,
-                            results = searchResults,
-                            onKeywordChange = { itemName ->
-                                appViewModel.onInputIntent(
-                                    SearchKeyWord(
-                                        itemName = itemName,
+                            ItemSearchBar(
+                                keyword = inputState.itemInCategory,
+                                results = searchResults,
+                                onKeywordChange = { itemName ->
+                                    appViewModel.onInputIntent(
+                                        SearchKeyWord(
+                                            itemName = itemName,
+                                        )
                                     )
-                                )
-                                appViewModel.onGeneralIntent(
-                                    ShareIntent.FindItemNameByKeyWord(
-                                        categoryName = inputState.category,
-                                        keyword = itemName
+                                    appViewModel.onGeneralIntent(
+                                        ShareIntent.FindItemNameByKeyWord(
+                                            categoryName = inputState.category,
+                                            keyword = itemName
+                                        )
                                     )
-                                )
-                            },
-                            onSelectItem = { itemName, itemId ->
-                                appViewModel.onInputIntent(
-                                    ChangeItemInCategory(
-                                        itemName = itemName,
-                                        itemId = itemId
+                                },
+                                onSelectItem = { itemName, itemId ->
+                                    appViewModel.onInputIntent(
+                                        ChangeItemInCategory(
+                                            itemName = itemName,
+                                            itemId = itemId
+                                        )
                                     )
-                                )
-                            }
-                        )
+                                }
+                            )
+                        }
+                        Spacer(modifier = Modifier.height(10.dp))
                     }
-                    Spacer(modifier = Modifier.height(10.dp))
                 }
             }
-            Spacer(modifier = Modifier.height(20.dp))
-            LazyColumn(
-                verticalArrangement = Arrangement.spacedBy(10.dp),
-                contentPadding = PaddingValues(vertical = 16.dp)
-            ) {
-                items(
-                    items = inboundInputFormResults.filter { it.isVisible }.sortedWith(
+            item {
+                Spacer(modifier = Modifier.height(20.dp))
+            }
+            items(
+                items = inboundInputFormResults
+                    .filter { it.isVisible }
+                    .sortedWith(
                         compareBy {
                             if (it.fieldName == InboundInputField.MEMO.displayName) 1 else 0
                         }
                     ),
-                    key = { it.fieldName }
-                ) { result ->
-                    InboundInputFormItem(
-                        result = result,
-                        inputState = inputState,
-                        appViewModel = appViewModel,
-                        expandState = expandState,
-                        locationMaster = locationMaster,
-                        winderMaster = winderMaster,
-                    )
-                }
+                key = { it.fieldName }
+            ) { result ->
+                InboundInputFormItem(
+                    result = result,
+                    inputState = inputState,
+                    appViewModel = appViewModel,
+                    expandState = expandState,
+                    locationMaster = locationMaster,
+                    winderMaster = winderMaster,
+                )
             }
         }
     }

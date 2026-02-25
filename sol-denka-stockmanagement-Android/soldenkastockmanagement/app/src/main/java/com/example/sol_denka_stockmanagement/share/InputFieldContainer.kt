@@ -15,8 +15,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -50,6 +52,7 @@ fun InputFieldContainer(
     onEnterPressed: (() -> Unit)? = null,
 ) {
     val textFieldInteractionSource = remember { MutableInteractionSource() }
+    val focusManager = LocalFocusManager.current
     OutlinedTextField(
         value = value,
         onValueChange = { newText ->
@@ -83,10 +86,21 @@ fun InputFieldContainer(
             imeAction = if (singleLine) imeAction else ImeAction.Default
         ),
         keyboardActions =
-            if (singleLine && imeAction == ImeAction.Next) {
-                KeyboardActions(onNext = { if (!readOnly) onEnterPressed?.invoke() })
+            if (singleLine) {
+                KeyboardActions(
+                    onNext = {
+                        if (!readOnly) {
+                            onEnterPressed?.invoke()
+                            focusManager.moveFocus(FocusDirection.Down)
+                        }
+                    }
+                )
             } else {
-                KeyboardActions.Default
+                KeyboardActions(
+                    onAny = {
+                        // Do nothing -> allow newline
+                    }
+                )
             },
         readOnly = readOnly,
         enabled = enable,

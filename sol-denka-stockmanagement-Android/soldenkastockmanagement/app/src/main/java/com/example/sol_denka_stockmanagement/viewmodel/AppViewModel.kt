@@ -319,8 +319,48 @@ class AppViewModel @Inject constructor(
             is InputIntent.ChangeQuantity -> _inputState.update { it.copy(quantity = intent.value) }
             is InputIntent.UpdateFieldErrors -> {
                 _inputState.update { it.copy(fieldErrors = intent.errors) }
+
                 viewModelScope.launch {
-                    _toastFlow.emit("必須項目を入力してください" to ToastType.ERROR)
+
+                    val errors = intent.errors
+
+                    val message = when {
+
+                        /* ===== REQUIRED ONLY ===== */
+                        errors.values.all { it } &&
+                                errors.keys.all { key ->
+                                    isRequiredField(key)
+                                } -> {
+                            "必須項目を入力してください"
+                        }
+
+                        /* ===== RANGE ERRORS ===== */
+                        errors.containsKey(InboundInputField.WIDTH.code) ||
+                                errors.containsKey(InboundInputField.LENGTH.code) ||
+                                errors.containsKey(InboundInputField.WEIGHT.code) -> {
+                            "巾・長さ・重量は0～9999の範囲で入力してください"
+                        }
+
+                        errors.containsKey(InboundInputField.THICKNESS.code) -> {
+                            "厚さは0.000～999.999の範囲で入力してください"
+                        }
+
+                        errors.containsKey(InboundInputField.QUANTITY.code) -> {
+                            "数量は0～999999の範囲で入力してください"
+                        }
+
+                        /* ===== DATETIME PAIR ===== */
+                        errors.containsKey(InboundInputField.OCCURRED_AT.code) ||
+                                errors.containsKey(InboundInputField.PROCESSED_AT.code) -> {
+                            "日付と時間は両方入力してください"
+                        }
+
+                        else -> {
+                            "入力内容に誤りがあります"
+                        }
+                    }
+
+                    _toastFlow.emit(message to ToastType.ERROR)
                 }
             }
         }
@@ -739,5 +779,10 @@ class AppViewModel @Inject constructor(
                 processedAtTime = "",
             )
         }
+    }
+    private fun isRequiredField(fieldCode: String): Boolean {
+        return _inboundInputFormResults.value
+            .firstOrNull { it.fieldCode == fieldCode }
+            ?.isRequired == true
     }
 }
