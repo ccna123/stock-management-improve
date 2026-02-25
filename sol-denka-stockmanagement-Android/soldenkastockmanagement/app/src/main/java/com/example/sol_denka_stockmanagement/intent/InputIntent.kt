@@ -24,5 +24,5 @@ sealed interface InputIntent {
     data class ChangeItemInCategory(val itemName: String, val itemId: Int): InputIntent
     data class SearchKeyWord(val itemName: String): InputIntent
     data class BulkApplyProcessMethod(val checkedTags: List<String>): InputIntent
-    data class UpdateFieldErrors(val errors: Map<String, Boolean>): InputIntent
+    data class UpdateFieldErrors(val errors: Map<String, List<String>>): InputIntent
 }

@@ -24,5 +24,5 @@ data class InputState(
     val width: String = "",
     val occurrenceReason: String = "",
     var fileTransferMethod: String = FileTransferMethod.WIFI.displayName,
-    val fieldErrors: Map<String, Boolean> = emptyMap()
+    val fieldErrors: Map<String, List<String>> = emptyMap()
 )

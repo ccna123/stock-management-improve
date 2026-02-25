@@ -2,6 +2,11 @@ package com.example.sol_denka_stockmanagement.share
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
@@ -14,6 +19,7 @@ import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.graphics.Color
@@ -33,8 +39,9 @@ fun InputFieldContainer(
     modifier: Modifier = Modifier,
     value: String,
     hintText: String = "",
-    error: Boolean? = false,
+    errorMessages: List<String>? = null,
     isNumeric: Boolean = false,
+    maxLength: Int? = null,
     shape: Shape = RoundedCornerShape(13.dp),
     imeAction: ImeAction = ImeAction.Next,
     fontSize: TextUnit = 16.sp,
@@ -63,7 +70,7 @@ fun InputFieldContainer(
         label = label?.let {
             {
                 Text(
-                    text = if (isRequired) "$it＊" else it ,
+                    text = if (isRequired) "$it＊" else it,
                     color = if (isRequired) Color.Red else Color.Black,
                 )
             }
@@ -71,8 +78,9 @@ fun InputFieldContainer(
         placeholder = { Text(text = hintText, color = Color.Gray, fontSize = 16.sp) },
         interactionSource = textFieldInteractionSource,
         colors = OutlinedTextFieldDefaults.colors(
-            focusedBorderColor = if (error == true) Color.Red else borderColor,
-            unfocusedBorderColor = if (error == true) Color.Red else borderColor,
+            focusedBorderColor =
+                if (!errorMessages.isNullOrEmpty()) Color.Red else borderColor,
+            unfocusedBorderColor = if (!errorMessages.isNullOrEmpty()) Color.Red else borderColor,
             focusedContainerColor = containerColor,
             unfocusedContainerColor = containerColor,
             disabledContainerColor = Color.White,

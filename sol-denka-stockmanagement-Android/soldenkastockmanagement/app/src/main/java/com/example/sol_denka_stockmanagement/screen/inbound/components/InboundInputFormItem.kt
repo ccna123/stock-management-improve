@@ -1,11 +1,14 @@
 package com.example.sol_denka_stockmanagement.screen.inbound.components
 
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -19,9 +22,11 @@ import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.example.sol_denka_stockmanagement.R
 import com.example.sol_denka_stockmanagement.constant.ControlType
 import com.example.sol_denka_stockmanagement.constant.DataType
@@ -47,6 +52,7 @@ import com.example.sol_denka_stockmanagement.share.InputFieldContainer
 import com.example.sol_denka_stockmanagement.state.ExpandState
 import com.example.sol_denka_stockmanagement.state.InputState
 import com.example.sol_denka_stockmanagement.ui.theme.brightAzure
+import com.example.sol_denka_stockmanagement.ui.theme.primaryRed
 import com.example.sol_denka_stockmanagement.viewmodel.AppViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -60,11 +66,17 @@ fun InboundInputFormItem(
     inputState: InputState,
     appViewModel: AppViewModel
 ) {
+    val fieldErrors = inputState.fieldErrors[result.fieldCode]
+    val maxLength = when (result.fieldCode) {
+        InboundInputField.MEMO.code -> 500
+        InboundInputField.LOT_NO.code -> 32
+        InboundInputField.OCCURRENCE_REASON.code -> 100
+        else -> null
+    }
     when (result.controlType) {
-
         /* ================= INPUT ================= */
         ControlType.INPUT -> {
-            val allowDecimal = when(result.fieldCode){
+            val allowDecimal = when (result.fieldCode) {
                 InboundInputField.WEIGHT.code -> false
                 InboundInputField.LENGTH.code -> false
                 InboundInputField.THICKNESS.code -> true
@@ -76,6 +88,7 @@ fun InboundInputFormItem(
                 modifier = Modifier
                     .height(if (result.fieldCode == InboundInputField.MEMO.code) 200.dp else 68.dp)
                     .fillMaxWidth(),
+                maxLength = maxLength,
                 value = when (result.fieldCode) {
                     InboundInputField.WEIGHT.code -> inputState.weight
                     InboundInputField.LENGTH.code -> inputState.length
@@ -166,7 +179,7 @@ fun InboundInputFormItem(
                     DataType.NUMBER -> true
                     DataType.DATETIME -> false
                 },
-                error = inputState.fieldErrors[result.fieldCode] == true,
+                errorMessages = fieldErrors,
                 readOnly = false,
                 isDropDown = false,
                 enable = true,
@@ -174,7 +187,10 @@ fun InboundInputFormItem(
                 singleLine = result.fieldCode != InboundInputField.MEMO.code,
                 onChange = { newValue ->
                     val filtered = if (result.dataType == DataType.NUMBER)
-                        FilterNumber.filterNumber(input = newValue, allowDecimal = allowDecimal) else newValue
+                        FilterNumber.filterNumber(
+                            input = newValue,
+                            allowDecimal = allowDecimal
+                        ) else newValue
 
                     when (result.fieldCode) {
                         InboundInputField.WEIGHT.code -> appViewModel.onInputIntent(
@@ -200,18 +216,18 @@ fun InboundInputFormItem(
                         )
 
                         InboundInputField.OCCURRENCE_REASON.code -> appViewModel.onInputIntent(
-                            ChangeMissRollReason(filtered)
+                            ChangeMissRollReason(filtered.take(100))
                         )
 
                         InboundInputField.MEMO.code -> appViewModel.onInputIntent(
                             ChangeMemo(
-                                filtered
+                                filtered.take(500)
                             )
                         )
 
                         InboundInputField.LOT_NO.code -> appViewModel.onInputIntent(
                             ChangeLotNo(
-                                filtered
+                                filtered.take(32)
                             )
                         )
 
@@ -223,6 +239,21 @@ fun InboundInputFormItem(
                     }
                 }
             )
+            if (!fieldErrors.isNullOrEmpty()) {
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalAlignment = Alignment.Start,
+                    verticalArrangement = Arrangement.spacedBy(4.dp)
+                ) {
+                    fieldErrors.forEach { errorMsg ->
+                        Text(
+                            text = "• $errorMsg",
+                            color = primaryRed,
+                            fontSize = 12.sp
+                        )
+                    }
+                }
+            }
         }
 
         /* ================= DROPDOWN ================= */
@@ -275,7 +306,7 @@ fun InboundInputFormItem(
                     isNumeric = false,
                     onChange = { /* readOnly */ },
                     isRequired = result.isRequired,
-                    error = inputState.fieldErrors[result.fieldCode] == true,
+                    errorMessages = fieldErrors,
                     readOnly = true,
                     isDropDown = true,
                     enable = true,
@@ -349,6 +380,21 @@ fun InboundInputFormItem(
                     }
                 }
             }
+            if (!fieldErrors.isNullOrEmpty()) {
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalAlignment = Alignment.Start,
+                    verticalArrangement = Arrangement.spacedBy(4.dp)
+                ) {
+                    fieldErrors.forEach { errorMsg ->
+                        Text(
+                            text = "• $errorMsg",
+                            color = primaryRed,
+                            fontSize = 12.sp
+                        )
+                    }
+                }
+            }
         }
 
         /* ================= DATETIME ================= */
@@ -381,10 +427,10 @@ fun InboundInputFormItem(
                     readOnly = true,
                     isDropDown = false,
                     enable = true,
-                    error = when (result.fieldCode) {
-                        InboundInputField.OCCURRED_AT.code -> inputState.fieldErrors["occurred_at_date"] == true
-                        InboundInputField.PROCESSED_AT.code -> inputState.fieldErrors["processed_at_date"] == true
-                        else -> false
+                    errorMessages = when (result.fieldCode) {
+                        InboundInputField.OCCURRED_AT.code -> fieldErrors
+                        InboundInputField.PROCESSED_AT.code -> fieldErrors
+                        else -> emptyList()
                     },
                     trailingIcon = {
                         Icon(
@@ -430,10 +476,10 @@ fun InboundInputFormItem(
                     readOnly = true,
                     isDropDown = false,
                     enable = true,
-                    error = when (result.fieldCode) {
-                        InboundInputField.OCCURRED_AT.code -> inputState.fieldErrors["occurred_at_time"] == true
-                        InboundInputField.PROCESSED_AT.code -> inputState.fieldErrors["processed_at_time"] == true
-                        else -> false
+                    errorMessages = when (result.fieldCode) {
+                        InboundInputField.OCCURRED_AT.code -> fieldErrors
+                        InboundInputField.PROCESSED_AT.code -> fieldErrors
+                        else -> emptyList()
                     },
                     trailingIcon = {
                         Icon(
@@ -455,6 +501,21 @@ fun InboundInputFormItem(
                         )
                     }
                 )
+            }
+            if (!fieldErrors.isNullOrEmpty()) {
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalAlignment = Alignment.Start,
+                    verticalArrangement = Arrangement.spacedBy(4.dp)
+                ) {
+                    fieldErrors.forEach { errorMsg ->
+                        Text(
+                            text = "• $errorMsg",
+                            color = primaryRed,
+                            fontSize = 12.sp
+                        )
+                    }
+                }
             }
         }
     }

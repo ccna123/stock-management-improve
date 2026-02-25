@@ -200,7 +200,7 @@ fun InboundScreen(
                         ),
                     canClick = inputState.category.isNotBlank() && inputState.itemInCategory.isNotBlank(),
                     onClick = {
-                        val errors = InputValidate.validateRequiredFields(
+                        val errors = InputValidate.validate(
                             formItems = inboundInputFormResults.filter { it.isVisible },
                             inputState = inputState
                         )
