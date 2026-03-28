@@ -1,6 +1,6 @@
 package com.example.sol_denka_stockmanagement.domain.model.location
 
-import com.example.sol_denka_stockmanagement.model.csv.LocationChangeResultCsvModel
+import com.example.sol_denka_stockmanagement.domain.model.csv.LocationChangeResultCsvModel
 
 data class LocationChangeEventForExportModel(
     val sourceEventId: String,

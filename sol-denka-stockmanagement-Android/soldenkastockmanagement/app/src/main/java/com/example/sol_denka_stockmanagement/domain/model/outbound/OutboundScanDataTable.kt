@@ -1,4 +1,4 @@
-package com.example.sol_denka_stockmanagement.model.outbound
+package com.example.sol_denka_stockmanagement.domain.model.outbound
 
 data class OutboundScanDataTable(
     val epc: String,

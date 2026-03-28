@@ -1,7 +1,5 @@
 package com.example.sol_denka_stockmanagement.domain.model.outbound
 
-import com.example.sol_denka_stockmanagement.model.csv.OutboundResultCsvModel
-
 data class OutboundEventForExportModel(
     val ledgerItemId: Int,
     val tagId: Int,
@@ -11,18 +9,4 @@ data class OutboundEventForExportModel(
     val memo: String?,
     val processedAt: String?,
     val registeredAt: String,
-)
-
-fun OutboundEventForExportModel.toCsvModel(
-    timeStamp: String,
-) = OutboundResultCsvModel(
-    ledgerItemId = ledgerItemId,
-    tagId = tagId,
-    processTypeId = processTypeId,
-    deviceId = deviceId,
-    sourceEventId = sourceEventId,
-    memo = memo,
-    processedAt = processedAt,
-    registeredAt = registeredAt,
-    timeStamp = timeStamp
 )

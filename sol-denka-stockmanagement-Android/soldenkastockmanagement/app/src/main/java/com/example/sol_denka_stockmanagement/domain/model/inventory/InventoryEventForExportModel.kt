@@ -1,6 +1,6 @@
 package com.example.sol_denka_stockmanagement.domain.model.inventory
 
-import com.example.sol_denka_stockmanagement.model.csv.InventoryResultCsvModel
+import com.example.sol_denka_stockmanagement.domain.model.csv.InventoryResultCsvModel
 
 data class InventoryEventForExportModel(
     val sourceSessionId: String,
