@@ -5,6 +5,7 @@ import android.content.SharedPreferences
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.room.Room
+import com.example.sol_denka_stockmanagement.data.local.repository.field.FieldMasterRepositoryImpl
 import com.example.sol_denka_stockmanagement.database.AppDatabase
 import com.example.sol_denka_stockmanagement.database.dao.csv.CsvHistoryDao
 import com.example.sol_denka_stockmanagement.database.dao.csv.CsvTaskTypeDao
@@ -32,6 +33,7 @@ import com.example.sol_denka_stockmanagement.database.migration.MIGRATION_33_34
 import com.example.sol_denka_stockmanagement.database.migration.MIGRATION_34_35
 import com.example.sol_denka_stockmanagement.helper.controller.ReaderController
 import com.example.sol_denka_stockmanagement.helper.controller.TagController
+import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
