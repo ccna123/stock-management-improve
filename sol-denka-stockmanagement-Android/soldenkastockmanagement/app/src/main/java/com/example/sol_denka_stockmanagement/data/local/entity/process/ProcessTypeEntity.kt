@@ -1,0 +1,14 @@
+package com.example.sol_denka_stockmanagement.data.local.entity.process
+
+import androidx.room.ColumnInfo
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+
+@Entity(tableName = "ProcessType")
+data class ProcessTypeEntity(
+    @PrimaryKey @ColumnInfo(name = "process_type_id") val processTypeId: Int,
+    @ColumnInfo(name = "process_code") val processCode: String,
+    @ColumnInfo(name = "process_name") val processName: String,
+    @ColumnInfo(name = "created_at") val createdAt: String,
+    @ColumnInfo(name = "updated_at") val updatedAt: String,
+)

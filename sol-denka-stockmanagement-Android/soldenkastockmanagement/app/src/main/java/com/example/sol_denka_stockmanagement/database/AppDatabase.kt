@@ -2,6 +2,28 @@ package com.example.sol_denka_stockmanagement.database
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
+import com.example.sol_denka_stockmanagement.data.local.entity.csv.CsvHistoryEntity
+import com.example.sol_denka_stockmanagement.data.local.entity.csv.CsvTaskTypeEntity
+import com.example.sol_denka_stockmanagement.data.local.entity.field.FieldMasterEntity
+import com.example.sol_denka_stockmanagement.data.local.entity.field.ItemTypeFieldSettingMasterEntity
+import com.example.sol_denka_stockmanagement.data.local.entity.inbound.InboundEventEntity
+import com.example.sol_denka_stockmanagement.data.local.entity.inbound.InboundSessionEntity
+import com.example.sol_denka_stockmanagement.data.local.entity.inventory.InventoryDetailEntity
+import com.example.sol_denka_stockmanagement.data.local.entity.inventory.InventoryResultTypeEntity
+import com.example.sol_denka_stockmanagement.data.local.entity.inventory.InventorySessionEntity
+import com.example.sol_denka_stockmanagement.data.local.entity.item.ItemCategoryEntity
+import com.example.sol_denka_stockmanagement.data.local.entity.item.ItemTypeMasterEntity
+import com.example.sol_denka_stockmanagement.data.local.entity.item.ItemUnitMasterEntity
+import com.example.sol_denka_stockmanagement.data.local.entity.ledger.LedgerItemEntity
+import com.example.sol_denka_stockmanagement.data.local.entity.location.LocationChangeEventEntity
+import com.example.sol_denka_stockmanagement.data.local.entity.location.LocationChangeSessionEntity
+import com.example.sol_denka_stockmanagement.data.local.entity.location.LocationMasterEntity
+import com.example.sol_denka_stockmanagement.data.local.entity.outbound.OutBoundEventEntity
+import com.example.sol_denka_stockmanagement.data.local.entity.outbound.OutboundSessionEntity
+import com.example.sol_denka_stockmanagement.data.local.entity.process.ProcessTypeEntity
+import com.example.sol_denka_stockmanagement.data.local.entity.tag.TagMasterEntity
+import com.example.sol_denka_stockmanagement.data.local.entity.tag.TagStatusMasterEntity
+import com.example.sol_denka_stockmanagement.data.local.entity.winder.WinderEntity
 
 import com.example.sol_denka_stockmanagement.database.dao.csv.CsvHistoryDao
 import com.example.sol_denka_stockmanagement.database.dao.csv.CsvTaskTypeDao
@@ -25,28 +47,6 @@ import com.example.sol_denka_stockmanagement.database.dao.outbound.OutboundSessi
 import com.example.sol_denka_stockmanagement.database.dao.process.ProcessTypeDao
 import com.example.sol_denka_stockmanagement.database.dao.tag.TagStatusMasterDao
 import com.example.sol_denka_stockmanagement.database.dao.winder.WinderDao
-import com.example.sol_denka_stockmanagement.database.entity.csv.CsvHistoryEntity
-import com.example.sol_denka_stockmanagement.database.entity.csv.CsvTaskTypeEntity
-import com.example.sol_denka_stockmanagement.database.entity.field.FieldMasterEntity
-import com.example.sol_denka_stockmanagement.database.entity.field.ItemTypeFieldSettingMasterEntity
-import com.example.sol_denka_stockmanagement.database.entity.inbound.InboundEventEntity
-import com.example.sol_denka_stockmanagement.database.entity.inbound.InboundSessionEntity
-import com.example.sol_denka_stockmanagement.database.entity.inventory.InventoryDetailEntity
-import com.example.sol_denka_stockmanagement.database.entity.inventory.InventorySessionEntity
-import com.example.sol_denka_stockmanagement.database.entity.inventory.InventoryResultTypeEntity
-import com.example.sol_denka_stockmanagement.database.entity.item.ItemCategoryEntity
-import com.example.sol_denka_stockmanagement.database.entity.location.LocationChangeEventEntity
-import com.example.sol_denka_stockmanagement.database.entity.location.LocationChangeSessionEntity
-import com.example.sol_denka_stockmanagement.database.entity.location.LocationMasterEntity
-import com.example.sol_denka_stockmanagement.database.entity.item.ItemTypeMasterEntity
-import com.example.sol_denka_stockmanagement.database.entity.item.ItemUnitMasterEntity
-import com.example.sol_denka_stockmanagement.database.entity.ledger.LedgerItemEntity
-import com.example.sol_denka_stockmanagement.database.entity.tag.TagMasterEntity
-import com.example.sol_denka_stockmanagement.database.entity.outbound.OutBoundEventEntity
-import com.example.sol_denka_stockmanagement.database.entity.outbound.OutboundSessionEntity
-import com.example.sol_denka_stockmanagement.database.entity.process.ProcessTypeEntity
-import com.example.sol_denka_stockmanagement.database.entity.tag.TagStatusMasterEntity
-import com.example.sol_denka_stockmanagement.database.entity.winder.WinderEntity
 
 @Database(
     entities = [

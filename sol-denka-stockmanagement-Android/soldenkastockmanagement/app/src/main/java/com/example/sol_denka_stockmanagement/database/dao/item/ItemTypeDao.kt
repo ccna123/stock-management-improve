@@ -7,35 +7,35 @@ import androidx.room.OnConflictStrategy.Companion.REPLACE
 import androidx.room.Query
 import androidx.room.Update
 import androidx.room.Upsert
-import com.example.sol_denka_stockmanagement.database.entity.item.ItemTypeMasterEntity
+import com.example.sol_denka_stockmanagement.data.local.entity.item.ItemTypeMasterEntity
 import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface ItemTypeDao {
 
     @Query("SELECT * FROM ItemTypeMaster")
-    fun get(): Flow<List<ItemTypeMasterEntity>>
+    fun get(): Flow<List<com.example.sol_denka_stockmanagement.data.local.entity.item.ItemTypeMasterEntity>>
 
     @Query("SELECT COUNT(*) FROM ItemTypeMaster")
     suspend fun countRecord(): Int
 
     @Insert(onConflict = REPLACE)
-    suspend fun insert(e: ItemTypeMasterEntity): Long
+    suspend fun insert(e: com.example.sol_denka_stockmanagement.data.local.entity.item.ItemTypeMasterEntity): Long
 
     @Insert(onConflict = REPLACE)
-    suspend fun insertAll(e: List<ItemTypeMasterEntity>)
+    suspend fun insertAll(e: List<com.example.sol_denka_stockmanagement.data.local.entity.item.ItemTypeMasterEntity>)
 
     @Update
-    suspend fun update(e: ItemTypeMasterEntity)
+    suspend fun update(e: com.example.sol_denka_stockmanagement.data.local.entity.item.ItemTypeMasterEntity)
 
     @Delete
-    suspend fun delete(e: ItemTypeMasterEntity)
+    suspend fun delete(e: com.example.sol_denka_stockmanagement.data.local.entity.item.ItemTypeMasterEntity)
 
     @Query("DELETE FROM ItemTypeMaster")
     suspend fun deleteAll()
 
     @Query("SELECT * FROM ItemTypeMaster WHERE item_type_name LIKE '%' || :keyword || '%'")
-    suspend fun findByName(keyword: String): List<ItemTypeMasterEntity>?
+    suspend fun findByName(keyword: String): List<com.example.sol_denka_stockmanagement.data.local.entity.item.ItemTypeMasterEntity>?
 
     @Query(
         """
@@ -45,11 +45,11 @@ interface ItemTypeDao {
         WHERE (:categoryId = 0 OR category.item_category_id = :categoryId)
     """
     )
-    suspend fun getItemTypeByCategoryId(categoryId: Int): List<ItemTypeMasterEntity>
+    suspend fun getItemTypeByCategoryId(categoryId: Int): List<com.example.sol_denka_stockmanagement.data.local.entity.item.ItemTypeMasterEntity>
 
     @Query("SELECT item_type_id FROM ItemTypeMaster WHERE item_type_name = :itemName")
     suspend fun getItemTypeIdByItemName(itemName: String): Int
 
     @Upsert
-    suspend fun upsertAll(e: List<ItemTypeMasterEntity>)
+    suspend fun upsertAll(e: List<com.example.sol_denka_stockmanagement.data.local.entity.item.ItemTypeMasterEntity>)
 }

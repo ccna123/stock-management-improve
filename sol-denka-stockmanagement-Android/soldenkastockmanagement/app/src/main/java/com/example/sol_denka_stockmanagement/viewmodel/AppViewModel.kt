@@ -16,8 +16,8 @@ import com.example.sol_denka_stockmanagement.constant.DialogType
 import com.example.sol_denka_stockmanagement.constant.InboundInputField
 import com.example.sol_denka_stockmanagement.constant.StatusCode
 import com.example.sol_denka_stockmanagement.constant.generateIso8601JstTimestamp
-import com.example.sol_denka_stockmanagement.database.repository.csv.CsvHistoryRepository
-import com.example.sol_denka_stockmanagement.database.repository.csv.CsvTaskTypeRepository
+import com.example.sol_denka_stockmanagement.domain.repository.csv.ICsvHistoryRepository
+import com.example.sol_denka_stockmanagement.domain.repository.csv.ICsvTaskTypeRepository
 import com.example.sol_denka_stockmanagement.database.repository.field.FieldMasterRepository
 import com.example.sol_denka_stockmanagement.database.repository.field.ItemTypeFieldSettingMasterRepository
 import com.example.sol_denka_stockmanagement.database.repository.item.ItemCategoryRepository
@@ -26,9 +26,17 @@ import com.example.sol_denka_stockmanagement.database.repository.item.ItemUnitRe
 import com.example.sol_denka_stockmanagement.database.repository.ledger.LedgerItemRepository
 import com.example.sol_denka_stockmanagement.database.repository.location.LocationMasterRepository
 import com.example.sol_denka_stockmanagement.database.repository.process.ProcessTypeRepository
-import com.example.sol_denka_stockmanagement.database.repository.tag.TagMasterRepository
-import com.example.sol_denka_stockmanagement.database.repository.tag.TagStatusMasterRepository
+import com.example.sol_denka_stockmanagement.domain.repository.tag.ITagMasterRepository
+import com.example.sol_denka_stockmanagement.domain.repository.tag.ITagStatusMasterRepository
 import com.example.sol_denka_stockmanagement.database.repository.winder.WinderRepository
+import com.example.sol_denka_stockmanagement.domain.model.csv.CsvHistoryModel
+import com.example.sol_denka_stockmanagement.domain.model.inbound.InboundInputFormModel
+import com.example.sol_denka_stockmanagement.domain.model.item.ItemCategoryModel
+import com.example.sol_denka_stockmanagement.domain.model.item.ItemTypeMasterModel
+import com.example.sol_denka_stockmanagement.domain.model.location.LocationMasterModel
+import com.example.sol_denka_stockmanagement.domain.model.process.ProcessTypeModel
+import com.example.sol_denka_stockmanagement.domain.model.reader.ReaderInfoModel
+import com.example.sol_denka_stockmanagement.domain.model.winder.WinderModel
 import com.example.sol_denka_stockmanagement.exception.AppException
 import com.example.sol_denka_stockmanagement.helper.NetworkConnectionObserver
 import com.example.sol_denka_stockmanagement.helper.controller.ReaderController
@@ -38,14 +46,6 @@ import com.example.sol_denka_stockmanagement.helper.toast.ToastType
 import com.example.sol_denka_stockmanagement.intent.ExpandIntent
 import com.example.sol_denka_stockmanagement.intent.InputIntent
 import com.example.sol_denka_stockmanagement.intent.ShareIntent
-import com.example.sol_denka_stockmanagement.model.csv.CsvHistoryModel
-import com.example.sol_denka_stockmanagement.model.inbound.InboundInputFormModel
-import com.example.sol_denka_stockmanagement.model.item.ItemCategoryModel
-import com.example.sol_denka_stockmanagement.model.item.ItemTypeMasterModel
-import com.example.sol_denka_stockmanagement.model.location.LocationMasterModel
-import com.example.sol_denka_stockmanagement.model.process.ProcessTypeModel
-import com.example.sol_denka_stockmanagement.model.reader.ReaderInfoModel
-import com.example.sol_denka_stockmanagement.model.winder.WinderModel
 import com.example.sol_denka_stockmanagement.navigation.Screen
 import com.example.sol_denka_stockmanagement.state.DialogState
 import com.example.sol_denka_stockmanagement.state.DialogState.CancelOperation
@@ -83,9 +83,9 @@ class AppViewModel @Inject constructor(
     private val readerController: ReaderController,
     private val connectionObserver: NetworkConnectionObserver,
     private val locationMasterRepository: LocationMasterRepository,
-    private val tagMasterRepository: TagMasterRepository,
-    private val csvTaskTypeRepository: CsvTaskTypeRepository,
-    private val csvHistoryRepository: CsvHistoryRepository,
+    private val ITagMasterRepository: ITagMasterRepository,
+    private val ICsvTaskTypeRepository: ICsvTaskTypeRepository,
+    private val ICsvHistoryRepository: ICsvHistoryRepository,
     private val itemTypeRepository: ItemTypeRepository,
     private val itemTypeFieldSettingMasterRepository: ItemTypeFieldSettingMasterRepository,
     private val itemCategoryRepository: ItemCategoryRepository,
@@ -94,7 +94,7 @@ class AppViewModel @Inject constructor(
     private val ledgerItemRepository: LedgerItemRepository,
     private val fieldMasterRepository: FieldMasterRepository,
     private val itemUnitRepository: ItemUnitRepository,
-    private val tagStatusMasterRepository: TagStatusMasterRepository,
+    private val ITagStatusMasterRepository: ITagStatusMasterRepository,
     private val csvHelper: CsvHelper,
 ) : ViewModel() {
 
@@ -579,13 +579,13 @@ class AppViewModel @Inject constructor(
             if (locationMasterRepository.countRecord() == 0)
                 missingMasters.add("保管場所マスタCSV")
 
-            if (tagMasterRepository.countRecord() == 0)
+            if (ITagMasterRepository.countRecord() == 0)
                 missingMasters.add("タグマスタCSV")
 
             if (itemTypeRepository.countRecord() == 0)
                 missingMasters.add("品目マスタCSV")
 
-            if (csvTaskTypeRepository.countRecord() == 0)
+            if (ICsvTaskTypeRepository.countRecord() == 0)
                 missingMasters.add("CSVタスク種別CSV")
 
             if (fieldMasterRepository.countRecord() == 0)
@@ -600,7 +600,7 @@ class AppViewModel @Inject constructor(
             if (processTypeRepository.countRecord() == 0)
                 missingMasters.add("処理種別CSV")
 
-            if (tagStatusMasterRepository.countRecord() == 0)
+            if (ITagStatusMasterRepository.countRecord() == 0)
                 missingMasters.add("タグステータス種別CSV")
 
             if (winderRepository.countRecord() == 0)
@@ -663,7 +663,7 @@ class AppViewModel @Inject constructor(
         var csvTaskTypeId: Int? = null
 
         try {
-            csvTaskTypeId = csvTaskTypeRepository
+            csvTaskTypeId = ICsvTaskTypeRepository
                 .getIdByTaskCode(taskCode.name)
 
             csvHelper.saveCsv(
@@ -703,7 +703,7 @@ class AppViewModel @Inject constructor(
         } finally {
             csvTaskTypeId?.let {
                 try {
-                    csvHistoryRepository.insert(
+                    ICsvHistoryRepository.insert(
                         CsvHistoryModel(
                             csvTaskTypeId = it,
                             fileName = first.toCsvName(),

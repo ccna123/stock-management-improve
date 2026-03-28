@@ -2,13 +2,13 @@ package com.example.sol_denka_stockmanagement.helper.csv
 
 import com.example.sol_denka_stockmanagement.constant.InventoryResultType
 import com.example.sol_denka_stockmanagement.constant.TagScanStatus
-import com.example.sol_denka_stockmanagement.database.repository.tag.TagMasterRepository
+import com.example.sol_denka_stockmanagement.domain.repository.tag.ITagMasterRepository
 import com.example.sol_denka_stockmanagement.model.common.AdditionalFieldsModel
 import com.example.sol_denka_stockmanagement.model.tag.TagMasterModel
 import java.math.BigDecimal
 
 class TagMasterImporter(
-    private val repository: TagMasterRepository,
+    private val repository: ITagMasterRepository,
 ) : CsvImporter<TagMasterModel>() {
 
     override val requiredHeaders = setOf(

@@ -1,6 +1,6 @@
 package com.example.sol_denka_stockmanagement.domain.model.csv
 
-import com.example.sol_denka_stockmanagement.database.entity.csv.CsvTaskTypeEntity
+import com.example.sol_denka_stockmanagement.data.local.entity.csv.CsvTaskTypeEntity
 
 data class CsvTaskTypeModel(
     val csvTaskTypeId: Int = 0,

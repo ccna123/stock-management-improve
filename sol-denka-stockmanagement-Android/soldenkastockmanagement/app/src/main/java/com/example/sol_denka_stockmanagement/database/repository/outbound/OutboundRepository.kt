@@ -2,10 +2,9 @@ package com.example.sol_denka_stockmanagement.database.repository.outbound
 
 import android.os.Build
 import androidx.room.withTransaction
-import com.example.sol_denka_stockmanagement.constant.generateIso8601JstTimestamp
 import com.example.sol_denka_stockmanagement.database.AppDatabase
 import com.example.sol_denka_stockmanagement.database.repository.process.ProcessTypeRepository
-import com.example.sol_denka_stockmanagement.database.repository.tag.TagMasterRepository
+import com.example.sol_denka_stockmanagement.domain.repository.tag.ITagMasterRepository
 import com.example.sol_denka_stockmanagement.model.outbound.OutBoundEventModel
 import com.example.sol_denka_stockmanagement.model.outbound.OutboundSessionModel
 import com.example.sol_denka_stockmanagement.model.tag.TagMasterModel
@@ -17,7 +16,7 @@ class OutboundRepository @Inject constructor(
     private val db: AppDatabase,
     private val sessionRepo: OutboundSessionRepository,
     private val eventRepo: OutboundEventRepository,
-    private val tagMasterRepository: TagMasterRepository,
+    private val ITagMasterRepository: ITagMasterRepository,
     private val processTypeRepository: ProcessTypeRepository
 ) {
     suspend fun createOutboundSession(executedAt: String): Int =
@@ -37,7 +36,7 @@ class OutboundRepository @Inject constructor(
         tags: List<TagMasterModel>
     ) {
         tags.forEach { tag ->
-            val ledgerId = tagMasterRepository.getLedgerIdByTagId(tag.tagId)
+            val ledgerId = ITagMasterRepository.getLedgerIdByTagId(tag.tagId)
             val processTypeId = processTypeRepository.getIdByName(tag.newFields.processType)
 
             eventRepo.insert(

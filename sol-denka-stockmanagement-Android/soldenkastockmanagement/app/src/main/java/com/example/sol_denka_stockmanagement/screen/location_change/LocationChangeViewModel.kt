@@ -5,7 +5,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import com.example.sol_denka_stockmanagement.constant.formatTimestamp
 import com.example.sol_denka_stockmanagement.database.repository.location.LocationChangeRepository
-import com.example.sol_denka_stockmanagement.database.repository.tag.TagMasterRepository
+import com.example.sol_denka_stockmanagement.domain.repository.tag.ITagMasterRepository
 import com.example.sol_denka_stockmanagement.model.csv.LocationChangeResultCsvModel
 import com.example.sol_denka_stockmanagement.model.tag.TagMasterModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -15,7 +15,7 @@ import kotlinx.coroutines.withContext
 
 @HiltViewModel
 class LocationChangeViewModel @Inject constructor(
-    private val tagMasterRepository: TagMasterRepository,
+    private val ITagMasterRepository: ITagMasterRepository,
     private val locationChangeRepository: LocationChangeRepository
 ) : ViewModel() {
 
@@ -33,7 +33,7 @@ class LocationChangeViewModel @Inject constructor(
             try {
                 csvModels.clear()
                 rfidTagList.forEach { tag ->
-                    val ledgerId = tagMasterRepository.getLedgerIdByTagId(tag.tagId)
+                    val ledgerId = ITagMasterRepository.getLedgerIdByTagId(tag.tagId)
                     val model = LocationChangeResultCsvModel(
                         ledgerItemId = ledgerId,
                         locationId = locationId,

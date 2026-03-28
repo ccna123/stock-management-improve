@@ -13,8 +13,8 @@ import com.example.sol_denka_stockmanagement.constant.ProcessMethod
 import com.example.sol_denka_stockmanagement.constant.Tab
 import com.example.sol_denka_stockmanagement.constant.WinderType
 import com.example.sol_denka_stockmanagement.constant.generateTimeStamp
-import com.example.sol_denka_stockmanagement.database.repository.csv.CsvHistoryRepository
-import com.example.sol_denka_stockmanagement.database.repository.csv.CsvTaskTypeRepository
+import com.example.sol_denka_stockmanagement.domain.repository.csv.ICsvHistoryRepository
+import com.example.sol_denka_stockmanagement.domain.repository.csv.ICsvTaskTypeRepository
 import com.example.sol_denka_stockmanagement.database.repository.field.ItemTypeFieldSettingMasterRepository
 import com.example.sol_denka_stockmanagement.database.repository.item.ItemCategoryRepository
 import com.example.sol_denka_stockmanagement.database.repository.item.ItemTypeRepository
@@ -75,8 +75,8 @@ class AppViewModelTest {
     private val readerController = mockk<ReaderController>(relaxed = true)
     private val connectionObserver = mockk<NetworkConnectionObserver>(relaxed = true)
     private val locationRepo = mockk<LocationMasterRepository>(relaxed = true)
-    private val csvTaskRepo = mockk<CsvTaskTypeRepository>(relaxed = true)
-    private val csvHistoryRepo = mockk<CsvHistoryRepository>(relaxed = true)
+    private val csvTaskRepo = mockk<ICsvTaskTypeRepository>(relaxed = true)
+    private val csvHistoryRepo = mockk<ICsvHistoryRepository>(relaxed = true)
     private val itemTypeRepo = mockk<ItemTypeRepository>(relaxed = true)
     private val fieldSettingRepo = mockk<ItemTypeFieldSettingMasterRepository>(relaxed = true)
     private val categoryRepo = mockk<ItemCategoryRepository>(relaxed = true)

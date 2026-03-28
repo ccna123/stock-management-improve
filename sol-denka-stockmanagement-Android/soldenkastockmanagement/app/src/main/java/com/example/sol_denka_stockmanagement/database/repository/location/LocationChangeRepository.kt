@@ -3,7 +3,7 @@ package com.example.sol_denka_stockmanagement.database.repository.location
 import android.os.Build
 import androidx.room.withTransaction
 import com.example.sol_denka_stockmanagement.database.AppDatabase
-import com.example.sol_denka_stockmanagement.database.repository.tag.TagMasterRepository
+import com.example.sol_denka_stockmanagement.domain.repository.tag.ITagMasterRepository
 import com.example.sol_denka_stockmanagement.model.location.LocationChangeEventModel
 import com.example.sol_denka_stockmanagement.model.location.LocationChangeSessionModel
 import com.example.sol_denka_stockmanagement.model.tag.TagMasterModel
@@ -15,7 +15,7 @@ class LocationChangeRepository @Inject constructor(
     private val db: AppDatabase,
     private val sessionRepo: LocationChangeSessionRepository,
     private val locationChangeEventRepository: LocationChangeEventRepository,
-    private val tagMasterRepository: TagMasterRepository,
+    private val ITagMasterRepository: ITagMasterRepository,
 ) {
 
     suspend fun createLocationChangeSession(executedAt: String): Int =
@@ -35,7 +35,7 @@ class LocationChangeRepository @Inject constructor(
         rfidTagList: List<TagMasterModel>
     ) {
         rfidTagList.forEach { tag ->
-            val ledgerId = tagMasterRepository.getLedgerIdByTagId(tag.tagId)
+            val ledgerId = ITagMasterRepository.getLedgerIdByTagId(tag.tagId)
             locationChangeEventRepository.insert(
                 LocationChangeEventModel(
                     locationChangeSessionId = sessionId,

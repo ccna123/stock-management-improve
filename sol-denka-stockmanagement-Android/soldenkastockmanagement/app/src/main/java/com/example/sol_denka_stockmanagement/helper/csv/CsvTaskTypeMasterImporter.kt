@@ -1,11 +1,11 @@
 package com.example.sol_denka_stockmanagement.helper.csv
 
 import com.example.sol_denka_stockmanagement.constant.generateTimeStamp
-import com.example.sol_denka_stockmanagement.database.repository.csv.CsvTaskTypeRepository
+import com.example.sol_denka_stockmanagement.domain.repository.csv.ICsvTaskTypeRepository
 import com.example.sol_denka_stockmanagement.model.csv.CsvTaskTypeModel
 
 class CsvTaskTypeMasterImporter(
-    private val repository: CsvTaskTypeRepository,
+    private val repository: ICsvTaskTypeRepository,
 )  : CsvImporter<CsvTaskTypeModel>() {
 
     override val requiredHeaders = setOf(

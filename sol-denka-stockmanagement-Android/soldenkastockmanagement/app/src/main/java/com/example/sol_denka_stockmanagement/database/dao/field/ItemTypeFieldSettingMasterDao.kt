@@ -7,7 +7,7 @@ import androidx.room.OnConflictStrategy.Companion.REPLACE
 import androidx.room.Query
 import androidx.room.Update
 import androidx.room.Upsert
-import com.example.sol_denka_stockmanagement.database.entity.field.ItemTypeFieldSettingMasterEntity
+import com.example.sol_denka_stockmanagement.data.local.entity.field.ItemTypeFieldSettingMasterEntity
 import com.example.sol_denka_stockmanagement.domain.model.inbound.InboundInputFormModel
 import kotlinx.coroutines.flow.Flow
 
@@ -15,7 +15,7 @@ import kotlinx.coroutines.flow.Flow
 interface ItemTypeFieldSettingMasterDao {
 
     @Query("SELECT * FROM ItemTypeFieldSettingMaster")
-    fun get(): Flow<List<ItemTypeFieldSettingMasterEntity>>
+    fun get(): Flow<List<com.example.sol_denka_stockmanagement.data.local.entity.field.ItemTypeFieldSettingMasterEntity>>
 
     @Query("SELECT COUNT(*) FROM ItemTypeFieldSettingMaster")
     suspend fun countRecord(): Int
@@ -39,20 +39,20 @@ interface ItemTypeFieldSettingMasterDao {
 
 
     @Insert(onConflict = REPLACE)
-    suspend fun insert(e: ItemTypeFieldSettingMasterEntity): Long
+    suspend fun insert(e: com.example.sol_denka_stockmanagement.data.local.entity.field.ItemTypeFieldSettingMasterEntity): Long
 
     @Insert(onConflict = REPLACE)
-    suspend fun insertAll(e: List<ItemTypeFieldSettingMasterEntity>)
+    suspend fun insertAll(e: List<com.example.sol_denka_stockmanagement.data.local.entity.field.ItemTypeFieldSettingMasterEntity>)
 
     @Update
-    suspend fun update(e: ItemTypeFieldSettingMasterEntity)
+    suspend fun update(e: com.example.sol_denka_stockmanagement.data.local.entity.field.ItemTypeFieldSettingMasterEntity)
 
     @Delete
-    suspend fun delete(e: ItemTypeFieldSettingMasterEntity)
+    suspend fun delete(e: com.example.sol_denka_stockmanagement.data.local.entity.field.ItemTypeFieldSettingMasterEntity)
 
     @Query("DELETE FROM ItemTypeFieldSettingMaster")
     suspend fun deleteAll()
 
     @Upsert
-    suspend fun upsertAll(e: List<ItemTypeFieldSettingMasterEntity>)
+    suspend fun upsertAll(e: List<com.example.sol_denka_stockmanagement.data.local.entity.field.ItemTypeFieldSettingMasterEntity>)
 }

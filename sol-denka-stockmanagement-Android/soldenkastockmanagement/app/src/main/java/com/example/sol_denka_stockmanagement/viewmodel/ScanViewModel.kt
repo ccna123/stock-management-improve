@@ -7,10 +7,10 @@ import androidx.lifecycle.viewModelScope
 import com.example.sol_denka_stockmanagement.constant.ScanMode
 import com.example.sol_denka_stockmanagement.constant.TagScanStatus
 import com.example.sol_denka_stockmanagement.database.repository.ledger.LedgerItemRepository
-import com.example.sol_denka_stockmanagement.database.repository.tag.TagMasterRepository
+import com.example.sol_denka_stockmanagement.domain.repository.tag.ITagMasterRepository
+import com.example.sol_denka_stockmanagement.domain.model.tag.TagMasterModel
 import com.example.sol_denka_stockmanagement.helper.controller.ReaderController
 import com.example.sol_denka_stockmanagement.helper.controller.TagController
-import com.example.sol_denka_stockmanagement.model.tag.TagMasterModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -22,7 +22,6 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import java.math.BigDecimal
 import javax.inject.Inject
-import kotlin.text.get
 
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @HiltViewModel
@@ -30,7 +29,7 @@ class ScanViewModel @Inject constructor(
     private val readerController: ReaderController,
     private val tagController: TagController,
     private val ledgerItemRepository: LedgerItemRepository,
-    private val tagMasterRepository: TagMasterRepository
+    private val ITagMasterRepository: ITagMasterRepository
 ) : ViewModel() {
 
     val scannedTags = readerController.scannedTags
@@ -57,11 +56,11 @@ class ScanViewModel @Inject constructor(
 
         viewModelScope.launch(Dispatchers.IO) {
 
-            val tagFlow = tagMasterRepository.get()
+            val tagFlow = ITagMasterRepository.get()
             val mappedTagIdFlow = ledgerItemRepository.getMappedTagIdsFlow()
 
             val fullInfoFlow = ledgerItemRepository.get()
-                .map { tagMasterRepository.getFullInfo() } // fullInfo list
+                .map { ITagMasterRepository.getFullInfo() } // fullInfo list
                 .distinctUntilChanged()
 
             combine(tagFlow, mappedTagIdFlow,  fullInfoFlow) { tagList, mappedTagIds, fullInfoList ->

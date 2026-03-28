@@ -6,7 +6,7 @@ import androidx.lifecycle.ViewModel
 import com.example.sol_denka_stockmanagement.constant.formatTimestamp
 import com.example.sol_denka_stockmanagement.database.repository.outbound.OutboundRepository
 import com.example.sol_denka_stockmanagement.database.repository.process.ProcessTypeRepository
-import com.example.sol_denka_stockmanagement.database.repository.tag.TagMasterRepository
+import com.example.sol_denka_stockmanagement.domain.repository.tag.ITagMasterRepository
 import com.example.sol_denka_stockmanagement.model.csv.OutboundResultCsvModel
 import com.example.sol_denka_stockmanagement.model.tag.TagMasterModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -16,7 +16,7 @@ import kotlinx.coroutines.withContext
 
 @HiltViewModel
 class OutboundViewModel @Inject constructor(
-    private val tagMasterRepository: TagMasterRepository,
+    private val ITagMasterRepository: ITagMasterRepository,
     private val processTypeRepository: ProcessTypeRepository,
     private val outboundRepository: OutboundRepository
 ) : ViewModel() {
@@ -35,7 +35,7 @@ class OutboundViewModel @Inject constructor(
                 csvModels.clear()
                 rfidTagList.forEach { tag ->
                     val processTypeId = processTypeRepository.getIdByName(tag.newFields.processType)
-                    val ledgerId = tagMasterRepository.getLedgerIdByTagId(tag.tagId)
+                    val ledgerId = ITagMasterRepository.getLedgerIdByTagId(tag.tagId)
                     val model = OutboundResultCsvModel(
                         ledgerItemId = ledgerId,
                         tagId = tag.tagId,

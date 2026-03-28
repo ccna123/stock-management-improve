@@ -14,7 +14,7 @@ import com.example.sol_denka_stockmanagement.constant.ProcessResult
 import com.example.sol_denka_stockmanagement.constant.StatusCode
 import com.example.sol_denka_stockmanagement.constant.formatTimestamp
 import com.example.sol_denka_stockmanagement.database.AppDatabase
-import com.example.sol_denka_stockmanagement.database.repository.csv.CsvTaskTypeRepository
+import com.example.sol_denka_stockmanagement.domain.repository.csv.ICsvTaskTypeRepository
 import com.example.sol_denka_stockmanagement.database.repository.field.FieldMasterRepository
 import com.example.sol_denka_stockmanagement.database.repository.field.ItemTypeFieldSettingMasterRepository
 import com.example.sol_denka_stockmanagement.database.repository.inbound.InboundEventRepository
@@ -32,8 +32,8 @@ import com.example.sol_denka_stockmanagement.database.repository.location.Locati
 import com.example.sol_denka_stockmanagement.database.repository.outbound.OutboundEventRepository
 import com.example.sol_denka_stockmanagement.database.repository.outbound.OutboundSessionRepository
 import com.example.sol_denka_stockmanagement.database.repository.process.ProcessTypeRepository
-import com.example.sol_denka_stockmanagement.database.repository.tag.TagMasterRepository
-import com.example.sol_denka_stockmanagement.database.repository.tag.TagStatusMasterRepository
+import com.example.sol_denka_stockmanagement.domain.repository.tag.ITagMasterRepository
+import com.example.sol_denka_stockmanagement.domain.repository.tag.ITagStatusMasterRepository
 import com.example.sol_denka_stockmanagement.database.repository.winder.WinderRepository
 import com.example.sol_denka_stockmanagement.exception.AppException
 import com.example.sol_denka_stockmanagement.exception.CsvFileCreateException
@@ -77,15 +77,15 @@ class CsvHelper @Inject constructor(
     private val locationMasterRepository: LocationMasterRepository,
     private val ledgerItemRepository: LedgerItemRepository,
     private val itemTypeRepository: ItemTypeRepository,
-    private val tagMasterRepository: TagMasterRepository,
+    private val ITagMasterRepository: ITagMasterRepository,
     private val itemTypeFieldSettingMasterRepository: ItemTypeFieldSettingMasterRepository,
     private val processTypeRepository: ProcessTypeRepository,
-    private val tagStatusMasterRepository: TagStatusMasterRepository,
+    private val ITagStatusMasterRepository: ITagStatusMasterRepository,
     private val winderRepository: WinderRepository,
     private val fieldMasterRepository: FieldMasterRepository,
     private val inventoryResultTypeRepository: InventoryResultTypeRepository,
     private val itemUnitRepository: ItemUnitRepository,
-    private val csvTaskTypeRepository: CsvTaskTypeRepository,
+    private val ICsvTaskTypeRepository: ICsvTaskTypeRepository,
     private val itemCategoryRepository: ItemCategoryRepository,
     private val inboundSessionRepository: InboundSessionRepository,
     private val inboundEventRepository: InboundEventRepository,
@@ -674,7 +674,7 @@ class CsvHelper @Inject constructor(
 
             CsvType.ItemTypeMaster.displayNameJp -> ItemTypeMasterImporter(repository = itemTypeRepository)
 
-            CsvType.TagMaster.displayNameJp -> TagMasterImporter(repository = tagMasterRepository)
+            CsvType.TagMaster.displayNameJp -> TagMasterImporter(repository = ITagMasterRepository)
 
             CsvType.ItemTypeFieldSettingMaster.displayNameJp -> ItemTypeFieldSettingMasterImporter(
                 repository = itemTypeFieldSettingMasterRepository
@@ -896,13 +896,13 @@ class CsvHelper @Inject constructor(
 
         val importers = listOf(
             ProcessTypeMasterImporter(processTypeRepository),
-            TagStatusMasterImporter(tagStatusMasterRepository),
+            TagStatusMasterImporter(ITagStatusMasterRepository),
             WinderMasterImporter(winderRepository),
             ItemCategoryMasterImporter(itemCategoryRepository),
             FieldMasterImporter(fieldMasterRepository),
             InventoryResultTypeMasterImporter(inventoryResultTypeRepository),
             ItemUnitMasterImporter(itemUnitRepository),
-            CsvTaskTypeMasterImporter(csvTaskTypeRepository)
+            CsvTaskTypeMasterImporter(ICsvTaskTypeRepository)
         )
 
         val matched = importers.filter {
@@ -920,7 +920,7 @@ class CsvHelper @Inject constructor(
                 ProcessTypeMasterImporter(processTypeRepository)
 
             TagStatusMasterImporter::class ->
-                TagStatusMasterImporter(tagStatusMasterRepository)
+                TagStatusMasterImporter(ITagStatusMasterRepository)
 
             WinderMasterImporter::class ->
                 WinderMasterImporter(winderRepository)
@@ -938,7 +938,7 @@ class CsvHelper @Inject constructor(
                 ItemUnitMasterImporter(itemUnitRepository)
 
             CsvTaskTypeMasterImporter::class ->
-                CsvTaskTypeMasterImporter(csvTaskTypeRepository)
+                CsvTaskTypeMasterImporter(ICsvTaskTypeRepository)
 
             else ->
                 throw CsvImporterNotFoundException()

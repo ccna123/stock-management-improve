@@ -3,10 +3,8 @@ package com.example.sol_denka_stockmanagement.database.repository.inventory
 import android.os.Build
 import androidx.room.withTransaction
 import com.example.sol_denka_stockmanagement.database.AppDatabase
-import com.example.sol_denka_stockmanagement.database.repository.tag.TagMasterRepository
+import com.example.sol_denka_stockmanagement.domain.repository.tag.ITagMasterRepository
 import com.example.sol_denka_stockmanagement.domain.model.inventory.InventoryDetailModel
-import com.example.sol_denka_stockmanagement.domain.model.inventory.InventorySessionModel
-import com.example.sol_denka_stockmanagement.domain.model.tag.TagMasterModel
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -14,7 +12,7 @@ import javax.inject.Singleton
 class InventoryCompleteRepository @Inject constructor(
     private val db: AppDatabase,
     private val inventorySessionRepository: InventorySessionRepository,
-    private val tagMasterRepository: TagMasterRepository,
+    private val ITagMasterRepository: ITagMasterRepository,
     private val inventoryDetailRepository: InventoryDetailRepository
 ) {
 
@@ -40,7 +38,7 @@ class InventoryCompleteRepository @Inject constructor(
         tagList: List<com.example.sol_denka_stockmanagement.domain.model.tag.TagMasterModel>
     ) {
         tagList.forEach { tag ->
-            val ledgerItemId = tagMasterRepository.getLedgerIdByTagId(tag.tagId)
+            val ledgerItemId = ITagMasterRepository.getLedgerIdByTagId(tag.tagId)
             inventoryDetailRepository.insert(
                 InventoryDetailModel(
                     inventorySessionId = sessionId,

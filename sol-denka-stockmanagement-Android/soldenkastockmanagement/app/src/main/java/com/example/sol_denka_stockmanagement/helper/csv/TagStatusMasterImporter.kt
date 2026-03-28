@@ -1,11 +1,11 @@
 package com.example.sol_denka_stockmanagement.helper.csv
 
 import com.example.sol_denka_stockmanagement.constant.generateTimeStamp
-import com.example.sol_denka_stockmanagement.database.repository.tag.TagStatusMasterRepository
+import com.example.sol_denka_stockmanagement.domain.repository.tag.ITagStatusMasterRepository
 import com.example.sol_denka_stockmanagement.model.tag.TagStatusMasterModel
 
 class TagStatusMasterImporter(
-    private val repository: TagStatusMasterRepository,
+    private val repository: ITagStatusMasterRepository,
 ): CsvImporter<TagStatusMasterModel>() {
 
     override val requiredHeaders = setOf(

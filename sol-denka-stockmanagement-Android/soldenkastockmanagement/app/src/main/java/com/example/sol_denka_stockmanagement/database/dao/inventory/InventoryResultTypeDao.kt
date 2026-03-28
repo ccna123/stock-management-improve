@@ -7,34 +7,34 @@ import androidx.room.OnConflictStrategy.Companion.REPLACE
 import androidx.room.Query
 import androidx.room.Update
 import androidx.room.Upsert
-import com.example.sol_denka_stockmanagement.database.entity.inventory.InventoryResultTypeEntity
+import com.example.sol_denka_stockmanagement.data.local.entity.inventory.InventoryResultTypeEntity
 import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface InventoryResultTypeDao {
 
     @Query("SELECT * FROM InventoryResultType")
-    fun get(): Flow<List<InventoryResultTypeEntity>>
+    fun get(): Flow<List<com.example.sol_denka_stockmanagement.data.local.entity.inventory.InventoryResultTypeEntity>>
 
     @Query("SELECT inventory_result_type_id FROM InventoryResultType WHERE inventory_result_code = :inventoryResultCode")
     suspend fun getInventoryResultTypeIdByCode(inventoryResultCode: String): Int
 
     @Insert
-    suspend fun insert(e: InventoryResultTypeEntity): Long
+    suspend fun insert(e: com.example.sol_denka_stockmanagement.data.local.entity.inventory.InventoryResultTypeEntity): Long
 
     @Insert(onConflict = REPLACE)
-    suspend fun insertAll(e: List<InventoryResultTypeEntity>)
+    suspend fun insertAll(e: List<com.example.sol_denka_stockmanagement.data.local.entity.inventory.InventoryResultTypeEntity>)
 
 
     @Update
-    suspend fun update(e: InventoryResultTypeEntity)
+    suspend fun update(e: com.example.sol_denka_stockmanagement.data.local.entity.inventory.InventoryResultTypeEntity)
 
     @Delete
-    suspend fun delete(e: InventoryResultTypeEntity)
+    suspend fun delete(e: com.example.sol_denka_stockmanagement.data.local.entity.inventory.InventoryResultTypeEntity)
 
     @Query("DELETE FROM InventoryResultType")
     suspend fun deleteAll()
 
     @Upsert
-    suspend fun upsertAll(e: List<InventoryResultTypeEntity>)
+    suspend fun upsertAll(e: List<com.example.sol_denka_stockmanagement.data.local.entity.inventory.InventoryResultTypeEntity>)
 }

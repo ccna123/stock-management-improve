@@ -7,14 +7,14 @@ import androidx.room.OnConflictStrategy.Companion.REPLACE
 import androidx.room.Query
 import androidx.room.Update
 import androidx.room.Upsert
-import com.example.sol_denka_stockmanagement.database.entity.item.ItemCategoryEntity
+import com.example.sol_denka_stockmanagement.data.local.entity.item.ItemCategoryEntity
 import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface ItemCategoryDao {
 
     @Query("SELECT * FROM ItemCategoryMaster")
-    fun get(): Flow<List<ItemCategoryEntity>>
+    fun get(): Flow<List<com.example.sol_denka_stockmanagement.data.local.entity.item.ItemCategoryEntity>>
 
     @Query("SELECT COUNT(*) FROM ItemCategoryMaster")
     suspend fun countRecord(): Int
@@ -23,20 +23,20 @@ interface ItemCategoryDao {
     suspend fun getIdByName(name: String): Long
 
     @Insert(onConflict = REPLACE)
-    suspend fun insert(e: ItemCategoryEntity): Long
+    suspend fun insert(e: com.example.sol_denka_stockmanagement.data.local.entity.item.ItemCategoryEntity): Long
 
     @Insert(onConflict = REPLACE)
-    suspend fun insertAll(e: List<ItemCategoryEntity>)
+    suspend fun insertAll(e: List<com.example.sol_denka_stockmanagement.data.local.entity.item.ItemCategoryEntity>)
 
     @Update
-    suspend fun update(e: ItemCategoryEntity)
+    suspend fun update(e: com.example.sol_denka_stockmanagement.data.local.entity.item.ItemCategoryEntity)
 
     @Delete
-    suspend fun delete(e: ItemCategoryEntity)
+    suspend fun delete(e: com.example.sol_denka_stockmanagement.data.local.entity.item.ItemCategoryEntity)
 
     @Query("DELETE FROM ItemCategoryMaster")
     suspend fun deleteAll()
 
     @Upsert
-    suspend fun upsertAll(e: List<ItemCategoryEntity>)
+    suspend fun upsertAll(e: List<com.example.sol_denka_stockmanagement.data.local.entity.item.ItemCategoryEntity>)
 }

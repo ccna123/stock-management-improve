@@ -5,7 +5,7 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
-import com.example.sol_denka_stockmanagement.database.entity.inventory.InventoryDetailEntity
+import com.example.sol_denka_stockmanagement.data.local.entity.inventory.InventoryDetailEntity
 import com.example.sol_denka_stockmanagement.domain.model.inventory.InventoryEventForExportModel
 import kotlinx.coroutines.flow.Flow
 
@@ -13,7 +13,7 @@ import kotlinx.coroutines.flow.Flow
 interface InventoryDetailDao {
 
     @Query("SELECT * FROM InventoryDetail")
-    fun get(): Flow<List<InventoryDetailEntity>>
+    fun get(): Flow<List<com.example.sol_denka_stockmanagement.data.local.entity.inventory.InventoryDetailEntity>>
 
     @Query("""
         SELECT session.source_session_uuid AS sourceSessionId,
@@ -30,11 +30,11 @@ interface InventoryDetailDao {
     """)
     suspend fun getEventBySessionId(sessionId: Int): List<com.example.sol_denka_stockmanagement.domain.model.inventory.InventoryEventForExportModel>
     @Insert
-    suspend fun insert(e: InventoryDetailEntity): Long
+    suspend fun insert(e: com.example.sol_denka_stockmanagement.data.local.entity.inventory.InventoryDetailEntity): Long
 
     @Update
-    suspend fun update(e: InventoryDetailEntity)
+    suspend fun update(e: com.example.sol_denka_stockmanagement.data.local.entity.inventory.InventoryDetailEntity)
 
     @Delete
-    suspend fun delete(e: InventoryDetailEntity)
+    suspend fun delete(e: com.example.sol_denka_stockmanagement.data.local.entity.inventory.InventoryDetailEntity)
 }

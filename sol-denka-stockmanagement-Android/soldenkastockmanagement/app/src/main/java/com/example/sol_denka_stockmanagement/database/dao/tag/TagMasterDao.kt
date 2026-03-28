@@ -7,7 +7,7 @@ import androidx.room.OnConflictStrategy.Companion.REPLACE
 import androidx.room.Query
 import androidx.room.Update
 import androidx.room.Upsert
-import com.example.sol_denka_stockmanagement.database.entity.tag.TagMasterEntity
+import com.example.sol_denka_stockmanagement.data.local.entity.tag.TagMasterEntity
 import com.example.sol_denka_stockmanagement.domain.model.tag.SingleTagInfoModel
 import kotlinx.coroutines.flow.Flow
 
@@ -15,22 +15,22 @@ import kotlinx.coroutines.flow.Flow
 interface TagMasterDao {
 
     @Query("SELECT * FROM TagMaster")
-    fun get(): Flow<List<TagMasterEntity>>
+    fun get(): Flow<List<com.example.sol_denka_stockmanagement.data.local.entity.tag.TagMasterEntity>>
 
     @Query("SELECT COUNT(*) FROM TagMaster")
     suspend fun countRecord(): Int
 
     @Insert(onConflict = REPLACE)
-    suspend fun insert(e: TagMasterEntity): Long
+    suspend fun insert(e: com.example.sol_denka_stockmanagement.data.local.entity.tag.TagMasterEntity): Long
 
     @Insert(onConflict = REPLACE)
-    suspend fun insertAll(e: List<TagMasterEntity>)
+    suspend fun insertAll(e: List<com.example.sol_denka_stockmanagement.data.local.entity.tag.TagMasterEntity>)
 
     @Update
-    suspend fun update(e: TagMasterEntity)
+    suspend fun update(e: com.example.sol_denka_stockmanagement.data.local.entity.tag.TagMasterEntity)
 
     @Delete
-    suspend fun delete(e: TagMasterEntity)
+    suspend fun delete(e: com.example.sol_denka_stockmanagement.data.local.entity.tag.TagMasterEntity)
 
     @Query("DELETE FROM tagmaster")
     suspend fun deleteAll()
@@ -45,10 +45,10 @@ interface TagMasterDao {
     suspend fun getTagsByLocationAndStock(
         locationId: Int,
         isInStock: Boolean
-    ): List<TagMasterEntity>
+    ): List<com.example.sol_denka_stockmanagement.data.local.entity.tag.TagMasterEntity>
 
     @Query("SELECT * FROM tagmaster WHERE epc = :epc")
-    suspend fun getTagIdLedgerIdByEpc(epc: String): TagMasterEntity
+    suspend fun getTagIdLedgerIdByEpc(epc: String): com.example.sol_denka_stockmanagement.data.local.entity.tag.TagMasterEntity
 
     @Query(
         """
@@ -107,5 +107,5 @@ interface TagMasterDao {
     suspend fun getLocationIdByTagId(tagId: Int): Long
 
     @Upsert
-    suspend fun upsertAll(e: List<TagMasterEntity>)
+    suspend fun upsertAll(e: List<com.example.sol_denka_stockmanagement.data.local.entity.tag.TagMasterEntity>)
 }

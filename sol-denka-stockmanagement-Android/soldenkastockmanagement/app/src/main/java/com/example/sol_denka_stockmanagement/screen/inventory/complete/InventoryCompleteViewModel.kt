@@ -8,7 +8,7 @@ import com.example.sol_denka_stockmanagement.constant.InventoryResultType
 import com.example.sol_denka_stockmanagement.constant.TagScanStatus
 import com.example.sol_denka_stockmanagement.constant.formatTimestamp
 import com.example.sol_denka_stockmanagement.database.repository.inventory.InventoryCompleteRepository
-import com.example.sol_denka_stockmanagement.database.repository.tag.TagMasterRepository
+import com.example.sol_denka_stockmanagement.domain.repository.tag.ITagMasterRepository
 import com.example.sol_denka_stockmanagement.model.csv.InventoryResultCsvModel
 import com.example.sol_denka_stockmanagement.model.tag.TagMasterModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -23,7 +23,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class InventoryCompleteViewModel @Inject constructor(
-    private val tagMasterRepository: TagMasterRepository,
+    private val ITagMasterRepository: ITagMasterRepository,
     private val inventoryCompleteRepository: InventoryCompleteRepository
 ) : ViewModel() {
 
@@ -89,7 +89,7 @@ class InventoryCompleteViewModel @Inject constructor(
             try {
                 csvModels.clear()
                 rfidTagList.forEach { tag ->
-                    val ledgerId = tagMasterRepository.getLedgerIdByTagId(tag.tagId)
+                    val ledgerId = ITagMasterRepository.getLedgerIdByTagId(tag.tagId)
                     val model = InventoryResultCsvModel(
                         sourceSessionId = sourceSessionUuid,
                         locationId = locationId,

@@ -5,7 +5,7 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
-import com.example.sol_denka_stockmanagement.database.entity.inventory.InventorySessionEntity
+import com.example.sol_denka_stockmanagement.data.local.entity.inventory.InventorySessionEntity
 import com.example.sol_denka_stockmanagement.domain.model.session.SessionModel
 import kotlinx.coroutines.flow.Flow
 
@@ -13,17 +13,17 @@ import kotlinx.coroutines.flow.Flow
 interface InventorySessionDao {
 
     @Query("SELECT * FROM InventorySession")
-    fun get(): Flow<List<InventorySessionEntity>>
+    fun get(): Flow<List<com.example.sol_denka_stockmanagement.data.local.entity.inventory.InventorySessionEntity>>
 
     @Query("SELECT inventory_session_id AS sessionId, executed_at AS timeStamp FROM InventorySession")
     suspend fun getSession(): List<com.example.sol_denka_stockmanagement.domain.model.session.SessionModel>
 
     @Insert
-    suspend fun insert(e: InventorySessionEntity): Long
+    suspend fun insert(e: com.example.sol_denka_stockmanagement.data.local.entity.inventory.InventorySessionEntity): Long
 
     @Update
-    suspend fun update(e: InventorySessionEntity)
+    suspend fun update(e: com.example.sol_denka_stockmanagement.data.local.entity.inventory.InventorySessionEntity)
 
     @Delete
-    suspend fun delete(e: InventorySessionEntity)
+    suspend fun delete(e: com.example.sol_denka_stockmanagement.data.local.entity.inventory.InventorySessionEntity)
 }

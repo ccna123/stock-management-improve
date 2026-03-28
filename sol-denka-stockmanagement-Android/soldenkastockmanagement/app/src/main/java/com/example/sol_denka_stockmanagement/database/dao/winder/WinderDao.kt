@@ -8,14 +8,14 @@ import androidx.room.Query
 import androidx.room.Transaction
 import androidx.room.Update
 import androidx.room.Upsert
-import com.example.sol_denka_stockmanagement.database.entity.winder.WinderEntity
+import com.example.sol_denka_stockmanagement.data.local.entity.winder.WinderEntity
 import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface WinderDao {
 
     @Query("SELECT * FROM Winder")
-    fun get(): Flow<List<WinderEntity>>
+    fun get(): Flow<List<com.example.sol_denka_stockmanagement.data.local.entity.winder.WinderEntity>>
 
     @Query("SELECT COUNT(*) FROM Winder")
     suspend fun countRecord(): Int
@@ -24,25 +24,25 @@ interface WinderDao {
     suspend fun getIdByName(winderName: String): Int?
 
     @Insert
-    suspend fun insert(e: WinderEntity): Long
+    suspend fun insert(e: com.example.sol_denka_stockmanagement.data.local.entity.winder.WinderEntity): Long
 
     @Insert(onConflict = REPLACE)
-    suspend fun insertAll(e: List<WinderEntity>)
+    suspend fun insertAll(e: List<com.example.sol_denka_stockmanagement.data.local.entity.winder.WinderEntity>)
 
     @Update
-    suspend fun update(e: WinderEntity)
+    suspend fun update(e: com.example.sol_denka_stockmanagement.data.local.entity.winder.WinderEntity)
 
     @Delete
-    suspend fun delete(e: WinderEntity)
+    suspend fun delete(e: com.example.sol_denka_stockmanagement.data.local.entity.winder.WinderEntity)
 
     @Query("DELETE FROM Winder")
     suspend fun deleteAll()
 
     @Upsert
-    suspend fun upsertAll(e: List<WinderEntity>)
+    suspend fun upsertAll(e: List<com.example.sol_denka_stockmanagement.data.local.entity.winder.WinderEntity>)
 
     @Transaction
-    suspend fun replaceAll(e: List<WinderEntity>) {
+    suspend fun replaceAll(e: List<com.example.sol_denka_stockmanagement.data.local.entity.winder.WinderEntity>) {
         deleteAll()
         insertAll(e)
     }

@@ -6,7 +6,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy.Companion.REPLACE
 import androidx.room.Query
 import androidx.room.Update
-import com.example.sol_denka_stockmanagement.database.entity.outbound.OutBoundEventEntity
+import com.example.sol_denka_stockmanagement.data.local.entity.outbound.OutBoundEventEntity
 import com.example.sol_denka_stockmanagement.domain.model.outbound.OutboundEventForExportModel
 import kotlinx.coroutines.flow.Flow
 
@@ -14,7 +14,7 @@ import kotlinx.coroutines.flow.Flow
 interface OutboundEventDao {
 
     @Query("SELECT * FROM OutboundEvent")
-    fun get(): Flow<List<OutBoundEventEntity>>
+    fun get(): Flow<List<com.example.sol_denka_stockmanagement.data.local.entity.outbound.OutBoundEventEntity>>
 
     @Query("""
         SELECT event.ledger_item_id AS ledgerItemId,
@@ -32,11 +32,11 @@ interface OutboundEventDao {
     suspend fun getEventBySessionId(sessionId: Int): List<com.example.sol_denka_stockmanagement.domain.model.outbound.OutboundEventForExportModel>
 
     @Insert(onConflict = REPLACE)
-    suspend fun insert(e: OutBoundEventEntity): Long
+    suspend fun insert(e: com.example.sol_denka_stockmanagement.data.local.entity.outbound.OutBoundEventEntity): Long
 
     @Update
-    suspend fun update(e: OutBoundEventEntity)
+    suspend fun update(e: com.example.sol_denka_stockmanagement.data.local.entity.outbound.OutBoundEventEntity)
 
     @Delete
-    suspend fun delete(e: OutBoundEventEntity)
+    suspend fun delete(e: com.example.sol_denka_stockmanagement.data.local.entity.outbound.OutBoundEventEntity)
 }

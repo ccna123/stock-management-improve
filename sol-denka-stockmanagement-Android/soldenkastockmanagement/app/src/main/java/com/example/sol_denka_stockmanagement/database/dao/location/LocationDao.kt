@@ -7,29 +7,29 @@ import androidx.room.OnConflictStrategy.Companion.REPLACE
 import androidx.room.Query
 import androidx.room.Update
 import androidx.room.Upsert
-import com.example.sol_denka_stockmanagement.database.entity.location.LocationMasterEntity
+import com.example.sol_denka_stockmanagement.data.local.entity.location.LocationMasterEntity
 import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface LocationDao {
 
     @Query("SELECT * FROM LocationMaster")
-    fun get(): Flow<List<LocationMasterEntity>>
+    fun get(): Flow<List<com.example.sol_denka_stockmanagement.data.local.entity.location.LocationMasterEntity>>
 
     @Query("SELECT COUNT(*) FROM LocationMaster")
     suspend fun countRecord(): Int
 
     @Insert(onConflict = REPLACE)
-    suspend fun insert(e: LocationMasterEntity): Long
+    suspend fun insert(e: com.example.sol_denka_stockmanagement.data.local.entity.location.LocationMasterEntity): Long
 
     @Insert(onConflict = REPLACE)
-    suspend fun insertAll(e: List<LocationMasterEntity>)
+    suspend fun insertAll(e: List<com.example.sol_denka_stockmanagement.data.local.entity.location.LocationMasterEntity>)
 
     @Update
-    suspend fun update(e: LocationMasterEntity)
+    suspend fun update(e: com.example.sol_denka_stockmanagement.data.local.entity.location.LocationMasterEntity)
 
     @Delete
-    suspend fun delete(e: LocationMasterEntity)
+    suspend fun delete(e: com.example.sol_denka_stockmanagement.data.local.entity.location.LocationMasterEntity)
 
     @Query("DELETE FROM LocationMaster")
     suspend fun deleteAll()
@@ -38,5 +38,5 @@ interface LocationDao {
     suspend fun getLocationIdByName(locationName: String): Int
 
     @Upsert
-    suspend fun upsertAll(e: List<LocationMasterEntity>)
+    suspend fun upsertAll(e: List<com.example.sol_denka_stockmanagement.data.local.entity.location.LocationMasterEntity>)
 }

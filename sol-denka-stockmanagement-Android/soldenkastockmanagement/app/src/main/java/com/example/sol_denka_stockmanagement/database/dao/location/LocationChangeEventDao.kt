@@ -5,7 +5,7 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
-import com.example.sol_denka_stockmanagement.database.entity.location.LocationChangeEventEntity
+import com.example.sol_denka_stockmanagement.data.local.entity.location.LocationChangeEventEntity
 import com.example.sol_denka_stockmanagement.domain.model.location.LocationChangeEventForExportModel
 import kotlinx.coroutines.flow.Flow
 
@@ -13,7 +13,7 @@ import kotlinx.coroutines.flow.Flow
 interface LocationChangeEventDao {
 
     @Query("SELECT * FROM LocationChangeEvent")
-    fun get(): Flow<List<LocationChangeEventEntity>>
+    fun get(): Flow<List<com.example.sol_denka_stockmanagement.data.local.entity.location.LocationChangeEventEntity>>
 
     @Query("""
         SELECT detail.source_event_id AS sourceEventId,
@@ -30,11 +30,11 @@ interface LocationChangeEventDao {
     suspend fun getEventBySessionId(sessionId: Int): List<com.example.sol_denka_stockmanagement.domain.model.location.LocationChangeEventForExportModel>
 
     @Insert
-    suspend fun insert(e: LocationChangeEventEntity): Long
+    suspend fun insert(e: com.example.sol_denka_stockmanagement.data.local.entity.location.LocationChangeEventEntity): Long
 
     @Update
-    suspend fun update(e: LocationChangeEventEntity)
+    suspend fun update(e: com.example.sol_denka_stockmanagement.data.local.entity.location.LocationChangeEventEntity)
 
     @Delete
-    suspend fun delete(e: LocationChangeEventEntity)
+    suspend fun delete(e: com.example.sol_denka_stockmanagement.data.local.entity.location.LocationChangeEventEntity)
 }

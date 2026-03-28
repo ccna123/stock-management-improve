@@ -7,14 +7,14 @@ import androidx.room.OnConflictStrategy.Companion.REPLACE
 import androidx.room.Query
 import androidx.room.Update
 import androidx.room.Upsert
-import com.example.sol_denka_stockmanagement.database.entity.process.ProcessTypeEntity
+import com.example.sol_denka_stockmanagement.data.local.entity.process.ProcessTypeEntity
 import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface ProcessTypeDao {
 
     @Query("SELECT * FROM ProcessType")
-    fun get(): Flow<List<ProcessTypeEntity>>
+    fun get(): Flow<List<com.example.sol_denka_stockmanagement.data.local.entity.process.ProcessTypeEntity>>
 
     @Query("SELECT COUNT(*) FROM ProcessType")
     suspend fun countRecord(): Int
@@ -23,20 +23,20 @@ interface ProcessTypeDao {
     suspend fun getIdByName(processTypeName: String): Int
 
     @Insert(onConflict = REPLACE)
-    suspend fun insert(e: ProcessTypeEntity): Long
+    suspend fun insert(e: com.example.sol_denka_stockmanagement.data.local.entity.process.ProcessTypeEntity): Long
 
     @Insert(onConflict = REPLACE)
-    suspend fun insertAll(e: List<ProcessTypeEntity>)
+    suspend fun insertAll(e: List<com.example.sol_denka_stockmanagement.data.local.entity.process.ProcessTypeEntity>)
 
     @Update
-    suspend fun update(e: ProcessTypeEntity)
+    suspend fun update(e: com.example.sol_denka_stockmanagement.data.local.entity.process.ProcessTypeEntity)
 
     @Delete
-    suspend fun delete(e: ProcessTypeEntity)
+    suspend fun delete(e: com.example.sol_denka_stockmanagement.data.local.entity.process.ProcessTypeEntity)
 
     @Query("DELETE FROM ProcessType")
     suspend fun deleteAll()
 
     @Upsert
-    suspend fun upsertAll(e: List<ProcessTypeEntity>)
+    suspend fun upsertAll(e: List<com.example.sol_denka_stockmanagement.data.local.entity.process.ProcessTypeEntity>)
 }
