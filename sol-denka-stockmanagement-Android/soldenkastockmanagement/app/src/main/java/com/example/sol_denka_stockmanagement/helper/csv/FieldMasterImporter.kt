@@ -1,10 +1,9 @@
 package com.example.sol_denka_stockmanagement.helper.csv
 
-import com.example.sol_denka_stockmanagement.database.repository.field.FieldMasterRepository
 import com.example.sol_denka_stockmanagement.model.field.FieldMasterModel
 
 class FieldMasterImporter(
-    private val repository: FieldMasterRepository,
+    private val repository: com.example.sol_denka_stockmanagement.domain.repository.field.IFieldMasterRepository,
 ): CsvImporter<FieldMasterModel>() {
 
     override val requiredHeaders = setOf(

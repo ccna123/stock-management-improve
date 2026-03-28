@@ -1,11 +1,11 @@
 package com.example.sol_denka_stockmanagement.helper.csv
 
-import com.example.sol_denka_stockmanagement.database.repository.ledger.LedgerItemRepository
+import com.example.sol_denka_stockmanagement.domain.repository.ledger.LedgerItemRepository
 import com.example.sol_denka_stockmanagement.model.ledger.LedgerItemModel
 import java.math.BigDecimal
 
 class LedgerItemMasterImporter(
-    private val repository: LedgerItemRepository,
+    private val repository: com.example.sol_denka_stockmanagement.domain.repository.ledger.LedgerItemRepository,
 ) : CsvImporter<LedgerItemModel>() {
 
     override val requiredHeaders = setOf(

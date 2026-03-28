@@ -1,10 +1,9 @@
 package com.example.sol_denka_stockmanagement.helper.csv
 
-import com.example.sol_denka_stockmanagement.database.repository.field.ItemTypeFieldSettingMasterRepository
 import com.example.sol_denka_stockmanagement.model.field.ItemTypeFieldSettingMasterModel
 
 class ItemTypeFieldSettingMasterImporter(
-    private val repository: ItemTypeFieldSettingMasterRepository,
+    private val repository: com.example.sol_denka_stockmanagement.domain.repository.field.IItemTypeFieldSettingMasterRepository,
 ) : CsvImporter<ItemTypeFieldSettingMasterModel>() {
 
     override val requiredHeaders = setOf(

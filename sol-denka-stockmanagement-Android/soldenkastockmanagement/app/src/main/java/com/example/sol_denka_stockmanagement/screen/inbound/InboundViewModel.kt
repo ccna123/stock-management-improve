@@ -4,8 +4,6 @@ import android.os.Build
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import com.example.sol_denka_stockmanagement.constant.formatTimestamp
-import com.example.sol_denka_stockmanagement.database.repository.inbound.InboundRepository
-import com.example.sol_denka_stockmanagement.database.repository.item.ItemTypeRepository
 import com.example.sol_denka_stockmanagement.model.csv.InboundResultCsvModel
 import com.example.sol_denka_stockmanagement.model.tag.TagMasterModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -17,8 +15,8 @@ import java.math.RoundingMode
 
 @HiltViewModel
 class InboundViewModel @Inject constructor(
-    private val inboundRepository: InboundRepository,
-    private val itemTypeRepository: ItemTypeRepository,
+    private val IInboundRepository: com.example.sol_denka_stockmanagement.domain.repository.inbound.IInboundRepository,
+    private val IItemTypeRepository: com.example.sol_denka_stockmanagement.domain.repository.item.IItemTypeRepository,
 ) : ViewModel() {
 
     private val csvModels = mutableListOf<InboundResultCsvModel>()
@@ -45,7 +43,7 @@ class InboundViewModel @Inject constructor(
             try {
                 csvModels.clear()
                 val itemTypeId =
-                    itemTypeRepository.getItemTypeIdByItemName(itemName = itemInCategory)
+                    IItemTypeRepository.getItemTypeIdByItemName(itemName = itemInCategory)
                 val model = InboundResultCsvModel(
                     tagId = rfidTag?.tagId ?: 0,
                     itemTypeId = itemTypeId,
@@ -96,15 +94,15 @@ class InboundViewModel @Inject constructor(
         return try {
             var sessionId = 0
 
-            inboundRepository.saveInboundTransaction {
+            IInboundRepository.saveInboundTransaction {
 
                 // 1️⃣ create session
-                sessionId = inboundRepository.createInboundSession(executedAt = executedAt)
+                sessionId = IInboundRepository.createInboundSession(executedAt = executedAt)
                 val itemTypeId =
-                    itemTypeRepository.getItemTypeIdByItemName(itemName = itemInCategory)
+                    IItemTypeRepository.getItemTypeIdByItemName(itemName = itemInCategory)
 
                 // 2️⃣ insert event (only if session OK)
-                inboundRepository.insertInboundEvent(
+                IInboundRepository.insertInboundEvent(
                     sessionId = sessionId,
                     winderId = winderId,
                     itemTypeId = itemTypeId,

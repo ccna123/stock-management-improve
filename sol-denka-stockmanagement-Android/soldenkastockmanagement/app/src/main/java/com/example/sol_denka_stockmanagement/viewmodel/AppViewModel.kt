@@ -18,17 +18,8 @@ import com.example.sol_denka_stockmanagement.constant.StatusCode
 import com.example.sol_denka_stockmanagement.constant.generateIso8601JstTimestamp
 import com.example.sol_denka_stockmanagement.domain.repository.csv.ICsvHistoryRepository
 import com.example.sol_denka_stockmanagement.domain.repository.csv.ICsvTaskTypeRepository
-import com.example.sol_denka_stockmanagement.database.repository.field.FieldMasterRepository
-import com.example.sol_denka_stockmanagement.database.repository.field.ItemTypeFieldSettingMasterRepository
-import com.example.sol_denka_stockmanagement.database.repository.item.ItemCategoryRepository
-import com.example.sol_denka_stockmanagement.database.repository.item.ItemTypeRepository
-import com.example.sol_denka_stockmanagement.database.repository.item.ItemUnitRepository
-import com.example.sol_denka_stockmanagement.database.repository.ledger.LedgerItemRepository
-import com.example.sol_denka_stockmanagement.database.repository.location.LocationMasterRepository
-import com.example.sol_denka_stockmanagement.database.repository.process.ProcessTypeRepository
 import com.example.sol_denka_stockmanagement.domain.repository.tag.ITagMasterRepository
 import com.example.sol_denka_stockmanagement.domain.repository.tag.ITagStatusMasterRepository
-import com.example.sol_denka_stockmanagement.database.repository.winder.WinderRepository
 import com.example.sol_denka_stockmanagement.domain.model.csv.CsvHistoryModel
 import com.example.sol_denka_stockmanagement.domain.model.inbound.InboundInputFormModel
 import com.example.sol_denka_stockmanagement.domain.model.item.ItemCategoryModel
@@ -82,18 +73,18 @@ class AppViewModel @Inject constructor(
     @ApplicationContext private val context: Context,
     private val readerController: ReaderController,
     private val connectionObserver: NetworkConnectionObserver,
-    private val locationMasterRepository: LocationMasterRepository,
+    private val locationMasterRepository: com.example.sol_denka_stockmanagement.domain.repository.location.LocationMasterRepository,
     private val ITagMasterRepository: ITagMasterRepository,
     private val ICsvTaskTypeRepository: ICsvTaskTypeRepository,
     private val ICsvHistoryRepository: ICsvHistoryRepository,
-    private val itemTypeRepository: ItemTypeRepository,
-    private val itemTypeFieldSettingMasterRepository: ItemTypeFieldSettingMasterRepository,
-    private val itemCategoryRepository: ItemCategoryRepository,
-    private val winderRepository: WinderRepository,
-    private val processTypeRepository: ProcessTypeRepository,
-    private val ledgerItemRepository: LedgerItemRepository,
-    private val fieldMasterRepository: FieldMasterRepository,
-    private val itemUnitRepository: ItemUnitRepository,
+    private val IItemTypeRepository: com.example.sol_denka_stockmanagement.domain.repository.item.IItemTypeRepository,
+    private val IItemTypeFieldSettingMasterRepository: com.example.sol_denka_stockmanagement.domain.repository.field.IItemTypeFieldSettingMasterRepository,
+    private val IItemCategoryRepository: com.example.sol_denka_stockmanagement.domain.repository.item.IItemCategoryRepository,
+    private val IWinderRepository: com.example.sol_denka_stockmanagement.domain.repository.winder.IWinderRepository,
+    private val IProcessTypeRepository: com.example.sol_denka_stockmanagement.domain.repository.process.IProcessTypeRepository,
+    private val ledgerItemRepository: com.example.sol_denka_stockmanagement.domain.repository.ledger.LedgerItemRepository,
+    private val IFieldMasterRepository: com.example.sol_denka_stockmanagement.domain.repository.field.IFieldMasterRepository,
+    private val itemUnitRepository: com.example.sol_denka_stockmanagement.domain.repository.item.ItemUnitRepository,
     private val ITagStatusMasterRepository: ITagStatusMasterRepository,
     private val csvHelper: CsvHelper,
 ) : ViewModel() {
@@ -209,19 +200,19 @@ class AppViewModel @Inject constructor(
         }
 
         viewModelScope.launch {
-            itemCategoryRepository.get().collect { categories ->
+            IItemCategoryRepository.get().collect { categories ->
                 _itemCategoryMaster.value = categories
             }
         }
 
         viewModelScope.launch {
-            winderRepository.get().collect { winders ->
+            IWinderRepository.get().collect { winders ->
                 _winderMaster.value = winders
             }
         }
 
         viewModelScope.launch {
-            processTypeRepository.get().collect { processTypes ->
+            IProcessTypeRepository.get().collect { processTypes ->
                 _processTypeMaster.value = processTypes
             }
         }
@@ -304,7 +295,7 @@ class AppViewModel @Inject constructor(
                 _inboundInputFormResults.value = emptyList()
                 resetInboundInputForm()
                 viewModelScope.launch {
-                    val result = itemTypeRepository.getItemTypeByCategoryId(intent.categoryId)
+                    val result = IItemTypeRepository.getItemTypeByCategoryId(intent.categoryId)
                     _searchResults.value = result
                 }
             }
@@ -315,7 +306,7 @@ class AppViewModel @Inject constructor(
                 resetInboundInputForm()
                 viewModelScope.launch {
                     _inboundInputFormResults.value =
-                        itemTypeFieldSettingMasterRepository.getFieldForItemTypeByItemTypeId(intent.itemId)
+                        IItemTypeFieldSettingMasterRepository.getFieldForItemTypeByItemTypeId(intent.itemId)
                 }
             }
 
@@ -523,9 +514,9 @@ class AppViewModel @Inject constructor(
 
                     // case: keyword empty ⇒ reload full list from DB
                     if (keyword.isBlank()) {
-                        val categoryId = itemCategoryRepository.getIdByName(intent.categoryName)
+                        val categoryId = IItemCategoryRepository.getIdByName(intent.categoryName)
                         val fullList =
-                            itemTypeRepository.getItemTypeByCategoryId(categoryId)
+                            IItemTypeRepository.getItemTypeByCategoryId(categoryId)
                         _searchResults.value = fullList
                     }
 
@@ -582,28 +573,28 @@ class AppViewModel @Inject constructor(
             if (ITagMasterRepository.countRecord() == 0)
                 missingMasters.add("タグマスタCSV")
 
-            if (itemTypeRepository.countRecord() == 0)
+            if (IItemTypeRepository.countRecord() == 0)
                 missingMasters.add("品目マスタCSV")
 
             if (ICsvTaskTypeRepository.countRecord() == 0)
                 missingMasters.add("CSVタスク種別CSV")
 
-            if (fieldMasterRepository.countRecord() == 0)
+            if (IFieldMasterRepository.countRecord() == 0)
                 missingMasters.add("項目マスタCSV")
 
-            if (itemCategoryRepository.countRecord() == 0)
+            if (IItemCategoryRepository.countRecord() == 0)
                 missingMasters.add("品目区分CSV")
 
             if (itemUnitRepository.countRecord() == 0)
                 missingMasters.add("品目単位CSV")
 
-            if (processTypeRepository.countRecord() == 0)
+            if (IProcessTypeRepository.countRecord() == 0)
                 missingMasters.add("処理種別CSV")
 
             if (ITagStatusMasterRepository.countRecord() == 0)
                 missingMasters.add("タグステータス種別CSV")
 
-            if (winderRepository.countRecord() == 0)
+            if (IWinderRepository.countRecord() == 0)
                 missingMasters.add("巻取機CSV")
 
 
@@ -612,7 +603,7 @@ class AppViewModel @Inject constructor(
                 if (ledgerItemRepository.countRecord() == 0)
                     missingMasters.add("台帳アイテムCSV")
             } else {
-                if (itemTypeFieldSettingMasterRepository.countRecord() == 0)
+                if (IItemTypeFieldSettingMasterRepository.countRecord() == 0)
                     missingMasters.add("品目項目設定マスタCSV")
             }
 

@@ -1,11 +1,10 @@
 package com.example.sol_denka_stockmanagement.helper.csv
 
 import com.example.sol_denka_stockmanagement.constant.generateTimeStamp
-import com.example.sol_denka_stockmanagement.database.repository.winder.WinderRepository
 import com.example.sol_denka_stockmanagement.model.winder.WinderModel
 
 class WinderMasterImporter(
-    private val repository: WinderRepository,
+    private val repository: com.example.sol_denka_stockmanagement.domain.repository.winder.IWinderRepository,
 ) : CsvImporter<WinderModel>() {
 
     override val requiredHeaders = setOf(

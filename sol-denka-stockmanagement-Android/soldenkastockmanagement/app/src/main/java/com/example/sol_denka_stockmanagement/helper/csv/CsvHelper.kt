@@ -15,26 +15,8 @@ import com.example.sol_denka_stockmanagement.constant.StatusCode
 import com.example.sol_denka_stockmanagement.constant.formatTimestamp
 import com.example.sol_denka_stockmanagement.database.AppDatabase
 import com.example.sol_denka_stockmanagement.domain.repository.csv.ICsvTaskTypeRepository
-import com.example.sol_denka_stockmanagement.database.repository.field.FieldMasterRepository
-import com.example.sol_denka_stockmanagement.database.repository.field.ItemTypeFieldSettingMasterRepository
-import com.example.sol_denka_stockmanagement.database.repository.inbound.InboundEventRepository
-import com.example.sol_denka_stockmanagement.database.repository.inbound.InboundSessionRepository
-import com.example.sol_denka_stockmanagement.database.repository.inventory.InventoryDetailRepository
-import com.example.sol_denka_stockmanagement.database.repository.inventory.InventoryResultTypeRepository
-import com.example.sol_denka_stockmanagement.database.repository.inventory.InventorySessionRepository
-import com.example.sol_denka_stockmanagement.database.repository.item.ItemCategoryRepository
-import com.example.sol_denka_stockmanagement.database.repository.item.ItemTypeRepository
-import com.example.sol_denka_stockmanagement.database.repository.item.ItemUnitRepository
-import com.example.sol_denka_stockmanagement.database.repository.ledger.LedgerItemRepository
-import com.example.sol_denka_stockmanagement.database.repository.location.LocationChangeEventRepository
-import com.example.sol_denka_stockmanagement.database.repository.location.LocationChangeSessionRepository
-import com.example.sol_denka_stockmanagement.database.repository.location.LocationMasterRepository
-import com.example.sol_denka_stockmanagement.database.repository.outbound.OutboundEventRepository
-import com.example.sol_denka_stockmanagement.database.repository.outbound.OutboundSessionRepository
-import com.example.sol_denka_stockmanagement.database.repository.process.ProcessTypeRepository
 import com.example.sol_denka_stockmanagement.domain.repository.tag.ITagMasterRepository
 import com.example.sol_denka_stockmanagement.domain.repository.tag.ITagStatusMasterRepository
-import com.example.sol_denka_stockmanagement.database.repository.winder.WinderRepository
 import com.example.sol_denka_stockmanagement.exception.AppException
 import com.example.sol_denka_stockmanagement.exception.CsvFileCreateException
 import com.example.sol_denka_stockmanagement.exception.CsvFileEmptyException
@@ -74,27 +56,27 @@ import javax.inject.Inject
 import kotlin.reflect.KClass
 
 class CsvHelper @Inject constructor(
-    private val locationMasterRepository: LocationMasterRepository,
-    private val ledgerItemRepository: LedgerItemRepository,
-    private val itemTypeRepository: ItemTypeRepository,
+    private val locationMasterRepository: com.example.sol_denka_stockmanagement.domain.repository.location.LocationMasterRepository,
+    private val ledgerItemRepository: com.example.sol_denka_stockmanagement.domain.repository.ledger.LedgerItemRepository,
+    private val IItemTypeRepository: com.example.sol_denka_stockmanagement.domain.repository.item.IItemTypeRepository,
     private val ITagMasterRepository: ITagMasterRepository,
-    private val itemTypeFieldSettingMasterRepository: ItemTypeFieldSettingMasterRepository,
-    private val processTypeRepository: ProcessTypeRepository,
+    private val IItemTypeFieldSettingMasterRepository: com.example.sol_denka_stockmanagement.domain.repository.field.IItemTypeFieldSettingMasterRepository,
+    private val IProcessTypeRepository: com.example.sol_denka_stockmanagement.domain.repository.process.IProcessTypeRepository,
     private val ITagStatusMasterRepository: ITagStatusMasterRepository,
-    private val winderRepository: WinderRepository,
-    private val fieldMasterRepository: FieldMasterRepository,
-    private val inventoryResultTypeRepository: InventoryResultTypeRepository,
-    private val itemUnitRepository: ItemUnitRepository,
+    private val IWinderRepository: com.example.sol_denka_stockmanagement.domain.repository.winder.IWinderRepository,
+    private val IFieldMasterRepository: com.example.sol_denka_stockmanagement.domain.repository.field.IFieldMasterRepository,
+    private val IInventoryResultTypeRepository: com.example.sol_denka_stockmanagement.domain.repository.inventory.IInventoryResultTypeRepository,
+    private val itemUnitRepository: com.example.sol_denka_stockmanagement.domain.repository.item.ItemUnitRepository,
     private val ICsvTaskTypeRepository: ICsvTaskTypeRepository,
-    private val itemCategoryRepository: ItemCategoryRepository,
-    private val inboundSessionRepository: InboundSessionRepository,
-    private val inboundEventRepository: InboundEventRepository,
-    private val outboundSessionRepository: OutboundSessionRepository,
-    private val outboundEventRepository: OutboundEventRepository,
-    private val locationChangeSessionRepository: LocationChangeSessionRepository,
-    private val locationChangeRepository: LocationChangeEventRepository,
-    private val inventorySessionRepository: InventorySessionRepository,
-    private val inventoryDetailRepository: InventoryDetailRepository,
+    private val IItemCategoryRepository: com.example.sol_denka_stockmanagement.domain.repository.item.IItemCategoryRepository,
+    private val IInboundSessionRepository: com.example.sol_denka_stockmanagement.domain.repository.inbound.IInboundSessionRepository,
+    private val inboundEventRepository: com.example.sol_denka_stockmanagement.domain.repository.inbound.InboundEventRepository,
+    private val outboundSessionRepository: com.example.sol_denka_stockmanagement.domain.repository.outbound.OutboundSessionRepository,
+    private val outboundEventRepository: com.example.sol_denka_stockmanagement.domain.repository.outbound.OutboundEventRepository,
+    private val ILocationChangeSessionRepository: com.example.sol_denka_stockmanagement.domain.repository.location.ILocationChangeSessionRepository,
+    private val locationChangeRepository: com.example.sol_denka_stockmanagement.domain.repository.location.ILocationChangeEventRepository,
+    private val IInventorySessionRepository: com.example.sol_denka_stockmanagement.domain.repository.inventory.IInventorySessionRepository,
+    private val IInventoryDetailRepository: com.example.sol_denka_stockmanagement.domain.repository.inventory.IInventoryDetailRepository,
     private val db: AppDatabase
 ) {
     companion object {
@@ -231,7 +213,7 @@ class CsvHelper @Inject constructor(
             val listFileName = mutableListOf<ExportFileModel>()
             when (csvType) {
                 CsvType.InboundResult.displayNameJp -> {
-                    inboundSessionRepository.getSession().map { model ->
+                    IInboundSessionRepository.getSession().map { model ->
                         listFileName.add(
                             ExportFileModel(
                                 sessionId = model.sessionId,
@@ -253,7 +235,7 @@ class CsvHelper @Inject constructor(
                         )
                     }
 
-                CsvType.LocationChangeResult.displayNameJp -> locationChangeSessionRepository.getSession()
+                CsvType.LocationChangeResult.displayNameJp -> ILocationChangeSessionRepository.getSession()
                     .map { model ->
                         listFileName.add(
                             ExportFileModel(
@@ -264,7 +246,7 @@ class CsvHelper @Inject constructor(
                         )
                     }
 
-                CsvType.InventoryResult.displayNameJp -> inventorySessionRepository.getSession()
+                CsvType.InventoryResult.displayNameJp -> IInventorySessionRepository.getSession()
                     .map { model ->
                         listFileName.add(
                             ExportFileModel(
@@ -301,7 +283,7 @@ class CsvHelper @Inject constructor(
     }
 
     suspend fun getInventoryEvents(sessionId: Int): List<InventoryEventForExportModel> {
-        return inventoryDetailRepository
+        return IInventoryDetailRepository
             .getEventBySessionId(sessionId)
     }
 
@@ -672,12 +654,12 @@ class CsvHelper @Inject constructor(
 
             CsvType.LedgerMaster.displayNameJp -> LedgerItemMasterImporter(repository = ledgerItemRepository)
 
-            CsvType.ItemTypeMaster.displayNameJp -> ItemTypeMasterImporter(repository = itemTypeRepository)
+            CsvType.ItemTypeMaster.displayNameJp -> ItemTypeMasterImporter(repository = IItemTypeRepository)
 
             CsvType.TagMaster.displayNameJp -> TagMasterImporter(repository = ITagMasterRepository)
 
             CsvType.ItemTypeFieldSettingMaster.displayNameJp -> ItemTypeFieldSettingMasterImporter(
-                repository = itemTypeFieldSettingMasterRepository
+                repository = IItemTypeFieldSettingMasterRepository
             )
 
             else -> null
@@ -895,12 +877,12 @@ class CsvHelper @Inject constructor(
     ): KClass<out CsvImporter<*>>? {
 
         val importers = listOf(
-            ProcessTypeMasterImporter(processTypeRepository),
+            ProcessTypeMasterImporter(IProcessTypeRepository),
             TagStatusMasterImporter(ITagStatusMasterRepository),
-            WinderMasterImporter(winderRepository),
-            ItemCategoryMasterImporter(itemCategoryRepository),
-            FieldMasterImporter(fieldMasterRepository),
-            InventoryResultTypeMasterImporter(inventoryResultTypeRepository),
+            WinderMasterImporter(IWinderRepository),
+            ItemCategoryMasterImporter(IItemCategoryRepository),
+            FieldMasterImporter(IFieldMasterRepository),
+            InventoryResultTypeMasterImporter(IInventoryResultTypeRepository),
             ItemUnitMasterImporter(itemUnitRepository),
             CsvTaskTypeMasterImporter(ICsvTaskTypeRepository)
         )
@@ -917,22 +899,22 @@ class CsvHelper @Inject constructor(
     ): CsvImporter<*> =
         when (cls) {
             ProcessTypeMasterImporter::class ->
-                ProcessTypeMasterImporter(processTypeRepository)
+                ProcessTypeMasterImporter(IProcessTypeRepository)
 
             TagStatusMasterImporter::class ->
                 TagStatusMasterImporter(ITagStatusMasterRepository)
 
             WinderMasterImporter::class ->
-                WinderMasterImporter(winderRepository)
+                WinderMasterImporter(IWinderRepository)
 
             ItemCategoryMasterImporter::class ->
-                ItemCategoryMasterImporter(itemCategoryRepository)
+                ItemCategoryMasterImporter(IItemCategoryRepository)
 
             FieldMasterImporter::class ->
-                FieldMasterImporter(fieldMasterRepository)
+                FieldMasterImporter(IFieldMasterRepository)
 
             InventoryResultTypeMasterImporter::class ->
-                InventoryResultTypeMasterImporter(inventoryResultTypeRepository)
+                InventoryResultTypeMasterImporter(IInventoryResultTypeRepository)
 
             ItemUnitMasterImporter::class ->
                 ItemUnitMasterImporter(itemUnitRepository)

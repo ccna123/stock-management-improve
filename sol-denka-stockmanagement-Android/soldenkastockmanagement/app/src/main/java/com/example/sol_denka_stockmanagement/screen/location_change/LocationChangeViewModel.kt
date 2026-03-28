@@ -4,7 +4,6 @@ import android.os.Build
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import com.example.sol_denka_stockmanagement.constant.formatTimestamp
-import com.example.sol_denka_stockmanagement.database.repository.location.LocationChangeRepository
 import com.example.sol_denka_stockmanagement.domain.repository.tag.ITagMasterRepository
 import com.example.sol_denka_stockmanagement.model.csv.LocationChangeResultCsvModel
 import com.example.sol_denka_stockmanagement.model.tag.TagMasterModel
@@ -16,7 +15,7 @@ import kotlinx.coroutines.withContext
 @HiltViewModel
 class LocationChangeViewModel @Inject constructor(
     private val ITagMasterRepository: ITagMasterRepository,
-    private val locationChangeRepository: LocationChangeRepository
+    private val ILocationChangeRepository: com.example.sol_denka_stockmanagement.domain.repository.location.ILocationChangeRepository
 ) : ViewModel() {
 
     private val csvModels = mutableListOf<LocationChangeResultCsvModel>()
@@ -63,11 +62,11 @@ class LocationChangeViewModel @Inject constructor(
     ): Result<Unit> {
         return try {
             var sessionId: Int
-            locationChangeRepository.saveLocationChangeTransaction {
+            ILocationChangeRepository.saveLocationChangeTransaction {
 
-                sessionId = locationChangeRepository.createLocationChangeSession(executedAt = executedAt)
+                sessionId = ILocationChangeRepository.createLocationChangeSession(executedAt = executedAt)
 
-                locationChangeRepository.insertLocationChangeEvent(
+                ILocationChangeRepository.insertLocationChangeEvent(
                     sessionId = sessionId,
                     memo = memo,
                     locationId = locationId,

@@ -15,7 +15,7 @@ import kotlinx.coroutines.flow.Flow
 interface ItemTypeFieldSettingMasterDao {
 
     @Query("SELECT * FROM ItemTypeFieldSettingMaster")
-    fun get(): Flow<List<com.example.sol_denka_stockmanagement.data.local.entity.field.ItemTypeFieldSettingMasterEntity>>
+    fun get(): Flow<List<ItemTypeFieldSettingMasterEntity>>
 
     @Query("SELECT COUNT(*) FROM ItemTypeFieldSettingMaster")
     suspend fun countRecord(): Int

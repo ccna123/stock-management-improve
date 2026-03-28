@@ -7,7 +7,6 @@ import androidx.lifecycle.viewModelScope
 import com.example.sol_denka_stockmanagement.constant.InventoryResultType
 import com.example.sol_denka_stockmanagement.constant.TagScanStatus
 import com.example.sol_denka_stockmanagement.constant.formatTimestamp
-import com.example.sol_denka_stockmanagement.database.repository.inventory.InventoryCompleteRepository
 import com.example.sol_denka_stockmanagement.domain.repository.tag.ITagMasterRepository
 import com.example.sol_denka_stockmanagement.model.csv.InventoryResultCsvModel
 import com.example.sol_denka_stockmanagement.model.tag.TagMasterModel
@@ -24,7 +23,7 @@ import javax.inject.Inject
 @HiltViewModel
 class InventoryCompleteViewModel @Inject constructor(
     private val ITagMasterRepository: ITagMasterRepository,
-    private val inventoryCompleteRepository: InventoryCompleteRepository
+    private val IInventoryCompleteRepository: com.example.sol_denka_stockmanagement.domain.repository.inventory.IInventoryCompleteRepository
 ) : ViewModel() {
 
     private val _wrongLocationCount = MutableStateFlow(0)
@@ -120,14 +119,14 @@ class InventoryCompleteViewModel @Inject constructor(
     ): Result<Int> {
         return try {
             var sessionId = 0
-            inventoryCompleteRepository.saveInventoryResultTransaction {
-                sessionId = inventoryCompleteRepository.createInventorySession(
+            IInventoryCompleteRepository.saveInventoryResultTransaction {
+                sessionId = IInventoryCompleteRepository.createInventorySession(
                     locationId = locationId,
                     sourceSessionUuid = sourceSessionUuid,
                     memo = memo,
                     executedAt = executedAt
                 )
-                inventoryCompleteRepository.insertInventoryDetail(
+                IInventoryCompleteRepository.insertInventoryDetail(
                     sessionId = sessionId,
                     tagList = rfidTagList,
                     scannedAt = scannedAt

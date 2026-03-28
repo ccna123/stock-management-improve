@@ -6,7 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.sol_denka_stockmanagement.constant.ScanMode
 import com.example.sol_denka_stockmanagement.constant.TagScanStatus
-import com.example.sol_denka_stockmanagement.database.repository.ledger.LedgerItemRepository
+import com.example.sol_denka_stockmanagement.domain.repository.ledger.LedgerItemRepository
 import com.example.sol_denka_stockmanagement.domain.repository.tag.ITagMasterRepository
 import com.example.sol_denka_stockmanagement.domain.model.tag.TagMasterModel
 import com.example.sol_denka_stockmanagement.helper.controller.ReaderController
@@ -28,7 +28,7 @@ import javax.inject.Inject
 class ScanViewModel @Inject constructor(
     private val readerController: ReaderController,
     private val tagController: TagController,
-    private val ledgerItemRepository: LedgerItemRepository,
+    private val ledgerItemRepository: com.example.sol_denka_stockmanagement.domain.repository.ledger.LedgerItemRepository,
     private val ITagMasterRepository: ITagMasterRepository
 ) : ViewModel() {
 

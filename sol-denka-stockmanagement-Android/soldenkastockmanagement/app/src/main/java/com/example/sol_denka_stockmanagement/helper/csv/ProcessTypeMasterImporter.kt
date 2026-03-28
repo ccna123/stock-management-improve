@@ -1,11 +1,10 @@
 package com.example.sol_denka_stockmanagement.helper.csv
 
 import com.example.sol_denka_stockmanagement.constant.generateTimeStamp
-import com.example.sol_denka_stockmanagement.database.repository.process.ProcessTypeRepository
 import com.example.sol_denka_stockmanagement.model.process.ProcessTypeModel
 
 class ProcessTypeMasterImporter(
-    private val repository: ProcessTypeRepository,
+    private val repository: com.example.sol_denka_stockmanagement.domain.repository.process.IProcessTypeRepository,
 ): CsvImporter<ProcessTypeModel>() {
 
     override val requiredHeaders = setOf(

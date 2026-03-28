@@ -1,10 +1,10 @@
 package com.example.sol_denka_stockmanagement.helper.csv
 
-import com.example.sol_denka_stockmanagement.database.repository.location.LocationMasterRepository
+import com.example.sol_denka_stockmanagement.domain.repository.location.LocationMasterRepository
 import com.example.sol_denka_stockmanagement.model.location.LocationMasterModel
 
 class LocationMasterImporter(
-    private val repository: LocationMasterRepository,
+    private val repository: com.example.sol_denka_stockmanagement.domain.repository.location.LocationMasterRepository,
 ) : CsvImporter<LocationMasterModel>() {
 
     override val requiredHeaders = setOf(

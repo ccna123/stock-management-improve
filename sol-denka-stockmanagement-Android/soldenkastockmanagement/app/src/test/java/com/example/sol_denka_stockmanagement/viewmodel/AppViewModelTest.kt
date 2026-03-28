@@ -15,12 +15,6 @@ import com.example.sol_denka_stockmanagement.constant.WinderType
 import com.example.sol_denka_stockmanagement.constant.generateTimeStamp
 import com.example.sol_denka_stockmanagement.domain.repository.csv.ICsvHistoryRepository
 import com.example.sol_denka_stockmanagement.domain.repository.csv.ICsvTaskTypeRepository
-import com.example.sol_denka_stockmanagement.database.repository.field.ItemTypeFieldSettingMasterRepository
-import com.example.sol_denka_stockmanagement.database.repository.item.ItemCategoryRepository
-import com.example.sol_denka_stockmanagement.database.repository.item.ItemTypeRepository
-import com.example.sol_denka_stockmanagement.database.repository.location.LocationMasterRepository
-import com.example.sol_denka_stockmanagement.database.repository.process.ProcessTypeRepository
-import com.example.sol_denka_stockmanagement.database.repository.winder.WinderRepository
 import com.example.sol_denka_stockmanagement.helper.NetworkConnectionObserver
 import com.example.sol_denka_stockmanagement.helper.controller.ReaderController
 import com.example.sol_denka_stockmanagement.helper.csv.CsvHelper
@@ -74,14 +68,14 @@ class AppViewModelTest {
     private val context = mockk<Context>(relaxed = true)
     private val readerController = mockk<ReaderController>(relaxed = true)
     private val connectionObserver = mockk<NetworkConnectionObserver>(relaxed = true)
-    private val locationRepo = mockk<LocationMasterRepository>(relaxed = true)
+    private val locationRepo = mockk<com.example.sol_denka_stockmanagement.domain.repository.location.LocationMasterRepository>(relaxed = true)
     private val csvTaskRepo = mockk<ICsvTaskTypeRepository>(relaxed = true)
     private val csvHistoryRepo = mockk<ICsvHistoryRepository>(relaxed = true)
-    private val itemTypeRepo = mockk<ItemTypeRepository>(relaxed = true)
-    private val fieldSettingRepo = mockk<ItemTypeFieldSettingMasterRepository>(relaxed = true)
-    private val categoryRepo = mockk<ItemCategoryRepository>(relaxed = true)
-    private val winderRepo = mockk<WinderRepository>(relaxed = true)
-    private val processRepo = mockk<ProcessTypeRepository>(relaxed = true)
+    private val itemTypeRepo = mockk<com.example.sol_denka_stockmanagement.domain.repository.item.IItemTypeRepository>(relaxed = true)
+    private val fieldSettingRepo = mockk<com.example.sol_denka_stockmanagement.domain.repository.field.IItemTypeFieldSettingMasterRepository>(relaxed = true)
+    private val categoryRepo = mockk<com.example.sol_denka_stockmanagement.domain.repository.item.IItemCategoryRepository>(relaxed = true)
+    private val winderRepo = mockk<com.example.sol_denka_stockmanagement.domain.repository.winder.IWinderRepository>(relaxed = true)
+    private val processRepo = mockk<com.example.sol_denka_stockmanagement.domain.repository.process.IProcessTypeRepository>(relaxed = true)
     private val csvHelper = mockk<CsvHelper>(relaxed = true)
 
     private val presetRepos = emptySet<IPresetRepo>()

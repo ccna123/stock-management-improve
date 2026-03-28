@@ -1,11 +1,10 @@
 package com.example.sol_denka_stockmanagement.helper.csv
 
 import com.example.sol_denka_stockmanagement.constant.generateTimeStamp
-import com.example.sol_denka_stockmanagement.database.repository.item.ItemCategoryRepository
 import com.example.sol_denka_stockmanagement.model.item.ItemCategoryModel
 
 class ItemCategoryMasterImporter(
-    private val repository: ItemCategoryRepository,
+    private val repository: com.example.sol_denka_stockmanagement.domain.repository.item.IItemCategoryRepository,
 ): CsvImporter<ItemCategoryModel>() {
 
     override val requiredHeaders = setOf(
