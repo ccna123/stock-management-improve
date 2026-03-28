@@ -7,7 +7,7 @@ import androidx.room.OnConflictStrategy.Companion.REPLACE
 import androidx.room.Query
 import androidx.room.Update
 import com.example.sol_denka_stockmanagement.database.entity.outbound.OutboundSessionEntity
-import com.example.sol_denka_stockmanagement.model.session.SessionModel
+import com.example.sol_denka_stockmanagement.domain.model.session.SessionModel
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -17,7 +17,7 @@ interface OutboundSessionDao {
     fun get(): Flow<List<OutboundSessionEntity>>
 
     @Query("SELECT outbound_session_id AS sessionId, executed_at AS timeStamp FROM OutboundSession")
-    suspend fun getSession(): List<SessionModel>
+    suspend fun getSession(): List<com.example.sol_denka_stockmanagement.domain.model.session.SessionModel>
 
     @Insert(onConflict = REPLACE)
     suspend fun insert(e: OutboundSessionEntity): Long

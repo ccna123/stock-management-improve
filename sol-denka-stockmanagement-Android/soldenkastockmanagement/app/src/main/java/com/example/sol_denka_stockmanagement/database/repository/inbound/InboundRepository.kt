@@ -3,9 +3,9 @@ package com.example.sol_denka_stockmanagement.database.repository.inbound
 import android.os.Build
 import androidx.room.withTransaction
 import com.example.sol_denka_stockmanagement.database.AppDatabase
-import com.example.sol_denka_stockmanagement.model.inbound.InboundEventModel
-import com.example.sol_denka_stockmanagement.model.inbound.InboundSessionModel
-import com.example.sol_denka_stockmanagement.model.tag.TagMasterModel
+import com.example.sol_denka_stockmanagement.domain.model.inbound.InboundEventModel
+import com.example.sol_denka_stockmanagement.domain.model.inbound.InboundSessionModel
+import com.example.sol_denka_stockmanagement.domain.model.tag.TagMasterModel
 import java.math.BigDecimal
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -19,7 +19,7 @@ class InboundRepository @Inject constructor(
 
     suspend fun createInboundSession(executedAt: String): Int =
         sessionRepo.insert(
-            InboundSessionModel(
+            _root_ide_package_.com.example.sol_denka_stockmanagement.domain.model.inbound.InboundSessionModel(
                 deviceId = Build.ID,
                 executedAt = executedAt
             )
@@ -42,10 +42,10 @@ class InboundRepository @Inject constructor(
         occurredAt: String?,
         processedAt: String?,
         registeredAt: String,
-        rfidTag: TagMasterModel?
+        rfidTag: com.example.sol_denka_stockmanagement.domain.model.tag.TagMasterModel?
     ) {
         eventRepo.insert(
-            InboundEventModel(
+            _root_ide_package_.com.example.sol_denka_stockmanagement.domain.model.inbound.InboundEventModel(
                 inboundSessionId = sessionId,
                 itemTypeId = itemTypeId,
                 locationId = locationId,

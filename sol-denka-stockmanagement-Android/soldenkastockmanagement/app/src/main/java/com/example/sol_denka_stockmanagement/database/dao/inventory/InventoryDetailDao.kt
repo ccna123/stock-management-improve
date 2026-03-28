@@ -6,7 +6,7 @@ import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
 import com.example.sol_denka_stockmanagement.database.entity.inventory.InventoryDetailEntity
-import com.example.sol_denka_stockmanagement.model.inventory.InventoryEventForExportModel
+import com.example.sol_denka_stockmanagement.domain.model.inventory.InventoryEventForExportModel
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -28,7 +28,7 @@ interface InventoryDetailDao {
         LEFT JOIN InventorySession AS session ON session.inventory_session_id = detail.inventory_session_id
         WHERE session.inventory_session_id = :sessionId
     """)
-    suspend fun getEventBySessionId(sessionId: Int): List<InventoryEventForExportModel>
+    suspend fun getEventBySessionId(sessionId: Int): List<com.example.sol_denka_stockmanagement.domain.model.inventory.InventoryEventForExportModel>
     @Insert
     suspend fun insert(e: InventoryDetailEntity): Long
 

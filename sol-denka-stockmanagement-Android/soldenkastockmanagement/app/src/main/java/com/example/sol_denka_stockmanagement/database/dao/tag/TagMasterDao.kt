@@ -8,7 +8,7 @@ import androidx.room.Query
 import androidx.room.Update
 import androidx.room.Upsert
 import com.example.sol_denka_stockmanagement.database.entity.tag.TagMasterEntity
-import com.example.sol_denka_stockmanagement.model.tag.SingleTagInfoModel
+import com.example.sol_denka_stockmanagement.domain.model.tag.SingleTagInfoModel
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -81,7 +81,7 @@ interface TagMasterDao {
             LEFT JOIN itemcategorymaster itc ON itc.item_category_id = it.item_category_id
     """
     )
-    suspend fun getFullInfo(): List<SingleTagInfoModel>
+    suspend fun getFullInfo(): List<com.example.sol_denka_stockmanagement.domain.model.tag.SingleTagInfoModel>
 
     @Query("SELECT ledger_item_id FROM ledgeritem WHERE tag_id = :tagId")
     suspend fun getLedgerIdByTagId(tagId: Int): Int

@@ -6,7 +6,7 @@ import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
 import com.example.sol_denka_stockmanagement.database.entity.inventory.InventorySessionEntity
-import com.example.sol_denka_stockmanagement.model.session.SessionModel
+import com.example.sol_denka_stockmanagement.domain.model.session.SessionModel
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -16,7 +16,7 @@ interface InventorySessionDao {
     fun get(): Flow<List<InventorySessionEntity>>
 
     @Query("SELECT inventory_session_id AS sessionId, executed_at AS timeStamp FROM InventorySession")
-    suspend fun getSession(): List<SessionModel>
+    suspend fun getSession(): List<com.example.sol_denka_stockmanagement.domain.model.session.SessionModel>
 
     @Insert
     suspend fun insert(e: InventorySessionEntity): Long

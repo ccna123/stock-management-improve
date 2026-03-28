@@ -8,7 +8,7 @@ import androidx.room.Query
 import androidx.room.Update
 import androidx.room.Upsert
 import com.example.sol_denka_stockmanagement.database.entity.field.ItemTypeFieldSettingMasterEntity
-import com.example.sol_denka_stockmanagement.model.inbound.InboundInputFormModel
+import com.example.sol_denka_stockmanagement.domain.model.inbound.InboundInputFormModel
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -35,7 +35,7 @@ interface ItemTypeFieldSettingMasterDao {
         WHERE s.item_type_id = :id
     """
     )
-    suspend fun getFieldForItemTypeByItemTypeId(id: Int): List<InboundInputFormModel>
+    suspend fun getFieldForItemTypeByItemTypeId(id: Int): List<com.example.sol_denka_stockmanagement.domain.model.inbound.InboundInputFormModel>
 
 
     @Insert(onConflict = REPLACE)

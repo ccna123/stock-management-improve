@@ -7,7 +7,7 @@ import androidx.room.OnConflictStrategy.Companion.REPLACE
 import androidx.room.Query
 import androidx.room.Update
 import com.example.sol_denka_stockmanagement.database.entity.outbound.OutBoundEventEntity
-import com.example.sol_denka_stockmanagement.model.outbound.OutboundEventForExportModel
+import com.example.sol_denka_stockmanagement.domain.model.outbound.OutboundEventForExportModel
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -29,7 +29,7 @@ interface OutboundEventDao {
         LEFT JOIN OutboundSession AS session ON session.outbound_session_id = event.outbound_session_id
         WHERE session.outbound_session_id = :sessionId
     """)
-    suspend fun getEventBySessionId(sessionId: Int): List<OutboundEventForExportModel>
+    suspend fun getEventBySessionId(sessionId: Int): List<com.example.sol_denka_stockmanagement.domain.model.outbound.OutboundEventForExportModel>
 
     @Insert(onConflict = REPLACE)
     suspend fun insert(e: OutBoundEventEntity): Long

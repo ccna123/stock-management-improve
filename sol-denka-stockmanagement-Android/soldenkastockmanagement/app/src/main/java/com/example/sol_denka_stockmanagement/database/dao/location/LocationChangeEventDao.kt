@@ -6,7 +6,7 @@ import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
 import com.example.sol_denka_stockmanagement.database.entity.location.LocationChangeEventEntity
-import com.example.sol_denka_stockmanagement.model.location.LocationChangeEventForExportModel
+import com.example.sol_denka_stockmanagement.domain.model.location.LocationChangeEventForExportModel
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -27,7 +27,7 @@ interface LocationChangeEventDao {
         LEFT JOIN LocationChangeSession AS session ON session.location_change_session_id = detail.location_change_session_id
         WHERE session.location_change_session_id = :sessionId
     """)
-    suspend fun getEventBySessionId(sessionId: Int): List<LocationChangeEventForExportModel>
+    suspend fun getEventBySessionId(sessionId: Int): List<com.example.sol_denka_stockmanagement.domain.model.location.LocationChangeEventForExportModel>
 
     @Insert
     suspend fun insert(e: LocationChangeEventEntity): Long
