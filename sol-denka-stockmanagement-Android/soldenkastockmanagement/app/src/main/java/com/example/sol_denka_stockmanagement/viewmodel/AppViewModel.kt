@@ -28,6 +28,15 @@ import com.example.sol_denka_stockmanagement.domain.model.location.LocationMaste
 import com.example.sol_denka_stockmanagement.domain.model.process.ProcessTypeModel
 import com.example.sol_denka_stockmanagement.domain.model.reader.ReaderInfoModel
 import com.example.sol_denka_stockmanagement.domain.model.winder.WinderModel
+import com.example.sol_denka_stockmanagement.domain.repository.field.IFieldMasterRepository
+import com.example.sol_denka_stockmanagement.domain.repository.field.IItemTypeFieldSettingMasterRepository
+import com.example.sol_denka_stockmanagement.domain.repository.item.IItemCategoryRepository
+import com.example.sol_denka_stockmanagement.domain.repository.item.IItemTypeRepository
+import com.example.sol_denka_stockmanagement.domain.repository.item.IItemUnitRepository
+import com.example.sol_denka_stockmanagement.domain.repository.ledger.ILedgerItemRepository
+import com.example.sol_denka_stockmanagement.domain.repository.location.ILocationMasterRepository
+import com.example.sol_denka_stockmanagement.domain.repository.process.IProcessTypeRepository
+import com.example.sol_denka_stockmanagement.domain.repository.winder.IWinderRepository
 import com.example.sol_denka_stockmanagement.exception.AppException
 import com.example.sol_denka_stockmanagement.helper.NetworkConnectionObserver
 import com.example.sol_denka_stockmanagement.helper.controller.ReaderController
@@ -73,19 +82,19 @@ class AppViewModel @Inject constructor(
     @ApplicationContext private val context: Context,
     private val readerController: ReaderController,
     private val connectionObserver: NetworkConnectionObserver,
-    private val locationMasterRepository: com.example.sol_denka_stockmanagement.domain.repository.location.LocationMasterRepository,
-    private val ITagMasterRepository: ITagMasterRepository,
-    private val ICsvTaskTypeRepository: ICsvTaskTypeRepository,
-    private val ICsvHistoryRepository: ICsvHistoryRepository,
-    private val IItemTypeRepository: com.example.sol_denka_stockmanagement.domain.repository.item.IItemTypeRepository,
-    private val IItemTypeFieldSettingMasterRepository: com.example.sol_denka_stockmanagement.domain.repository.field.IItemTypeFieldSettingMasterRepository,
-    private val IItemCategoryRepository: com.example.sol_denka_stockmanagement.domain.repository.item.IItemCategoryRepository,
-    private val IWinderRepository: com.example.sol_denka_stockmanagement.domain.repository.winder.IWinderRepository,
-    private val IProcessTypeRepository: com.example.sol_denka_stockmanagement.domain.repository.process.IProcessTypeRepository,
-    private val ledgerItemRepository: com.example.sol_denka_stockmanagement.domain.repository.ledger.LedgerItemRepository,
-    private val IFieldMasterRepository: com.example.sol_denka_stockmanagement.domain.repository.field.IFieldMasterRepository,
-    private val itemUnitRepository: com.example.sol_denka_stockmanagement.domain.repository.item.ItemUnitRepository,
-    private val ITagStatusMasterRepository: ITagStatusMasterRepository,
+    private val locationMasterRepository: ILocationMasterRepository,
+    private val tagMasterRepository: ITagMasterRepository,
+    private val csvTaskTypeRepository: ICsvTaskTypeRepository,
+    private val csvHistoryRepository: ICsvHistoryRepository,
+    private val itemTypeRepository: IItemTypeRepository,
+    private val itemTypeFieldSettingMasterRepository: IItemTypeFieldSettingMasterRepository,
+    private val itemCategoryRepository: IItemCategoryRepository,
+    private val winderRepository: IWinderRepository,
+    private val processTypeRepository: IProcessTypeRepository,
+    private val ledgerItemRepository: ILedgerItemRepository,
+    private val fieldMasterRepository: IFieldMasterRepository,
+    private val itemUnitRepository: IItemUnitRepository,
+    private val tagStatusMasterRepository: ITagStatusMasterRepository,
     private val csvHelper: CsvHelper,
 ) : ViewModel() {
 
@@ -200,19 +209,19 @@ class AppViewModel @Inject constructor(
         }
 
         viewModelScope.launch {
-            IItemCategoryRepository.get().collect { categories ->
+            itemCategoryRepository.get().collect { categories ->
                 _itemCategoryMaster.value = categories
             }
         }
 
         viewModelScope.launch {
-            IWinderRepository.get().collect { winders ->
+            winderRepository.get().collect { winders ->
                 _winderMaster.value = winders
             }
         }
 
         viewModelScope.launch {
-            IProcessTypeRepository.get().collect { processTypes ->
+            processTypeRepository.get().collect { processTypes ->
                 _processTypeMaster.value = processTypes
             }
         }
@@ -295,7 +304,7 @@ class AppViewModel @Inject constructor(
                 _inboundInputFormResults.value = emptyList()
                 resetInboundInputForm()
                 viewModelScope.launch {
-                    val result = IItemTypeRepository.getItemTypeByCategoryId(intent.categoryId)
+                    val result = itemTypeRepository.getItemTypeByCategoryId(intent.categoryId)
                     _searchResults.value = result
                 }
             }
@@ -306,7 +315,7 @@ class AppViewModel @Inject constructor(
                 resetInboundInputForm()
                 viewModelScope.launch {
                     _inboundInputFormResults.value =
-                        IItemTypeFieldSettingMasterRepository.getFieldForItemTypeByItemTypeId(intent.itemId)
+                        itemTypeFieldSettingMasterRepository.getFieldForItemTypeByItemTypeId(intent.itemId)
                 }
             }
 
@@ -514,9 +523,9 @@ class AppViewModel @Inject constructor(
 
                     // case: keyword empty ⇒ reload full list from DB
                     if (keyword.isBlank()) {
-                        val categoryId = IItemCategoryRepository.getIdByName(intent.categoryName)
+                        val categoryId = itemCategoryRepository.getIdByName(intent.categoryName)
                         val fullList =
-                            IItemTypeRepository.getItemTypeByCategoryId(categoryId)
+                            itemTypeRepository.getItemTypeByCategoryId(categoryId)
                         _searchResults.value = fullList
                     }
 

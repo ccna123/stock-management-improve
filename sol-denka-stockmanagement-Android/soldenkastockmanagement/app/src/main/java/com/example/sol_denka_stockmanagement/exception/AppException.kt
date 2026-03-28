@@ -27,7 +27,7 @@ class CsvFormatException(message: String) : AppException(
     message = message
 )
 
-class CsvFileNotFoundException(): AppException(
+class CsvFileNotFoundException : AppException(
     statusCode = StatusCode.FILE_NOT_FOUND
 )
 
@@ -67,4 +67,8 @@ class ReferenceMasterMissingFileException(
 ) : AppException(
     statusCode = StatusCode.REFERENCE_MASTER_MISSING_FILE,
     params = mapOf("missing_files" to missing)
+)
+
+class EmptyDataException : AppException(
+    statusCode = StatusCode.EMPTY_DATA
 )
