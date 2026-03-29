@@ -11,38 +11,30 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.CalendarMonth
-import androidx.compose.material.icons.filled.Cancel
 import androidx.compose.material.icons.filled.Timer
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.sol_denka_stockmanagement.R
-import com.example.sol_denka_stockmanagement.constant.CsvHistoryDirection
-import com.example.sol_denka_stockmanagement.constant.CsvTaskType
 import com.example.sol_denka_stockmanagement.constant.DialogType
 import com.example.sol_denka_stockmanagement.constant.StatusCode
 import com.example.sol_denka_stockmanagement.constant.generateIso8601JstTimestamp
+import com.example.sol_denka_stockmanagement.domain.model.scan.ScanResultRowModel
 import com.example.sol_denka_stockmanagement.helper.message_mapper.MessageMapper
-import com.example.sol_denka_stockmanagement.intent.InputIntent
 import com.example.sol_denka_stockmanagement.intent.ShareIntent
-import com.example.sol_denka_stockmanagement.model.scan.ScanResultRowModel
 import com.example.sol_denka_stockmanagement.navigation.Screen
 import com.example.sol_denka_stockmanagement.screen.layout.Layout
 import com.example.sol_denka_stockmanagement.share.ButtonContainer
@@ -53,10 +45,8 @@ import com.example.sol_denka_stockmanagement.share.dialog.TimeDialog
 import com.example.sol_denka_stockmanagement.ui.theme.brightAzure
 import com.example.sol_denka_stockmanagement.viewmodel.AppViewModel
 import com.example.sol_denka_stockmanagement.viewmodel.ScanViewModel
-import kotlinx.coroutines.launch
 import java.util.UUID
 
-@OptIn(ExperimentalMaterial3Api::class)
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @Composable
 fun OutboundScreen(
@@ -64,40 +54,72 @@ fun OutboundScreen(
     outboundViewModel: OutboundViewModel,
     scanViewModel: ScanViewModel,
     onNavigate: (Screen) -> Unit,
-    onGoBack: () -> Unit,
+    onGoBack: () -> Unit
 ) {
-
-    val inputState by appViewModel.inputState.collectAsStateWithLifecycle()
-    val generalState by appViewModel.generalState.collectAsStateWithLifecycle()
+    val uiState by outboundViewModel.uiState.collectAsStateWithLifecycle()
     val rfidTagList by scanViewModel.rfidTagList.collectAsStateWithLifecycle()
     val processTypeMap by appViewModel.perTagProcessMethod.collectAsStateWithLifecycle()
     val isNetworkConnected by appViewModel.isNetworkConnected.collectAsStateWithLifecycle()
-    val scope = rememberCoroutineScope()
 
     LaunchedEffect(Unit) {
         scanViewModel.applyProcessType(processTypeMap)
     }
 
+    LaunchedEffect(uiState.event) {
+        when (uiState.event) {
+            is OutboundEvent.SaveDbFailed ->
+                appViewModel.onGeneralIntent(
+                    ShareIntent.ShowDialog(
+                        type = DialogType.ERROR,
+                        message = MessageMapper.toMessage(StatusCode.SAVE_DATA_TO_DB_FAILED)
+                    )
+                )
+            is OutboundEvent.SaveCsvSuccess ->
+                appViewModel.onGeneralIntent(
+                    ShareIntent.ShowDialog(
+                        type = DialogType.SAVE_CSV_SUCCESS_FAILED_SFTP,
+                        message = MessageMapper.toMessage(StatusCode.SAVE_CSV_SUCCESS_FAILED_SFTP)
+                    )
+                )
+            is OutboundEvent.SaveCsvFailed ->
+                appViewModel.onGeneralIntent(
+                    ShareIntent.ShowDialog(
+                        type = DialogType.SAVE_CSV_FAILED,
+                        message = MessageMapper.toMessage(StatusCode.SAVE_DATA_TO_CSV_FAILED)
+                    )
+                )
+            null -> Unit
+        }
+        if (uiState.event != null) {
+            outboundViewModel.onIntent(OutboundIntent.EventConsumed)
+        }
+    }
+
     TimeDialog(
-        showTimeDialog = generalState.showTimePicker,
+        showTimeDialog = uiState.showTimePicker,
         title = stringResource(R.string.choose_time),
         confirmText = stringResource(R.string.ok),
         cancelText = stringResource(R.string.cancel),
         onConfirm = { time ->
-            appViewModel.onInputIntent(InputIntent.ChangeProcessedAtTime(time))
-            appViewModel.onGeneralIntent(ShareIntent.ToggleTimePicker(false))
+            outboundViewModel.onIntent(OutboundIntent.ProcessedAtTimeChanged(time))
+            outboundViewModel.onIntent(OutboundIntent.ToggleTimePicker(false))
         },
         onDismissRequest = {
-            appViewModel.onGeneralIntent(ShareIntent.ToggleTimePicker(false))
+            outboundViewModel.onIntent(OutboundIntent.ToggleTimePicker(false))
         }
     )
 
     DateDialog(
-        showDateDialog = generalState.showDatePicker,
+        showDateDialog = uiState.showDatePicker,
         confirmText = stringResource(R.string.ok),
         cancelText = stringResource(R.string.cancel),
-        onConfirm = { date -> appViewModel.onInputIntent(InputIntent.ChangeProcessedAtDate(date)) },
-        onDismissRequest = { appViewModel.onGeneralIntent(ShareIntent.ToggleDatePicker(false)) }
+        onConfirm = { date ->
+            outboundViewModel.onIntent(OutboundIntent.ProcessedAtDateChanged(date))
+            outboundViewModel.onIntent(OutboundIntent.ToggleDatePicker(false))
+        },
+        onDismissRequest = {
+            outboundViewModel.onIntent(OutboundIntent.ToggleDatePicker(false))
+        }
     )
 
     Layout(
@@ -106,29 +128,15 @@ fun OutboundScreen(
         appViewModel = appViewModel,
         onNavigate = onNavigate,
         hasBottomBar = true,
+        retrySaveDb = {
+            outboundViewModel.onIntent(OutboundIntent.Retry)
+        },
         bottomButton = {
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(10.dp)
-            ) {
+            Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                 ButtonContainer(
                     buttonText = stringResource(R.string.cancel),
                     containerColor = Color.Red,
-                    icon = {
-                        Icon(
-                            imageVector = Icons.Default.Cancel,
-                            contentDescription = null,
-                            tint = Color.White,
-                            modifier = Modifier.size(20.dp)
-                        )
-                    },
-                    modifier = Modifier
-                        .weight(1f)
-                        .shadow(
-                            elevation = 13.dp,
-                            clip = true,
-                            ambientColor = Color.Gray.copy(alpha = 0.5f),
-                            spotColor = Color.DarkGray.copy(alpha = 0.7f)
-                        ),
+                    modifier = Modifier.weight(1f).shadow(elevation = 13.dp, clip = true),
                     onClick = {
                         appViewModel.onGeneralIntent(
                             ShareIntent.ShowDialog(
@@ -140,104 +148,36 @@ fun OutboundScreen(
                 )
                 ButtonContainer(
                     buttonText = stringResource(R.string.register),
-                    modifier = Modifier
-                        .weight(1f)
-                        .shadow(
-                            elevation = 13.dp,
-                            clip = true,
-                            ambientColor = Color.Gray.copy(alpha = 0.5f),
-                            spotColor = Color.DarkGray.copy(alpha = 0.7f)
-                        ),
-                    icon = {
-                        Icon(
-                            painter = painterResource(R.drawable.register),
-                            contentDescription = null,
-                            tint = Color.White,
-                            modifier = Modifier.size(20.dp)
-                        )
-                    },
+                    modifier = Modifier.weight(1f).shadow(elevation = 13.dp, clip = true),
                     onClick = {
                         val selectedTags = rfidTagList.filter { it.newFields.isChecked }
-
-                        val sourceEventIdByTagId = selectedTags.associate { tag ->
-                            tag.tagId to UUID.randomUUID().toString()
+                        val now = generateIso8601JstTimestamp()
+                        val processedAt = if (uiState.processedAtDate.isEmpty() || uiState.processedAtTime.isEmpty()) {
+                            null
+                        } else {
+                            "${uiState.processedAtDate}T${uiState.processedAtTime}"
                         }
 
-                        val now = generateIso8601JstTimestamp()
-                        val processedAt =
-                            if (inputState.processedAtDate.isEmpty() || inputState.processedAtTime.isEmpty()) {
-                                null
-                            } else {
-                                "${inputState.processedAtDate}T${inputState.processedAtTime}"
-                            }
-                        scope.launch {
-                            val saveOutboundToDbResult = outboundViewModel.saveOutboundToDb(
-                                memo = inputState.memo,
+                        outboundViewModel.onIntent(
+                            OutboundIntent.Execute(
+                                memo = uiState.memo,
                                 processedAt = processedAt,
                                 registeredAt = now,
                                 executedAt = now,
-                                sourceEventIdByTagId = sourceEventIdByTagId,
-                                rfidTagList = rfidTagList.filter { it.newFields.isChecked }
+                                sourceEventIdByTagId = selectedTags.associate {
+                                    it.tagId to UUID.randomUUID().toString()
+                                },
+                                rfidTagList = selectedTags
                             )
-                            saveOutboundToDbResult.exceptionOrNull()?.let { e ->
-                                appViewModel.onGeneralIntent(
-                                    ShareIntent.ShowDialog(
-                                        type = DialogType.ERROR,
-                                        message = MessageMapper.toMessage(StatusCode.SAVE_DATA_TO_DB_FAILED)
-                                    )
-                                )
-                                return@launch
-                            }
-                            val csvModels =
-                                outboundViewModel.generateCsvData(
-                                    memo = inputState.memo,
-                                    processedAt = processedAt,
-                                    registeredAt = now,
-                                    sourceEventIdByTagId = sourceEventIdByTagId,
-                                    rfidTagList = rfidTagList.filter { it.newFields.isChecked }
-                                )
-                            val saveResult = appViewModel.saveScanResultToCsv(
-                                data = csvModels,
-                                direction = CsvHistoryDirection.EXPORT,
-                                taskCode = CsvTaskType.OUT,
-                            )
-                            if (saveResult) {
-                                appViewModel.onGeneralIntent(
-                                    ShareIntent.ShowDialog(
-                                        type = DialogType.SAVE_CSV_SUCCESS_FAILED_SFTP,
-                                        message = MessageMapper.toMessage(StatusCode.SAVE_CSV_SUCCESS_FAILED_SFTP)
-                                    )
-                                )
-//                                if (isNetworkConnected) {
-//                                    //sftp send
-//                                } else {
-//                                    appViewModel.onGeneralIntent(
-//                                        ShareIntent.ShowDialog(
-//                                            type = DialogType.SAVE_CSV_SEND_SFTP_SUCCESS,
-//                                            message = MessageMapper.toMessage(StatusCode.SAVE_CSV_SEND_SFTP_SUCCESS)
-//                                        )
-//                                    )
-//                                }
-                            } else {
-                                appViewModel.onGeneralIntent(
-                                    ShareIntent.ShowDialog(
-                                        type = DialogType.SAVE_CSV_FAILED,
-                                        message = MessageMapper.toMessage(StatusCode.SAVE_DATA_TO_CSV_FAILED)
-                                    )
-                                )
-                            }
-                        }
+                        )
                     }
                 )
             }
         },
-        onBackArrowClick = {
-            onGoBack()
-        }) { paddingValues ->
+        onBackArrowClick = { onGoBack() }
+    ) { paddingValues ->
         Column(
-            Modifier
-                .padding(paddingValues)
-                .padding(16.dp)
+            Modifier.padding(paddingValues).padding(16.dp)
         ) {
             Text(
                 text = stringResource(
@@ -246,10 +186,7 @@ fun OutboundScreen(
                 )
             )
             Spacer(modifier = Modifier.height(18.dp))
-            LazyColumn(
-                modifier = Modifier
-                    .imePadding()
-            ) {
+            LazyColumn(modifier = Modifier.imePadding()) {
                 item {
                     ScanResultTable(
                         tableHeight = 250.dp,
@@ -261,23 +198,20 @@ fun OutboundScreen(
                         ),
                         scanResult = rfidTagList.filter { it.newFields.isChecked }.map { tag ->
                             ScanResultRowModel(
-                                itemName = rfidTagList.find { it.epc == tag.epc }?.newFields?.itemName ?: "-",
-                                itemCode = rfidTagList.find { it.epc == tag.epc }?.epc
-                                    ?: "-",
-                                lastColumn = rfidTagList.find { it.epc == tag.epc }?.newFields?.processType
-                                    ?: "-",
+                                itemName = tag.newFields.itemName,
+                                itemCode = tag.epc,
+                                lastColumn = tag.newFields.processType
                             )
-                        },
+                        }
                     )
                     Spacer(modifier = Modifier.height(20.dp))
                     Row(
-                        modifier = Modifier
-                            .fillMaxWidth(),
+                        modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.spacedBy(10.dp)
                     ) {
                         InputFieldContainer(
                             modifier = Modifier.weight(1f),
-                            value = inputState.processedAtDate,
+                            value = uiState.processedAtDate,
                             label = stringResource(R.string.processed_at_date),
                             isNumeric = false,
                             shape = RoundedCornerShape(13.dp),
@@ -289,21 +223,15 @@ fun OutboundScreen(
                                     imageVector = Icons.Default.CalendarMonth,
                                     contentDescription = null,
                                     tint = brightAzure,
-                                    modifier = Modifier.clickable(
-                                        onClick = {
-                                            appViewModel.onGeneralIntent(
-                                                ShareIntent.ToggleDatePicker(
-                                                    true
-                                                )
-                                            )
-                                        }
-                                    )
+                                    modifier = Modifier.clickable {
+                                        outboundViewModel.onIntent(OutboundIntent.ToggleDatePicker(true))
+                                    }
                                 )
                             }
                         )
                         InputFieldContainer(
                             modifier = Modifier.weight(1f),
-                            value = inputState.processedAtTime,
+                            value = uiState.processedAtTime,
                             label = stringResource(R.string.processed_at_time),
                             isNumeric = false,
                             shape = RoundedCornerShape(13.dp),
@@ -315,25 +243,17 @@ fun OutboundScreen(
                                     imageVector = Icons.Default.Timer,
                                     contentDescription = null,
                                     tint = brightAzure,
-                                    modifier = Modifier.clickable(
-                                        onClick = {
-                                            appViewModel.onGeneralIntent(
-                                                ShareIntent.ToggleTimePicker(
-                                                    true
-                                                )
-                                            )
-                                        }
-                                    )
+                                    modifier = Modifier.clickable {
+                                        outboundViewModel.onIntent(OutboundIntent.ToggleTimePicker(true))
+                                    }
                                 )
                             }
                         )
                     }
                     Spacer(modifier = Modifier.height(10.dp))
                     InputFieldContainer(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(200.dp),
-                        value = inputState.memo,
+                        modifier = Modifier.fillMaxWidth().height(200.dp),
+                        value = uiState.memo,
                         label = "${stringResource(R.string.memo)} (オプション)",
                         hintText = stringResource(R.string.memo_hint),
                         isNumeric = false,
@@ -342,13 +262,7 @@ fun OutboundScreen(
                         isDropDown = false,
                         enable = true,
                         singleLine = false,
-                        onChange = { newValue ->
-                            appViewModel.onInputIntent(
-                                InputIntent.ChangeMemo(
-                                    newValue
-                                )
-                            )
-                        }
+                        onChange = { outboundViewModel.onIntent(OutboundIntent.MemoChanged(it)) }
                     )
                 }
             }

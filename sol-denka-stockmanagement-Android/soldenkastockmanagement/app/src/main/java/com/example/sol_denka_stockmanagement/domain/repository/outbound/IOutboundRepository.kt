@@ -3,20 +3,21 @@ package com.example.sol_denka_stockmanagement.domain.repository.outbound
 import android.os.Build
 import androidx.room.withTransaction
 import com.example.sol_denka_stockmanagement.database.AppDatabase
+import com.example.sol_denka_stockmanagement.domain.model.outbound.OutBoundEventModel
+import com.example.sol_denka_stockmanagement.domain.model.outbound.OutboundSessionModel
+import com.example.sol_denka_stockmanagement.domain.model.tag.TagMasterModel
+import com.example.sol_denka_stockmanagement.domain.repository.process.IProcessTypeRepository
 import com.example.sol_denka_stockmanagement.domain.repository.tag.ITagMasterRepository
-import com.example.sol_denka_stockmanagement.model.outbound.OutBoundEventModel
-import com.example.sol_denka_stockmanagement.model.outbound.OutboundSessionModel
-import com.example.sol_denka_stockmanagement.model.tag.TagMasterModel
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class OutboundRepository @Inject constructor(
+class IOutboundRepository @Inject constructor(
     private val db: AppDatabase,
-    private val sessionRepo: com.example.sol_denka_stockmanagement.domain.repository.outbound.OutboundSessionRepository,
-    private val eventRepo: com.example.sol_denka_stockmanagement.domain.repository.outbound.OutboundEventRepository,
-    private val ITagMasterRepository: ITagMasterRepository,
-    private val IProcessTypeRepository: com.example.sol_denka_stockmanagement.domain.repository.process.IProcessTypeRepository
+    private val sessionRepo: IOutboundSessionRepository,
+    private val eventRepo: IOutboundEventRepository,
+    private val tagMasterRepository: ITagMasterRepository,
+    private val processTypeRepository: IProcessTypeRepository
 ) {
     suspend fun createOutboundSession(executedAt: String): Int =
         sessionRepo.insert(
@@ -35,8 +36,8 @@ class OutboundRepository @Inject constructor(
         tags: List<TagMasterModel>
     ) {
         tags.forEach { tag ->
-            val ledgerId = ITagMasterRepository.getLedgerIdByTagId(tag.tagId)
-            val processTypeId = IProcessTypeRepository.getIdByName(tag.newFields.processType)
+            val ledgerId = tagMasterRepository.getLedgerIdByTagId(tag.tagId)
+            val processTypeId = processTypeRepository.getIdByName(tag.newFields.processType)
 
             eventRepo.insert(
                 OutBoundEventModel(

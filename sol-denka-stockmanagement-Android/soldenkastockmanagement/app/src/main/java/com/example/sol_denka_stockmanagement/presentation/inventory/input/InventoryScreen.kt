@@ -1,6 +1,5 @@
-package com.example.sol_denka_stockmanagement.screen.inventory.input
+package com.example.sol_denka_stockmanagement.presentation.inventory.input
 
-import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -30,8 +29,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.sol_denka_stockmanagement.R
 import com.example.sol_denka_stockmanagement.constant.SelectTitle
 import com.example.sol_denka_stockmanagement.constant.TagScanStatus
-import com.example.sol_denka_stockmanagement.intent.ExpandIntent
-import com.example.sol_denka_stockmanagement.intent.InputIntent
 import com.example.sol_denka_stockmanagement.intent.ShareIntent
 import com.example.sol_denka_stockmanagement.navigation.Screen
 import com.example.sol_denka_stockmanagement.screen.layout.Layout
@@ -43,20 +40,19 @@ import com.example.sol_denka_stockmanagement.viewmodel.AppViewModel
 import com.example.sol_denka_stockmanagement.viewmodel.ScanViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
-@RequiresApi(Build.VERSION_CODES.TIRAMISU)
+@RequiresApi(android.os.Build.VERSION_CODES.TIRAMISU)
 @Composable
 fun InventoryScreen(
     appViewModel: AppViewModel,
     scanViewModel: ScanViewModel,
+    inventoryViewModel: InventoryViewModel,
     onNavigate: (Screen) -> Unit,
     onGoBack: () -> Unit,
 ) {
-
-    val inputState = appViewModel.inputState.collectAsStateWithLifecycle().value
-    val expandState = appViewModel.expandState.collectAsStateWithLifecycle().value
-    val rfidTagList = scanViewModel.rfidTagList.collectAsStateWithLifecycle().value
+    val uiState by inventoryViewModel.uiState.collectAsStateWithLifecycle()
+    val locationMaster by inventoryViewModel.locationMaster.collectAsStateWithLifecycle()
+    val rfidTagList by scanViewModel.rfidTagList.collectAsStateWithLifecycle()
     val showClearTagConfirmDialog = appViewModel.showClearTagConfirmDialog.value
-    val locationMaster by appViewModel.locationMaster.collectAsStateWithLifecycle()
 
     LaunchedEffect(Unit) {
         scanViewModel.setEnableScan(false)
@@ -96,7 +92,9 @@ fun InventoryScreen(
         bottomButton = {
             ButtonContainer(
                 modifier = Modifier.shadow(
-                    elevation = 13.dp, clip = true, ambientColor = Color.Gray.copy(alpha = 0.5f),
+                    elevation = 13.dp,
+                    clip = true,
+                    ambientColor = Color.Gray.copy(alpha = 0.5f),
                     spotColor = Color.DarkGray.copy(alpha = 0.7f)
                 ),
                 icon = {
@@ -107,7 +105,7 @@ fun InventoryScreen(
                         modifier = Modifier.size(20.dp)
                     )
                 },
-                canClick = inputState.location != null,
+                canClick = uiState.location != null,
                 onClick = {
                     onNavigate(Screen.InventoryScan(Screen.Inventory.routeId))
                 },
@@ -120,7 +118,8 @@ fun InventoryScreen(
             } else {
                 onGoBack()
             }
-        }) { paddingValues ->
+        }
+    ) { paddingValues ->
         Box(
             modifier = Modifier
                 .padding(paddingValues)
@@ -128,14 +127,16 @@ fun InventoryScreen(
         ) {
             CardContainer {
                 Column(
-                    modifier = Modifier
-                        .padding(16.dp)
+                    modifier = Modifier.padding(16.dp)
                 ) {
                     Text(text = "棚卸を行う保管場所を選択")
                     Spacer(modifier = Modifier.height(10.dp))
                     ExposedDropdownMenuBox(
-                        expanded = expandState.locationExpanded,
-                        onExpandedChange = { appViewModel.onExpandIntent(ExpandIntent.ToggleLocationExpanded) }) {
+                        expanded = uiState.locationExpanded,
+                        onExpandedChange = {
+                            inventoryViewModel.onIntent(InventoryIntent.ToggleLocationExpanded)
+                        }
+                    ) {
                         InputFieldContainer(
                             modifier = Modifier
                                 .menuAnchor(
@@ -143,40 +144,35 @@ fun InventoryScreen(
                                     enabled = true
                                 )
                                 .fillMaxWidth(),
-                            value = if (inputState.location?.locationName == SelectTitle.SelectLocation.displayName) "" else inputState.location?.locationName
-                                ?: "",
+                            value = if (uiState.location?.locationName == SelectTitle.SelectLocation.displayName) ""
+                            else uiState.location?.locationName ?: "",
                             hintText = SelectTitle.SelectLocation.displayName,
                             isNumeric = false,
-                            onChange = {
-                            },
+                            onChange = {},
                             readOnly = true,
                             isDropDown = true,
                             enable = true,
                             onEnterPressed = {}
                         )
                         ExposedDropdownMenu(
-                            expanded = expandState.locationExpanded,
-                            onDismissRequest = { appViewModel.onExpandIntent(ExpandIntent.ToggleLocationExpanded) }
+                            expanded = uiState.locationExpanded,
+                            onDismissRequest = {
+                                inventoryViewModel.onIntent(InventoryIntent.ToggleLocationExpanded)
+                            }
                         ) {
                             DropdownMenuItem(
                                 text = { Text(text = SelectTitle.SelectLocation.displayName) },
                                 onClick = {
-                                    appViewModel.apply {
-                                        onInputIntent(InputIntent.ChangeLocation(null))
-                                        onExpandIntent(ExpandIntent.ToggleLocationExpanded)
-                                    }
+                                    inventoryViewModel.onIntent(InventoryIntent.LocationChanged(null))
                                 }
                             )
                             locationMaster.forEach { location ->
                                 DropdownMenuItem(
                                     text = { Text(location.locationName) },
                                     onClick = {
-                                        appViewModel.onInputIntent(
-                                            InputIntent.ChangeLocation(
-                                                location
-                                            )
+                                        inventoryViewModel.onIntent(
+                                            InventoryIntent.LocationChanged(location)
                                         )
-                                        appViewModel.onExpandIntent(ExpandIntent.ToggleLocationExpanded)
                                     }
                                 )
                             }

@@ -15,12 +15,11 @@ import com.example.sol_denka_stockmanagement.screen.csv.CsvImportScreen
 import com.example.sol_denka_stockmanagement.screen.csv.CsvViewModel
 import com.example.sol_denka_stockmanagement.screen.detail.DetailScreen
 import com.example.sol_denka_stockmanagement.screen.home.HomeScreen
-import com.example.sol_denka_stockmanagement.screen.inventory.complete.InventoryCompleteScreen
-import com.example.sol_denka_stockmanagement.screen.inventory.input.InventoryScreen
-import com.example.sol_denka_stockmanagement.screen.inventory.scan.InventoryScanScreen
+import com.example.sol_denka_stockmanagement.presentation.inventory.complete.InventoryCompleteScreen
+import com.example.sol_denka_stockmanagement.presentation.inventory.input.InventoryScreen
+import com.example.sol_denka_stockmanagement.presentation.inventory.scan.InventoryScanScreen
 import com.example.sol_denka_stockmanagement.screen.inbound.InboundScreen
 import com.example.sol_denka_stockmanagement.screen.inbound.InboundViewModel
-import com.example.sol_denka_stockmanagement.screen.inventory.complete.InventoryCompleteViewModel
 import com.example.sol_denka_stockmanagement.screen.scan.ScanScreen
 import com.example.sol_denka_stockmanagement.presentation.outbound.OutboundScreen
 import com.example.sol_denka_stockmanagement.screen.version.VersionInfoScreen

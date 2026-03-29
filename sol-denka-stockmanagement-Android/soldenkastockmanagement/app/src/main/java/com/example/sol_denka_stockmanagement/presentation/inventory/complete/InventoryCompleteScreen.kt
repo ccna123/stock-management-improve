@@ -1,4 +1,4 @@
-package com.example.sol_denka_stockmanagement.screen.inventory.complete
+package com.example.sol_denka_stockmanagement.presentation.inventory.complete
 
 import android.os.Build
 import androidx.annotation.RequiresApi
@@ -20,7 +20,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
@@ -31,18 +30,17 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.sol_denka_stockmanagement.R
-import com.example.sol_denka_stockmanagement.constant.CsvHistoryDirection
-import com.example.sol_denka_stockmanagement.constant.CsvTaskType
 import com.example.sol_denka_stockmanagement.constant.DialogType
 import com.example.sol_denka_stockmanagement.constant.InventoryScanResult
 import com.example.sol_denka_stockmanagement.constant.StatusCode
 import com.example.sol_denka_stockmanagement.constant.TagScanStatus
 import com.example.sol_denka_stockmanagement.constant.generateIso8601JstTimestamp
+import com.example.sol_denka_stockmanagement.domain.model.inventory.InventoryCompleteModel
 import com.example.sol_denka_stockmanagement.helper.message_mapper.MessageMapper
-import com.example.sol_denka_stockmanagement.intent.InputIntent
 import com.example.sol_denka_stockmanagement.intent.ShareIntent
-import com.example.sol_denka_stockmanagement.model.inventory.InventoryCompleteModel
 import com.example.sol_denka_stockmanagement.navigation.Screen
+import com.example.sol_denka_stockmanagement.presentation.inventory.input.InventoryIntent
+import com.example.sol_denka_stockmanagement.presentation.inventory.input.InventoryViewModel
 import com.example.sol_denka_stockmanagement.screen.layout.Layout
 import com.example.sol_denka_stockmanagement.share.ButtonContainer
 import com.example.sol_denka_stockmanagement.share.CardContainer
@@ -54,37 +52,60 @@ import com.example.sol_denka_stockmanagement.ui.theme.deepBlueSky
 import com.example.sol_denka_stockmanagement.ui.theme.primaryRed
 import com.example.sol_denka_stockmanagement.viewmodel.AppViewModel
 import com.example.sol_denka_stockmanagement.viewmodel.ScanViewModel
-import kotlinx.coroutines.launch
-import java.util.UUID
 
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @Composable
 fun InventoryCompleteScreen(
     appViewModel: AppViewModel,
     scanViewModel: ScanViewModel,
+    inventoryViewModel: InventoryViewModel,
     inventoryCompleteViewModel: InventoryCompleteViewModel,
     onNavigate: (Screen) -> Unit,
     onGoBack: () -> Unit,
 ) {
-
-    val generalState by appViewModel.generalState.collectAsStateWithLifecycle()
-    val inputState by appViewModel.inputState.collectAsStateWithLifecycle()
+    val uiState by inventoryCompleteViewModel.uiState.collectAsStateWithLifecycle()
+    val inventoryUiState by inventoryViewModel.uiState.collectAsStateWithLifecycle()
     val rfidTagList by scanViewModel.rfidTagList.collectAsStateWithLifecycle()
-
-    val wrongLocationCount by inventoryCompleteViewModel.wrongLocationCount.collectAsStateWithLifecycle()
-    val shortageCount by inventoryCompleteViewModel.shortageCount.collectAsStateWithLifecycle()
-    val overCount by inventoryCompleteViewModel.overCount.collectAsStateWithLifecycle()
-
-    val okCount by inventoryCompleteViewModel.okCount.collectAsStateWithLifecycle()
-    val isNetworkConnected by appViewModel.isNetworkConnected.collectAsStateWithLifecycle()
-    val scope = rememberCoroutineScope()
+    val generalState by appViewModel.generalState.collectAsStateWithLifecycle()
 
     LaunchedEffect(Unit) {
         scanViewModel.setEnableScan(false)
-        inventoryCompleteViewModel.computeResult(
-            rfidTagList = rfidTagList,
-            locationName = inputState.location!!.locationName
+        inventoryCompleteViewModel.onIntent(
+            InventoryCompleteIntent.ComputeResult(
+                rfidTagList = rfidTagList,
+                locationName = inventoryUiState.location?.locationName ?: ""
+            )
         )
+    }
+
+    LaunchedEffect(uiState.event) {
+        when (uiState.event) {
+            is InventoryCompleteEvent.SaveDbFailed ->
+                appViewModel.onGeneralIntent(
+                    ShareIntent.ShowDialog(
+                        type = DialogType.ERROR,
+                        message = MessageMapper.toMessage(StatusCode.SAVE_DATA_TO_DB_FAILED)
+                    )
+                )
+            is InventoryCompleteEvent.SaveCsvSuccess ->
+                appViewModel.onGeneralIntent(
+                    ShareIntent.ShowDialog(
+                        type = DialogType.SAVE_CSV_SUCCESS_FAILED_SFTP,
+                        message = MessageMapper.toMessage(StatusCode.SAVE_CSV_SUCCESS_FAILED_SFTP)
+                    )
+                )
+            is InventoryCompleteEvent.SaveCsvFailed ->
+                appViewModel.onGeneralIntent(
+                    ShareIntent.ShowDialog(
+                        type = DialogType.SAVE_CSV_FAILED,
+                        message = MessageMapper.toMessage(StatusCode.SAVE_DATA_TO_CSV_FAILED)
+                    )
+                )
+            null -> Unit
+        }
+        if (uiState.event != null) {
+            inventoryCompleteViewModel.onIntent(InventoryCompleteIntent.EventConsumed)
+        }
     }
 
     if (generalState.showNetworkDialog) {
@@ -94,6 +115,7 @@ fun InventoryCompleteScreen(
             )
         })
     }
+
     val inventoryStatusList = listOf(
         InventoryCompleteModel(
             status = InventoryScanResult.OK,
@@ -123,10 +145,15 @@ fun InventoryCompleteScreen(
         appViewModel = appViewModel,
         onNavigate = onNavigate,
         hasBottomBar = true,
+        retrySaveDb = {
+            inventoryCompleteViewModel.onIntent(InventoryCompleteIntent.Retry)
+        },
         bottomButton = {
             ButtonContainer(
                 modifier = Modifier.shadow(
-                    elevation = 13.dp, clip = true, ambientColor = Color.Gray.copy(alpha = 0.5f),
+                    elevation = 13.dp,
+                    clip = true,
+                    ambientColor = Color.Gray.copy(alpha = 0.5f),
                     spotColor = Color.DarkGray.copy(alpha = 0.7f)
                 ),
                 icon = {
@@ -138,73 +165,26 @@ fun InventoryCompleteScreen(
                     )
                 },
                 onClick = {
-                    scope.launch {
-                        val sourceSessionUuid = UUID.randomUUID().toString()
-                        val now = generateIso8601JstTimestamp()
-                        val result = inventoryCompleteViewModel.saveInventoryResultToDb(
-                            memo = inputState.memo,
-                            sourceSessionUuid = sourceSessionUuid,
-                            rfidTagList = rfidTagList.filter { it.newFields.tagScanStatus == TagScanStatus.PROCESSED },
-                            locationId = inputState.location!!.locationId,
+                    val now = generateIso8601JstTimestamp()
+                    inventoryCompleteViewModel.onIntent(
+                        InventoryCompleteIntent.Execute(
+                            memo = inventoryUiState.memo,
+                            locationId = inventoryUiState.location?.locationId ?: 0,
                             scannedAt = now,
-                            executedAt = now
+                            executedAt = now,
+                            rfidTagList = rfidTagList.filter {
+                                it.newFields.tagScanStatus == TagScanStatus.PROCESSED
+                            }
                         )
-                        result.exceptionOrNull()?.let { e ->
-                            appViewModel.onGeneralIntent(
-                                ShareIntent.ShowDialog(
-                                    type = DialogType.ERROR,
-                                    message = MessageMapper.toMessage(StatusCode.SAVE_DATA_TO_DB_FAILED)
-                                )
-                            )
-                            return@launch
-                        }
-                        val csvModels =
-                            inventoryCompleteViewModel.generateCsvData(
-                                memo = inputState.memo,
-                                sourceSessionUuid = sourceSessionUuid,
-                                locationId = inputState.location!!.locationId,
-                                scannedAt = now,
-                                executedAt = now,
-                                rfidTagList = rfidTagList.filter { it.newFields.tagScanStatus == TagScanStatus.PROCESSED },
-                            )
-                        val saveResult = appViewModel.saveScanResultToCsv(
-                            data = csvModels,
-                            direction = CsvHistoryDirection.EXPORT,
-                            taskCode = CsvTaskType.INVENTORY,
-                        )
-                        if (saveResult) {
-                            appViewModel.onGeneralIntent(
-                                ShareIntent.ShowDialog(
-                                    type = DialogType.SAVE_CSV_SUCCESS_FAILED_SFTP,
-                                    message = MessageMapper.toMessage(StatusCode.SAVE_CSV_SUCCESS_FAILED_SFTP)
-                                )
-                            )
-//                            if (isNetworkConnected) {
-//                                    //sftp send
-//                                } else {
-//                                    appViewModel.onGeneralIntent(
-//                                        ShareIntent.ShowDialog(
-//                                            type = DialogType.SAVE_CSV_SEND_SFTP_SUCCESS,
-//                                            message = MessageMapper.toMessage(StatusCode.SAVE_CSV_SEND_SFTP_SUCCESS)
-//                                        )
-//                                    )
-//                                }
-                        } else {
-                            appViewModel.onGeneralIntent(
-                                ShareIntent.ShowDialog(
-                                    type = DialogType.SAVE_CSV_FAILED,
-                                    message = MessageMapper.toMessage(StatusCode.SAVE_DATA_TO_CSV_FAILED)
-                                )
-                            )
-                        }
-                    }
+                    )
                 },
                 buttonText = stringResource(R.string.finish_inventory),
             )
         },
         onBackArrowClick = {
             onGoBack()
-        }) { paddingValues ->
+        }
+    ) { paddingValues ->
         Column(
             modifier = Modifier
                 .padding(paddingValues)
@@ -214,8 +194,7 @@ fun InventoryCompleteScreen(
             Text(text = stringResource(R.string.csv_export_title))
             Spacer(modifier = Modifier.height(30.dp))
             LazyColumn(
-                modifier = Modifier
-                    .imePadding()
+                modifier = Modifier.imePadding()
             ) {
                 item {
                     CardContainer {
@@ -227,14 +206,13 @@ fun InventoryCompleteScreen(
                         ) {
                             inventoryStatusList.forEach { item ->
                                 val count = when (item.status) {
-                                    InventoryScanResult.OK -> okCount
-                                    InventoryScanResult.SHORTAGE -> shortageCount
-                                    InventoryScanResult.OVERLOAD -> overCount
-                                    InventoryScanResult.WRONG_LOCATION -> wrongLocationCount
+                                    InventoryScanResult.OK -> uiState.okCount
+                                    InventoryScanResult.SHORTAGE -> uiState.shortageCount
+                                    InventoryScanResult.OVERLOAD -> uiState.overCount
+                                    InventoryScanResult.WRONG_LOCATION -> uiState.wrongLocationCount
                                 }
                                 Row(
-                                    modifier = Modifier
-                                        .fillMaxWidth(),
+                                    modifier = Modifier.fillMaxWidth(),
                                     verticalAlignment = Alignment.CenterVertically
                                 ) {
                                     Row(
@@ -264,7 +242,7 @@ fun InventoryCompleteScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(200.dp),
-                        value = inputState.memo,
+                        value = inventoryUiState.memo,
                         label = "${stringResource(R.string.memo)} (オプション)",
                         hintText = stringResource(R.string.memo_hint),
                         isNumeric = false,
@@ -277,11 +255,7 @@ fun InventoryCompleteScreen(
                                 (char.isLetterOrDigit() && char.toString()
                                     .toByteArray().size == 1) || char == '-'
                             }
-                            appViewModel.onInputIntent(
-                                InputIntent.ChangeMemo(
-                                    filteredValue
-                                )
-                            )
+                            inventoryViewModel.onIntent(InventoryIntent.MemoChanged(filteredValue))
                         }
                     )
                 }

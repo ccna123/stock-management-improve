@@ -1,4 +1,4 @@
-package com.example.sol_denka_stockmanagement.screen.inventory.scan
+package com.example.sol_denka_stockmanagement.presentation.inventory.scan
 
 import android.os.Build
 import androidx.annotation.RequiresApi
@@ -58,6 +58,7 @@ import com.example.sol_denka_stockmanagement.constant.TagScanStatus
 import com.example.sol_denka_stockmanagement.intent.SettingIntent
 import com.example.sol_denka_stockmanagement.intent.ShareIntent
 import com.example.sol_denka_stockmanagement.navigation.Screen
+import com.example.sol_denka_stockmanagement.presentation.inventory.input.InventoryViewModel
 import com.example.sol_denka_stockmanagement.screen.layout.Layout
 import com.example.sol_denka_stockmanagement.screen.setting.SettingViewModel
 import com.example.sol_denka_stockmanagement.share.ButtonContainer
@@ -79,11 +80,13 @@ fun InventoryScanScreen(
     appViewModel: AppViewModel,
     scanViewModel: ScanViewModel,
     settingViewModel: SettingViewModel,
+    inventoryViewModel: InventoryViewModel,
+    inventoryScanViewModel: InventoryScanViewModel,
     onNavigate: (Screen) -> Unit,
     onGoBack: () -> Unit,
 ) {
-    val generalState by appViewModel.generalState.collectAsStateWithLifecycle()
-    val inputState by appViewModel.inputState.collectAsStateWithLifecycle()
+    val uiState by inventoryScanViewModel.uiState.collectAsStateWithLifecycle()
+    val inventoryUiState by inventoryViewModel.uiState.collectAsStateWithLifecycle()
     val rfidTagList by scanViewModel.rfidTagList.collectAsStateWithLifecycle()
     val readerSettingState by settingViewModel.readerSettingState.collectAsStateWithLifecycle()
     val showClearTagConfirmDialog = appViewModel.showClearTagConfirmDialog.value
@@ -97,16 +100,12 @@ fun InventoryScanScreen(
             setScanMode(ScanMode.INVENTORY_SCAN)
             resetIsCheckedField()
         }
-        appViewModel.onGeneralIntent(
-            ShareIntent.ToggleSelectionMode(false),
-        )
+        inventoryScanViewModel.onIntent(InventoryScanIntent.ToggleSelectionMode(false))
     }
 
-    DisposableEffect (Unit){
+    DisposableEffect(Unit) {
         onDispose {
-            appViewModel.onGeneralIntent(
-                ShareIntent.ChangeTab(Tab.Left),
-            )
+            inventoryScanViewModel.onIntent(InventoryScanIntent.ChangeTab(Tab.Left))
         }
     }
 
@@ -115,31 +114,19 @@ fun InventoryScanScreen(
         readerSettingState = readerSettingState,
         onChangeMinPower = {
             settingViewModel.apply {
-                onSettingIntent(
-                    SettingIntent.ChangeRadioPowerSliderPosition(
-                        0
-                    )
-                )
+                onSettingIntent(SettingIntent.ChangeRadioPowerSliderPosition(0))
                 onSettingIntent(SettingIntent.ChangeRadioPower(0))
             }
         },
         onChangeMaxPower = {
             settingViewModel.apply {
-                onSettingIntent(
-                    SettingIntent.ChangeRadioPowerSliderPosition(
-                        30
-                    )
-                )
+                onSettingIntent(SettingIntent.ChangeRadioPowerSliderPosition(30))
                 onSettingIntent(SettingIntent.ChangeRadioPower(30))
             }
         },
         onChangeSlider = { newValue ->
             settingViewModel.apply {
-                onSettingIntent(
-                    SettingIntent.ChangeRadioPowerSliderPosition(
-                        newValue
-                    )
-                )
+                onSettingIntent(SettingIntent.ChangeRadioPowerSliderPosition(newValue))
                 onSettingIntent(SettingIntent.ChangeRadioPower(newValue))
             }
         },
@@ -154,6 +141,7 @@ fun InventoryScanScreen(
             appViewModel.onGeneralIntent(ShareIntent.ToggleRadioPowerChangeDialog)
         }
     )
+
     ConfirmDialog(
         showDialog = showClearTagConfirmDialog,
         dialogTitle = stringResource(R.string.clear_processed_tag_dialog),
@@ -162,10 +150,8 @@ fun InventoryScanScreen(
                 ButtonContainer(
                     buttonText = stringResource(R.string.ok),
                     onClick = {
-                        appViewModel.apply {
-                            onGeneralIntent(ShareIntent.ChangeTab(Tab.Left))
-                            onGeneralIntent(ShareIntent.ToggleClearTagConfirmDialog)
-                        }
+                        inventoryScanViewModel.onIntent(InventoryScanIntent.ChangeTab(Tab.Left))
+                        appViewModel.onGeneralIntent(ShareIntent.ToggleClearTagConfirmDialog)
                         scanViewModel.clearTagStatusAndRssi()
                     }
                 )
@@ -197,7 +183,9 @@ fun InventoryScanScreen(
                     buttonHeight = 35.dp,
                     buttonText = stringResource(R.string.finish_inventory),
                     buttonTextSize = 19,
-                    canClick = isPerformingInventory.not() && rfidTagList.count { it.newFields.tagScanStatus == TagScanStatus.PROCESSED } > 0,
+                    canClick = isPerformingInventory.not() && rfidTagList.count {
+                        it.newFields.tagScanStatus == TagScanStatus.PROCESSED
+                    } > 0,
                     icon = {
                         Icon(
                             imageVector = Icons.Default.CheckCircle,
@@ -220,40 +208,36 @@ fun InventoryScanScreen(
                             .clickable(
                                 enabled = isPerformingInventory.not(),
                                 onClick = {
-                                    appViewModel.onGeneralIntent(
-                                        ShareIntent.ToggleDropDown(true)
+                                    inventoryScanViewModel.onIntent(
+                                        InventoryScanIntent.ToggleDropDown(true)
                                     )
                                 }
                             )
                     )
                     DropdownMenu(
-                        expanded = generalState.showDropDown,
+                        expanded = uiState.showDropDown,
                         onDismissRequest = {
-                            appViewModel.onGeneralIntent(
-                                ShareIntent.ToggleDropDown(false)
+                            inventoryScanViewModel.onIntent(
+                                InventoryScanIntent.ToggleDropDown(false)
                             )
                         }
                     ) {
                         DropdownMenuItem(
                             text = { Text(text = stringResource(R.string.setting_rfid_power)) },
                             onClick = {
-                                appViewModel.apply {
-                                    onGeneralIntent(ShareIntent.ToggleRadioPowerChangeDialog)
-                                    onGeneralIntent(
-                                        ShareIntent.ToggleDropDown(false)
-                                    )
-                                }
+                                inventoryScanViewModel.onIntent(
+                                    InventoryScanIntent.ToggleDropDown(false)
+                                )
+                                appViewModel.onGeneralIntent(ShareIntent.ToggleRadioPowerChangeDialog)
                             }
                         )
                         DropdownMenuItem(
                             text = { Text(text = stringResource(R.string.clear)) },
                             onClick = {
-                                appViewModel.apply {
-                                    onGeneralIntent(ShareIntent.ToggleClearTagConfirmDialog)
-                                    onGeneralIntent(
-                                        ShareIntent.ToggleDropDown(false)
-                                    )
-                                }
+                                inventoryScanViewModel.onIntent(
+                                    InventoryScanIntent.ToggleDropDown(false)
+                                )
+                                appViewModel.onGeneralIntent(ShareIntent.ToggleClearTagConfirmDialog)
                             }
                         )
                     }
@@ -262,12 +246,11 @@ fun InventoryScanScreen(
         },
         bottomButton = {
             Row(
-                modifier = Modifier
-                    .fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
-                if (generalState.isSelectionMode) {
+                if (uiState.isSelectionMode) {
                     ButtonContainer(
                         buttonText = stringResource(R.string.search),
                         icon = {
@@ -302,12 +285,10 @@ fun InventoryScanScreen(
                         ),
                         shape = IconButtonDefaults.outlinedShape,
                         onClick = {
-                            appViewModel.apply {
-                                onGeneralIntent(
-                                    ShareIntent.ToggleSelectionMode(false),
-                                )
-                                scanViewModel.resetIsCheckedField()
-                            }
+                            inventoryScanViewModel.onIntent(
+                                InventoryScanIntent.ToggleSelectionMode(false)
+                            )
+                            scanViewModel.resetIsCheckedField()
                         },
                     ) {
                         Icon(
@@ -318,9 +299,10 @@ fun InventoryScanScreen(
                     }
                 } else {
                     ButtonContainer(
-                        buttonText = if (isPerformingInventory) stringResource(R.string.scan_stop) else stringResource(
-                            R.string.scan_start
-                        ),
+                        buttonText = if (isPerformingInventory)
+                            stringResource(R.string.scan_stop)
+                        else
+                            stringResource(R.string.scan_start),
                         modifier = Modifier
                             .fillMaxWidth(.5f)
                             .shadow(
@@ -339,20 +321,22 @@ fun InventoryScanScreen(
                         },
                         containerColor = if (isPerformingInventory) orange else tealGreen,
                         onClick = {
+                            // scope.launch ổn ở đây — UI-level coroutine cho RFID reader
                             scope.launch {
-                                if (isPerformingInventory) scanViewModel.stopInventory() else scanViewModel.startInventory()
+                                if (isPerformingInventory) scanViewModel.stopInventory()
+                                else scanViewModel.startInventory()
                             }
                         }
                     )
                 }
-
             }
         },
         onBackArrowClick = {
             if (isPerformingInventory.not()) {
                 onGoBack()
             }
-        }) { paddingValues ->
+        }
+    ) { paddingValues ->
         Column(
             modifier = Modifier
                 .padding(paddingValues)
@@ -369,20 +353,28 @@ fun InventoryScanScreen(
                         )
                 ) {
                     Row(
-                        modifier = Modifier
-                            .fillMaxWidth(),
+                        modifier = Modifier.fillMaxWidth(),
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
                         Text(text = stringResource(R.string.process_status), fontSize = 26.sp)
                         Text(
-                            text = "${rfidTagList.count { it.newFields.tagScanStatus == TagScanStatus.PROCESSED && it.newFields.location == inputState.location?.locationName }}/${rfidTagList.count { it.newFields.location == inputState.location?.locationName }}",
+                            text = "${
+                                rfidTagList.count {
+                                    it.newFields.tagScanStatus == TagScanStatus.PROCESSED &&
+                                            it.newFields.location == inventoryUiState.location?.locationName
+                                }
+                            }/${
+                                rfidTagList.count {
+                                    it.newFields.location == inventoryUiState.location?.locationName
+                                }
+                            }",
                             fontSize = 26.sp
                         )
                     }
                     Spacer(modifier = Modifier.height(20.dp))
                     OptionTabs(
-                        tab = generalState.tab,
+                        tab = uiState.tab,
                         leftTabText = stringResource(R.string.unprocessed),
                         rightTabText = stringResource(R.string.processed),
                         leftTab = Tab.Left,
@@ -390,12 +382,12 @@ fun InventoryScanScreen(
                         leftIcon = Icons.Default.PendingActions,
                         rightIcon = Icons.Default.CheckCircle,
                         onChangeTab = {
-                            appViewModel.onGeneralIntent(ShareIntent.ChangeTab(it))
+                            inventoryScanViewModel.onIntent(InventoryScanIntent.ChangeTab(it))
                         }
                     )
                     Spacer(modifier = Modifier.height(10.dp))
                     AnimatedContent(
-                        targetState = generalState.tab,
+                        targetState = uiState.tab,
                         transitionSpec = {
                             if (targetState == Tab.Left) {
                                 slideInHorizontally { -it } + fadeIn() togetherWith
@@ -407,36 +399,48 @@ fun InventoryScanScreen(
                         },
                         label = "InventoryTabAnimation"
                     ) { tab ->
+                        val locationName = inventoryUiState.location?.locationName
 
                         val displayList = when (tab) {
                             Tab.Left -> {
-                                val matchLocation =
-                                    rfidTagList.filter { it.newFields.hasLeger && it.newFields.tagScanStatus == TagScanStatus.UNPROCESSED && it.newFields.location == inputState.location?.locationName }
-                                val unMatchLocation =
-                                    rfidTagList.filter { it.newFields.hasLeger && it.newFields.tagScanStatus == TagScanStatus.PROCESSED && it.newFields.location != inputState.location?.locationName }
+                                val matchLocation = rfidTagList.filter {
+                                    it.newFields.hasLeger &&
+                                            it.newFields.tagScanStatus == TagScanStatus.UNPROCESSED &&
+                                            it.newFields.location == locationName
+                                }
+                                val unMatchLocation = rfidTagList.filter {
+                                    it.newFields.hasLeger &&
+                                            it.newFields.tagScanStatus == TagScanStatus.PROCESSED &&
+                                            it.newFields.location != locationName
+                                }
                                 rfidTagList.filter {
                                     matchLocation.contains(it) || unMatchLocation.contains(it)
                                 }
                             }
-
-                            Tab.Right -> rfidTagList.filter { it.newFields.hasLeger && it.newFields.tagScanStatus == TagScanStatus.PROCESSED && it.newFields.location == inputState.location?.locationName }
+                            Tab.Right -> rfidTagList.filter {
+                                it.newFields.hasLeger &&
+                                        it.newFields.tagScanStatus == TagScanStatus.PROCESSED &&
+                                        it.newFields.location == locationName
+                            }
                         }
 
                         ScannedTagDisplay(
                             rfidTagList = displayList,
-                            location = inputState.location?.locationName ?: "",
-                            isSelectionMode = if (rfidTagList.any { it.newFields.isChecked }) generalState.isSelectionMode else false,
+                            location = locationName ?: "",
+                            isSelectionMode = if (rfidTagList.any { it.newFields.isChecked })
+                                uiState.isSelectionMode
+                            else false,
                             onClick = { item ->
-                                if (generalState.isSelectionMode) {
+                                if (uiState.isSelectionMode) {
                                     scanViewModel.toggleCheck(item)
                                 }
                             },
                             onLongClick = { item ->
                                 if (isPerformingInventory.not()) {
-                                    appViewModel.apply {
-                                        onGeneralIntent(ShareIntent.ToggleSelectionMode(true))
-                                        scanViewModel.toggleCheck(item)
-                                    }
+                                    inventoryScanViewModel.onIntent(
+                                        InventoryScanIntent.ToggleSelectionMode(true)
+                                    )
+                                    scanViewModel.toggleCheck(item)
                                 }
                             },
                             onCheckedChange = { item ->
