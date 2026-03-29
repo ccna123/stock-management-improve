@@ -10,10 +10,9 @@ import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDe
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
-import com.example.sol_denka_stockmanagement.screen.csv.CsvExportScreen
-import com.example.sol_denka_stockmanagement.screen.csv.CsvImportScreen
-import com.example.sol_denka_stockmanagement.screen.csv.CsvViewModel
-import com.example.sol_denka_stockmanagement.screen.detail.DetailScreen
+import com.example.sol_denka_stockmanagement.presentation.csv.CsvExportScreen
+import com.example.sol_denka_stockmanagement.presentation.csv.CsvImportScreen
+import com.example.sol_denka_stockmanagement.presentation.detail.DetailScreen
 import com.example.sol_denka_stockmanagement.screen.home.HomeScreen
 import com.example.sol_denka_stockmanagement.presentation.inventory.complete.InventoryCompleteScreen
 import com.example.sol_denka_stockmanagement.presentation.inventory.input.InventoryScreen

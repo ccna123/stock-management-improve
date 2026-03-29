@@ -1,4 +1,4 @@
-package com.example.sol_denka_stockmanagement.screen.csv
+package com.example.sol_denka_stockmanagement.presentation.csv
 
 import android.os.Build
 import androidx.annotation.RequiresApi
@@ -24,9 +24,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
@@ -43,11 +41,8 @@ import com.example.sol_denka_stockmanagement.constant.CsvHistoryDirection
 import com.example.sol_denka_stockmanagement.constant.CsvType
 import com.example.sol_denka_stockmanagement.constant.ProcessResult
 import com.example.sol_denka_stockmanagement.constant.SelectTitle
-import com.example.sol_denka_stockmanagement.intent.CsvIntent
-import com.example.sol_denka_stockmanagement.intent.ExpandIntent
 import com.example.sol_denka_stockmanagement.intent.ShareIntent
 import com.example.sol_denka_stockmanagement.navigation.Screen
-import com.example.sol_denka_stockmanagement.screen.csv.components.SingleCsvFile
 import com.example.sol_denka_stockmanagement.screen.layout.Layout
 import com.example.sol_denka_stockmanagement.share.ButtonContainer
 import com.example.sol_denka_stockmanagement.share.CardContainer
@@ -58,7 +53,6 @@ import com.example.sol_denka_stockmanagement.share.dialog.NetworkDialog
 import com.example.sol_denka_stockmanagement.ui.theme.brightAzure
 import com.example.sol_denka_stockmanagement.ui.theme.brightGreenSecondary
 import com.example.sol_denka_stockmanagement.viewmodel.AppViewModel
-import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
@@ -68,20 +62,11 @@ fun CsvImportScreen(
     appViewModel: AppViewModel,
     onGoBack: () -> Unit
 ) {
-    val csvType by csvViewModel.csvType.collectAsStateWithLifecycle()
-    val expandState = appViewModel.expandState.collectAsStateWithLifecycle()
-    val scope = rememberCoroutineScope()
-    val generalState = appViewModel.generalState.collectAsState().value
-    val importFileSelectedIndex = csvViewModel.importFileSelectedIndex.collectAsState().value
-    val csvFiles by csvViewModel.csvFiles.collectAsStateWithLifecycle()
-    val showProgress by csvViewModel.showProgress.collectAsStateWithLifecycle()
-    val importProgress by csvViewModel.importProgress.collectAsStateWithLifecycle()
-    val showProcessResultDialog by csvViewModel.showProcessResultDialog.collectAsStateWithLifecycle()
-    val processResultMessage by csvViewModel.processResultMessage.collectAsStateWithLifecycle()
-    val importResultStatus by csvViewModel.importResultStatus.collectAsStateWithLifecycle()
+    val uiState by csvViewModel.uiState.collectAsStateWithLifecycle()
+    val generalState by appViewModel.generalState.collectAsStateWithLifecycle()
 
-    LaunchedEffect(csvType) {
-        when (csvType) {
+    LaunchedEffect(uiState.csvType) {
+        when (uiState.csvType) {
             in listOf(
                 CsvType.LedgerMaster.displayNameJp,
                 CsvType.LocationMaster.displayNameJp,
@@ -90,36 +75,37 @@ fun CsvImportScreen(
                 CsvType.TagMaster.displayNameJp,
                 CsvType.ReferenceMaster.displayNameJp,
             ) -> {
-                csvViewModel.apply {
-                    onCsvIntent(CsvIntent.FetchCsvFiles)
-                    onCsvIntent(CsvIntent.ToggleProgressVisibility(false))
-                    onCsvIntent(CsvIntent.ResetFileSelect)
-                    onCsvIntent(CsvIntent.ResetFileSelectedStatus)
-                }
+                csvViewModel.onIntent(CsvIntent.FetchCsvFiles)
+                csvViewModel.onIntent(CsvIntent.ToggleProgressVisibility(false))
+                csvViewModel.onIntent(CsvIntent.ResetFileSelect)
+                csvViewModel.onIntent(CsvIntent.ResetFileSelectedStatus)
             }
+            else -> csvViewModel.onIntent(CsvIntent.ClearCsvFileList)
+        }
+    }
 
-            else -> csvViewModel.onCsvIntent(CsvIntent.ClearCsvFileList)
+    DisposableEffect(Unit) {
+        onDispose {
+            csvViewModel.onIntent(CsvIntent.ResetCsvType)
         }
     }
 
     if (generalState.showNetworkDialog) {
         NetworkDialog(appViewModel = appViewModel, onClose = {
-            appViewModel.onGeneralIntent(
-                ShareIntent.ToggleNetworkDialog(false)
-            )
+            appViewModel.onGeneralIntent(ShareIntent.ToggleNetworkDialog(false))
         })
     }
 
-    if (showProcessResultDialog) {
+    if (uiState.showProcessResultDialog) {
         AppDialog {
             Column(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(
-                    text = processResultMessage ?: "",
+                    text = uiState.processResultMessage ?: "",
                     textAlign = TextAlign.Center,
-                    color = when (importResultStatus) {
+                    color = when (uiState.importResultStatus) {
                         is ProcessResult.Failure -> Color.Red
                         is ProcessResult.Success -> brightGreenSecondary
                         null -> Color.Unspecified
@@ -127,23 +113,17 @@ fun CsvImportScreen(
                 )
                 Spacer(Modifier.height(12.dp))
                 ButtonContainer(
-                    containerColor = when (importResultStatus) {
+                    containerColor = when (uiState.importResultStatus) {
                         is ProcessResult.Failure -> Color.Red
                         is ProcessResult.Success -> brightAzure
                         null -> Color.Unspecified
                     },
                     buttonText = stringResource(R.string.close),
                     onClick = {
-                        csvViewModel.dismissProcessResultDialog()
+                        csvViewModel.onIntent(CsvIntent.DismissProcessResultDialog)
                     }
                 )
             }
-        }
-    }
-
-    DisposableEffect(Unit) {
-        onDispose {
-            csvViewModel.onCsvIntent(CsvIntent.ResetCsvType)
         }
     }
 
@@ -155,12 +135,16 @@ fun CsvImportScreen(
         bottomButton = {
             ButtonContainer(
                 modifier = Modifier.shadow(
-                    elevation = 13.dp, clip = true, ambientColor = Color.Gray.copy(alpha = 0.5f),
+                    elevation = 13.dp,
+                    clip = true,
+                    ambientColor = Color.Gray.copy(alpha = 0.5f),
                     spotColor = Color.DarkGray.copy(alpha = 0.7f)
                 ),
                 buttonTextSize = 20,
                 buttonText = stringResource(R.string.import_file),
-                canClick = csvType.isNotEmpty() && csvFiles.isNotEmpty() && importFileSelectedIndex != -1,
+                canClick = uiState.csvType.isNotEmpty() &&
+                        uiState.csvFiles.isNotEmpty() &&
+                        uiState.importFileSelectedIndex != -1,
                 icon = {
                     Icon(
                         painter = painterResource(R.drawable.file_import),
@@ -170,28 +154,13 @@ fun CsvImportScreen(
                     )
                 },
                 onClick = {
-                    scope.launch {
-                        csvViewModel.apply {
-                            onCsvIntent(CsvIntent.ToggleProgressVisibility(true))
-                            importMaster()
-                        }
-                    }
-//                    if (appViewModel.isNetworkConnected.value.not()) {
-//                        appViewModel.onGeneralIntent(
-//                            ShareIntent.ToggleNetworkDialog(true)
-//                        )
-//                    } else {
-//                        scope.launch {
-////                            csvViewModel.downloadCsvFromSftp(context)
-//                            csvViewModel.importMaster()
-//                        }
-//                    }
+                    csvViewModel.onIntent(CsvIntent.ToggleProgressVisibility(true))
+                    csvViewModel.onIntent(CsvIntent.ImportMaster)
                 },
             )
         },
-        onBackArrowClick = {
-            onGoBack()
-        }) { paddingValues ->
+        onBackArrowClick = { onGoBack() }
+    ) { paddingValues ->
         Column(
             modifier = Modifier
                 .padding(paddingValues)
@@ -199,16 +168,17 @@ fun CsvImportScreen(
                 .imePadding()
         ) {
             CardContainer {
-                Column(
-                    modifier = Modifier.padding(16.dp)
-                ) {
+                Column(modifier = Modifier.padding(16.dp)) {
                     InputContainer(
                         title = stringResource(R.string.csv_type_selection),
                         isRequired = true,
                         children = {
                             ExposedDropdownMenuBox(
-                                expanded = expandState.value.csvTypeExpanded,
-                                onExpandedChange = { appViewModel.onExpandIntent(ExpandIntent.ToggleCsvTypeExpanded) }) {
+                                expanded = uiState.csvTypeExpanded,
+                                onExpandedChange = {
+                                    csvViewModel.onIntent(CsvIntent.ToggleCsvTypeExpanded)
+                                }
+                            ) {
                                 InputFieldContainer(
                                     modifier = Modifier
                                         .menuAnchor(
@@ -216,24 +186,21 @@ fun CsvImportScreen(
                                             enabled = true
                                         )
                                         .fillMaxWidth(),
-                                    value = if (csvType == SelectTitle.SelectCsvType.displayName) "" else csvType,
+                                    value = if (uiState.csvType == SelectTitle.SelectCsvType.displayName) ""
+                                    else uiState.csvType,
                                     hintText = SelectTitle.SelectCsvType.displayName,
                                     isNumeric = false,
                                     shape = RoundedCornerShape(13.dp),
-                                    onChange = {
-                                        csvViewModel.onCsvIntent(
-                                            CsvIntent.SelectCsvType(
-                                                csvType = it
-                                            )
-                                        )
-                                    },
+                                    onChange = {},
                                     readOnly = true,
                                     isDropDown = true,
                                     enable = true,
                                 )
                                 ExposedDropdownMenu(
-                                    expanded = expandState.value.csvTypeExpanded,
-                                    onDismissRequest = { appViewModel.onExpandIntent(ExpandIntent.ToggleCsvTypeExpanded) }
+                                    expanded = uiState.csvTypeExpanded,
+                                    onDismissRequest = {
+                                        csvViewModel.onIntent(CsvIntent.ToggleCsvTypeExpanded)
+                                    }
                                 ) {
                                     listOf(
                                         SelectTitle.SelectCsvType.displayName,
@@ -243,16 +210,15 @@ fun CsvImportScreen(
                                         CsvType.ItemTypeFieldSettingMaster.displayNameJp,
                                         CsvType.TagMaster.displayNameJp,
                                         CsvType.ReferenceMaster.displayNameJp,
-                                    ).forEach { csvType ->
+                                    ).forEach { type ->
                                         DropdownMenuItem(
-                                            text = { Text(text = csvType) },
+                                            text = { Text(text = type) },
                                             onClick = {
-                                                csvViewModel.onCsvIntent(
+                                                csvViewModel.onIntent(
                                                     CsvIntent.SelectCsvType(
-                                                        csvType = if (csvType == SelectTitle.SelectCsvType.displayName) "" else csvType
+                                                        csvType = if (type == SelectTitle.SelectCsvType.displayName) "" else type
                                                     )
                                                 )
-                                                appViewModel.onExpandIntent(ExpandIntent.ToggleCsvTypeExpanded)
                                             }
                                         )
                                     }
@@ -268,8 +234,8 @@ fun CsvImportScreen(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 item {
-                    if (csvType == "") {
-                        if (csvFiles.isEmpty()) {
+                    if (uiState.csvType == "") {
+                        if (uiState.csvFiles.isEmpty()) {
                             Text(
                                 color = Color.Red,
                                 fontSize = 17.sp,
@@ -277,36 +243,36 @@ fun CsvImportScreen(
                             )
                         }
                     } else {
-                        csvFiles.takeIf { it.isNotEmpty() }?.forEachIndexed { index, file ->
-                            val isSelectedFile = importFileSelectedIndex == index
-                            SingleCsvFile(
-                                csvFileName = file.fileName,
-                                csvFileSize = file.fileSize,
-                                isSelected = isSelectedFile,
-                                type = CsvHistoryDirection.IMPORT.displayName,
-                                csvType = when(csvType){
-                                    CsvType.ReferenceMaster.displayNameJp -> CsvFileType.ZIP_FILE
-                                    else -> CsvFileType.SINGLE_FILE
-                                },
-                                showProgress = showProgress && isSelectedFile,
-                                progress = if (isSelectedFile) importProgress else 0f,
-                                isCompleted = isSelectedFile && importResultStatus is ProcessResult.Success,
-                                isError = isSelectedFile && importResultStatus is ProcessResult.Failure,
-                                onChoose = {
-                                    csvViewModel.onCsvIntent(
-                                        CsvIntent.ToggleFileSelect(
-                                            type = CsvHistoryDirection.IMPORT.displayName,
-                                            fileIndex = index,
-                                            fileName = file.fileName
+                        uiState.csvFiles.takeIf { it.isNotEmpty() }
+                            ?.forEachIndexed { index, file ->
+                                val isSelectedFile = uiState.importFileSelectedIndex == index
+                                SingleCsvFile(
+                                    csvFileName = file.fileName,
+                                    csvFileSize = file.fileSize,
+                                    isSelected = isSelectedFile,
+                                    type = CsvHistoryDirection.IMPORT.displayName,
+                                    csvType = when (uiState.csvType) {
+                                        CsvType.ReferenceMaster.displayNameJp -> CsvFileType.ZIP_FILE
+                                        else -> CsvFileType.SINGLE_FILE
+                                    },
+                                    showProgress = uiState.showProgress && isSelectedFile,
+                                    progress = if (isSelectedFile) uiState.importProgress else 0f,
+                                    isCompleted = isSelectedFile && uiState.importResultStatus is ProcessResult.Success,
+                                    isError = isSelectedFile && uiState.importResultStatus is ProcessResult.Failure,
+                                    onChoose = {
+                                        csvViewModel.onIntent(
+                                            CsvIntent.ToggleFileSelect(
+                                                type = CsvHistoryDirection.IMPORT.displayName,
+                                                fileIndex = index,
+                                                fileName = file.fileName
+                                            )
                                         )
-                                    )
-                                }
-                            )
-                        }
-                            ?: Text(
-                                color = Color.Red,
-                                text = stringResource(R.string.no_csv_file_found)
-                            )
+                                    }
+                                )
+                            } ?: Text(
+                            color = Color.Red,
+                            text = stringResource(R.string.no_csv_file_found)
+                        )
                     }
                 }
             }

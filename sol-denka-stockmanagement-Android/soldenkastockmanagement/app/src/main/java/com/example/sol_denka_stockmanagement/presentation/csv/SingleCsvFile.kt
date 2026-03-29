@@ -1,4 +1,4 @@
-package com.example.sol_denka_stockmanagement.screen.csv.components
+package com.example.sol_denka_stockmanagement.presentation.csv
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background

@@ -1,4 +1,4 @@
-package com.example.sol_denka_stockmanagement.screen.detail
+package com.example.sol_denka_stockmanagement.presentation.detail
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
