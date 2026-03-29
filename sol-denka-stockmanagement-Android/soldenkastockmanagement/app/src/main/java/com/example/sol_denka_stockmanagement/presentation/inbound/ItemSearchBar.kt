@@ -1,4 +1,4 @@
-package com.example.sol_denka_stockmanagement.screen.inbound.components
+package com.example.sol_denka_stockmanagement.presentation.inbound
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -17,7 +17,6 @@ import androidx.compose.material.icons.filled.ArrowDropUp
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
@@ -28,14 +27,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.zIndex
 import com.example.sol_denka_stockmanagement.R
-import com.example.sol_denka_stockmanagement.model.item.ItemTypeMasterModel
+import com.example.sol_denka_stockmanagement.domain.model.item.ItemTypeMasterModel
 import com.example.sol_denka_stockmanagement.ui.theme.brightAzure
 
 @Composable

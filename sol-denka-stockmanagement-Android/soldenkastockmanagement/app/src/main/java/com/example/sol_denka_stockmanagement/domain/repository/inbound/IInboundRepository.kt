@@ -11,8 +11,8 @@ import javax.inject.Singleton
 @Singleton
 class IInboundRepository @Inject constructor(
     private val db: AppDatabase,
-    private val sessionRepo: com.example.sol_denka_stockmanagement.domain.repository.inbound.IInboundSessionRepository,
-    private val eventRepo: com.example.sol_denka_stockmanagement.domain.repository.inbound.InboundEventRepository,
+    private val sessionRepo: IInboundSessionRepository,
+    private val eventRepo: IInboundEventRepository,
 ) {
 
     suspend fun createInboundSession(executedAt: String): Int =
