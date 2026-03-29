@@ -22,16 +22,16 @@ import com.example.sol_denka_stockmanagement.screen.inbound.InboundScreen
 import com.example.sol_denka_stockmanagement.screen.inbound.InboundViewModel
 import com.example.sol_denka_stockmanagement.screen.inventory.complete.InventoryCompleteViewModel
 import com.example.sol_denka_stockmanagement.screen.scan.ScanScreen
-import com.example.sol_denka_stockmanagement.screen.outbound.OutboundScreen
+import com.example.sol_denka_stockmanagement.presentation.outbound.OutboundScreen
 import com.example.sol_denka_stockmanagement.screen.version.VersionInfoScreen
 import com.example.sol_denka_stockmanagement.screen.version.sub_screen.LicenseInfoScreen
 import com.example.sol_denka_stockmanagement.viewmodel.ScanViewModel
 import com.example.sol_denka_stockmanagement.viewmodel.AppViewModel
 import com.example.sol_denka_stockmanagement.screen.setting.SettingScreen
 import com.example.sol_denka_stockmanagement.screen.setting.SettingViewModel
-import com.example.sol_denka_stockmanagement.screen.location_change.LocationChangeScreen
-import com.example.sol_denka_stockmanagement.screen.location_change.LocationChangeViewModel
-import com.example.sol_denka_stockmanagement.screen.outbound.OutboundViewModel
+import com.example.sol_denka_stockmanagement.presentation.location.LocationChangeScreen
+import com.example.sol_denka_stockmanagement.presentation.location.LocationChangeViewModel
+import com.example.sol_denka_stockmanagement.presentation.outbound.OutboundViewModel
 import com.example.sol_denka_stockmanagement.search.SearchTagsScreen
 import kotlin.collections.listOf
 

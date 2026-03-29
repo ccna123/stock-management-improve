@@ -1,4 +1,4 @@
-package com.example.sol_denka_stockmanagement.screen.location_change
+package com.example.sol_denka_stockmanagement.presentation.location
 
 import android.os.Build
 import androidx.annotation.RequiresApi
@@ -22,6 +22,7 @@ import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
@@ -33,28 +34,22 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.sol_denka_stockmanagement.R
-import com.example.sol_denka_stockmanagement.constant.CsvHistoryDirection
-import com.example.sol_denka_stockmanagement.constant.CsvTaskType
 import com.example.sol_denka_stockmanagement.constant.DialogType
 import com.example.sol_denka_stockmanagement.constant.SelectTitle
 import com.example.sol_denka_stockmanagement.constant.StatusCode
 import com.example.sol_denka_stockmanagement.constant.generateIso8601JstTimestamp
+import com.example.sol_denka_stockmanagement.domain.model.scan.ScanResultRowModel
 import com.example.sol_denka_stockmanagement.helper.message_mapper.MessageMapper
 import com.example.sol_denka_stockmanagement.intent.ExpandIntent
 import com.example.sol_denka_stockmanagement.intent.InputIntent
 import com.example.sol_denka_stockmanagement.intent.ShareIntent
-import com.example.sol_denka_stockmanagement.model.scan.ScanResultRowModel
-import com.example.sol_denka_stockmanagement.model.tag.TagMasterModel
 import com.example.sol_denka_stockmanagement.navigation.Screen
 import com.example.sol_denka_stockmanagement.screen.layout.Layout
 import com.example.sol_denka_stockmanagement.share.ButtonContainer
 import com.example.sol_denka_stockmanagement.share.InputFieldContainer
 import com.example.sol_denka_stockmanagement.share.ScanResultTable
-import com.example.sol_denka_stockmanagement.state.InputState
 import com.example.sol_denka_stockmanagement.viewmodel.AppViewModel
 import com.example.sol_denka_stockmanagement.viewmodel.ScanViewModel
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
 import java.util.UUID
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -68,12 +63,39 @@ fun LocationChangeScreen(
     onGoBack: () -> Unit
 ) {
 
-    val expandState by appViewModel.expandState.collectAsStateWithLifecycle()
+    val isNetworkConnected by appViewModel.isNetworkConnected.collectAsStateWithLifecycle()
+    val uiState by locationChangeViewModel.uiState.collectAsStateWithLifecycle()
     val rfidTagList by scanViewModel.rfidTagList.collectAsStateWithLifecycle()
     val inputState by appViewModel.inputState.collectAsStateWithLifecycle()
     val locationMaster by appViewModel.locationMaster.collectAsStateWithLifecycle()
-    val isNetworkConnected by appViewModel.isNetworkConnected.collectAsStateWithLifecycle()
     val scope = rememberCoroutineScope()
+
+    LaunchedEffect(uiState.event) {
+        when (uiState.event) {
+            is LocationChangeEvent.SaveDbFailed ->
+                appViewModel.onGeneralIntent(
+                    ShareIntent.ShowDialog(
+                        type = DialogType.SAVE_DATA_TO_DB_FAILED,
+                        message = MessageMapper.toMessage(StatusCode.SAVE_DATA_TO_DB_FAILED)
+                    )
+                )
+            is LocationChangeEvent.SaveCsvSuccess ->
+                appViewModel.onGeneralIntent(
+                    ShareIntent.ShowDialog(
+                        type = DialogType.SAVE_CSV_SUCCESS_FAILED_SFTP,
+                        message = MessageMapper.toMessage(StatusCode.SAVE_CSV_SUCCESS_FAILED_SFTP)
+                    )
+                )
+            is LocationChangeEvent.SaveCsvFailed ->
+                appViewModel.onGeneralIntent(
+                    ShareIntent.ShowDialog(
+                        type = DialogType.SAVE_CSV_FAILED,
+                        message = MessageMapper.toMessage(StatusCode.SAVE_DATA_TO_CSV_FAILED)
+                    )
+                )
+            null -> Unit
+        }
+    }
 
     Layout(
         topBarText = stringResource(R.string.storage_area_change),
@@ -82,13 +104,7 @@ fun LocationChangeScreen(
         onNavigate = onNavigate,
         hasBottomBar = true,
         retrySaveDb = {
-            executeLocationChange(
-                scope = scope,
-                locationChangeViewModel = locationChangeViewModel,
-                appViewModel = appViewModel,
-                inputState = inputState,
-                rfidTagList = rfidTagList,
-            )
+            locationChangeViewModel.onIntent(LocationChangeIntent.Retry)
         },
         bottomButton = {
             Row(
@@ -143,13 +159,23 @@ fun LocationChangeScreen(
                         )
                     },
                     onClick = {
-                        executeLocationChange(
-                            scope = scope,
-                            locationChangeViewModel = locationChangeViewModel,
-                            appViewModel = appViewModel,
-                            inputState = inputState,
-                            rfidTagList = rfidTagList,
-                        )
+
+                        val selectedTags = rfidTagList.filter { it.newFields.isChecked }
+
+                        val sourceEventIdByTagId = selectedTags.associate { tag ->
+                            tag.tagId to UUID.randomUUID().toString()
+                        }
+
+                        val now = generateIso8601JstTimestamp()
+
+                        locationChangeViewModel.onIntent(LocationChangeIntent.Execute(
+                            memo = uiState.memo,
+                            locationId = uiState.location?.locationId ?: 0,
+                            scannedAt = now,
+                            executedAt = now,
+                            sourceEventIdByTagId = sourceEventIdByTagId,
+                            rfidTagList = selectedTags
+                        ))
                     },
                 )
             }
@@ -181,7 +207,8 @@ fun LocationChangeScreen(
                         ),
                         scanResult = rfidTagList.filter { it.newFields.isChecked }.map { tag ->
                             ScanResultRowModel(
-                                itemName = rfidTagList.find { it.epc == tag.epc }?.newFields?.itemName ?: "-",
+                                itemName = rfidTagList.find { it.epc == tag.epc }?.newFields?.itemName
+                                    ?: "-",
                                 itemCode = rfidTagList.find { it.epc == tag.epc }?.epc
                                     ?: "-",
                                 lastColumn = rfidTagList.find { it.epc == tag.epc }?.newFields?.location
@@ -191,7 +218,7 @@ fun LocationChangeScreen(
                     )
                     Spacer(modifier = Modifier.height(20.dp))
                     ExposedDropdownMenuBox(
-                        expanded = expandState.locationExpanded,
+                        expanded = uiState.locationExpanded,
                         onExpandedChange = { appViewModel.onExpandIntent(ExpandIntent.ToggleLocationExpanded) }) {
                         InputFieldContainer(
                             modifier = Modifier
@@ -200,7 +227,7 @@ fun LocationChangeScreen(
                                     enabled = true
                                 )
                                 .fillMaxWidth(),
-                            value = if (inputState.location?.locationName == SelectTitle.SelectLocation.displayName) "" else inputState.location?.locationName
+                            value = if (uiState.location?.locationName == SelectTitle.SelectLocation.displayName) "" else uiState.location?.locationName
                                 ?: "",
                             hintText = SelectTitle.SelectLocation.displayName,
                             isNumeric = false,
@@ -213,7 +240,7 @@ fun LocationChangeScreen(
                             onEnterPressed = {}
                         )
                         ExposedDropdownMenu(
-                            expanded = expandState.locationExpanded,
+                            expanded = uiState.locationExpanded,
                             onDismissRequest = { appViewModel.onExpandIntent(ExpandIntent.ToggleLocationExpanded) }
                         ) {
                             DropdownMenuItem(
@@ -260,77 +287,6 @@ fun LocationChangeScreen(
                     )
                 }
             }
-        }
-    }
-}
-
-@RequiresApi(Build.VERSION_CODES.TIRAMISU)
-private fun executeLocationChange(
-    scope: CoroutineScope,
-    locationChangeViewModel: LocationChangeViewModel,
-    appViewModel: AppViewModel,
-    inputState: InputState,
-    rfidTagList: List<TagMasterModel>
-) {
-    val selectedTags = rfidTagList.filter { it.newFields.isChecked }
-
-    val sourceEventIdByTagId = selectedTags.associate { tag ->
-        tag.tagId to UUID.randomUUID().toString()
-    }
-
-    val now = generateIso8601JstTimestamp()
-
-    scope.launch {
-        val saveLocationChangeToDbResult =
-            locationChangeViewModel.saveLocationChangeToDb(
-                memo = inputState.memo,
-                locationId = inputState.location?.locationId ?: 0,
-                sourceEventIdByTagId = sourceEventIdByTagId,
-                scannedAt = now,
-                executedAt = now,
-                rfidTagList = selectedTags,
-            )
-
-        saveLocationChangeToDbResult.exceptionOrNull()?.let {
-            appViewModel.onGeneralIntent(
-                ShareIntent.ShowDialog(
-                    type = DialogType.SAVE_DATA_TO_DB_FAILED,
-                    message = MessageMapper.toMessage(StatusCode.SAVE_DATA_TO_DB_FAILED)
-                )
-            )
-            return@launch
-        }
-
-        val csvModels =
-            locationChangeViewModel.generateCsvData(
-                memo = inputState.memo,
-                locationId = inputState.location?.locationId ?: 0,
-                scannedAt = now,
-                executedAt = now,
-                sourceEventIdByTagId = sourceEventIdByTagId,
-                rfidTagList = selectedTags
-            )
-
-        val saveScanToCsvResult = appViewModel.saveScanResultToCsv(
-            data = csvModels,
-            direction = CsvHistoryDirection.EXPORT,
-            taskCode = CsvTaskType.LOCATION_CHANGE,
-        )
-
-        if (saveScanToCsvResult) {
-            appViewModel.onGeneralIntent(
-                ShareIntent.ShowDialog(
-                    type = DialogType.SAVE_CSV_SUCCESS_FAILED_SFTP,
-                    message = MessageMapper.toMessage(StatusCode.SAVE_CSV_SUCCESS_FAILED_SFTP)
-                )
-            )
-        } else {
-            appViewModel.onGeneralIntent(
-                ShareIntent.ShowDialog(
-                    type = DialogType.SAVE_CSV_FAILED,
-                    message = MessageMapper.toMessage(StatusCode.SAVE_DATA_TO_CSV_FAILED)
-                )
-            )
         }
     }
 }

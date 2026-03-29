@@ -20,7 +20,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.unit.times
-import com.example.sol_denka_stockmanagement.model.scan.ScanResultRowModel
+import com.example.sol_denka_stockmanagement.domain.model.scan.ScanResultRowModel
 import com.example.sol_denka_stockmanagement.ui.theme.brightAzure
 
 @Composable

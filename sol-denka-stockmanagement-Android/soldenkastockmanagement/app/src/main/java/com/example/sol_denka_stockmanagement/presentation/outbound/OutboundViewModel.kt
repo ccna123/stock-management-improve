@@ -1,9 +1,11 @@
-package com.example.sol_denka_stockmanagement.screen.outbound
+package com.example.sol_denka_stockmanagement.presentation.outbound
 
 import android.os.Build
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import com.example.sol_denka_stockmanagement.constant.formatTimestamp
+import com.example.sol_denka_stockmanagement.domain.repository.outbound.OutboundRepository
+import com.example.sol_denka_stockmanagement.domain.repository.process.IProcessTypeRepository
 import com.example.sol_denka_stockmanagement.domain.repository.tag.ITagMasterRepository
 import com.example.sol_denka_stockmanagement.model.csv.OutboundResultCsvModel
 import com.example.sol_denka_stockmanagement.model.tag.TagMasterModel
@@ -15,8 +17,8 @@ import kotlinx.coroutines.withContext
 @HiltViewModel
 class OutboundViewModel @Inject constructor(
     private val ITagMasterRepository: ITagMasterRepository,
-    private val IProcessTypeRepository: com.example.sol_denka_stockmanagement.domain.repository.process.IProcessTypeRepository,
-    private val outboundRepository: com.example.sol_denka_stockmanagement.domain.repository.outbound.OutboundRepository
+    private val IProcessTypeRepository: IProcessTypeRepository,
+    private val outboundRepository: OutboundRepository
 ) : ViewModel() {
 
     private val csvModels = mutableListOf<OutboundResultCsvModel>()

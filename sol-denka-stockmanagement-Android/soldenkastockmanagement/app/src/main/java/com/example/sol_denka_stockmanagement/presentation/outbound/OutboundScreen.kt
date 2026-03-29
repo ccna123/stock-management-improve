@@ -1,4 +1,4 @@
-package com.example.sol_denka_stockmanagement.screen.outbound
+package com.example.sol_denka_stockmanagement.presentation.outbound
 
 import android.os.Build
 import androidx.annotation.RequiresApi
